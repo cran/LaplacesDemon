@@ -1,0 +1,5 @@
+export(Consort, Effective.Size, Geweke.Diagnostic, LaplacesDemon)
+
+S3method("predict","demonoid")
+S3method("print","demonoid")
+S3method("plot","demonoid")
