@@ -5,7 +5,7 @@
 # on the log of a joint posterior distribution of a Bayesian model.       #
 ###########################################################################
 
-LaplacesDemon <- function(Log.Posterior=NULL, Data=NULL, Adaptive=0,
+LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
      Covar=NULL, DR=1, Initial.Values=NULL, Iterations=1000,
      Periodicity=1, Status=100, Thinning=1)
      {
@@ -13,8 +13,8 @@ LaplacesDemon <- function(Log.Posterior=NULL, Data=NULL, Adaptive=0,
      time1 <- proc.time()
      ### Initial Checks
      cat("\nPerforming initial checks...\n")
-     if(is.null(Log.Posterior)) {cat("ERROR: A function must be ",
-          "entered for Log.Posterior.\n", sep="")}
+     if(is.null(Model)) {cat("ERROR: A function must be ",
+          "entered for Model.\n", sep="")}
      if(is.null(Data)) {cat("ERROR: A list containing data must ",
           "be entered for Data.\n", sep="")}
      if(Iterations < 11) {
@@ -40,11 +40,11 @@ LaplacesDemon <- function(Log.Posterior=NULL, Data=NULL, Adaptive=0,
                sep="")}
      ### Initial Settings
      Acceptance <- 0
-     LP0 <- Log.Posterior(Initial.Values, Data)
-     if(is.na(LP0[[1]])) LP0[[1]] <- -999999999
-     if(is.infinite(LP0[[2]])) LP0[[2]] <- 999999999
-     Dev <- LP0[[2]]
-     Mon <- LP0[[3]]
+     Mo0 <- Model(Initial.Values, Data)
+     if(is.na(Mo0[[1]])) Mo0[[1]] <- -999999999
+     if(is.infinite(Mo0[[2]])) Mo0[[2]] <- 999999999
+     Dev <- Mo0[[2]]
+     Mon <- Mo0[[3]]
      LIV <- length(Initial.Values)
      post <- matrix(0, Iterations, LIV)
      thinned <- Initial.Values
@@ -78,15 +78,15 @@ LaplacesDemon <- function(Log.Posterior=NULL, Data=NULL, Adaptive=0,
           if(iter %% Thinning == 0)
                {
                thinned <- rbind(thinned, post[iter,])
-               Dev <- rbind(Dev, LP0[[2]])
-               Mon <- rbind(Mon, LP0[[3]])
+               Dev <- rbind(Dev, Mo0[[2]])
+               Mon <- rbind(Mon, Mo0[[3]])
                }
           ### Prepare next iteration in case of rejection
           post[iter+1,] <- post[iter,]
           ### Log-Posterior of the current state
-          LP0 <- Log.Posterior(post[iter,], Data)
-          if(is.na(LP0[[1]])) LP0[[1]] <- -999999999
-          if(is.infinite(LP0[[2]])) LP0[[2]] <- 999999999
+          Mo0 <- Model(post[iter,], Data)
+          if(is.na(Mo0[[1]])) Mo0[[1]] <- -999999999
+          if(is.infinite(Mo0[[2]])) Mo0[[2]] <- 999999999
           ### Propose new parameter values
           MVN.rand <- rnorm(LIV, 0, 1)
           MVN.test <- try(MVNz <- matrix(MVN.rand,1,LIV) %*% chol(VarCov),
@@ -102,12 +102,12 @@ LaplacesDemon <- function(Log.Posterior=NULL, Data=NULL, Adaptive=0,
                for (j in 1:LIV) {
                     prop[j] <- rnorm(1, post[iter,j], tuning[j])}}
           ### Log-Posterior of the proposed state
-          LP1 <- Log.Posterior(prop, Data)
-          if(is.na(LP1[[1]])) LP1[[1]] <- LP0[[1]]
-          if(is.infinite(LP1[[2]])) LP1[[2]] <- LP0[[1]]
+          Mo1 <- Model(prop, Data)
+          if(is.na(Mo1[[1]])) Mo1[[1]] <- Mo0[[1]]
+          if(is.infinite(Mo1[[2]])) Mo1[[2]] <- Mo0[[1]]
           ### Accept/Reject
           log.u <- log(runif(1))
-          log.alpha <- LP1[[1]] - LP0[[1]]
+          log.alpha <- Mo1[[1]] - Mo0[[1]]
           log.alpha <- ifelse(is.na(log.alpha), 0, log.alpha)
           if(log.u < log.alpha)
                {
@@ -115,9 +115,9 @@ LaplacesDemon <- function(Log.Posterior=NULL, Data=NULL, Adaptive=0,
                Acceptance <- Acceptance + 1
                if(iter %% Thinning == 0)
                     {
-                    Dev[length(Dev)] <- LP1[[2]]
-                    if(is.vector(Mon)) {Mon[length(Mon)] <- LP1[[3]][1]}
-                    if(is.matrix(Mon)) {Mon[NROW(Mon),] <- LP1[[3]]}
+                    Dev[length(Dev)] <- Mo1[[2]]
+                    if(is.vector(Mon)) {Mon[length(Mon)] <- Mo1[[3]][1]}
+                    if(is.matrix(Mon)) {Mon[NROW(Mon),] <- Mo1[[3]]}
                     }
                }
           ### Delayed Rejection: Second Stage Proposals
@@ -132,18 +132,18 @@ LaplacesDemon <- function(Log.Posterior=NULL, Data=NULL, Adaptive=0,
                if(is.character(MVN.test[1])) {for (j in 1:LIV) {
                          prop[j] <- rnorm(1, prop[j], tuning[j])}}
                ### Log-Posterior of the proposed state
-               LP12 <- Log.Posterior(prop, Data)
-               if(is.na(LP12[[1]])) LP12[[1]] <- LP1[[1]]
-               if(is.infinite(LP12[[2]])) LP12[[2]] <- LP1[[1]]
+               Mo12 <- Model(prop, Data)
+               if(is.na(Mo12[[1]])) Mo12[[1]] <- Mo1[[1]]
+               if(is.infinite(Mo12[[2]])) Mo12[[2]] <- Mo1[[1]]
                ### Accept/Reject
                log.u <- log(runif(1))
                options(warn=-1)
-               log.alpha.comp <- log(1 - exp(LP1[[1]] - LP12[[1]]))
+               log.alpha.comp <- log(1 - exp(Mo1[[1]] - Mo12[[1]]))
                options(warn=0)
                if(is.nan(log.alpha.comp)) log.alpha.comp <- 0
                if(is.infinite(log.alpha.comp)) log.alpha.comp <- 0
-               log.alpha <- LP12[[1]] + log.alpha.comp  -
-                    (LP0[[1]] + log(1 - exp(LP1[[1]] - LP0[[1]])))
+               log.alpha <- Mo12[[1]] + log.alpha.comp  -
+                    (Mo0[[1]] + log(1 - exp(Mo1[[1]] - Mo0[[1]])))
                log.alpha <- ifelse(is.na(log.alpha), 0, log.alpha)
                if(log.u < log.alpha)
                     {
@@ -151,10 +151,10 @@ LaplacesDemon <- function(Log.Posterior=NULL, Data=NULL, Adaptive=0,
                     Acceptance <- Acceptance + 1
                     if(iter %% Thinning == 0)
                          {
-                         Dev[length(Dev)] <- LP1[[2]]
+                         Dev[length(Dev)] <- Mo1[[2]]
                          if(is.vector(Mon)) {
-                              Mon[length(Mon)] <- LP1[[3]][1]}
-                         if(is.matrix(Mon)) {Mon[NROW(Mon),] <- LP1[[3]]}
+                              Mon[length(Mon)] <- Mo1[[3]][1]}
+                         if(is.matrix(Mon)) {Mon[NROW(Mon),] <- Mo1[[3]]}
                          }
                     }
                }
@@ -369,8 +369,8 @@ LaplacesDemon <- function(Log.Posterior=NULL, Data=NULL, Adaptive=0,
                else rep(NA,3),
           DR=DR,
           Iterations=Iterations,
-          Log.Posterior=Log.Posterior,
           Minutes=as.vector(time2[3] - time1[3]) / 60,
+          Model=Model,
           Monitor=Mon,
           Parameters=LIV,
           Periodicity=Periodicity,

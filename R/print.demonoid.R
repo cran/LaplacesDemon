@@ -28,9 +28,9 @@ print.demonoid <- function(x, ...)
           round(x$DIC2[3],3), "\n", sep="")
      cat("DR: ", x$DR, "\n", sep="")
      cat("Iterations: ", x$Iterations, "\n", sep="")
-     cat("Log.Posterior: (NOT SHOWN HERE)\n")
      cat("Minutes of run-time: ", round(x$Minutes,2), "\n",
           sep="")
+     cat("Model: (NOT SHOWN HERE)\n")
      cat("Monitor: (NOT SHOWN HERE)\n")
      cat("Parameters (Number of): ", x$Parameters, "\n",
           sep="")

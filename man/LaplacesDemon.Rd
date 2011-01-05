@@ -9,13 +9,13 @@ distribution and provides samples of the marginal posterior
 distributions, deviance, and other monitored variables.
 }
 \usage{
-LaplacesDemon( Log.Posterior=NULL, Data=NULL, Adaptive=0, Covar=NULL,
-     DR=1, Initial.Values, Iterations=1000, Periodicity=1, Status=100,
+LaplacesDemon( Model=NULL, Data=NULL, Adaptive=0, Covar=NULL, DR=1,
+     Initial.Values, Iterations=1000, Periodicity=1, Status=100,
      Thinning=1)
 }
 \arguments{
-     \item{Log.Posterior}{
-          This required argument specifies the model in a user-defined
+     \item{Model}{
+          This required argument receives the model from a user-defined
           function.
           }
      \item{Data}{
@@ -59,9 +59,9 @@ LaplacesDemon( Log.Posterior=NULL, Data=NULL, Adaptive=0, Covar=NULL,
 	  Markov chain of a parameter.  After Laplace's Demon is finished,
           it may be desired to continue updating from where it left off.
           To continue, this argument should receive the last iteration
-          of the previous update.  For example, if MyModel is the output 
+          of the previous update.  For example, if Fit is the output 
           object, then 
-          \code{Initial.Values=MyModel$Posterior1[NROW(MyModel$Posterior1),]}.
+          \code{Initial.Values=Fit$Posterior1[NROW(Fit$Posterior1),]}.
           }
      \item{Iterations}{
           This required argument accepts integers greater than 10, and
@@ -161,8 +161,8 @@ LaplacesDemon( Log.Posterior=NULL, Data=NULL, Adaptive=0, Covar=NULL,
      \item{Iterations}{
           This reports the number of \code{Iterations} for updating.
           }
-     \item{Log.Posterior}{
-          This contains the model specification \code{Log.Posterior}.
+     \item{Model}{
+          This contains the model specification \code{Model}.
 	  }
      \item{Minutes}{
           This indicates the number of minutes that \code{LaplacesDemon}
@@ -173,7 +173,7 @@ LaplacesDemon( Log.Posterior=NULL, Data=NULL, Adaptive=0, Covar=NULL,
      \item{Monitor}{
           This is a vector or matrix of one or more monitored variables,
           which are variables that were specified in the
-	  \code{Log.Posterior} function to be observed as chains (or
+	  \code{Model} function to be observed as chains (or
 	  Markov chains, if \code{Adaptive=0}), but that were not
           deviance or parameters.
 	  }
@@ -286,7 +286,7 @@ MyData <- list(J=J, X=X, parm.names=parm.names, y=y)
 Initial.Values <- c(rep(0,J), log(1))
 
 ########################  Log-Posterior Function  #########################
-Log.Posterior <- function(parm, Data)
+Model <- function(parm, Data)
      {
      ### Prior Parameters
      beta.mu <- rep(0,J)
@@ -307,8 +307,8 @@ Log.Posterior <- function(parm, Data)
      mu <- beta %*% t(X)
      LL <- sum(dnorm(y, mu, 1/sqrt(tau), log=TRUE))
      LP <- LL + sum(beta.prior) + tau.prior
-     LPout <- list(LP=LP, Dev=-2*LL, Monitor=c(tau,mu[1]), yrep=mu)
-     return(LPout)
+     Modelout <- list(LP=LP, Dev=-2*LL, Monitor=c(tau,mu[1]), yrep=mu)
+     return(Modelout)
      }
 
 set.seed(666)
@@ -318,48 +318,32 @@ set.seed(666)
 ###########################################################################
 
 ##########################  Adaptive Metropolis  ##########################
-MyModel <- LaplacesDemon(Log.Posterior, Data=MyData, Adaptive=500,
+Fit <- LaplacesDemon(Model, Data=MyData, Adaptive=500,
      Covar=NULL, DR=0, Initial.Values, Iterations=1000,
      Periodicity=10, Status=1000, Thinning=1)
-MyModel
-print(MyModel)
-Consort(MyModel)
-#MyPred <- predict(MyModel, Log.Posterior, MyData)
-#MyPred$Concordance
+Fit
+print(Fit)
+Consort(Fit)
+#BurnIn <- Fit$Rec.BurnIn.Thinned
+#plot(Fit, BurnIn, MyData, PDF=FALSE, Parms=Fit$Parameters)
+#Pred <- predict(Fit, Model, MyData)
+#summary(Pred)
+#plot(Pred)
 
 #####################  Delayed Rejection Metropolis  ######################
-MyModel <- LaplacesDemon(Log.Posterior, Data=MyData, Adaptive=0,
+Fit <- LaplacesDemon(Model, Data=MyData, Adaptive=0,
      Covar=NULL, DR=1, Initial.Values, Iterations=1000,
      Periodicity=10, Status=1000, Thinning=1)
-MyModel
-print(MyModel)
-Consort(MyModel)
-#MyPred <- predict(MyModel, Log.Posterior, MyData)
-#MyPred$Concordance
 
 #################  Delayed Rejection Adaptive Metropolis  #################
-MyModel <- LaplacesDemon(Log.Posterior, Data=MyData, Adaptive=500,
+Fit <- LaplacesDemon(Model, Data=MyData, Adaptive=500,
      Covar=NULL, DR=1, Initial.Values, Iterations=1000,
      Periodicity=10, Status=1000, Thinning=1)
-MyModel
-print(MyModel)
-Consort(MyModel)
-#MyPred <- predict(MyModel, Log.Posterior, MyData)
-#MyPred$Concordance
 
 ########################  Random-Walk Metropolis  #########################
-MyModel <- LaplacesDemon(Log.Posterior, Data=MyData, Adaptive=0,
+Fit <- LaplacesDemon(Model, Data=MyData, Adaptive=0,
      Covar=NULL, DR=0, Initial.Values, Iterations=1000,
      Periodicity=10, Status=1000, Thinning=1)
-MyModel
-print(MyModel)
-Consort(MyModel)
-#MyPred <- predict(MyModel, Log.Posterior, MyData)
-#MyPred$Concordance
-
-#################  Plot Marginal Posterior Distributions  #################
-BurnIn <- MyModel$Rec.BurnIn.Thinned
-plot(MyModel, BurnIn, MyData, PDF=FALSE, Parms=MyModel$Parameters)
 
 #End
 }

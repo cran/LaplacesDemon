@@ -26,7 +26,7 @@
   argument is suggested to be set equal to the value of
   \code{Rec.Thinning}.
 
-  If all five conditions are satisfactory, the Laplace's Demon is
+  If all five conditions are satisfactory, then Laplace's Demon is
   appeased.  Otherwise, Laplace's Demon will suggest and supply R
   code that is ready to be copy/pasted and executed.
 

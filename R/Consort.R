@@ -125,7 +125,7 @@ Consort <- function(object=NULL)
           (Acc.Rate.Level == 1) & (MCSE.tot >= object$Parameters) &
           (Eff.Size.min < Eff.Size.crit) & (Stationarity == TRUE)) {
                ### DRAM
-               cat(oname, " <- LaplacesDemon(Log.Posterior, ",
+               cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=2,\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=1, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
@@ -139,7 +139,7 @@ Consort <- function(object=NULL)
           (Acc.Rate.Level == 1) & (MCSE.tot < object$Parameters) &
           (Eff.Size.min < Eff.Size.crit) & (Stationarity == TRUE)) {
                ### DRAM
-               cat(oname, " <- LaplacesDemon(Log.Posterior, ",
+               cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=2,\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=1, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
@@ -153,7 +153,7 @@ Consort <- function(object=NULL)
           (Acc.Rate.Level == 1) & (MCSE.tot >= object$Parameters) &
           (Eff.Size.min < Eff.Size.crit) & (Stationarity == FALSE)) {
                ### DRAM
-               cat(oname, " <- LaplacesDemon(Log.Posterior, ",
+               cat(oname, " <- LaplacesDemon(Model, ",
                    "Data=", dname, ", Adaptive=2,\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=1, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
@@ -167,7 +167,7 @@ Consort <- function(object=NULL)
           (Acc.Rate.Level == 1) & (MCSE.tot < object$Parameters) &
           (Eff.Size.min >= Eff.Size.crit) & (Stationarity == FALSE)) {
                ### DRAM
-               cat(oname, " <- LaplacesDemon(Log.Posterior, ",
+               cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=2,\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=1, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
@@ -181,7 +181,7 @@ Consort <- function(object=NULL)
           (Acc.Rate.Level == 1) & (MCSE.tot >= object$Parameters) &
           (Eff.Size.min >= Eff.Size.crit) & (Stationarity == FALSE)) {
                ### DRAM
-               cat(oname, " <- LaplacesDemon(Log.Posterior, ",
+               cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=2,\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=1, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
@@ -195,7 +195,7 @@ Consort <- function(object=NULL)
           (Acc.Rate.Level == 1) & (MCSE.tot < object$Parameters) &
           (Eff.Size.min >= Eff.Size.crit) & (Stationarity == TRUE)) {
                ### DRAM
-               cat(oname, " <- LaplacesDemon(Log.Posterior, ",
+               cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=2,\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=1, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
@@ -209,7 +209,7 @@ Consort <- function(object=NULL)
           (Acc.Rate.Level == 1) & (MCSE.tot >= object$Parameters) &
           (Eff.Size.min >= Eff.Size.crit) & (Stationarity == TRUE)) {
                ### DRAM
-               cat(oname, " <- LaplacesDemon(Log.Posterior, ",
+               cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=2,\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=1, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
@@ -223,7 +223,7 @@ Consort <- function(object=NULL)
           (Acc.Rate.Level == 2) & (MCSE.tot < object$Parameters) &
           (Eff.Size.min < Eff.Size.crit) & (Stationarity == FALSE)) {
                ### AM
-               cat(oname, " <- LaplacesDemon(Log.Posterior, ",
+               cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=2,\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=0, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
@@ -237,7 +237,7 @@ Consort <- function(object=NULL)
           (Acc.Rate.Level == 2) & (MCSE.tot >= object$Parameters) &
           (Eff.Size.min < Eff.Size.crit) & (Stationarity == TRUE)) {
                ### RWM
-               cat(oname, " <- LaplacesDemon(Log.Posterior, ",
+               cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=0,\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=0, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
@@ -251,7 +251,7 @@ Consort <- function(object=NULL)
           (Acc.Rate.Level == 2) & (MCSE.tot < object$Parameters) &
           (Eff.Size.min < Eff.Size.crit) & (Stationarity == TRUE)) {
                ### RWM
-               cat(oname, " <- LaplacesDemon(Log.Posterior, ",
+               cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=0,\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=0, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
@@ -265,7 +265,7 @@ Consort <- function(object=NULL)
           (Acc.Rate.Level == 2) & (MCSE.tot >= object$Parameters) &
           (Eff.Size.min < Eff.Size.crit) & (Stationarity == FALSE)) {
                ### AM
-               cat(oname, " <- LaplacesDemon(Log.Posterior, ",
+               cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=2,\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=0, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
@@ -279,7 +279,7 @@ Consort <- function(object=NULL)
           (Acc.Rate.Level == 2) & (MCSE.tot < object$Parameters) &
           (Eff.Size.min >= Eff.Size.crit) & (Stationarity == FALSE)) {
                ### AM
-               cat(oname, " <- LaplacesDemon(Log.Posterior, ",
+               cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=2,\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=0, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
@@ -293,7 +293,7 @@ Consort <- function(object=NULL)
           (Acc.Rate.Level == 2) & (MCSE.tot >= object$Parameters) &
           (Eff.Size.min >= Eff.Size.crit) & (Stationarity == FALSE)) {
                ### AM
-               cat(oname, " <- LaplacesDemon(Log.Posterior, ",
+               cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=2,\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=0, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
@@ -307,7 +307,7 @@ Consort <- function(object=NULL)
           (Acc.Rate.Level == 2) & (MCSE.tot < object$Parameters) &
           (Eff.Size.min >= Eff.Size.crit) & (Stationarity == TRUE)) {
                ### RWM
-               cat(oname, " <- LaplacesDemon(Log.Posterior, ",
+               cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=0,\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=0, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
@@ -321,7 +321,7 @@ Consort <- function(object=NULL)
           (Acc.Rate.Level == 2) & (MCSE.tot >= object$Parameters) &
           (Eff.Size.min >= Eff.Size.crit) & (Stationarity == TRUE)) {
                ### RWM
-               cat(oname, " <- LaplacesDemon(Log.Posterior, ",
+               cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=0,\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=0, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
@@ -335,7 +335,7 @@ Consort <- function(object=NULL)
           (Acc.Rate.Level == 3) & (MCSE.tot < object$Parameters) &
           (Eff.Size.min < Eff.Size.crit) & (Stationarity == FALSE)) {
                ### AM
-               cat(oname, " <- LaplacesDemon(Log.Posterior, ",
+               cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=2,\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=0, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
@@ -349,7 +349,7 @@ Consort <- function(object=NULL)
           (Acc.Rate.Level == 3) & (MCSE.tot >= object$Parameters) &
           (Eff.Size.min < Eff.Size.crit) & (Stationarity == TRUE)) {
                ### AM
-               cat(oname, " <- LaplacesDemon(Log.Posterior, ",
+               cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=2,\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=0, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
@@ -363,7 +363,7 @@ Consort <- function(object=NULL)
           (Acc.Rate.Level == 3) & (MCSE.tot < object$Parameters) &
           (Eff.Size.min < Eff.Size.crit) & (Stationarity == TRUE)) {
                ### AM
-               cat(oname, " <- LaplacesDemon(Log.Posterior, ",
+               cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=2,\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=0, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
@@ -377,7 +377,7 @@ Consort <- function(object=NULL)
           (Acc.Rate.Level == 3) & (MCSE.tot >= object$Parameters) &
           (Eff.Size.min < Eff.Size.crit) & (Stationarity == FALSE)) {
                ### AM
-               cat(oname, " <- LaplacesDemon(Log.Posterior, ",
+               cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=2,\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=0, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
@@ -391,7 +391,7 @@ Consort <- function(object=NULL)
           (Acc.Rate.Level == 3) & (MCSE.tot < object$Parameters) &
           (Eff.Size.min >= Eff.Size.crit) & (Stationarity == FALSE)) {
                ### AM
-               cat(oname, " <- LaplacesDemon(Log.Posterior, ",
+               cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=2,\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=0, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
@@ -405,7 +405,7 @@ Consort <- function(object=NULL)
           (Acc.Rate.Level == 3) & (MCSE.tot >= object$Parameters) &
           (Eff.Size.min >= Eff.Size.crit) & (Stationarity == FALSE)) {
                ### AM
-               cat(oname, " <- LaplacesDemon(Log.Posterior, ",
+               cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=2,\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=0, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
@@ -419,7 +419,7 @@ Consort <- function(object=NULL)
           (Acc.Rate.Level == 3) & (MCSE.tot < object$Parameters) &
           (Eff.Size.min >= Eff.Size.crit) & (Stationarity == TRUE)) {
                ### AM
-               cat(oname, " <- LaplacesDemon(Log.Posterior, ",
+               cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=2,\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=0, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
@@ -433,7 +433,7 @@ Consort <- function(object=NULL)
           (Acc.Rate.Level == 3) & (MCSE.tot >= object$Parameters) &
           (Eff.Size.min >= Eff.Size.crit) & (Stationarity == TRUE)) {
                ### AM
-               cat(oname, " <- LaplacesDemon(Log.Posterior, ",
+               cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=2,\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=0, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
@@ -447,7 +447,7 @@ Consort <- function(object=NULL)
           (Acc.Rate.Level == 1) & (MCSE.tot < object$Parameters) &
           (Eff.Size.min < Eff.Size.crit) & (Stationarity == FALSE)) {
                ### DRAM
-               cat(oname, " <- LaplacesDemon(Log.Posterior, ",
+               cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=2,\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=1, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
@@ -461,7 +461,7 @@ Consort <- function(object=NULL)
           (Acc.Rate.Level == 1) & (MCSE.tot >= object$Parameters) &
           (Eff.Size.min < Eff.Size.crit) & (Stationarity == TRUE)) {
                ### DRAM
-               cat(oname, " <- LaplacesDemon(Log.Posterior, ",
+               cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=2,\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=1, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
@@ -475,7 +475,7 @@ Consort <- function(object=NULL)
           (Acc.Rate.Level == 1) & (MCSE.tot < object$Parameters) &
           (Eff.Size.min < Eff.Size.crit) & (Stationarity == TRUE)) {
                ### DRAM
-               cat(oname, " <- LaplacesDemon(Log.Posterior, ",
+               cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=2,\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=1, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
@@ -489,7 +489,7 @@ Consort <- function(object=NULL)
           (Acc.Rate.Level == 1) & (MCSE.tot >= object$Parameters) &
           (Eff.Size.min < Eff.Size.crit) & (Stationarity == FALSE)) {
                ### DRAM
-               cat(oname, " <- LaplacesDemon(Log.Posterior, ",
+               cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=2,\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=1, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
@@ -503,7 +503,7 @@ Consort <- function(object=NULL)
           (Acc.Rate.Level == 1) & (MCSE.tot < object$Parameters) &
           (Eff.Size.min >= Eff.Size.crit) & (Stationarity == FALSE)) {
                ### DRAM
-               cat(oname, " <- LaplacesDemon(Log.Posterior, ",
+               cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=2,\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=1, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
@@ -517,7 +517,7 @@ Consort <- function(object=NULL)
           (Acc.Rate.Level == 1) & (MCSE.tot >= object$Parameters) &
           (Eff.Size.min >= Eff.Size.crit) & (Stationarity == FALSE)) {
                ### DRAM
-               cat(oname, " <- LaplacesDemon(Log.Posterior, ",
+               cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=2,\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=1, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
@@ -531,7 +531,7 @@ Consort <- function(object=NULL)
           (Acc.Rate.Level == 1) & (MCSE.tot < object$Parameters) &
           (Eff.Size.min >= Eff.Size.crit) & (Stationarity == TRUE)) {
                ### DRAM
-               cat(oname, " <- LaplacesDemon(Log.Posterior, ",
+               cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=2,\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=1, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
@@ -545,7 +545,7 @@ Consort <- function(object=NULL)
           (Acc.Rate.Level == 1) & (MCSE.tot >= object$Parameters) &
           (Eff.Size.min >= Eff.Size.crit) & (Stationarity == TRUE)) {
                ### DRM
-               cat(oname, " <- LaplacesDemon(Log.Posterior, ",
+               cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=0,\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=1, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
@@ -559,7 +559,7 @@ Consort <- function(object=NULL)
           (Acc.Rate.Level == 2) & (MCSE.tot < object$Parameters) &
           (Eff.Size.min < Eff.Size.crit) & (Stationarity == FALSE)) {
                ### AM
-               cat(oname, " <- LaplacesDemon(Log.Posterior, ",
+               cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=2,\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=0, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
@@ -573,7 +573,7 @@ Consort <- function(object=NULL)
           (Acc.Rate.Level == 2) & (MCSE.tot >= object$Parameters) &
           (Eff.Size.min < Eff.Size.crit) & (Stationarity == TRUE)) {
                ### RWM
-               cat(oname, " <- LaplacesDemon(Log.Posterior, ",
+               cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=0,\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=0, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
@@ -587,7 +587,7 @@ Consort <- function(object=NULL)
           (Acc.Rate.Level == 2) & (MCSE.tot < object$Parameters) &
           (Eff.Size.min < Eff.Size.crit) & (Stationarity == TRUE)) {
                ### RWM
-               cat(oname, " <- LaplacesDemon(Log.Posterior, ",
+               cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=0,\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=0, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
@@ -601,7 +601,7 @@ Consort <- function(object=NULL)
           (Acc.Rate.Level == 2) & (MCSE.tot >= object$Parameters) &
           (Eff.Size.min < Eff.Size.crit) & (Stationarity == FALSE)) {
                ### AM
-               cat("object <- LaplacesDemon(Log.Posterior, ",
+               cat("object <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=2,\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=0, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
@@ -615,7 +615,7 @@ Consort <- function(object=NULL)
           (Acc.Rate.Level == 2) & (MCSE.tot < object$Parameters) &
           (Eff.Size.min >= Eff.Size.crit) & (Stationarity == FALSE)) {
                ### AM
-               cat(oname, " <- LaplacesDemon(Log.Posterior, ",
+               cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=2,\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=0, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
@@ -629,7 +629,7 @@ Consort <- function(object=NULL)
           (Acc.Rate.Level == 2) & (MCSE.tot >= object$Parameters) &
           (Eff.Size.min >= Eff.Size.crit) & (Stationarity == FALSE)) {
                ### AM
-               cat(oname, " <- LaplacesDemon(Log.Posterior, ",
+               cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=2,\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=0, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
@@ -643,7 +643,7 @@ Consort <- function(object=NULL)
           (Acc.Rate.Level == 2) & (MCSE.tot < object$Parameters) &
           (Eff.Size.min >= Eff.Size.crit) & (Stationarity == TRUE)) {
                ### RWM
-               cat(oname, " <- LaplacesDemon(Log.Posterior, ",
+               cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=0,\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=0, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
@@ -657,7 +657,7 @@ Consort <- function(object=NULL)
           (Acc.Rate.Level == 3) & (MCSE.tot < object$Parameters) &
           (Eff.Size.min < Eff.Size.crit) & (Stationarity == FALSE)) {
                ### AM
-               cat(oname, " <- LaplacesDemon(Log.Posterior, ",
+               cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=2,\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=0, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
@@ -671,7 +671,7 @@ Consort <- function(object=NULL)
           (Acc.Rate.Level == 3) & (MCSE.tot >= object$Parameters) &
           (Eff.Size.min < Eff.Size.crit) & (Stationarity == TRUE)) {
                ### AM
-               cat(oname, " <- LaplacesDemon(Log.Posterior, ",
+               cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=2,\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=0, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
@@ -685,7 +685,7 @@ Consort <- function(object=NULL)
           (Acc.Rate.Level == 3) & (MCSE.tot < object$Parameters) &
           (Eff.Size.min < Eff.Size.crit) & (Stationarity == TRUE)) {
                ### AM
-               cat(oname, " <- LaplacesDemon(Log.Posterior, ",
+               cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=2,\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=0, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
@@ -699,7 +699,7 @@ Consort <- function(object=NULL)
           (Acc.Rate.Level == 3) & (MCSE.tot >= object$Parameters) &
           (Eff.Size.min < Eff.Size.crit) & (Stationarity == FALSE)) {
                ### AM
-               cat(oname, " <- LaplacesDemon(Log.Posterior, ",
+               cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=2,\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=0, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
@@ -713,7 +713,7 @@ Consort <- function(object=NULL)
           (Acc.Rate.Level == 3) & (MCSE.tot < object$Parameters) &
           (Eff.Size.min >= Eff.Size.crit) & (Stationarity == FALSE)) {
                ### AM
-               cat(oname, " <- LaplacesDemon(Log.Posterior, ",
+               cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=2,\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=0, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
@@ -727,7 +727,7 @@ Consort <- function(object=NULL)
           (Acc.Rate.Level == 3) & (MCSE.tot >= object$Parameters) &
           (Eff.Size.min >= Eff.Size.crit) & (Stationarity == FALSE)) {
                ### AM
-               cat(oname, " <- LaplacesDemon(Log.Posterior, ",
+               cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=2,\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=0, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
@@ -741,7 +741,7 @@ Consort <- function(object=NULL)
           (Acc.Rate.Level == 3) & (MCSE.tot < object$Parameters) &
           (Eff.Size.min >= Eff.Size.crit) & (Stationarity == TRUE)) {
                ### AM
-               cat(oname, " <- LaplacesDemon(Log.Posterior, ",
+               cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=2,\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=0, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
@@ -755,7 +755,7 @@ Consort <- function(object=NULL)
           (Acc.Rate.Level == 3) & (MCSE.tot >= object$Parameters) &
           (Eff.Size.min >= Eff.Size.crit) & (Stationarity == TRUE)) {
                ### AM
-               cat(oname, " <- LaplacesDemon(Log.Posterior, ",
+               cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=2,\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=0, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
