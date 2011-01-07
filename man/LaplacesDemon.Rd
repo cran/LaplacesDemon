@@ -146,7 +146,8 @@ LaplacesDemon( Model=NULL, Data=NULL, Adaptive=0, Covar=NULL, DR=1,
 	  indicating the effective number of parameters, and DIC is the
 	  Deviance Information Criterion, which is a model fit statistic
 	  that is the sum of Dbar and pD.  \code{DIC1} is calculated
-	  over all retained samples.
+	  over all retained samples.  Note that pD is calculated as
+	  \code{var(Deviance)/2} as in Gelman et al. (2004).
           }
      \item{DIC2}{
           This is identical to \code{DIC1} above, except that it is
@@ -161,14 +162,14 @@ LaplacesDemon( Model=NULL, Data=NULL, Adaptive=0, Covar=NULL, DR=1,
      \item{Iterations}{
           This reports the number of \code{Iterations} for updating.
           }
-     \item{Model}{
-          This contains the model specification \code{Model}.
-	  }
      \item{Minutes}{
           This indicates the number of minutes that \code{LaplacesDemon}
           was running, and this includes the initial checks as well as
-	  time it took to assess burn-in, effective sample size, and
+	  time it took to assess stationarity, effective sample size, and
 	  create summaries.
+	}
+     \item{Model}{
+          This contains the model specification \code{Model}.
 	  }
      \item{Monitor}{
           This is a vector or matrix of one or more monitored variables,
@@ -197,11 +198,12 @@ LaplacesDemon( Model=NULL, Data=NULL, Adaptive=0, Covar=NULL, DR=1,
 	  }
      \item{Rec.BurnIn.Thinned}{
           This is the recommended burn-in for the thinned samples, where
-          the value indicates the number of initial rows to discard as
-	  burn-in.  Samples considered as burn-in are discarded because
-	  they do not represent the target distribution and have not
-          adequately forgotten the initial value of the chain (or Markov
-	  chain, if \code{Adaptive=0}).
+          the value indicates the first row that was stationary across
+	  all parameters, and previous rows are discarded as burn-in.
+	  Samples considered as burn-in are discarded because they do
+	  not represent the target distribution and have not adequately
+	  forgotten the initial value of the chain (or Markov chain, if
+	  \code{Adaptive=0}).
 	  }
      \item{Rec.BurnIn.UnThinned}{
           This is the recommended burn-in for all samples, in case
@@ -210,7 +212,7 @@ LaplacesDemon( Model=NULL, Data=NULL, Adaptive=0, Covar=NULL, DR=1,
      \item{Rec.Thinning}{
 	  This is the recommended value for the \code{Thinning} 
           argument according to the autocorrelation in the thinned
-	  samples, and it is limited to the interval of [1,1000].
+	  samples, and it is limited to the interval [1,1000].
 	  }
      \item{Status}{
           This is the value in the \code{Status} argument.
@@ -226,11 +228,12 @@ LaplacesDemon( Model=NULL, Data=NULL, Adaptive=0, Covar=NULL, DR=1,
 	  deviation around the marginal posterior mean that is due to
 	  uncertainty associated with using MCMC.  The acceptable size of 
           the MCSE depends on the acceptable uncertainty associated
-	  around the marginal posterior mean.  As a rough guide, it is
-	  usually preferable to continue updating the model until each
-	  MCSE is less than 5\% of the marginal posterior standard
-	  deviation.  The desired precision of Eff.Size depends on the
-	  user's goal, but usually 100 is enough to describe 95\%
+	  around the marginal posterior mean.  Laplace's Demon prefers
+	  to continue updating until each MCSE is less than 6.7\% of each
+	  marginal posterior standard deviation (see \code{Consort}).  The 
+	  The desired precision of Eff.Size depends on the user's goal,
+	  and Laplace's Demon prefers to continue until each effective
+	  size is at least 100, which should be enough to describe 95\%
 	  boundaries of an approximately Gaussian distribution.
 	  }
      \item{Summary2}{
@@ -247,6 +250,10 @@ LaplacesDemon( Model=NULL, Data=NULL, Adaptive=0, Covar=NULL, DR=1,
           }
 }
 \references{
+     Gelman, A., Carlin, J., Stern, H., and Rubin, D. (2004). Bayesian
+     Data Analysis, Texts in Statistical Science, 2nd ed., Chapman and
+     Hall, London.
+  
      Hall, B. (2011), "Laplace's Demon", STATISTICAT, LLC.
      URL=\url{http://www.statisticat.com/laplacesdemon.html}
 
@@ -285,7 +292,7 @@ MyData <- list(J=J, X=X, parm.names=parm.names, y=y)
 ############################  Initial Values  #############################
 Initial.Values <- c(rep(0,J), log(1))
 
-########################  Log-Posterior Function  #########################
+##########################  Model Specification  ##########################
 Model <- function(parm, Data)
      {
      ### Prior Parameters
@@ -304,10 +311,10 @@ Model <- function(parm, Data)
                1/sqrt(beta.tau[j]), log=TRUE)}
      tau.prior <- dgamma(tau, tau.alpha, tau.beta, log=TRUE)
      ### Log-Posterior
-     mu <- beta %*% t(X)
+     mu <- beta \%*\% t(X)
      LL <- sum(dnorm(y, mu, 1/sqrt(tau), log=TRUE))
      LP <- LL + sum(beta.prior) + tau.prior
-     Modelout <- list(LP=LP, Dev=-2*LL, Monitor=c(tau,mu[1]), yrep=mu)
+     Modelout <- list(LP=LP, Dev=-2*LL, Monitor=c(tau,mu[1]), yhat=mu)
      return(Modelout)
      }
 
@@ -319,31 +326,31 @@ set.seed(666)
 
 ##########################  Adaptive Metropolis  ##########################
 Fit <- LaplacesDemon(Model, Data=MyData, Adaptive=500,
-     Covar=NULL, DR=0, Initial.Values, Iterations=1000,
-     Periodicity=10, Status=1000, Thinning=1)
+     Covar=NULL, DR=0, Initial.Values, Iterations=10000,
+     Periodicity=10, Status=100, Thinning=10)
 Fit
 print(Fit)
 Consort(Fit)
-#BurnIn <- Fit$Rec.BurnIn.Thinned
-#plot(Fit, BurnIn, MyData, PDF=FALSE, Parms=Fit$Parameters)
-#Pred <- predict(Fit, Model, MyData)
-#summary(Pred)
-#plot(Pred)
+BurnIn <- Fit$Rec.BurnIn.Thinned
+plot(Fit, BurnIn, MyData, PDF=FALSE, Parms=Fit$Parameters)
+Pred <- predict(Fit, Model, MyData)
+summary(Pred)
+plot(Pred)
 
 #####################  Delayed Rejection Metropolis  ######################
 Fit <- LaplacesDemon(Model, Data=MyData, Adaptive=0,
      Covar=NULL, DR=1, Initial.Values, Iterations=1000,
-     Periodicity=10, Status=1000, Thinning=1)
+     Periodicity=10, Status=100, Thinning=1)
 
 #################  Delayed Rejection Adaptive Metropolis  #################
 Fit <- LaplacesDemon(Model, Data=MyData, Adaptive=500,
      Covar=NULL, DR=1, Initial.Values, Iterations=1000,
-     Periodicity=10, Status=1000, Thinning=1)
+     Periodicity=10, Status=100, Thinning=1)
 
 ########################  Random-Walk Metropolis  #########################
 Fit <- LaplacesDemon(Model, Data=MyData, Adaptive=0,
      Covar=NULL, DR=0, Initial.Values, Iterations=1000,
-     Periodicity=10, Status=1000, Thinning=1)
+     Periodicity=10, Status=100, Thinning=1)
 
 #End
 }

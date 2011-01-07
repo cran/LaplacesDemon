@@ -1,6 +1,6 @@
 \name{demonsnacks}
 \alias{demonsnacks}
-\title{Demon Snacks}
+\title{Demon Snacks Data Set}
 \usage{data(demonsnacks)}
 \description{
   Late one night, after witnessing Laplace's Demon in action, I followed

@@ -23,7 +23,8 @@
   y[rep], simply supply the data set used to estimate the model.  To
   predict y[new], supply a new data set instead.  If the new data set
   does not have y, then create \code{y} in the list and set it equal to
-  something sensible, such as \code{mean(y)} from the original data set.
+  something sensible, such as \code{mean(y)} from the original data
+  set.
 
   At the moment, y must be univariate and continuous.
 }

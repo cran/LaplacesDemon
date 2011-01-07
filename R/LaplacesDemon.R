@@ -116,8 +116,8 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
                if(iter %% Thinning == 0)
                     {
                     Dev[length(Dev)] <- Mo1[[2]]
-                    if(is.vector(Mon)) {Mon[length(Mon)] <- Mo1[[3]][1]}
-                    if(is.matrix(Mon)) {Mon[NROW(Mon),] <- Mo1[[3]]}
+                    Mon <- as.matrix(Mon)
+                    Mon[NROW(Mon),] <- Mo1[[3]]
                     }
                }
           ### Delayed Rejection: Second Stage Proposals
@@ -152,9 +152,8 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
                     if(iter %% Thinning == 0)
                          {
                          Dev[length(Dev)] <- Mo1[[2]]
-                         if(is.vector(Mon)) {
-                              Mon[length(Mon)] <- Mo1[[3]][1]}
-                         if(is.matrix(Mon)) {Mon[NROW(Mon),] <- Mo1[[3]]}
+                         Mon <- as.matrix(Mon)
+                         Mon[NROW(Mon),] <- Mo1[[3]]
                          }
                     }
                }
@@ -225,22 +224,17 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
           }
      ### Posterior Summary Table 1: All Thinned Samples
      cat("Creating Summaries\n")
-     if(is.vector(Mon)) Num.Mon <- 1
-     if(is.matrix(Mon)) Num.Mon <- NCOL(Mon)
+     Mon <- as.matrix(Mon)
+     Num.Mon <- NCOL(Mon)
      Summ1 <- matrix(NA, LIV, 7, dimnames=list(Data$parm.names,
           c("Mean","SD","MCSE","Eff.Size","LB","Median","UB")))
      Summ1[,1] <- apply(thinned, 2, mean)
      Summ1[,2] <- apply(thinned, 2, sd)
      Summ1[,3] <- Summ1[,2] / sqrt(Eff.Size1)
      Summ1[,4] <- Eff.Size1
-     for (j in 1:LIV) {
-          Summ1[j,5] <- as.numeric(quantile(thinned[,j], probs=0.025,
-               na.rm=TRUE))
-          Summ1[j,6] <- as.numeric(quantile(thinned[,j], probs=0.5,
-               na.rm=TRUE))
-          Summ1[j,7] <- as.numeric(quantile(thinned[,j], probs=0.975,
-               na.rm=TRUE))
-          }
+     Summ1[,5] <- apply(thinned, 2, quantile, c(0.025))
+     Summ1[,6] <- apply(thinned, 2, quantile, c(0.500))
+     Summ1[,7] <- apply(thinned, 2, quantile, c(0.975))
      Deviance <- rep(NA,7)
      Deviance[1] <- mean(Dev)
      Deviance[2] <- sd(Dev)
@@ -250,34 +244,19 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
      Deviance[6] <- as.numeric(quantile(Dev, probs=0.500, na.rm=TRUE))
      Deviance[7] <- as.numeric(quantile(Dev, probs=0.975, na.rm=TRUE))
      Summ1 <- rbind(Summ1, Deviance)
-     if(Num.Mon == 1)
-          {
+     for (j in 1:Num.Mon) {
           Monitor <- rep(NA,7)
-          Monitor[1] <- mean(Mon)
-          Monitor[2] <- sd(Mon)
-          Monitor[3] <- sd(Mon) / sqrt(Eff.Size3)
-          Monitor[4] <- Eff.Size3
-          Monitor[5] <- as.numeric(quantile(Mon, probs=0.025, na.rm=TRUE))
-          Monitor[6] <- as.numeric(quantile(Mon, probs=0.500, na.rm=TRUE))
-          Monitor[7] <- as.numeric(quantile(Mon, probs=0.975, na.rm=TRUE))
+          Monitor[1] <- mean(Mon[,j])
+          Monitor[2] <- sd(Mon[,j])
+          Monitor[3] <- sd(Mon[,j]) / sqrt(Eff.Size3[j])
+          Monitor[4] <- Eff.Size3[j]
+          Monitor[5] <- as.numeric(quantile(Mon[,j], probs=0.025,
+               na.rm=TRUE))
+          Monitor[6] <- as.numeric(quantile(Mon[,j], probs=0.5,
+               na.rm=TRUE))
+          Monitor[7] <- as.numeric(quantile(Mon[,j], probs=0.975,
+               na.rm=TRUE))
           Summ1 <- rbind(Summ1, Monitor)
-          }
-     if(Num.Mon > 1)
-          {
-          for (j in 1:Num.Mon) {
-               Monitor <- rep(NA,7)
-               Monitor[1] <- mean(Mon[,j])
-               Monitor[2] <- sd(Mon[,j])
-               Monitor[3] <- sd(Mon[,j]) / sqrt(Eff.Size3[j])
-               Monitor[4] <- Eff.Size3[j]
-               Monitor[5] <- as.numeric(quantile(Mon[,j], probs=0.025,
-                    na.rm=TRUE))
-               Monitor[6] <- as.numeric(quantile(Mon[,j], probs=0.5,
-                    na.rm=TRUE))
-               Monitor[7] <- as.numeric(quantile(Mon[,j], probs=0.975,
-                    na.rm=TRUE))
-               Summ1 <- rbind(Summ1, Monitor)
-               }
           }
      ### Posterior Summary Table 2: Stationary Samples
      Summ2 <- matrix(NA, LIV, 7, dimnames=list(Data$parm.names,
@@ -288,17 +267,12 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
           Summ2[,2] <- apply(thinned[BurnIn:NROW(thinned),], 2, sd)
           Summ2[,3] <- Summ2[,2] / sqrt(Eff.Size4)
           Summ2[,4] <- Eff.Size4
-          for (j in 1:LIV) {
-               Summ2[j,5] <- as.numeric(
-                    quantile(thinned[BurnIn:NROW(thinned),j], probs=0.025,
-                    na.rm=TRUE))
-               Summ2[j,6] <- as.numeric(
-                    quantile(thinned[BurnIn:NROW(thinned),j], probs=0.500,
-                    na.rm=TRUE))
-               Summ2[j,7] <- as.numeric(
-                    quantile(thinned[BurnIn:NROW(thinned),j], probs=0.975,
-                    na.rm=TRUE))
-               }
+          Summ2[,5] <- apply(thinned[BurnIn:NROW(thinned),], 2, quantile,
+               c(0.025))
+          Summ2[,6] <- apply(thinned[BurnIn:NROW(thinned),], 2, quantile,
+               c(0.500))
+          Summ2[,7] <- apply(thinned[BurnIn:NROW(thinned),], 2, quantile,
+               c(0.975))
           Deviance <- rep(NA,7)
           Deviance[1] <- mean(Dev[BurnIn:length(Dev)])
           Deviance[2] <- sd(Dev[BurnIn:length(Dev)])
@@ -311,42 +285,20 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
           Deviance[7] <- as.numeric(quantile(Dev[BurnIn:length(Dev)],
                probs=0.975, na.rm=TRUE))
           Summ2 <- rbind(Summ2, Deviance)
-          if(Num.Mon == 1)
-               {
+          for (j in 1:Num.Mon) {
                Monitor <- rep(NA,7)
-               Monitor[1] <- mean(Mon[BurnIn:NROW(thinned)])
-               Monitor[2] <- sd(Mon[BurnIn:NROW(thinned)])
-               Monitor[3] <- sd(Mon[BurnIn:NROW(thinned)]) /
-                    sqrt(Eff.Size6)
-               Monitor[4] <- Eff.Size6
-               Monitor[5] <- as.numeric(
-                    quantile(Mon[BurnIn:NROW(thinned)], probs=0.025,
-                    na.rm=TRUE))
-               Monitor[6] <- as.numeric(
-                    quantile(Mon[BurnIn:NROW(thinned)], probs=0.500,
-                    na.rm=TRUE))
-               Monitor[7] <- as.numeric(
-                    quantile(Mon[BurnIn:NROW(thinned)], probs=0.975,
-                    na.rm=TRUE))
+               Monitor[1] <- mean(Mon[BurnIn:NROW(thinned),j])
+               Monitor[2] <- sd(Mon[BurnIn:NROW(thinned),j])
+               Monitor[3] <- sd(Mon[BurnIn:NROW(thinned),j]) /
+                    sqrt(Eff.Size6[j])
+               Monitor[4] <- Eff.Size6[j]
+               Monitor[5] <- as.numeric(quantile(Mon[BurnIn:NROW(Mon),j],
+                    probs=0.025, na.rm=TRUE))
+               Monitor[6] <- as.numeric(quantile(Mon[BurnIn:NROW(Mon),j],
+                    probs=0.500, na.rm=TRUE))
+               Monitor[7] <- as.numeric(quantile(Mon[BurnIn:NROW(Mon),j],
+                    probs=0.975, na.rm=TRUE))
                Summ2 <- rbind(Summ2, Monitor)
-               }
-          if(Num.Mon > 1)
-               {
-               for (j in 1:Num.Mon) {
-                    Monitor <- rep(NA,7)
-                    Monitor[1] <- mean(Mon[BurnIn:NROW(thinned),j])
-                    Monitor[2] <- sd(Mon[BurnIn:NROW(thinned),j])
-                    Monitor[3] <- sd(Mon[BurnIn:NROW(thinned),j]) /
-                         sqrt(Eff.Size6[j])
-                    Monitor[4] <- Eff.Size6[j]
-                    Monitor[5] <- as.numeric(quantile(Mon[BurnIn:NROW(Mon),j],
-                         probs=0.025, na.rm=TRUE))
-                    Monitor[6] <- as.numeric(quantile(Mon[BurnIn:NROW(Mon),j],
-                         probs=0.500, na.rm=TRUE))
-                    Monitor[7] <- as.numeric(quantile(Mon[BurnIn:NROW(Mon),j],
-                         probs=0.975, na.rm=TRUE))
-                    Summ2 <- rbind(Summ2, Monitor)
-                    }
                }
           }
      time2 <- proc.time()
