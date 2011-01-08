@@ -58,7 +58,7 @@ Consort <- function(object=NULL)
                ") is below ", Acc.Rate.Low, ".\n", sep="")}
      if(Acc.Rate.Level == 2) {
           cat("2. The acceptance rate (", object$Acceptance.Rate,
-               ") is within the interval of [", Acc.Rate.Low, ",",
+               ") is within the interval [", Acc.Rate.Low, ",",
                Acc.Rate.High, "].\n", sep="")}
      if(Acc.Rate.Level == 3) {
           cat("2. The acceptance rate (", object$Acceptance.Rate,
