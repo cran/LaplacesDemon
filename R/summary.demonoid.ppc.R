@@ -13,7 +13,7 @@ summary.demonoid.ppc <- function(object=NULL, Rows=NULL, ...)
      if(is.null(Rows)) {Rows <- 1:NROW(y)}
      ### Create Summary Table
      Summ <- matrix(NA, length(y), 7, dimnames=list(1:length(y),
-          c("y","Mean","SD","LB","Median","UB","p.value")))
+          c("y","Mean","SD","LB","Median","UB","PQ")))
      Summ[,1] <- y
      Summ[,2] <- apply(yhat, 1, mean)
      Summ[,3] <- apply(yhat, 1, sd)
@@ -24,13 +24,10 @@ summary.demonoid.ppc <- function(object=NULL, Rows=NULL, ...)
          Summ[i,6] <- quantile(yhat[i,], probs=0.975)
          Summ[i,7] <- mean(yhat[i,] >= y[i])
        }
-     Chi.Square <- sum((Summ[,1]-Summ[,2])^2 / var(Summ[,2]))
      Concordance <- 1 - mean((Summ[,7] < 0.025) | (Summ[,7] > 0.975))
      ### Create Output
-     Summ.out <- list(Chi.Square=Chi.Square,
-          Concordance=Concordance,
+     Summ.out <- list(Concordance=Concordance,
           Summary=Summ[Rows,])
-     cat("\nChi-square: ", Chi.Square, "\n")
      cat("Concordance: ", Concordance, "\n")
      cat("Records: \n")
      print(Summ[Rows,])

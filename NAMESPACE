@@ -1,4 +1,4 @@
-export(Consort, Effective.Size, Geweke.Diagnostic, LaplacesDemon)
+export(Consort, ESS, Geweke.Diagnostic, LaplacesDemon)
 
 S3method("predict","demonoid")
 S3method("print","demonoid")

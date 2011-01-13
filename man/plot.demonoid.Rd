@@ -54,8 +54,8 @@
   Autocorrelation plots show the autocorrelation or serial correlation
   between sampled values at nearby iterations.  Samples with
   autocorrelation do not violate any assumption, but are inefficient
-  because they reduce the effective sample size, and indicate that the
-  chain is not mixing well, since each value is influenced by values
+  because they reduce the effective sample size (ESS), and indicate that
+  the chain is not mixing well, since each value is influenced by values
   that are previous and nearby.  The x-axis indicates lags with respect
   to samples by iteration, and the y-axis represents autocorrelation.
   The ideal autocorrelation plot shows perfect correlation at zero lag,

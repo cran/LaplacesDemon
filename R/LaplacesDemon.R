@@ -200,46 +200,46 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
      geweke.ct <- ifelse(is.na(geweke.ct), NROW(thinned), geweke.ct)
      BurnIn <- burn.start[max(geweke.ct)]
      BurnIn <- ifelse(is.na(BurnIn), NROW(thinned), BurnIn)
-     ### Assess Thinning and Effective Size for all parameter samples
-     cat("Assessing Thinning and Effective Size\n")
+     ### Assess Thinning and ESS Size for all parameter samples
+     cat("Assessing Thinning and ESS\n")
      acf.temp <- matrix(1, trunc(10*log10(NROW(thinned))), LIV)
-     Eff.Size1 <- Rec.Thin <- rep(1, LIV)
+     ESS1 <- Rec.Thin <- rep(1, LIV)
      for (j in 1:LIV)
           {
           temp0 <- acf(thinned[,j], lag.max=NROW(acf.temp), plot=FALSE)
           acf.temp[,j] <- abs(temp0$acf[2:(NROW(acf.temp)+1),,1])
-          Eff.Size1[j] <- Effective.Size(thinned[,j])
+          ESS1[j] <- ESS(thinned[,j])
           Rec.Thin[j] <- which(acf.temp[,j] <= 0.1)[1]*Thinning
           }
      Rec.Thin <- ifelse(is.na(Rec.Thin), NROW(acf.temp), Rec.Thin)
-     ### Assess Effective Size for all deviance and monitor samples
-     Eff.Size2 <- Effective.Size(Dev)
-     Eff.Size3 <- Effective.Size(Mon)
-     ### Assess Effective Size for stationary samples
+     ### Assess ESS for all deviance and monitor samples
+     ESS2 <- ESS(Dev)
+     ESS3 <- ESS(Mon)
+     ### Assess ESS for stationary samples
      if(BurnIn < NROW(thinned))
           {
-          Eff.Size4 <- Effective.Size(thinned[BurnIn:NROW(thinned),])
-          Eff.Size5 <- Effective.Size(Dev[BurnIn:NROW(Dev),])
-          Eff.Size6 <- Effective.Size(Mon[BurnIn:NROW(Mon),])
+          ESS4 <- ESS(thinned[BurnIn:NROW(thinned),])
+          ESS5 <- ESS(Dev[BurnIn:NROW(Dev),])
+          ESS6 <- ESS(Mon[BurnIn:NROW(Mon),])
           }
      ### Posterior Summary Table 1: All Thinned Samples
      cat("Creating Summaries\n")
      Mon <- as.matrix(Mon)
      Num.Mon <- NCOL(Mon)
      Summ1 <- matrix(NA, LIV, 7, dimnames=list(Data$parm.names,
-          c("Mean","SD","MCSE","Eff.Size","LB","Median","UB")))
+          c("Mean","SD","MCSE","ESS","LB","Median","UB")))
      Summ1[,1] <- apply(thinned, 2, mean)
      Summ1[,2] <- apply(thinned, 2, sd)
-     Summ1[,3] <- Summ1[,2] / sqrt(Eff.Size1)
-     Summ1[,4] <- Eff.Size1
+     Summ1[,3] <- Summ1[,2] / sqrt(ESS1)
+     Summ1[,4] <- ESS1
      Summ1[,5] <- apply(thinned, 2, quantile, c(0.025))
      Summ1[,6] <- apply(thinned, 2, quantile, c(0.500))
      Summ1[,7] <- apply(thinned, 2, quantile, c(0.975))
      Deviance <- rep(NA,7)
      Deviance[1] <- mean(Dev)
      Deviance[2] <- sd(Dev)
-     Deviance[3] <- sd(Dev) / sqrt(Eff.Size2)
-     Deviance[4] <- Eff.Size2
+     Deviance[3] <- sd(Dev) / sqrt(ESS2)
+     Deviance[4] <- ESS2
      Deviance[5] <- as.numeric(quantile(Dev, probs=0.025, na.rm=TRUE))
      Deviance[6] <- as.numeric(quantile(Dev, probs=0.500, na.rm=TRUE))
      Deviance[7] <- as.numeric(quantile(Dev, probs=0.975, na.rm=TRUE))
@@ -248,8 +248,8 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
           Monitor <- rep(NA,7)
           Monitor[1] <- mean(Mon[,j])
           Monitor[2] <- sd(Mon[,j])
-          Monitor[3] <- sd(Mon[,j]) / sqrt(Eff.Size3[j])
-          Monitor[4] <- Eff.Size3[j]
+          Monitor[3] <- sd(Mon[,j]) / sqrt(ESS3[j])
+          Monitor[4] <- ESS3[j]
           Monitor[5] <- as.numeric(quantile(Mon[,j], probs=0.025,
                na.rm=TRUE))
           Monitor[6] <- as.numeric(quantile(Mon[,j], probs=0.5,
@@ -260,13 +260,13 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
           }
      ### Posterior Summary Table 2: Stationary Samples
      Summ2 <- matrix(NA, LIV, 7, dimnames=list(Data$parm.names,
-          c("Mean","SD","MCSE","Eff.Size","LB","Median","UB")))
+          c("Mean","SD","MCSE","ESS","LB","Median","UB")))
      if(BurnIn < NROW(thinned))
           {
           Summ2[,1] <- apply(thinned[BurnIn:NROW(thinned),], 2, mean)
           Summ2[,2] <- apply(thinned[BurnIn:NROW(thinned),], 2, sd)
-          Summ2[,3] <- Summ2[,2] / sqrt(Eff.Size4)
-          Summ2[,4] <- Eff.Size4
+          Summ2[,3] <- Summ2[,2] / sqrt(ESS4)
+          Summ2[,4] <- ESS4
           Summ2[,5] <- apply(thinned[BurnIn:NROW(thinned),], 2, quantile,
                c(0.025))
           Summ2[,6] <- apply(thinned[BurnIn:NROW(thinned),], 2, quantile,
@@ -276,8 +276,8 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
           Deviance <- rep(NA,7)
           Deviance[1] <- mean(Dev[BurnIn:length(Dev)])
           Deviance[2] <- sd(Dev[BurnIn:length(Dev)])
-          Deviance[3] <- sd(Dev[BurnIn:length(Dev)]) / sqrt(Eff.Size5)
-          Deviance[4] <- Eff.Size5
+          Deviance[3] <- sd(Dev[BurnIn:length(Dev)]) / sqrt(ESS5)
+          Deviance[4] <- ESS5
           Deviance[5] <- as.numeric(quantile(Dev[BurnIn:length(Dev)],
                probs=0.025, na.rm=TRUE))
           Deviance[6] <- as.numeric(quantile(Dev[BurnIn:length(Dev)],
@@ -290,8 +290,8 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
                Monitor[1] <- mean(Mon[BurnIn:NROW(thinned),j])
                Monitor[2] <- sd(Mon[BurnIn:NROW(thinned),j])
                Monitor[3] <- sd(Mon[BurnIn:NROW(thinned),j]) /
-                    sqrt(Eff.Size6[j])
-               Monitor[4] <- Eff.Size6[j]
+                    sqrt(ESS6[j])
+               Monitor[4] <- ESS6[j]
                Monitor[5] <- as.numeric(quantile(Mon[BurnIn:NROW(Mon),j],
                     probs=0.025, na.rm=TRUE))
                Monitor[6] <- as.numeric(quantile(Mon[BurnIn:NROW(Mon),j],

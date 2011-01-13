@@ -1,13 +1,13 @@
 ###########################################################################
-# Effective.Size                                                          #
+# ESS                                                                     #
 #                                                                         #
 # The purpose of this function is to estimate the effective sample size   #
-# of a target distribution after taking autocorrelation into account.     #
-# Although the code is slightly different, it is essentially the same as  #
-# the effectiveSize function in the coda package.                         #
+# (ESS) of a target distribution after taking autocorrelation into        #
+# account.  Although the code is slightly different, it is essentially    #
+# the same as the effectiveSize function in the coda package.             #
 ###########################################################################
 
-Effective.Size <- function(x) 
+ESS <- function(x) 
      {
      x <- as.matrix(x)
      v0 <- order <- numeric(ncol(x))
@@ -28,7 +28,7 @@ Effective.Size <- function(x)
           }
      spec <- list(spec = v0, order = order)
      spec <- spec$spec
-     Eff.Size <- ifelse(spec == 0, 0, nrow(x) * apply(x, 2, var)/spec)
-     Eff.Size <- ifelse(Eff.Size > nrow(x), nrow(x), Eff.Size)
-     return(Eff.Size)
+     ESS <- ifelse(spec == 0, 0, nrow(x) * apply(x, 2, var)/spec)
+     ESS <- ifelse(ESS > nrow(x), nrow(x), ESS)
+     return(ESS)
      }

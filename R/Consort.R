@@ -28,13 +28,13 @@ Consort <- function(object=NULL)
      MCSE.tot <- 0
      if(MCSE.temp2 < object$Parameters) {
           MCSE.tot <- sum(MCSE.temp < MCSE.crit)}
-     ### Check Eff.Size
-     Eff.Size.temp <- object$Summary2[1:object$Parameters,4]
-     Eff.Size.temp <- ifelse(is.na(Eff.Size.temp), 0, Eff.Size.temp)
-     Eff.Size.temp <- ifelse(is.nan(Eff.Size.temp), 0, Eff.Size.temp)
-     Eff.Size.temp <- ifelse(is.infinite(Eff.Size.temp), 0, Eff.Size.temp)
-     Eff.Size.min <- min(Eff.Size.temp)
-     Eff.Size.crit <- 100
+     ### Check ESS
+     ESS.temp <- object$Summary2[1:object$Parameters,4]
+     ESS.temp <- ifelse(is.na(ESS.temp), 0, ESS.temp)
+     ESS.temp <- ifelse(is.nan(ESS.temp), 0, ESS.temp)
+     ESS.temp <- ifelse(is.infinite(ESS.temp), 0, ESS.temp)
+     ESS.min <- min(ESS.temp)
+     ESS.crit <- 100
      ### Check Stationarity
      Stationarity <- FALSE
      if(object$Rec.BurnIn.Thinned < object$Thinned.Samples) {
@@ -71,14 +71,14 @@ Consort <- function(object=NULL)
           cat("3. Each target MCSE is < ", MCSE.crit * 100,
                "% of its marginal posterior\n", sep="")
           cat("   standard deviation.\n")}
-     if(Eff.Size.min < Eff.Size.crit) {
+     if(ESS.min < ESS.crit) {
           cat("4. At least one target distribution has an ",
                "effective sample size\n", sep="")
-          cat("   less than ", Eff.Size.crit, ".\n", sep="")}
-     if(Eff.Size.min >= Eff.Size.crit) {
+          cat("   (ESS) less than ", ESS.crit, ".\n", sep="")}
+     if(ESS.min >= ESS.crit) {
           cat("4. Each target distribution has an effective ",
-               "sample size of\n", sep="")
-          cat("   at least ", Eff.Size.crit, ".\n", sep="")}
+               "sample size (ESS)\n", sep="")
+          cat("   of at least ", ESS.crit, ".\n", sep="")}
      if(Stationarity == FALSE) {
           cat("5. At least one target distribution is not ",
                "stationary.\n\n", sep="")}
@@ -91,7 +91,7 @@ Consort <- function(object=NULL)
      Appeased <- FALSE
      if((object$Adaptive > object$Iterations) &
           (Acc.Rate.Level == 2) & (MCSE.tot >= object$Parameters) &
-          (Eff.Size.min >= Eff.Size.crit) & (Stationarity == TRUE)) {
+          (ESS.min >= ESS.crit) & (Stationarity == TRUE)) {
           Appeased <- TRUE
           cat("Laplace's Demon has been appeased, and suggests\n")
           cat("the marginal posterior samples should be plotted\n")
@@ -106,24 +106,10 @@ Consort <- function(object=NULL)
 
           cat("Initial.Values <- ", oname, "$Posterior1",
                     "[", oname, "$Thinned.Samples,]\n", sep="")
-          ### If adaptive, low acc., bad MCSE, bad Eff, bad Stat...
+          ### If adaptive, low acc., bad MCSE, bad ESS, bad Stat...
           if((object$Adaptive <= object$Iterations) &
           (Acc.Rate.Level == 1) & (MCSE.tot < object$Parameters) &
-          (Eff.Size.min < Eff.Size.crit) & (Stationarity == FALSE)) {
-               ### DRAM
-               cat(oname, " <- LaplacesDemon(Log.Posterior, ",
-                    "Data=", dname, ", Adaptive=2,\n", sep="")
-               cat("     Covar=", oname, "$Covar, DR=1, ",
-                    "Initial.Values, Iterations=", Rec.Iterations,
-                    ",\n", sep="")
-               cat("     Periodicity=", Rec.Periodicity,
-                    ", Status=", Rec.Status, ", Thinning=",
-                    object$Rec.Thinning, ")\n\n", sep="")
-               }
-          ### If adaptive, low acc., good MCSE, bad Eff, good Stat...
-          if((object$Adaptive <= object$Iterations) &
-          (Acc.Rate.Level == 1) & (MCSE.tot >= object$Parameters) &
-          (Eff.Size.min < Eff.Size.crit) & (Stationarity == TRUE)) {
+          (ESS.min < ESS.crit) & (Stationarity == FALSE)) {
                ### DRAM
                cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=2,\n", sep="")
@@ -134,10 +120,10 @@ Consort <- function(object=NULL)
                     ", Status=", Rec.Status, ", Thinning=",
                     object$Rec.Thinning, ")\n\n", sep="")
                }
-          ### If adaptive, low acc., bad MCSE, bad Eff, good Stat...
+          ### If adaptive, low acc., good MCSE, bad ESS, good Stat...
           if((object$Adaptive <= object$Iterations) &
-          (Acc.Rate.Level == 1) & (MCSE.tot < object$Parameters) &
-          (Eff.Size.min < Eff.Size.crit) & (Stationarity == TRUE)) {
+          (Acc.Rate.Level == 1) & (MCSE.tot >= object$Parameters) &
+          (ESS.min < ESS.crit) & (Stationarity == TRUE)) {
                ### DRAM
                cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=2,\n", sep="")
@@ -148,10 +134,24 @@ Consort <- function(object=NULL)
                     ", Status=", Rec.Status, ", Thinning=",
                     object$Rec.Thinning, ")\n\n", sep="")
                }
-          ### If adaptive, low acc., good MCSE, bad Eff, bad Stat...
+          ### If adaptive, low acc., bad MCSE, bad ESS, good Stat...
+          if((object$Adaptive <= object$Iterations) &
+          (Acc.Rate.Level == 1) & (MCSE.tot < object$Parameters) &
+          (ESS.min < ESS.crit) & (Stationarity == TRUE)) {
+               ### DRAM
+               cat(oname, " <- LaplacesDemon(Model, ",
+                    "Data=", dname, ", Adaptive=2,\n", sep="")
+               cat("     Covar=", oname, "$Covar, DR=1, ",
+                    "Initial.Values, Iterations=", Rec.Iterations,
+                    ",\n", sep="")
+               cat("     Periodicity=", Rec.Periodicity,
+                    ", Status=", Rec.Status, ", Thinning=",
+                    object$Rec.Thinning, ")\n\n", sep="")
+               }
+          ### If adaptive, low acc., good MCSE, bad ESS, bad Stat...
           if((object$Adaptive <= object$Iterations) &
           (Acc.Rate.Level == 1) & (MCSE.tot >= object$Parameters) &
-          (Eff.Size.min < Eff.Size.crit) & (Stationarity == FALSE)) {
+          (ESS.min < ESS.crit) & (Stationarity == FALSE)) {
                ### DRAM
                cat(oname, " <- LaplacesDemon(Model, ",
                    "Data=", dname, ", Adaptive=2,\n", sep="")
@@ -162,10 +162,10 @@ Consort <- function(object=NULL)
                     ", Status=", Rec.Status, ", Thinning=",
                     object$Rec.Thinning, ")\n\n", sep="")
                }
-          ### If adaptive, low acc., bad MCSE, good Eff, bad Stat...
+          ### If adaptive, low acc., bad MCSE, good ESS, bad Stat...
           if((object$Adaptive <= object$Iterations) &
           (Acc.Rate.Level == 1) & (MCSE.tot < object$Parameters) &
-          (Eff.Size.min >= Eff.Size.crit) & (Stationarity == FALSE)) {
+          (ESS.min >= ESS.crit) & (Stationarity == FALSE)) {
                ### DRAM
                cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=2,\n", sep="")
@@ -176,10 +176,10 @@ Consort <- function(object=NULL)
                     ", Status=", Rec.Status, ", Thinning=",
                     object$Rec.Thinning, ")\n\n", sep="")
                }
-          ### If adaptive, low acc., good MCSE, good Eff, bad Stat...
+          ### If adaptive, low acc., good MCSE, good ESS, bad Stat...
           if((object$Adaptive <= object$Iterations) &
           (Acc.Rate.Level == 1) & (MCSE.tot >= object$Parameters) &
-          (Eff.Size.min >= Eff.Size.crit) & (Stationarity == FALSE)) {
+          (ESS.min >= ESS.crit) & (Stationarity == FALSE)) {
                ### DRAM
                cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=2,\n", sep="")
@@ -190,10 +190,10 @@ Consort <- function(object=NULL)
                     ", Status=", Rec.Status, ", Thinning=",
                     object$Rec.Thinning, ")\n\n", sep="")
                }
-          ### If adaptive, low acc., bad MCSE, good Eff, good Stat...
+          ### If adaptive, low acc., bad MCSE, good ESS, good Stat...
           if((object$Adaptive <= object$Iterations) &
           (Acc.Rate.Level == 1) & (MCSE.tot < object$Parameters) &
-          (Eff.Size.min >= Eff.Size.crit) & (Stationarity == TRUE)) {
+          (ESS.min >= ESS.crit) & (Stationarity == TRUE)) {
                ### DRAM
                cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=2,\n", sep="")
@@ -204,10 +204,10 @@ Consort <- function(object=NULL)
                     ", Status=", Rec.Status, ", Thinning=",
                     object$Rec.Thinning, ")\n\n", sep="")
                }
-          ### If adaptive, low acc., good MCSE, good Eff, good Stat...
+          ### If adaptive, low acc., good MCSE, good ESS, good Stat...
           if((object$Adaptive <= object$Iterations) &
           (Acc.Rate.Level == 1) & (MCSE.tot >= object$Parameters) &
-          (Eff.Size.min >= Eff.Size.crit) & (Stationarity == TRUE)) {
+          (ESS.min >= ESS.crit) & (Stationarity == TRUE)) {
                ### DRAM
                cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=2,\n", sep="")
@@ -218,10 +218,10 @@ Consort <- function(object=NULL)
                     ", Status=", Rec.Status, ", Thinning=",
                     object$Rec.Thinning, ")\n\n", sep="")
                }
-          ### If adaptive, good acc., bad MCSE, bad Eff, bad Stat...
+          ### If adaptive, good acc., bad MCSE, bad ESS, bad Stat...
           if((object$Adaptive <= object$Iterations) &
           (Acc.Rate.Level == 2) & (MCSE.tot < object$Parameters) &
-          (Eff.Size.min < Eff.Size.crit) & (Stationarity == FALSE)) {
+          (ESS.min < ESS.crit) & (Stationarity == FALSE)) {
                ### AM
                cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=2,\n", sep="")
@@ -232,10 +232,10 @@ Consort <- function(object=NULL)
                     ", Status=", Rec.Status, ", Thinning=",
                     object$Rec.Thinning, ")\n\n", sep="")
                }
-          ### If adaptive, good acc., good MCSE, bad Eff, good Stat...
+          ### If adaptive, good acc., good MCSE, bad ESS, good Stat...
           if((object$Adaptive <= object$Iterations) &
           (Acc.Rate.Level == 2) & (MCSE.tot >= object$Parameters) &
-          (Eff.Size.min < Eff.Size.crit) & (Stationarity == TRUE)) {
+          (ESS.min < ESS.crit) & (Stationarity == TRUE)) {
                ### RWM
                cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=0,\n", sep="")
@@ -246,10 +246,10 @@ Consort <- function(object=NULL)
                     ", Status=", Rec.Status, ", Thinning=",
                     object$Rec.Thinning, ")\n\n", sep="")
                }
-          ### If adaptive, good acc., bad MCSE, bad Eff, good Stat...
+          ### If adaptive, good acc., bad MCSE, bad ESS, good Stat...
           if((object$Adaptive <= object$Iterations) &
           (Acc.Rate.Level == 2) & (MCSE.tot < object$Parameters) &
-          (Eff.Size.min < Eff.Size.crit) & (Stationarity == TRUE)) {
+          (ESS.min < ESS.crit) & (Stationarity == TRUE)) {
                ### RWM
                cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=0,\n", sep="")
@@ -260,10 +260,10 @@ Consort <- function(object=NULL)
                     ", Status=", Rec.Status, ", Thinning=",
                     object$Rec.Thinning, ")\n\n", sep="")
                }
-          ### If adaptive, good acc., good MCSE, bad Eff, bad Stat...
+          ### If adaptive, good acc., good MCSE, bad ESS, bad Stat...
           if((object$Adaptive <= object$Iterations) &
           (Acc.Rate.Level == 2) & (MCSE.tot >= object$Parameters) &
-          (Eff.Size.min < Eff.Size.crit) & (Stationarity == FALSE)) {
+          (ESS.min < ESS.crit) & (Stationarity == FALSE)) {
                ### AM
                cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=2,\n", sep="")
@@ -274,10 +274,10 @@ Consort <- function(object=NULL)
                     ", Status=", Rec.Status, ", Thinning=",
                     object$Rec.Thinning, ")\n\n", sep="")
                }
-          ### If adaptive, good acc., bad MCSE, good Eff, bad Stat...
+          ### If adaptive, good acc., bad MCSE, good ESS, bad Stat...
           if((object$Adaptive <= object$Iterations) &
           (Acc.Rate.Level == 2) & (MCSE.tot < object$Parameters) &
-          (Eff.Size.min >= Eff.Size.crit) & (Stationarity == FALSE)) {
+          (ESS.min >= ESS.crit) & (Stationarity == FALSE)) {
                ### AM
                cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=2,\n", sep="")
@@ -288,10 +288,10 @@ Consort <- function(object=NULL)
                     ", Status=", Rec.Status, ", Thinning=",
                     object$Rec.Thinning, ")\n\n", sep="")
                }
-          ### If adaptive, good acc., good MCSE, good Eff, bad Stat...
+          ### If adaptive, good acc., good MCSE, good ESS, bad Stat...
           if((object$Adaptive <= object$Iterations) &
           (Acc.Rate.Level == 2) & (MCSE.tot >= object$Parameters) &
-          (Eff.Size.min >= Eff.Size.crit) & (Stationarity == FALSE)) {
+          (ESS.min >= ESS.crit) & (Stationarity == FALSE)) {
                ### AM
                cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=2,\n", sep="")
@@ -302,10 +302,10 @@ Consort <- function(object=NULL)
                     ", Status=", Rec.Status, ", Thinning=",
                     object$Rec.Thinning, ")\n\n", sep="")
                }
-          ### If adaptive, good acc., bad MCSE, good Eff, good Stat...
+          ### If adaptive, good acc., bad MCSE, good ESS, good Stat...
           if((object$Adaptive <= object$Iterations) &
           (Acc.Rate.Level == 2) & (MCSE.tot < object$Parameters) &
-          (Eff.Size.min >= Eff.Size.crit) & (Stationarity == TRUE)) {
+          (ESS.min >= ESS.crit) & (Stationarity == TRUE)) {
                ### RWM
                cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=0,\n", sep="")
@@ -316,10 +316,10 @@ Consort <- function(object=NULL)
                     ", Status=", Rec.Status, ", Thinning=",
                     object$Rec.Thinning, ")\n\n", sep="")
                }
-          ### If adaptive, good acc., good MCSE, good Eff, good Stat...
+          ### If adaptive, good acc., good MCSE, good ESS, good Stat...
           if((object$Adaptive <= object$Iterations) &
           (Acc.Rate.Level == 2) & (MCSE.tot >= object$Parameters) &
-          (Eff.Size.min >= Eff.Size.crit) & (Stationarity == TRUE)) {
+          (ESS.min >= ESS.crit) & (Stationarity == TRUE)) {
                ### RWM
                cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=0,\n", sep="")
@@ -330,10 +330,10 @@ Consort <- function(object=NULL)
                     ", Status=", Rec.Status, ", Thinning=",
                     object$Rec.Thinning, ")\n\n", sep="")
                }
-          ### If adaptive, high acc., bad MCSE, bad Eff, bad Stat...
+          ### If adaptive, high acc., bad MCSE, bad ESS, bad Stat...
           if((object$Adaptive <= object$Iterations) &
           (Acc.Rate.Level == 3) & (MCSE.tot < object$Parameters) &
-          (Eff.Size.min < Eff.Size.crit) & (Stationarity == FALSE)) {
+          (ESS.min < ESS.crit) & (Stationarity == FALSE)) {
                ### AM
                cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=2,\n", sep="")
@@ -344,10 +344,10 @@ Consort <- function(object=NULL)
                     ", Status=", Rec.Status, ", Thinning=",
                     object$Rec.Thinning, ")\n\n", sep="")
                }
-          ### If adaptive, high acc., good MCSE, bad Eff, good Stat...
+          ### If adaptive, high acc., good MCSE, bad ESS, good Stat...
           if((object$Adaptive <= object$Iterations) &
           (Acc.Rate.Level == 3) & (MCSE.tot >= object$Parameters) &
-          (Eff.Size.min < Eff.Size.crit) & (Stationarity == TRUE)) {
+          (ESS.min < ESS.crit) & (Stationarity == TRUE)) {
                ### AM
                cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=2,\n", sep="")
@@ -358,10 +358,10 @@ Consort <- function(object=NULL)
                     ", Status=", Rec.Status, ", Thinning=",
                     object$Rec.Thinning, ")\n\n", sep="")
                }
-          ### If adaptive, high acc., bad MCSE, bad Eff, good Stat...
+          ### If adaptive, high acc., bad MCSE, bad ESS, good Stat...
           if((object$Adaptive <= object$Iterations) &
           (Acc.Rate.Level == 3) & (MCSE.tot < object$Parameters) &
-          (Eff.Size.min < Eff.Size.crit) & (Stationarity == TRUE)) {
+          (ESS.min < ESS.crit) & (Stationarity == TRUE)) {
                ### AM
                cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=2,\n", sep="")
@@ -372,10 +372,10 @@ Consort <- function(object=NULL)
                     ", Status=", Rec.Status, ", Thinning=",
                     object$Rec.Thinning, ")\n\n", sep="")
                }
-          ### If adaptive, high acc., good MCSE, bad Eff, bad Stat...
+          ### If adaptive, high acc., good MCSE, bad ESS, bad Stat...
           if((object$Adaptive <= object$Iterations) &
           (Acc.Rate.Level == 3) & (MCSE.tot >= object$Parameters) &
-          (Eff.Size.min < Eff.Size.crit) & (Stationarity == FALSE)) {
+          (ESS.min < ESS.crit) & (Stationarity == FALSE)) {
                ### AM
                cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=2,\n", sep="")
@@ -386,10 +386,10 @@ Consort <- function(object=NULL)
                     ", Status=", Rec.Status, ", Thinning=",
                     object$Rec.Thinning, ")\n\n", sep="")
                }
-          ### If adaptive, high acc., bad MCSE, good Eff, bad Stat...
+          ### If adaptive, high acc., bad MCSE, good ESS, bad Stat...
           if((object$Adaptive <= object$Iterations) &
           (Acc.Rate.Level == 3) & (MCSE.tot < object$Parameters) &
-          (Eff.Size.min >= Eff.Size.crit) & (Stationarity == FALSE)) {
+          (ESS.min >= ESS.crit) & (Stationarity == FALSE)) {
                ### AM
                cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=2,\n", sep="")
@@ -400,10 +400,10 @@ Consort <- function(object=NULL)
                     ", Status=", Rec.Status, ", Thinning=",
                     object$Rec.Thinning, ")\n\n", sep="")
                }
-          ### If adaptive, high acc., good MCSE, good Eff, bad Stat...
+          ### If adaptive, high acc., good MCSE, good ESS, bad Stat...
           if((object$Adaptive <= object$Iterations) &
           (Acc.Rate.Level == 3) & (MCSE.tot >= object$Parameters) &
-          (Eff.Size.min >= Eff.Size.crit) & (Stationarity == FALSE)) {
+          (ESS.min >= ESS.crit) & (Stationarity == FALSE)) {
                ### AM
                cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=2,\n", sep="")
@@ -414,10 +414,10 @@ Consort <- function(object=NULL)
                     ", Status=", Rec.Status, ", Thinning=",
                     object$Rec.Thinning, ")\n\n", sep="")
                }
-          ### If adaptive, high acc., bad MCSE, good Eff, good Stat...
+          ### If adaptive, high acc., bad MCSE, good ESS, good Stat...
           if((object$Adaptive <= object$Iterations) &
           (Acc.Rate.Level == 3) & (MCSE.tot < object$Parameters) &
-          (Eff.Size.min >= Eff.Size.crit) & (Stationarity == TRUE)) {
+          (ESS.min >= ESS.crit) & (Stationarity == TRUE)) {
                ### AM
                cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=2,\n", sep="")
@@ -428,10 +428,10 @@ Consort <- function(object=NULL)
                     ", Status=", Rec.Status, ", Thinning=",
                     object$Rec.Thinning, ")\n\n", sep="")
                }
-          ### If adaptive, high acc., good MCSE, good Eff, good Stat...
+          ### If adaptive, high acc., good MCSE, good ESS, good Stat...
           if((object$Adaptive <= object$Iterations) &
           (Acc.Rate.Level == 3) & (MCSE.tot >= object$Parameters) &
-          (Eff.Size.min >= Eff.Size.crit) & (Stationarity == TRUE)) {
+          (ESS.min >= ESS.crit) & (Stationarity == TRUE)) {
                ### AM
                cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=2,\n", sep="")
@@ -442,10 +442,10 @@ Consort <- function(object=NULL)
                     ", Status=", Rec.Status, ", Thinning=",
                     object$Rec.Thinning, ")\n\n", sep="")
                }
-          ### If nonadapt, low acc., bad MCSE, bad Eff, bad Stat...
+          ### If nonadapt, low acc., bad MCSE, bad ESS, bad Stat...
           if((object$Adaptive > object$Iterations) &
           (Acc.Rate.Level == 1) & (MCSE.tot < object$Parameters) &
-          (Eff.Size.min < Eff.Size.crit) & (Stationarity == FALSE)) {
+          (ESS.min < ESS.crit) & (Stationarity == FALSE)) {
                ### DRAM
                cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=2,\n", sep="")
@@ -456,10 +456,10 @@ Consort <- function(object=NULL)
                     ", Status=", Rec.Status, ", Thinning=",
                     object$Rec.Thinning, ")\n\n", sep="")
                }
-          ### If nonadapt, low acc., good MCSE, bad Eff, good Stat...
+          ### If nonadapt, low acc., good MCSE, bad ESS, good Stat...
           if((object$Adaptive > object$Iterations) &
           (Acc.Rate.Level == 1) & (MCSE.tot >= object$Parameters) &
-          (Eff.Size.min < Eff.Size.crit) & (Stationarity == TRUE)) {
+          (ESS.min < ESS.crit) & (Stationarity == TRUE)) {
                ### DRAM
                cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=2,\n", sep="")
@@ -470,10 +470,10 @@ Consort <- function(object=NULL)
                     ", Status=", Rec.Status, ", Thinning=",
                     object$Rec.Thinning, ")\n\n", sep="")
                }
-          ### If nonadapt, low acc., bad MCSE, bad Eff, good Stat...
+          ### If nonadapt, low acc., bad MCSE, bad ESS, good Stat...
           if((object$Adaptive > object$Iterations) &
           (Acc.Rate.Level == 1) & (MCSE.tot < object$Parameters) &
-          (Eff.Size.min < Eff.Size.crit) & (Stationarity == TRUE)) {
+          (ESS.min < ESS.crit) & (Stationarity == TRUE)) {
                ### DRAM
                cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=2,\n", sep="")
@@ -484,10 +484,10 @@ Consort <- function(object=NULL)
                     ", Status=", Rec.Status, ", Thinning=",
                     object$Rec.Thinning, ")\n\n", sep="")
                }
-          ### If nonadapt, low acc., good MCSE, bad Eff, bad Stat...
+          ### If nonadapt, low acc., good MCSE, bad ESS, bad Stat...
           if((object$Adaptive > object$Iterations) &
           (Acc.Rate.Level == 1) & (MCSE.tot >= object$Parameters) &
-          (Eff.Size.min < Eff.Size.crit) & (Stationarity == FALSE)) {
+          (ESS.min < ESS.crit) & (Stationarity == FALSE)) {
                ### DRAM
                cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=2,\n", sep="")
@@ -498,10 +498,10 @@ Consort <- function(object=NULL)
                     ", Status=", Rec.Status, ", Thinning=",
                     object$Rec.Thinning, ")\n\n", sep="")
                }
-          ## If nonadapt, low acc., bad MCSE, good Eff, bad Stat...
+          ## If nonadapt, low acc., bad MCSE, good ESS, bad Stat...
           if((object$Adaptive > object$Iterations) &
           (Acc.Rate.Level == 1) & (MCSE.tot < object$Parameters) &
-          (Eff.Size.min >= Eff.Size.crit) & (Stationarity == FALSE)) {
+          (ESS.min >= ESS.crit) & (Stationarity == FALSE)) {
                ### DRAM
                cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=2,\n", sep="")
@@ -512,10 +512,10 @@ Consort <- function(object=NULL)
                     ", Status=", Rec.Status, ", Thinning=",
                     object$Rec.Thinning, ")\n\n", sep="")
                }
-          ### If nonadapt, low acc., good MCSE, good Eff, bad Stat...
+          ### If nonadapt, low acc., good MCSE, good ESS, bad Stat...
           if((object$Adaptive > object$Iterations) &
           (Acc.Rate.Level == 1) & (MCSE.tot >= object$Parameters) &
-          (Eff.Size.min >= Eff.Size.crit) & (Stationarity == FALSE)) {
+          (ESS.min >= ESS.crit) & (Stationarity == FALSE)) {
                ### DRAM
                cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=2,\n", sep="")
@@ -526,10 +526,10 @@ Consort <- function(object=NULL)
                     ", Status=", Rec.Status, ", Thinning=",
                     object$Rec.Thinning, ")\n\n", sep="")
                }
-          ### If nonadapt, low acc., bad MCSE, good Eff, good Stat...
+          ### If nonadapt, low acc., bad MCSE, good ESS, good Stat...
           if((object$Adaptive > object$Iterations) &
           (Acc.Rate.Level == 1) & (MCSE.tot < object$Parameters) &
-          (Eff.Size.min >= Eff.Size.crit) & (Stationarity == TRUE)) {
+          (ESS.min >= ESS.crit) & (Stationarity == TRUE)) {
                ### DRAM
                cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=2,\n", sep="")
@@ -540,10 +540,10 @@ Consort <- function(object=NULL)
                     ", Status=", Rec.Status, ", Thinning=",
                     object$Rec.Thinning, ")\n\n", sep="")
                }
-          ### If nonadapt, low acc., good MCSE, good Eff, good Stat...
+          ### If nonadapt, low acc., good MCSE, good ESS, good Stat...
           if((object$Adaptive > object$Iterations) &
           (Acc.Rate.Level == 1) & (MCSE.tot >= object$Parameters) &
-          (Eff.Size.min >= Eff.Size.crit) & (Stationarity == TRUE)) {
+          (ESS.min >= ESS.crit) & (Stationarity == TRUE)) {
                ### DRM
                cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=0,\n", sep="")
@@ -554,10 +554,10 @@ Consort <- function(object=NULL)
                     ", Status=", Rec.Status, ", Thinning=",
                     object$Rec.Thinning, ")\n\n", sep="")
                }
-          ### If nonadapt, good acc., bad MCSE, bad Eff, bad Stat...
+          ### If nonadapt, good acc., bad MCSE, bad ESS, bad Stat...
           if((object$Adaptive > object$Iterations) &
           (Acc.Rate.Level == 2) & (MCSE.tot < object$Parameters) &
-          (Eff.Size.min < Eff.Size.crit) & (Stationarity == FALSE)) {
+          (ESS.min < ESS.crit) & (Stationarity == FALSE)) {
                ### AM
                cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=2,\n", sep="")
@@ -568,10 +568,10 @@ Consort <- function(object=NULL)
                     ", Status=", Rec.Status, ", Thinning=",
                     object$Rec.Thinning, ")\n\n", sep="")
                }
-          ### If nonadapt, good acc., good MCSE, bad Eff, good Stat...
+          ### If nonadapt, good acc., good MCSE, bad ESS, good Stat...
           if((object$Adaptive > object$Iterations) &
           (Acc.Rate.Level == 2) & (MCSE.tot >= object$Parameters) &
-          (Eff.Size.min < Eff.Size.crit) & (Stationarity == TRUE)) {
+          (ESS.min < ESS.crit) & (Stationarity == TRUE)) {
                ### RWM
                cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=0,\n", sep="")
@@ -582,10 +582,10 @@ Consort <- function(object=NULL)
                     ", Status=", Rec.Status, ", Thinning=",
                     object$Rec.Thinning, ")\n\n", sep="")
                }
-          ### If nonadapt, good acc., bad MCSE, bad Eff, good Stat...
+          ### If nonadapt, good acc., bad MCSE, bad ESS, good Stat...
           if((object$Adaptive > object$Iterations) &
           (Acc.Rate.Level == 2) & (MCSE.tot < object$Parameters) &
-          (Eff.Size.min < Eff.Size.crit) & (Stationarity == TRUE)) {
+          (ESS.min < ESS.crit) & (Stationarity == TRUE)) {
                ### RWM
                cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=0,\n", sep="")
@@ -596,10 +596,10 @@ Consort <- function(object=NULL)
                     ", Status=", Rec.Status, ", Thinning=",
                     object$Rec.Thinning, ")\n\n", sep="")
                }
-          ### If nonadapt, good acc., good MCSE, bad Eff, bad Stat...
+          ### If nonadapt, good acc., good MCSE, bad ESS, bad Stat...
           if((object$Adaptive > object$Iterations) &
           (Acc.Rate.Level == 2) & (MCSE.tot >= object$Parameters) &
-          (Eff.Size.min < Eff.Size.crit) & (Stationarity == FALSE)) {
+          (ESS.min < ESS.crit) & (Stationarity == FALSE)) {
                ### AM
                cat("object <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=2,\n", sep="")
@@ -610,10 +610,10 @@ Consort <- function(object=NULL)
                     ", Status=", Rec.Status, ", Thinning=",
                     object$Rec.Thinning, ")\n\n", sep="")
                }
-          ### If nonadapt, good acc., bad MCSE, good Eff, bad Stat...
+          ### If nonadapt, good acc., bad MCSE, good ESS, bad Stat...
           if((object$Adaptive > object$Iterations) &
           (Acc.Rate.Level == 2) & (MCSE.tot < object$Parameters) &
-          (Eff.Size.min >= Eff.Size.crit) & (Stationarity == FALSE)) {
+          (ESS.min >= ESS.crit) & (Stationarity == FALSE)) {
                ### AM
                cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=2,\n", sep="")
@@ -624,10 +624,10 @@ Consort <- function(object=NULL)
                     ", Status=", Rec.Status, ", Thinning=",
                     object$Rec.Thinning, ")\n\n", sep="")
                }
-          ### If nonadapt, good acc., good MCSE, good Eff, bad Stat...
+          ### If nonadapt, good acc., good MCSE, good ESS, bad Stat...
           if((object$Adaptive > object$Iterations) &
           (Acc.Rate.Level == 2) & (MCSE.tot >= object$Parameters) &
-          (Eff.Size.min >= Eff.Size.crit) & (Stationarity == FALSE)) {
+          (ESS.min >= ESS.crit) & (Stationarity == FALSE)) {
                ### AM
                cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=2,\n", sep="")
@@ -638,10 +638,10 @@ Consort <- function(object=NULL)
                     ", Status=", Rec.Status, ", Thinning=",
                     object$Rec.Thinning, ")\n\n", sep="")
                }
-          ### If nonadapt, good acc., bad MCSE, good Eff, good Stat...
+          ### If nonadapt, good acc., bad MCSE, good ESS, good Stat...
           if((object$Adaptive > object$Iterations) &
           (Acc.Rate.Level == 2) & (MCSE.tot < object$Parameters) &
-          (Eff.Size.min >= Eff.Size.crit) & (Stationarity == TRUE)) {
+          (ESS.min >= ESS.crit) & (Stationarity == TRUE)) {
                ### RWM
                cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=0,\n", sep="")
@@ -652,10 +652,10 @@ Consort <- function(object=NULL)
                     ", Status=", Rec.Status, ", Thinning=",
                     object$Rec.Thinning, ")\n\n", sep="")
                }
-          ### If nonadapt, high acc., bad MCSE, bad Eff, bad Stat...
+          ### If nonadapt, high acc., bad MCSE, bad ESS, bad Stat...
           if((object$Adaptive > object$Iterations) &
           (Acc.Rate.Level == 3) & (MCSE.tot < object$Parameters) &
-          (Eff.Size.min < Eff.Size.crit) & (Stationarity == FALSE)) {
+          (ESS.min < ESS.crit) & (Stationarity == FALSE)) {
                ### AM
                cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=2,\n", sep="")
@@ -666,10 +666,10 @@ Consort <- function(object=NULL)
                     ", Status=", Rec.Status, ", Thinning=",
                     object$Rec.Thinning, ")\n\n", sep="")
                }
-          ### If nonadapt, high acc., good MCSE, bad Eff, good Stat...
+          ### If nonadapt, high acc., good MCSE, bad ESS, good Stat...
           if((object$Adaptive > object$Iterations) &
           (Acc.Rate.Level == 3) & (MCSE.tot >= object$Parameters) &
-          (Eff.Size.min < Eff.Size.crit) & (Stationarity == TRUE)) {
+          (ESS.min < ESS.crit) & (Stationarity == TRUE)) {
                ### AM
                cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=2,\n", sep="")
@@ -680,10 +680,10 @@ Consort <- function(object=NULL)
                     ", Status=", Rec.Status, ", Thinning=",
                     object$Rec.Thinning, ")\n\n", sep="")
                }
-          ### If nonadapt, high acc., bad MCSE, bad Eff, good Stat...
+          ### If nonadapt, high acc., bad MCSE, bad ESS, good Stat...
           if((object$Adaptive > object$Iterations) &
           (Acc.Rate.Level == 3) & (MCSE.tot < object$Parameters) &
-          (Eff.Size.min < Eff.Size.crit) & (Stationarity == TRUE)) {
+          (ESS.min < ESS.crit) & (Stationarity == TRUE)) {
                ### AM
                cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=2,\n", sep="")
@@ -694,10 +694,10 @@ Consort <- function(object=NULL)
                     ", Status=", Rec.Status, ", Thinning=",
                     object$Rec.Thinning, ")\n\n", sep="")
                }
-          ### If nonadapt, high acc., good MCSE, bad Eff, bad Stat...
+          ### If nonadapt, high acc., good MCSE, bad ESS, bad Stat...
           if((object$Adaptive > object$Iterations) &
           (Acc.Rate.Level == 3) & (MCSE.tot >= object$Parameters) &
-          (Eff.Size.min < Eff.Size.crit) & (Stationarity == FALSE)) {
+          (ESS.min < ESS.crit) & (Stationarity == FALSE)) {
                ### AM
                cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=2,\n", sep="")
@@ -708,10 +708,10 @@ Consort <- function(object=NULL)
                     ", Status=", Rec.Status, ", Thinning=",
                     object$Rec.Thinning, ")\n\n", sep="")
                }
-          ### If nonadapt, high acc., bad MCSE, good Eff, bad Stat...
+          ### If nonadapt, high acc., bad MCSE, good ESS, bad Stat...
           if((object$Adaptive > object$Iterations) &
           (Acc.Rate.Level == 3) & (MCSE.tot < object$Parameters) &
-          (Eff.Size.min >= Eff.Size.crit) & (Stationarity == FALSE)) {
+          (ESS.min >= ESS.crit) & (Stationarity == FALSE)) {
                ### AM
                cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=2,\n", sep="")
@@ -722,10 +722,10 @@ Consort <- function(object=NULL)
                     ", Status=", Rec.Status, ", Thinning=",
                     object$Rec.Thinning, ")\n\n", sep="")
                }
-          ### If nonadapt, high acc., good MCSE, good Eff, bad Stat...
+          ### If nonadapt, high acc., good MCSE, good ESS, bad Stat...
           if((object$Adaptive > object$Iterations) &
           (Acc.Rate.Level == 3) & (MCSE.tot >= object$Parameters) &
-          (Eff.Size.min >= Eff.Size.crit) & (Stationarity == FALSE)) {
+          (ESS.min >= ESS.crit) & (Stationarity == FALSE)) {
                ### AM
                cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=2,\n", sep="")
@@ -736,10 +736,10 @@ Consort <- function(object=NULL)
                     ", Status=", Rec.Status, ", Thinning=",
                     object$Rec.Thinning, ")\n\n", sep="")
                }
-          ### If nonadapt, high acc., bad MCSE, good Eff, good Stat...
+          ### If nonadapt, high acc., bad MCSE, good ESS, good Stat...
           if((object$Adaptive > object$Iterations) &
           (Acc.Rate.Level == 3) & (MCSE.tot < object$Parameters) &
-          (Eff.Size.min >= Eff.Size.crit) & (Stationarity == TRUE)) {
+          (ESS.min >= ESS.crit) & (Stationarity == TRUE)) {
                ### AM
                cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=2,\n", sep="")
@@ -750,10 +750,10 @@ Consort <- function(object=NULL)
                     ", Status=", Rec.Status, ", Thinning=",
                     object$Rec.Thinning, ")\n\n", sep="")
                }
-          ### If nonadapt, high acc., good MCSE, good Eff, good Stat...
+          ### If nonadapt, high acc., good MCSE, good ESS, good Stat...
           if((object$Adaptive > object$Iterations) &
           (Acc.Rate.Level == 3) & (MCSE.tot >= object$Parameters) &
-          (Eff.Size.min >= Eff.Size.crit) & (Stationarity == TRUE)) {
+          (ESS.min >= ESS.crit) & (Stationarity == TRUE)) {
                ### AM
                cat(oname, " <- LaplacesDemon(Model, ",
                     "Data=", dname, ", Adaptive=2,\n", sep="")

@@ -13,18 +13,17 @@
 }
 \details{
   First, \code{Consort} calls \code{print.demonoid}, which prints most of
-  the items to the screen from the supplied object of class
+  the components to the screen from the supplied object of class
   \code{demonoid}.
 
   Second, Laplace's Demon considers a combination of five conditions
   when making the largest part of its suggestion.  These conditions are:
-  the algorithm, acceptance rate, MCSE, effective sample size, and
-  stationarity.  There are 48 combinations of these five conditions,
-  though several combinations yield the same suggestion.  Other things
-  are considered as well, such as the recommended thinning value is used
-  to suggest a new number of iterations.  The \code{Periodicity}
-  argument is suggested to be set equal to the value of
-  \code{Rec.Thinning}.
+  the algorithm, acceptance rate, MCSE, ESS, and stationarity.  There
+  are 48 combinations of these five conditions, though several
+  combinations yield the same suggestion.  Other things are considered
+  as well, such as the recommended thinning value is used to suggest a
+  new number of iterations.  The \code{Periodicity} argument is
+  suggested to be set equal to the value of \code{Rec.Thinning}.
 
   If all five conditions are satisfactory, then Laplace's Demon is
   appeased.  Otherwise, Laplace's Demon will suggest and supply R

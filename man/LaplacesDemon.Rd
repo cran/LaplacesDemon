@@ -103,11 +103,12 @@ LaplacesDemon( Model=NULL, Data=NULL, Adaptive=0, Covar=NULL, DR=1,
      Random-Walk Metropolis (RWM).  References are provided below.
      All algorithms attempt multivariate proposals, but are modified
      to use independent proposals if multivariate estimation is
-     problematic.
+     problematic.  For more information, see the accompanying vignettes
+     entitled "Bayesian Inference" and "LaplacesDemon Tutorial".
 }
 \value{
      \code{LaplacesDemon} returns an object of class \code{demonoid}
-     that is a list with the following items:
+     that is a list with the following components:
      \item{Acceptance.Rate}{
           This is the acceptance rate of the MCMC algorithm, indicating
           percentage of iterations in which the proposals were
@@ -165,8 +166,8 @@ LaplacesDemon( Model=NULL, Data=NULL, Adaptive=0, Covar=NULL, DR=1,
      \item{Minutes}{
           This indicates the number of minutes that \code{LaplacesDemon}
           was running, and this includes the initial checks as well as
-	  time it took to assess stationarity, effective sample size, and
-	  create summaries.
+	  time it took to assess stationarity, effective sample size
+	  (ESS), and create summaries.
 	}
      \item{Model}{
           This contains the model specification \code{Model}.
@@ -222,8 +223,8 @@ LaplacesDemon( Model=NULL, Data=NULL, Adaptive=0, Covar=NULL, DR=1,
           distributions of the parameters, deviance, and monitored
           variables over all samples in \code{Posterior1}.  The following 
 	  summary statistics are included: mean, standard deviation, MCSE 
-          (Monte Carlo Standard Error), Eff.Size is the effective sample
-	  size due to autocorrelation, and finally the 2.5\%, 50\%, and
+          (Monte Carlo Standard Error), ESS is the effective sample size 
+	  due to autocorrelation, and finally the 2.5\%, 50\%, and
 	  97.5\% quantiles are reported.  MCSE is essentially a standard
 	  deviation around the marginal posterior mean that is due to
 	  uncertainty associated with using MCMC.  The acceptable size of 
@@ -231,10 +232,10 @@ LaplacesDemon( Model=NULL, Data=NULL, Adaptive=0, Covar=NULL, DR=1,
 	  around the marginal posterior mean.  Laplace's Demon prefers
 	  to continue updating until each MCSE is less than 6.7\% of each
 	  marginal posterior standard deviation (see \code{Consort}).  The 
-	  The desired precision of Eff.Size depends on the user's goal,
-	  and Laplace's Demon prefers to continue until each effective
-	  size is at least 100, which should be enough to describe 95\%
-	  boundaries of an approximately Gaussian distribution.
+	  The desired precision of ESS depends on the user's goal, and 
+	  Laplace's Demon prefers to continue until each ESS is at least 
+	  100, which should be enough to describe 95\% boundaries of an
+	  approximately Gaussian distribution.
 	  }
      \item{Summary2}{
           This matrix is identical to the matrix in \code{Summary1}, 
@@ -257,18 +258,18 @@ LaplacesDemon( Model=NULL, Data=NULL, Adaptive=0, Covar=NULL, DR=1,
      Hall, B. (2011), "Laplace's Demon", STATISTICAT, LLC.
      URL=\url{http://www.statisticat.com/laplacesdemon.html}
 
-     Haario, H., Laine, M., Mira, A., and Saksman, E. (2006). DRAM:
-     Efficient Adaptive MCMC. Statistical Computing, 16, p. 339-354.
+     Haario, H., Laine, M., Mira, A., and Saksman, E. (2006). "DRAM:
+     Efficient Adaptive MCMC". Statistical Computing, 16, p. 339-354.
      
-     Haario, H., Saksman, E., and Tamminen, J. (2001). An Adaptive
-     Metropolis Algorithm. Bernoulli, 7, 223-242.
+     Haario, H., Saksman, E., and Tamminen, J. (2001). "An Adaptive
+     Metropolis Algorithm". Bernoulli, 7, 223-242.
 
      Metropolis, N., Rosenbluth, A.W., Rosenbluth, M.N., and Teller,
-     E. (1953). Equation of State Calculations by Fast Computing
-     Machines. Journal of Chemical Physics, 21, p. 1087-1092.
+     E. (1953). "Equation of State Calculations by Fast Computing
+     Machines". Journal of Chemical Physics, 21, p. 1087-1092.
 
-     Mira, A. (2001). On Metropolis-Hastings Algorithms with Delayed
-     Rejection. Metron, Vol. LIX, n. 3-4, pp. 231-241.
+     Mira, A. (2001). "On Metropolis-Hastings Algorithms with Delayed
+     Rejection". Metron, Vol. LIX, n. 3-4, pp. 231-241.
 }
 
 \author{Byron Hall \email{statisticat@gmail.com}}
@@ -304,7 +305,7 @@ Model <- function(parm, Data)
      beta <- rep(0,J)
      for (j in 1:J) {beta[j] <- parm[j]}
      tau <- exp(parm[J+1])
-     ### Prior Densities
+     ### Log of Prior Densities
      beta.prior <- rep(0,J)
      for (j in 1:J)
           {beta.prior[j] <- dnorm(beta[j], beta.mu[j],
@@ -327,7 +328,7 @@ set.seed(666)
 ##########################  Adaptive Metropolis  ##########################
 Fit <- LaplacesDemon(Model, Data=MyData, Adaptive=500,
      Covar=NULL, DR=0, Initial.Values, Iterations=10000,
-     Periodicity=10, Status=100, Thinning=10)
+     Periodicity=10, Status=1000, Thinning=10)
 Fit
 print(Fit)
 Consort(Fit)

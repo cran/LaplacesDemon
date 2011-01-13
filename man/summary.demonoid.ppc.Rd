@@ -22,50 +22,41 @@
   
   The purpose of a posterior predictive check is to assess how well (or
   poorly) the model fits the data, or to assess discrepancies between
-  the model and the data.  When y is known, this function estimates a
-  chi-square, the concordance between y and y[rep], and the posterior
-  predictive p-value (p.value), as in Gelman, Meng, and Stern (1996).
+  the model and the data.  When y is known, this function estimates the
+  predictive concordance between y and y[rep] as per Gelfand (1996), and
+  the predictive quantile (PQ), which is the individual-level metric for
+  outlier detection used to calculate Gelfand's predictive concordance.
 
   At the moment, y must be univariate and continuous.
 
-  Other popular posterior predictive checks that would be nice to
-  include in the future are the Posterior Predictive Ordinate (PPO) and
-  Conditional Predictive Ordinate (CPO).
+  Numerous other posterior predictive checks exist.  A future goal is to
+  include the Conditional Predictive Ordinate (CPO).
 }
 \value{
-     This function returns a list with the following items:
-     \item{Chi.Square}{
-          This is a chi-square to represent model fit (Gelman, Carlin,
-          Stern, and Rubin, 2004).
-          }
+     This function returns a list with the following components:
      \item{Concordance}{
           This is the percentage of the records of y that are within the 
           95\% probability interval of y[rep].  A probability interval
-	  is also called a credible interval.  A model that fits the
-	  data well has few instances of y outside of the 95\% probability
-	  interval of y[rep], and each instance of y outside of this
-	  interval may be considered an outlier in fit.  If a pattern
-	  exists, then it should be studied and the model refined.
+	  is also called a credible interval.  Gelfand's suggested goal
+	  is to achieve 95\% predictive concordance.  Lower percentages
+	  indicate too many outliers and a poor fit of the model to the
+	  data, and higher percentages may suggest overfitting.
           }
      \item{Summary}{
           This is a n x 7 matrix, where n is the number of records of
           y and there are 7 columns, as follows: y, Mean, SD, LB (the
 	  2.5\% quantile), Median, UB (the 97.5\% quantile), and
-	  p.value, the posterior predictive p-value, which is
-	  Pr(y[rep] >= y).
+	  PQ, the predictive quantile, which is Pr(y[rep] >= y).
           }
 }
 \references{
-     Gelman, A., Carlin, J., Stern, H., and Rubin, D. (2004). Bayesian
-     Data Analysis, Texts in Statistical Science, 2nd ed., Chapman and
-     Hall, London.
-     
-     Gelman, A., Meng, X.L., and Stern, H. (1996). Posterior Predictive
-     Assessment of Model Fitness via Realized Discrepancies. Statistica
-     Sinica, 6, p. 733-807.
+Gelfand, A. (1996). "Model Determination Using Sampling Based Methods". 
+In Gilks, W., Richardson, S., Spiegehalter, D., Chapter 9 in 
+Markov Chain Monte Carlo in Practice. Chapman \& Hall: Boca 
+Raton, FL.
 
-     Hall, B. (2011), "Laplace's Demon", STATISTICAT, LLC.
-     URL=\url{http://www.statisticat.com/laplacesdemon.html}
+Hall, B. (2011), "Laplace's Demon", STATISTICAT, LLC.
+URL=\url{http://www.statisticat.com/laplacesdemon.html}
 }
 \author{Byron Hall \email{statisticat@gmail.com}}
 \seealso{\code{\link{predict.demonoid}}}

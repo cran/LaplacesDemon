@@ -17,7 +17,7 @@
 }
 \details{
   This function passes each iteration of marginal posterior samples
-  along with data to \code{Model}, where the fourth item in the
+  along with data to \code{Model}, where the fourth component in the
   return list is labeled \code{yhat}, and is a vector of expectations of
   y, given the samples, model specification, and data.  To predict
   y[rep], simply supply the data set used to estimate the model.  To
@@ -31,7 +31,7 @@
 \value{
      This function returns an object of class \code{demonoid.ppc} (where
      ppc stands for posterior predictive checks).  The returned object is
-     a list with the following items:
+     a list with the following components:
      \item{y}{
           This stores y, the dependent variable.
           }
