@@ -1,0 +1,190 @@
+\documentclass[nojss]{jss}
+%% need no \usepackage{Sweave.sty}
+\usepackage{amsmath}
+
+%\VignetteIndexEntry{LaplacesDemon Examples}
+%\VignettePackage{LaplacesDemon}
+%\VignetteDepends{LaplacesDemon}
+
+\author{Byron Hall\\STATISTICAT, LLC}
+\title{\includegraphics[height=1in,keepaspectratio]{LDlogo} \\ \pkg{LaplacesDemon} Examples}
+
+%% for pretty printing and a nice hypersummary also set:
+\Plainauthor{Byron Hall} %% comma-separated
+\Plaintitle{LaplacesDemon Examples} %% without formatting
+\Shorttitle{Examples} %% a short title (if necessary)
+
+\Abstract{The \pkg{LaplacesDemon} package in \proglang{R} enables Bayesian 
+inference with any Bayesian model, provided the user specifies the 
+likelihood.  This vignette provides examples of how to specify different 
+model forms.
+}
+\Keywords{Bayesian, Bayesian Inference, Laplace's Demon, LaplacesDemon, R, 
+STATISTICAT}
+
+%% publication information
+%% NOTE: Typically, this can be left commented and will be filled out by the technical editor
+%% \Volume{13}
+%% \Issue{9}
+%% \Month{September}
+%% \Year{2011}
+%% \Submitdate{2011-01-18}
+%% \Acceptdate{2011-01-18}
+
+\Address{
+  Byron Hall\\
+  STATISTICAT, LLC\\
+  Farmington, CT\\
+  E-mail: \email{statisticat@gmail.com}\\
+  URL: \url{http://www.statisticat.com/laplacesdemon.html}
+}
+
+%% for those who use Sweave please include the following line (with % symbols):
+%% need no \usepackage{Sweave.sty}
+
+\begin{document}
+A formal introduction to Laplace's Demon is provided in an accompanying 
+vignette entitled ``\pkg{LaplacesDemon} Tutorial'', and an introduction to 
+Bayesian inference is provided in the ``Bayesian Inference'' vignette.
+
+The purpose of this document is to provide users of the \pkg{LaplacesDemon} 
+package \citep{hall11} with examples of a variety of Bayesian methods.  To 
+conserve space, the examples are not worked out in detail, but provide 
+necessary materials for using the various methodologies.  Necessary 
+materials include data (which is often simulated), initial values, and the 
+\code{Model} function.  This document is expected to grow over time as 
+examples of more methods become included.  Contributed examples are 
+welcome.  Please send contributed examples in a similar format in an 
+email to \email{statisticat@gmail.com} for review.
+
+\section{Normal, Multilevel}
+This is Gelman's school example \citep{gelman04}.  Note this does not 
+converge as quickly as the example using Gibbs sampling in the 
+\pkg{R2WinBUGS} package \citep{gelman09}, an \proglang{R} \citep{rdct:r} 
+package on CRAN, but also note that with further sampling, Laplace's 
+Demon provides a better answer (higher \code{ESS}, etc.), even though the 
+\pkg{R2WinBUGS} example uses of 3 chains for more indications of 
+convergence.
+
+\subsection{Data}
+\texttt{J <- 8 \\
+y <- c(28.4, 7.9, -2.8, 6.8, -0.6, 0.6, 18.0, 12.2) \\
+sd <- c(14.9, 10.2, 16.3, 11.0, 9.4, 11.4, 10.4, 17.6) \\
+parm.names <- 2*J+2 \\
+for (j in 1:J) \{parm.names[j] <- paste("theta[",j,"]",sep="")\} \\
+parm.names[J+1] <- paste("theta.mu[",j,"]",sep="") \\
+parm.names[J+2] <- paste("log.theta.sigma[",j,"]",sep="") \\
+MyData <- list(J=J, parm.names=parm.names, sd=sd, y=y) \\
+}
+\subsection{Initial Values}
+\texttt{Initial.Values <- rep(0,J+2)}
+\subsection{Model}
+\texttt{Model <- function(parm, MyData) \\
+\hspace*{0.27 in} \{ \\
+\hspace*{0.27 in} \#\#\# Prior Parameters \\
+\hspace*{0.27 in} theta.mu <- parm[J+1] \\
+\hspace*{0.27 in} log.theta.sigma <- parm[J+2] \\
+\hspace*{0.27 in} tau.alpha <- 1.0E-3 \\
+\hspace*{0.27 in} tau.beta <- 1.0E-3 \\
+\hspace*{0.27 in} \#\#\# Parameters \\
+\hspace*{0.27 in} tau <- theta <- rep(0,J) \\
+\hspace*{0.27 in} for (j in 1:J) \{theta[j] <- parm[j]; tau[j] <- sd[j]\^-2\} \\
+\hspace*{0.27 in} \#\#\# Log Prior Densities \\
+\hspace*{0.27 in} tau.prior <- theta.prior <- rep(0,J) \\
+\hspace*{0.27 in} for (j in 1:J) \{ \\
+\hspace*{0.62 in} tau.prior[j] <- dgamma(tau[j], tau.alpha, tau.beta, log=TRUE) \\
+\hspace*{0.62 in} theta.prior[j] <- dnorm(theta[j], theta.mu, \\
+\hspace*{0.98 in} exp(log.theta.sigma), log=TRUE)\} \\
+\hspace*{0.27 in} \#\#\# Log-Posterior \\
+\hspace*{0.27 in} LL <- sum(dnorm(y, theta, 1/sqrt(tau), log=TRUE)) \\
+\hspace*{0.27 in} LP <- LL + sum(theta.prior) + sum(tau.prior) \\
+\hspace*{0.27 in} Modelout <- list(LP=LP, Dev=-2*LL, Monitor=exp(log.theta.sigma), \\
+\hspace*{0.62 in} yhat=theta) \\
+\hspace*{0.27 in} return(Modelout) \\
+\hspace*{0.27 in} \} \\
+}
+\section{Linear Regression}
+\subsection{Data}
+\texttt{N <- 10000 \\
+J <- 5 \\
+X <- matrix(1,N,J) \\
+for (j in 2:J) \{X[,j] <- rnorm(N,runif(1,-3,3),runif(1,0.1,1))\} \\
+beta <- runif(J,-3,3) \\
+e <- rnorm(N,0,0.1) \\
+y <- beta \%*\% t(X) + e \\
+parm.names <- rep(NA, J+1) \\
+for (j in 1:J) \{parm.names[j] <- paste("beta[",j,"]",sep="")\} \\
+parm.names[J+1] <- "log.tau" \\
+MyData <- list(J=J, X=X, parm.names=parm.names, y=t(y)) \\
+}
+\subsection{Initial Values}
+\texttt{Initial.Values <- c(rep(0,J), log(1))}
+\subsection{Model}
+\texttt{Model <- function(parm, Data) \\
+\hspace*{0.27 in} \{ \\
+\hspace*{0.27 in} \#\#\# Prior Parameters \\
+\hspace*{0.27 in} beta.mu <- rep(0,J) \\
+\hspace*{0.27 in} beta.tau <- rep(1.0E-3,J) \\
+\hspace*{0.27 in} tau.alpha <- 1.0E-3 \\
+\hspace*{0.27 in} tau.beta <- 1.0E-3 \\
+\hspace*{0.27 in} \#\#\# Parameters \\
+\hspace*{0.27 in} beta <- rep(0,J) \\
+\hspace*{0.27 in} for (j in 1:J) \{beta[j] <- parm[j]\} \\
+\hspace*{0.27 in} tau <- exp(parm[J+1]) \\
+\hspace*{0.27 in} \#\#\# Log Prior Densities \\
+\hspace*{0.27 in} beta.prior <- rep(0,J) \\
+\hspace*{0.27 in} for (j in 1:J) \{ \\
+\hspace*{0.62 in} beta.prior[j] <- dnorm(beta[j], beta.mu[j], \\
+\hspace*{0.98 in} 1/sqrt(beta.tau[j]), log=TRUE)\} \\
+\hspace*{0.27 in} tau.prior <- dgamma(tau, tau.alpha, tau.beta, log=TRUE) \\
+\hspace*{0.27 in} \#\#\# Log-Posterior \\
+\hspace*{0.27 in} mu <- beta \%*\% t(X) \\
+\hspace*{0.27 in} LL <- sum(dnorm(y, mu, 1/sqrt(tau), log=TRUE)) \\
+\hspace*{0.27 in} LP <- LL + sum(beta.prior) + tau.prior \\
+\hspace*{0.27 in} Modelout <- list(LP=LP, Dev=-2*LL, Monitor=c(tau,mu[1]), yhat=mu) \\
+\hspace*{0.27 in} return(Modelout) \\
+\hspace*{0.27 in} \}
+}
+\section{Poisson Regression}
+\subsection{Data}
+\texttt{N <- 10000 \\
+J <- 5 \\
+X <- matrix(1,N,J) \\
+for (j in 2:J) \{X[,j] <- rnorm(N,runif(1,-3,3),runif(1,0.1,1))\} \\
+beta <- runif(J,-3,3) \\
+e <- rnorm(N,0,0.1) \\
+y <- exp(beta \%*\% t(X)) + e \\
+parm.names <- rep(NA,J+1) \\
+for (j in 1:J) \{parm.names[j] <- paste("beta[",j,"]",sep="")\} \\
+parm.names[J+1] <- "log.tau" \\
+MyData <- list(J=J, X=X, parm.names=parm.names, y=t(y)) \\
+}
+\subsection{Initial Values}
+\texttt{Initial.Values <- rep(0,J)}
+\subsection{Model}
+\texttt{Model <- function(parm, MyData) \\
+\hspace*{0.27 in} \{ \\
+\hspace*{0.27 in} \#\#\# Prior Parameters \\
+\hspace*{0.27 in} beta.mu <- rep(0,J) \\
+\hspace*{0.27 in} beta.tau <- rep(1.0E-3,J) \\
+\hspace*{0.27 in} \#\#\# Parameters \\
+\hspace*{0.27 in} beta <- rep(0,J) \\
+\hspace*{0.27 in} for (j in 1:J) \{beta[j] <- parm[j]\} \\
+\hspace*{0.27 in} \#\#\# Log Prior Densities \\
+\hspace*{0.27 in} beta.prior <- rep(0,j) \\
+\hspace*{0.27 in} for (j in 1:J) \{ \\
+\hspace*{0.62 in} beta.prior[j] <- dnorm(beta[j], beta.mu[j], \\
+\hspace*{0.98 in} 1/sqrt(beta.tau[j]), log=TRUE)\} \\
+\hspace*{0.27 in} \#\#\# Log-Posterior \\
+\hspace*{0.27 in} lambda <- exp(beta \%*\% t(X)) \\
+\hspace*{0.27 in} LL <- sum(dpois(y, lambda, log=TRUE)) \\
+\hspace*{0.27 in} LP <- LL + sum(beta.prior) \\
+\hspace*{0.27 in} Modelout <- list(LP=LP, Dev=-2*LL, Monitor=c(lambda[1:2]), yhat=lambda) \\
+\hspace*{0.27 in} return(Modelout) \\
+\hspace*{0.27 in} \}
+}
+
+\bibliography{References.bib}
+
+\end{document}
+

@@ -16,8 +16,7 @@ predict.demonoid <- function(object, Model, Data, ...)
           {post <- as.matrix(object$Posterior2)}
      else {post <- as.matrix(object$Posterior1)}
      yhat <- matrix(NA,length(Data$y),NROW(post))
-     for(i in 1:NROW(post))
-          {yhat[,i] <- Model(post[i,], Data)[[4]]}
+     for(i in 1:NROW(post)) {yhat[,i] <- Model(post[i,], Data)[[4]]}
      ### Create Output
      predicted <- list(y=Data$y, yhat=yhat)
      class(predicted) <- "demonoid.ppc"
