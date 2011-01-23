@@ -41,8 +41,15 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
      ### Initial Settings
      Acceptance <- 0
      Mo0 <- Model(Initial.Values, Data)
-     if(is.na(Mo0[[1]])) Mo0[[1]] <- -999999999
-     if(is.infinite(Mo0[[2]])) Mo0[[2]] <- 999999999
+     if(is.na(Mo0[[1]])) cat("Error: The posterior is a missing value!")
+     if(is.infinite(Mo0[[1]])) cat("Error: The posterior is infinite!")
+     if(is.nan(Mo0[[1]])) cat("Error: The posterior was not a number!")
+     if(is.na(Mo0[[2]])) cat("Error: The deviance is a missing value!")
+     if(is.infinite(Mo0[[2]])) cat("Error: The deviance is infinite!")
+     if(is.nan(Mo0[[2]])) cat("Error: The deviance is not a number!")
+     if(sum(is.na(Mo0[[3]])) > 0) cat("Error: Monitored variable(s) have a missing value!")
+     if(sum(is.infinite(Mo0[[3]])) > 0) cat("Error: Monitored variable(s) have an infinite value!")
+     if(sum(is.nan(Mo0[[3]])) > 0) cat("Error: Monitored variable(s) include a value that is not a number!")
      Dev <- Mo0[[2]]
      Mon <- Mo0[[3]]
      LIV <- length(Initial.Values)
@@ -52,9 +59,9 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
      ScaleF <- 2.381204 / sqrt(LIV) #2.381204^2 / LIV
      if(is.matrix(Covar)) {tuning <- diag(Covar); VarCov <- Covar}
      else {
-     tuning <- rep(ScaleF, LIV)
-     VarCov <- matrix(0, LIV, LIV)
-     diag(VarCov) <- ScaleF / LIV}
+          tuning <- rep(ScaleF, LIV)
+          VarCov <- matrix(0, LIV, LIV)
+          diag(VarCov) <- ScaleF / LIV}
      Iden.Mat <- VarCov
      ### Determine Algorithm
      if((Adaptive < Iterations) & (DR == 0)) {
@@ -68,7 +75,7 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
           cat("Algorithm: Delayed Rejection Metropolis\n")}
      if((Adaptive >= Iterations) & (DR == 0)) {
           Algorithm <- "Random-Walk Metropolis"
-          cat("Algorithm: Random-Walk Metropolis\n")}
+          cat("Algorithm: Random-Walk Metropolis\n")}     
      cat("\nLaplace's Demon is beginning to update...\n")
      for (iter in 1:(Iterations-1))
           {
@@ -85,8 +92,15 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
           post[iter+1,] <- post[iter,]
           ### Log-Posterior of the current state
           Mo0 <- Model(post[iter,], Data)
-          if(is.na(Mo0[[1]])) Mo0[[1]] <- -999999999
-          if(is.infinite(Mo0[[2]])) Mo0[[2]] <- 999999999
+          if(is.na(Mo0[[1]])) cat("Error: The posterior is a missing value!")
+          if(is.infinite(Mo0[[1]])) cat("Error: The posterior is infinite!")
+          if(is.nan(Mo0[[1]])) cat("Error: The posterior was not a number!")
+          if(is.na(Mo0[[2]])) cat("Error: The deviance is a missing value!")
+          if(is.infinite(Mo0[[2]])) cat("Error: The deviance is infinite!")
+          if(is.nan(Mo0[[2]])) cat("Error: The deviance is not a number!")
+          if(sum(is.na(Mo0[[3]])) > 0) cat("Error: Monitored variable(s) have a missing value!")
+          if(sum(is.infinite(Mo0[[3]])) > 0) cat("Error: Monitored variable(s) have an infinite value!")
+          if(sum(is.nan(Mo0[[3]])) > 0) cat("Error: Monitored variable(s) include a value that is not a number!")
           ### Propose new parameter values
           MVN.rand <- rnorm(LIV, 0, 1)
           MVN.test <- try(MVNz <- matrix(MVN.rand,1,LIV) %*% chol(VarCov),
@@ -103,8 +117,16 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
                     prop[j] <- rnorm(1, post[iter,j], tuning[j])}}
           ### Log-Posterior of the proposed state
           Mo1 <- Model(prop, Data)
-          if(is.na(Mo1[[1]])) Mo1[[1]] <- Mo0[[1]]
-          if(is.infinite(Mo1[[2]])) Mo1[[2]] <- Mo0[[1]]
+          if(is.na(Mo1[[1]])) {Mo1 <- Mo0; prop <- post[iter,]}
+          if(is.infinite(Mo1[[1]])) {Mo1 <- Mo0; prop <- post[iter,]}
+          if(is.nan(Mo1[[1]])) {Mo1 <- Mo0; prop <- post[iter,]}
+          if(is.na(Mo1[[2]])) {Mo1 <- Mo0; prop <- post[iter,]}
+          if(is.infinite(Mo1[[2]])) {Mo1 <- Mo0; prop <- post[iter,]}
+          if(is.nan(Mo1[[2]])) {Mo1 <- Mo0; prop <- post[iter,]}
+          if(sum(is.na(Mo1[[3]])) > 0) {Mo1 <- Mo0; prop <- post[iter,]}
+          if(sum(is.infinite(Mo1[[3]])) > 0) {Mo1 <- Mo0; prop <- post[iter,]}
+          if(sum(is.nan(Mo1[[3]])) > 0) {Mo1 <- Mo0; prop <- post[iter,]}
+          prop <- Mo1[[5]]
           ### Accept/Reject
           log.u <- log(runif(1))
           log.alpha <- Mo1[[1]] - Mo0[[1]]
@@ -133,8 +155,16 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
                          prop[j] <- rnorm(1, prop[j], tuning[j])}}
                ### Log-Posterior of the proposed state
                Mo12 <- Model(prop, Data)
-               if(is.na(Mo12[[1]])) Mo12[[1]] <- Mo1[[1]]
-               if(is.infinite(Mo12[[2]])) Mo12[[2]] <- Mo1[[1]]
+               if(is.na(Mo12[[1]])) {Mo12 <- Mo0; prop <- post[iter,]}
+               if(is.infinite(Mo12[[1]])) {Mo12 <- Mo0; prop <- post[iter,]}
+               if(is.nan(Mo12[[1]])) {Mo12 <- Mo0; prop <- post[iter,]}
+               if(is.na(Mo12[[2]])) {Mo12 <- Mo0; prop <- post[iter,]}
+               if(is.infinite(Mo12[[2]])) {Mo12 <- Mo0; prop <- post[iter,]}
+               if(is.nan(Mo12[[2]])) {Mo12 <- Mo0; prop <- post[iter,]}
+               if(sum(is.na(Mo12[[3]])) > 0) {Mo12 <- Mo0; prop <- post[iter,]}
+               if(sum(is.infinite(Mo12[[3]])) > 0) {Mo12 <- Mo0; prop <- post[iter,]}
+               if(sum(is.nan(Mo12[[3]])) > 0) {Mo12 <- Mo0; prop <- post[iter,]}
+               prop <- Mo12[[5]]
                ### Accept/Reject
                log.u <- log(runif(1))
                options(warn=-1)
@@ -177,6 +207,16 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
                     }
                }
           }
+     ### Real Values
+     thinned <- ifelse(is.na(thinned), 0, thinned)
+     thinned <- ifelse(is.infinite(thinned), 0, thinned)
+     thinned <- ifelse(is.nan(thinned), 0, thinned)
+     Dev <- ifelse(is.na(Dev), 0, Dev)
+     Dev <- ifelse(is.infinite(Dev), 0, Dev)
+     Dev <- ifelse(is.nan(Dev), 0, Dev)
+     Mon <- ifelse(is.na(Mon), 0, Mon)
+     Mon <- ifelse(is.infinite(Mon), 0, Mon)
+     Mon <- ifelse(is.nan(Mon), 0, Mon)
      ### Assess Stationarity
      cat("\nAssessing Stationarity\n")
      burn.start <- trunc(seq(from=1, to=NROW(thinned), by=NROW(thinned)/10))

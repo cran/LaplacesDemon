@@ -16,8 +16,8 @@
 
 \Abstract{The \pkg{LaplacesDemon} package in \proglang{R} enables Bayesian 
 inference with any Bayesian model, provided the user specifies the 
-likelihood.  This vignette provides examples of how to specify different 
-model forms.
+likelihood.  This vignette is a compendium of examples of how to specify 
+different model forms.
 }
 \Keywords{Bayesian, Bayesian Inference, Laplace's Demon, LaplacesDemon, R, 
 STATISTICAT}
@@ -43,31 +43,191 @@ STATISTICAT}
 %% need no \usepackage{Sweave.sty}
 
 \begin{document}
-A formal introduction to Laplace's Demon is provided in an accompanying 
-vignette entitled ``\pkg{LaplacesDemon} Tutorial'', and an introduction to 
-Bayesian inference is provided in the ``Bayesian Inference'' vignette.
+\pkg{LaplacesDemon} \citep{hall11}, usually referred to as Laplace's 
+Demon, is an \proglang{R} package that is available on CRAN 
+\citep{rdct:r}. A formal introduction to Laplace's Demon is provided in an 
+accompanying vignette entitled ``\pkg{LaplacesDemon} Tutorial'', and an 
+introduction to Bayesian inference is provided in the 
+``Bayesian Inference'' vignette.
 
 The purpose of this document is to provide users of the \pkg{LaplacesDemon} 
-package \citep{hall11} with examples of a variety of Bayesian methods.  To 
-conserve space, the examples are not worked out in detail, but provide 
-necessary materials for using the various methodologies.  Necessary 
-materials include data (which is often simulated), initial values, and the 
-\code{Model} function.  This document is expected to grow over time as 
-examples of more methods become included.  Contributed examples are 
-welcome.  Please send contributed examples in a similar format in an 
-email to \email{statisticat@gmail.com} for review.
+package with examples of a variety of Bayesian methods. To conserve space, 
+the examples are not worked out in detail, and only the minimum of 
+necessary materials is provided for using the various methodologies. 
+Necessary materials include the form expressed in notation, data (which is 
+often simulated), initial values, and the \code{Model} function. This 
+vignette will grow over time as examples of more methods become included. 
+Contributed examples are welcome. Please send contributed examples in a 
+similar format in an email to \email{statisticat@gmail.com} for review and 
+testing. All accepted contributions are, of course, credited.
 
-\section{Normal, Multilevel}
-This is Gelman's school example \citep{gelman04}.  Note this does not 
-converge as quickly as the example using Gibbs sampling in the 
-\pkg{R2WinBUGS} package \citep{gelman09}, an \proglang{R} \citep{rdct:r} 
-package on CRAN, but also note that with further sampling, Laplace's 
-Demon provides a better answer (higher \code{ESS}, etc.), even though the 
-\pkg{R2WinBUGS} example uses of 3 chains for more indications of 
-convergence.
+\begin{center} \textbf{Contents} \end{center}
+\begin{itemize}
+\item Autoregression, AR(1) \ref{ar1}
+\item Binary Logit \ref{binary.logit}
+\item Dynamic Linear Model (DLM) \ref{dlm}
+\item Normal, Multilevel \ref{norm.ml}
+\item Linear Regression \ref{linear.reg}
+\item Linear Regression, Laplace-Distributed \ref{linear.reg.lap}
+\item Poisson Regression \ref{poisson.reg}
+\end{itemize}
 
+\section{Autoregression, AR(1)} \label{ar1}
+\subsection{Form}
+$$y_t \sim N(\mu_{t-1}, \tau^{-1}), \quad t=2,\dots,T$$
+$$\mu_t = \alpha + \phi y_t, \quad t=1,\dots,T$$
+$$\alpha \sim N(0, 1000)$$
+$$\phi \sim N(0, 1000)$$
+$$\tau \sim \Gamma(0.001, 0.001)$$
 \subsection{Data}
-\texttt{J <- 8 \\
+\code{T <- 100 \\
+y <- rep(0,T) \\
+y[1] <- 0 \\
+for (t in 2:T) \{y[t] <- y[t-1] + rnorm(1,0,0.1)\} \\
+parm.names <- c("alpha","phi","log.tau") \\
+MyData <- list(T=T, parm.names=parm.names, y=y) \\
+}
+\subsection{Initial Values}
+\code{Initial.Values <- c(rep(0,2), log(1))}
+\subsection{Model}
+\code{Model <- function(parm, Data) \\
+\hspace*{0.27 in} \{ \\
+\hspace*{0.27 in} \#\#\# Prior Parameters \\
+\hspace*{0.27 in} alpha.mu <- 0; alpha.tau <- 1.0E-3 \\
+\hspace*{0.27 in} phi.mu <- 0; phi.tau <- 1.0E-3 \\
+\hspace*{0.27 in} tau.alpha <- 1.0E-3; tau.beta <- 1.0E-3 \\
+\hspace*{0.27 in} \#\#\# Parameters \\
+\hspace*{0.27 in} alpha <- parm[1]; phi <- parm[2]; tau <- exp(parm[3]) \\
+\hspace*{0.27 in} \#\#\# Log(Prior Densities) \\
+\hspace*{0.27 in} alpha.prior <- dnorm(alpha, alpha.mu, 1/sqrt(alpha.tau), log=TRUE) \\
+\hspace*{0.27 in} phi.prior <- dnorm(phi, phi.mu, 1/sqrt(phi.tau), log=TRUE) \\
+\hspace*{0.27 in} tau.prior <- dgamma(tau, tau.alpha, tau.beta, log=TRUE) \\
+\hspace*{0.27 in} \#\#\# Log-Likelihood \\
+\hspace*{0.27 in} mu <- alpha + phi*y \\
+\hspace*{0.27 in} LL <- sum(dnorm(y[2:T], mu[1:(T-1)], 1/sqrt(tau), log=TRUE)) \\
+\hspace*{0.27 in} \#\#\# Log-Posterior \\
+\hspace*{0.27 in} LP <- LL + alpha.prior + phi.prior + tau.prior \\
+\hspace*{0.27 in} Modelout <- list(LP=LP, Dev=-2*LL, Monitor=c(tau), yhat=mu, \\
+\hspace*{0.62 in} parm=parm) \\
+\hspace*{0.27 in} return(Modelout) \\
+\hspace*{0.27 in} \} \\
+}
+
+\section{Binary Logit} \label{binary.logit}
+\subsection{Form}
+$$y \sim Bern(\eta)$$
+$$\eta = \log[1 + \exp(\mu)]$$
+$$\mu = \textbf{X} \beta$$
+$$\beta_j \sim N(0, 1000), \quad j=1,\dots,J$$
+\subsection{Data}
+\code{data(demonsnacks) \\
+N <- NROW(demonsnacks) \\
+J <- 3 \\
+y <- ifelse(demonsnacks$Calories <= 137, 0, 1) \\
+X <- cbind(1, as.matrix(demonsnacks[,c(7,8)])) \\
+for (j in 2:J) \{X[,j] <- (X[,j] - mean(X[,j])) / (2*sd(X[,j]))\} \\
+parm.names <- rep(NA,J) \\
+for (j in 1:J) \{parm.names[j] <- paste("beta[",j,"]",sep="")\} \\
+MyData <- list(J=J, X=X, parm.names=parm.names, y=y) \\
+}
+\subsection{Initial Values}
+\code{Initial.Values <- c(rep(0,J))}
+\subsection{Model}
+\code{Model <- function(parm, MyData) \\
+\hspace*{0.27 in} \{ \\
+\hspace*{0.27 in} \#\#\# Prior Parameters \\
+\hspace*{0.27 in} beta.mu <- rep(0,J) \\
+\hspace*{0.27 in} beta.tau <- rep(1.0E-3,J) \\
+\hspace*{0.27 in} \#\#\# Parameters \\
+\hspace*{0.27 in} beta <- parm[1:J] \\
+\hspace*{0.27 in} \#\#\# Log(Prior Densities) \\
+\hspace*{0.27 in} beta.prior <- rep(0,j) \\
+\hspace*{0.27 in} for (j in 1:J) \\
+\hspace*{0.62 in} \{beta.prior[j] <- dnorm(beta[j], beta.mu[j], \\
+\hspace*{0.98 in} 1/sqrt(beta.tau[j]), log=TRUE)\} \\
+\hspace*{0.27 in} \#\#\# Log-Posterior \\
+\hspace*{0.27 in} mu <- beta \%*\% t(X) \\
+\hspace*{0.27 in} eta <- log(1 + exp(mu)) \\
+\hspace*{0.27 in} eta[mu>700] <- mu[mu>700] \# Overflow trick \\
+\hspace*{0.27 in} \#\#\# Log-Likelihood \\
+\hspace*{0.27 in} LL <- sum(y*mu - eta) \\
+\hspace*{0.27 in} \#\#\# Log-Posterior \\
+\hspace*{0.27 in} LP <- LL + sum(beta.prior) \\
+\hspace*{0.27 in} Modelout <- list(LP=LP, Dev=-2*LL, Monitor=c(eta[1],mu[1]), \\
+\hspace*{0.62 in} yhat=eta, parm=parm) \\
+\hspace*{0.27 in} return(Modelout) \\
+\hspace*{0.27 in} \} \\
+}
+
+\section{Dynamic Linear Model (DLM)} \label{dlm}
+The data is presented so that the time-series is subdivided into three 
+sections: modeled ($t=1,\dots,T_m$), one-step ahead forecast ($t=T_m+1$), 
+and future forecast [$t=(T_m+2),\dots,T$].
+\subsection{Form}
+$$y_t \sim N(\mu_t, \tau^{-1}_V), \quad t=1,\dots,T_m$$
+$$y^{new}_t \sim N(\mu_t, \tau^{-1}_V), \quad t=(T_m+1),\dots,T$$
+$$\mu_t = \alpha + x_t \beta_t, \quad t=1,\dots,T$$
+$$\alpha \sim N(0, 1000)$$
+$$\beta_1 \sim N(0, 1000)$$
+$$\beta_t \sim N(\beta_{t-1}, \tau^{-1}_W), \quad t=2,\dots,T$$
+$$\tau_V \sim \Gamma(0.001, 0.001)$$
+$$\tau_W \sim \Gamma(0.001, 0.001)$$
+\subsection{Data}
+\code{T <- 20 \\
+T.m <- 14 \\
+beta.orig <- x <- rep(0,T) \\
+for (t in 2:T) \{ \\
+     beta.orig[t] <- beta.orig[t-1] + rnorm(1,0,0.1) \\
+     x[t] <- x[t-1] + rnorm(1,0,0.1)\} \\
+y <- 10 + beta.orig*x + rnorm(T,0,0.1) \\
+y[(T.m+2):T] <- NA \\
+parm.names <- rep(NA, T+3) \\
+parm.names[1] <- "alpha" \\
+for (i in 1:T) \{parm.names[i+1] <- paste("beta[", i, "]", sep="")\} \\
+parm.names[(T+2):(T+3)] <- c("log.beta.w.tau","log.v.tau") \\
+MyData <- list(T=T, T.m=T.m, parm.names=parm.names, x=x, y=y) \\
+}
+\subsection{Initial Values}
+\code{Initial.Values <- c(rep(0,T+3))}
+\subsection{Model}
+\code{Model <- function(parm, Data) \\
+\hspace*{0.27 in} \{ \\
+\hspace*{0.27 in} \#\#\# Parameters \\
+\hspace*{0.27 in} alpha <- parm[1] \\
+\hspace*{0.27 in} beta <- rep(0,T); beta <- parm[2:(T+1)] \\
+\hspace*{0.27 in} beta.w.tau <- exp(parm[T+2]) \\
+\hspace*{0.27 in} v.tau <- exp(parm[T+3]) \\
+\hspace*{0.27 in} \#\#\# Log(Prior Densities) \\
+\hspace*{0.27 in} alpha.prior <- dnorm(alpha, 0, 1/sqrt(1.0E-3), log=TRUE) \\
+\hspace*{0.27 in} beta.prior <- rep(0,T) \\
+\hspace*{0.27 in} beta.prior[1] <- dnorm(beta[1], 0, 1/sqrt(1.0E-3), log=TRUE) \\
+\hspace*{0.27 in} for (t in 2:T) \{ \\
+\hspace*{0.62 in} beta.prior[t] <- dnorm(beta[t], beta[t-1], 1/sqrt(beta.w.tau), \\
+\hspace*{0.98 in} log=TRUE)\} \\
+\hspace*{0.27 in} beta.w.tau.prior <- dgamma(beta.w.tau, 0.001, 0.001, log=TRUE) \\
+\hspace*{0.27 in} v.tau.prior <- dgamma(v.tau, 1.0E-3, 1.0E-3, log=TRUE) \\
+\hspace*{0.27 in} \#\#\# Log-Likelihood \\
+\hspace*{0.27 in} mu <- alpha + beta*x \\
+\hspace*{0.27 in} LL <- sum(dnorm(y[1:T.m], mu[1:T.m], 1/sqrt(v.tau), log=TRUE)) \\
+\hspace*{0.27 in} \#\#\# Log-Posterior \\
+\hspace*{0.27 in} LP <- LL + alpha.prior + sum(beta.prior) + beta.w.tau.prior + \\
+\hspace*{0.62 in} v.tau.prior \\
+\hspace*{0.27 in} Modelout <- list(LP=LP, Dev=-2*LL, Monitor=c(mu[(T.m+1):T]), \\
+\hspace*{0.62 in} yhat=mu, parm=parm) \\
+\hspace*{0.27 in} return(Modelout) \\
+\hspace*{0.27 in} \}
+}
+\section{Normal, Multilevel} \label{norm.ml}
+This is Gelman's school example \citep{gelman04}.  Note that \pkg{LaplacesDemon} is much slower to converge compared to this example that uses the \pkg{R2WinBUGS} package \citep{gelman09}, an \proglang{R} package on CRAN.  However, also note that Laplace's Demon (eventually) provides a better answer (higher ESS, lower DIC, etc.).
+
+\subsection{Form}
+$$y_j \sim N(\theta_j, \tau^{-1}_j)$$
+$$\theta_j \sim N(\theta_{\mu}, \theta_\tau^{-1})$$
+$$\theta_{\mu} \sim N(0, 1000)$$
+$$\theta_{\tau} \sim \Gamma(0.001, 0.001)$$
+$$\tau_j =sd^{-2}$$
+\subsection{Data}
+\code{J <- 8 \\
 y <- c(28.4, 7.9, -2.8, 6.8, -0.6, 0.6, 18.0, 12.2) \\
 sd <- c(14.9, 10.2, 16.3, 11.0, 9.4, 11.4, 10.4, 17.6) \\
 parm.names <- 2*J+2 \\
@@ -77,35 +237,47 @@ parm.names[J+2] <- paste("log.theta.sigma[",j,"]",sep="") \\
 MyData <- list(J=J, parm.names=parm.names, sd=sd, y=y) \\
 }
 \subsection{Initial Values}
-\texttt{Initial.Values <- rep(0,J+2)}
+\code{Initial.Values <- rep(0,J+2)}
 \subsection{Model}
-\texttt{Model <- function(parm, MyData) \\
+\code{Model <- function(parm, MyData) \\
 \hspace*{0.27 in} \{ \\
+\hspace*{0.27 in} \#\#\# Hyperprior Parameters \\
+\hspace*{0.27 in} theta.mu.mu <- 0 \\
+\hspace*{0.27 in} theta.mu.tau <- 1.0E-3 \\
 \hspace*{0.27 in} \#\#\# Prior Parameters \\
 \hspace*{0.27 in} theta.mu <- parm[J+1] \\
-\hspace*{0.27 in} log.theta.sigma <- parm[J+2] \\
+\hspace*{0.27 in} theta.sigma <- exp(parm[J+2]) \\
 \hspace*{0.27 in} tau.alpha <- 1.0E-3 \\
 \hspace*{0.27 in} tau.beta <- 1.0E-3 \\
 \hspace*{0.27 in} \#\#\# Parameters \\
 \hspace*{0.27 in} tau <- theta <- rep(0,J) \\
-\hspace*{0.27 in} for (j in 1:J) \{theta[j] <- parm[j]; tau[j] <- sd[j]\^-2\} \\
-\hspace*{0.27 in} \#\#\# Log Prior Densities \\
+\hspace*{0.27 in} theta <- parm[1:J]; tau <- 1/(sd*sd) \\
+\hspace*{0.27 in} \#\#\# Log(Prior Densities) \\
+\hspace*{0.27 in} theta.mu.prior <- dnorm(theta.mu, theta.mu.mu, \\ 
+\hspace*{0.62 in} 1/sqrt(theta.mu.tau), log=TRUE) \\ 
 \hspace*{0.27 in} tau.prior <- theta.prior <- rep(0,J) \\
 \hspace*{0.27 in} for (j in 1:J) \{ \\
 \hspace*{0.62 in} tau.prior[j] <- dgamma(tau[j], tau.alpha, tau.beta, log=TRUE) \\
 \hspace*{0.62 in} theta.prior[j] <- dnorm(theta[j], theta.mu, \\
-\hspace*{0.98 in} exp(log.theta.sigma), log=TRUE)\} \\
-\hspace*{0.27 in} \#\#\# Log-Posterior \\
+\hspace*{0.98 in} theta.sigma, log=TRUE)\} \\
+\hspace*{0.27 in} \#\#\# Log-Likelihood \\
 \hspace*{0.27 in} LL <- sum(dnorm(y, theta, 1/sqrt(tau), log=TRUE)) \\
-\hspace*{0.27 in} LP <- LL + sum(theta.prior) + sum(tau.prior) \\
-\hspace*{0.27 in} Modelout <- list(LP=LP, Dev=-2*LL, Monitor=exp(log.theta.sigma), \\
-\hspace*{0.62 in} yhat=theta) \\
+\hspace*{0.27 in} \#\#\# Log-Posterior \\
+\hspace*{0.27 in} LP <- LL + theta.mu.prior + sum(theta.prior) + sum(tau.prior) \\
+\hspace*{0.27 in} Modelout <- list(LP=LP, Dev=-2*LL, Monitor=theta.sigma, \\
+\hspace*{0.62 in} yhat=theta, parm=parm) \\
 \hspace*{0.27 in} return(Modelout) \\
 \hspace*{0.27 in} \} \\
 }
-\section{Linear Regression}
+
+\section{Linear Regression} \label{linear.reg}
+\subsection{Form}
+$$y \sim N(\mu, \tau^{-1})$$
+$$\mu = \textbf{X}\beta$$
+$$\beta_j \sim N(0, 1000), \quad j=1,\dots,J$$
+$$\tau \sim \Gamma(0.001, 0.001)$$
 \subsection{Data}
-\texttt{N <- 10000 \\
+\code{N <- 10000 \\
 J <- 5 \\
 X <- matrix(1,N,J) \\
 for (j in 2:J) \{X[,j] <- rnorm(N,runif(1,-3,3),runif(1,0.1,1))\} \\
@@ -118,9 +290,9 @@ parm.names[J+1] <- "log.tau" \\
 MyData <- list(J=J, X=X, parm.names=parm.names, y=t(y)) \\
 }
 \subsection{Initial Values}
-\texttt{Initial.Values <- c(rep(0,J), log(1))}
+\code{Initial.Values <- c(rep(0,J), log(1))}
 \subsection{Model}
-\texttt{Model <- function(parm, Data) \\
+\code{Model <- function(parm, Data) \\
 \hspace*{0.27 in} \{ \\
 \hspace*{0.27 in} \#\#\# Prior Parameters \\
 \hspace*{0.27 in} beta.mu <- rep(0,J) \\
@@ -129,25 +301,95 @@ MyData <- list(J=J, X=X, parm.names=parm.names, y=t(y)) \\
 \hspace*{0.27 in} tau.beta <- 1.0E-3 \\
 \hspace*{0.27 in} \#\#\# Parameters \\
 \hspace*{0.27 in} beta <- rep(0,J) \\
-\hspace*{0.27 in} for (j in 1:J) \{beta[j] <- parm[j]\} \\
+\hspace*{0.27 in} beta <- parm[1:J] \\
 \hspace*{0.27 in} tau <- exp(parm[J+1]) \\
-\hspace*{0.27 in} \#\#\# Log Prior Densities \\
+\hspace*{0.27 in} \#\#\# Log(Prior Densities) \\
 \hspace*{0.27 in} beta.prior <- rep(0,J) \\
 \hspace*{0.27 in} for (j in 1:J) \{ \\
 \hspace*{0.62 in} beta.prior[j] <- dnorm(beta[j], beta.mu[j], \\
 \hspace*{0.98 in} 1/sqrt(beta.tau[j]), log=TRUE)\} \\
 \hspace*{0.27 in} tau.prior <- dgamma(tau, tau.alpha, tau.beta, log=TRUE) \\
-\hspace*{0.27 in} \#\#\# Log-Posterior \\
+\hspace*{0.27 in} \#\#\# Log-Likelihood \\
 \hspace*{0.27 in} mu <- beta \%*\% t(X) \\
 \hspace*{0.27 in} LL <- sum(dnorm(y, mu, 1/sqrt(tau), log=TRUE)) \\
+\hspace*{0.27 in} \#\#\# Log-Posterior \\
 \hspace*{0.27 in} LP <- LL + sum(beta.prior) + tau.prior \\
-\hspace*{0.27 in} Modelout <- list(LP=LP, Dev=-2*LL, Monitor=c(tau,mu[1]), yhat=mu) \\
+\hspace*{0.27 in} Modelout <- list(LP=LP, Dev=-2*LL, Monitor=c(tau,mu[1]), yhat=mu, \\
+\hspace*{0.62 in} parm=parm) \\
 \hspace*{0.27 in} return(Modelout) \\
 \hspace*{0.27 in} \}
 }
-\section{Poisson Regression}
+
+\section{Linear Regression, Laplace-Distributed} \label{linear.reg.lap}
+This linear regression specifies that $y$ is Laplace-distributed, where it 
+is usually Gaussian or normally-distributed.  It has been claimed that it 
+should be surprising that the normal distribution became the standard, 
+when the Laplace distribution usually fits better and has wider tails 
+\citep{kotz01}. Another popular alternative is to use the t-distribution, 
+though it is more computationally expensive to estimate, because it has 
+three parameters.  The Laplace distribution has only two parameters, 
+location and scale like the normal distribution, and is computationally 
+easier to fit.  This example could be taken one step further, and the 
+parameter vector $\beta$ could be Laplace-distributed.  Laplace's Demon 
+recommends that users experiment with replacing the normal distribution 
+with the Laplace distribution.
+\subsection{Form}
+$$y \sim L(\mu, \tau^{-1})$$
+$$\mu = \textbf{X}\beta$$
+$$\beta_j \sim N(0, 1000), \quad j=1,\dots,J$$
+$$\tau \sim \Gamma(0.001, 0.001)$$
 \subsection{Data}
-\texttt{N <- 10000 \\
+\code{N <- 10000 \\
+J <- 5 \\
+X <- matrix(1,N,J) \\
+for (j in 2:J) \{X[,j] <- rnorm(N,runif(1,-3,3),runif(1,0.1,1))\} \\
+beta <- runif(J,-3,3) \\
+e <- rnorm(N,0,0.1) \\
+y <- beta \%*\% t(X) + e \\
+parm.names <- rep(NA, J+1) \\
+for (j in 1:J) \{parm.names[j] <- paste("beta[",j,"]",sep="")\} \\
+parm.names[J+1] <- "log.tau" \\
+MyData <- list(J=J, X=X, parm.names=parm.names, y=t(y)) \\
+}
+\subsection{Initial Values}
+\code{Initial.Values <- c(rep(0,J), log(1))}
+\subsection{Model}
+\code{Model <- function(parm, Data) \\
+\hspace*{0.27 in} \{ \\
+\hspace*{0.27 in} \#\#\# Prior Parameters \\
+\hspace*{0.27 in} beta.mu <- rep(0,J) \\
+\hspace*{0.27 in} beta.tau <- rep(1.0E-3,J) \\
+\hspace*{0.27 in} tau.alpha <- 1.0E-3 \\
+\hspace*{0.27 in} tau.beta <- 1.0E-3 \\
+\hspace*{0.27 in} \#\#\# Parameters \\
+\hspace*{0.27 in} beta <- rep(0,J) \\
+\hspace*{0.27 in} beta <- parm[1:J] \\
+\hspace*{0.27 in} tau <- exp(parm[J+1]) \\
+\hspace*{0.27 in} \#\#\# Log(Prior Densities) \\
+\hspace*{0.27 in} beta.prior <- rep(0,J) \\
+\hspace*{0.27 in} for (j in 1:J) \{ \\
+\hspace*{0.62 in} beta.prior[j] <- dnorm(beta[j], beta.mu[j], \\
+\hspace*{0.98 in} 1/sqrt(beta.tau[j]), log=TRUE)\} \\
+\hspace*{0.27 in} tau.prior <- dgamma(tau, tau.alpha, tau.beta, log=TRUE) \\
+\hspace*{0.27 in} \#\#\# Log-Likelihood \\
+\hspace*{0.27 in} mu <- beta \%*\% t(X) \\
+\hspace*{0.27 in} LL <- sum(log(1 / (2*(1/sqrt(tau))) * exp(-(abs(y - mu) / \\
+\hspace*{0.62 in} (1/sqrt(tau)))))) \\
+\hspace*{0.27 in} \#\#\# Log-Posterior \\
+\hspace*{0.27 in} LP <- LL + sum(beta.prior) + tau.prior \\
+\hspace*{0.27 in} Modelout <- list(LP=LP, Dev=-2*LL, Monitor=c(tau,mu[1]), yhat=mu, \\
+\hspace*{0.62 in} parm=parm) \\
+\hspace*{0.27 in} return(Modelout) \\
+\hspace*{0.27 in} \}
+}
+
+\section{Poisson Regression} \label{poisson.reg}
+\subsection{Form}
+$$y \sim Pois(\lambda)$$
+$$\lambda = \textbf{X}\beta$$
+$$\beta \sim N(0, 1000)$$
+\subsection{Data}
+\code{N <- 10000 \\
 J <- 5 \\
 X <- matrix(1,N,J) \\
 for (j in 2:J) \{X[,j] <- rnorm(N,runif(1,-3,3),runif(1,0.1,1))\} \\
@@ -160,26 +402,28 @@ parm.names[J+1] <- "log.tau" \\
 MyData <- list(J=J, X=X, parm.names=parm.names, y=t(y)) \\
 }
 \subsection{Initial Values}
-\texttt{Initial.Values <- rep(0,J)}
+\code{Initial.Values <- rep(0,J)}
 \subsection{Model}
-\texttt{Model <- function(parm, MyData) \\
+\code{Model <- function(parm, MyData) \\
 \hspace*{0.27 in} \{ \\
 \hspace*{0.27 in} \#\#\# Prior Parameters \\
 \hspace*{0.27 in} beta.mu <- rep(0,J) \\
 \hspace*{0.27 in} beta.tau <- rep(1.0E-3,J) \\
 \hspace*{0.27 in} \#\#\# Parameters \\
 \hspace*{0.27 in} beta <- rep(0,J) \\
-\hspace*{0.27 in} for (j in 1:J) \{beta[j] <- parm[j]\} \\
-\hspace*{0.27 in} \#\#\# Log Prior Densities \\
+\hspace*{0.27 in} beta <- parm[1:J] \\
+\hspace*{0.27 in} \#\#\# Log(Prior Densities) \\
 \hspace*{0.27 in} beta.prior <- rep(0,j) \\
 \hspace*{0.27 in} for (j in 1:J) \{ \\
 \hspace*{0.62 in} beta.prior[j] <- dnorm(beta[j], beta.mu[j], \\
 \hspace*{0.98 in} 1/sqrt(beta.tau[j]), log=TRUE)\} \\
-\hspace*{0.27 in} \#\#\# Log-Posterior \\
+\hspace*{0.27 in} \#\#\# Log-Likelihood \\
 \hspace*{0.27 in} lambda <- exp(beta \%*\% t(X)) \\
 \hspace*{0.27 in} LL <- sum(dpois(y, lambda, log=TRUE)) \\
+\hspace*{0.27 in} \#\#\# Log-Posterior \\
 \hspace*{0.27 in} LP <- LL + sum(beta.prior) \\
-\hspace*{0.27 in} Modelout <- list(LP=LP, Dev=-2*LL, Monitor=c(lambda[1:2]), yhat=lambda) \\
+\hspace*{0.27 in} Modelout <- list(LP=LP, Dev=-2*LL, Monitor=c(lambda[1:2]), \\
+\hspace*{0.62 in} yhat=lambda, parm=parm) \\
 \hspace*{0.27 in} return(Modelout) \\
 \hspace*{0.27 in} \}
 }
@@ -187,4 +431,3 @@ MyData <- list(J=J, X=X, parm.names=parm.names, y=t(y)) \\
 \bibliography{References.bib}
 
 \end{document}
-

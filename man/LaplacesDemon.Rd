@@ -16,7 +16,15 @@ LaplacesDemon( Model=NULL, Data=NULL, Adaptive=0, Covar=NULL, DR=1,
 \arguments{
      \item{Model}{
           This required argument receives the model from a user-defined
-          function.
+          function.  The user-defined function is where the model is
+	  specified.  \code{LaplacesDemon} passes two arguments to the
+	  model function, \code{parms} and \code{Data}, and receives
+	  five arguments from the model function: \code{LP} (the log of
+	  the joint posterior), \code{Dev} (the deviance),
+	  \code{Monitor} (the monitored variables), \code{yhat} (the
+	  variables for posterior predictive checks), and \code{parm},
+	  the vector of parameters, which may be constrained in the
+	  model function.
           }
      \item{Data}{
           This required argument accepts a list of data.
@@ -303,7 +311,7 @@ Model <- function(parm, Data)
      tau.beta <- 1.0E-3
      ### Parameters
      beta <- rep(0,J)
-     for (j in 1:J) {beta[j] <- parm[j]}
+     beta <- parm[1:J]
      tau <- exp(parm[J+1])
      ### Log of Prior Densities
      beta.prior <- rep(0,J)
@@ -315,7 +323,8 @@ Model <- function(parm, Data)
      mu <- beta \%*\% t(X)
      LL <- sum(dnorm(y, mu, 1/sqrt(tau), log=TRUE))
      LP <- LL + sum(beta.prior) + tau.prior
-     Modelout <- list(LP=LP, Dev=-2*LL, Monitor=c(tau,mu[1]), yhat=mu)
+     Modelout <- list(LP=LP, Dev=-2*LL, Monitor=c(tau,mu[1]), yhat=mu,
+          parm=parm)
      return(Modelout)
      }
 
