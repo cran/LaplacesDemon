@@ -1,4 +1,23 @@
-export(Consort, ESS, Geweke.Diagnostic, LaplacesDemon)
+export(Consort,
+       ESS,
+       Geweke.Diagnostic,
+       LaplacesDemon,
+       ddirichlet,
+       dinvgamma,
+       dinvwishart,
+       dlaplace,
+       dmvn,
+       dmvt,
+       dwishart,
+       plaplace,
+       qlaplace,
+       rdirichlet,
+       rinvgamma,
+       rinvwishart,
+       rlaplace,
+       rmvn,
+       rmvt,
+       rwishart)
 
 S3method("predict","demonoid")
 S3method("print","demonoid")

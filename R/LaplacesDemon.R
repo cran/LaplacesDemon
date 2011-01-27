@@ -13,10 +13,8 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
      time1 <- proc.time()
      ### Initial Checks
      cat("\nPerforming initial checks...\n")
-     if(is.null(Model)) {cat("ERROR: A function must be ",
-          "entered for Model.\n", sep="")}
-     if(is.null(Data)) {cat("ERROR: A list containing data must ",
-          "be entered for Data.\n", sep="")}
+     if(is.null(Model)) stop("ERROR: A function must be entered for Model.")
+     if(is.null(Data)) stop("ERROR: A list containing data must be entered for Data.")
      if(Iterations < 11) {
           Iterations <- 11
           cat("'Iterations' has been changed to ", Iterations, ".\n",
@@ -41,15 +39,15 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
      ### Initial Settings
      Acceptance <- 0
      Mo0 <- Model(Initial.Values, Data)
-     if(is.na(Mo0[[1]])) cat("Error: The posterior is a missing value!")
-     if(is.infinite(Mo0[[1]])) cat("Error: The posterior is infinite!")
-     if(is.nan(Mo0[[1]])) cat("Error: The posterior was not a number!")
-     if(is.na(Mo0[[2]])) cat("Error: The deviance is a missing value!")
-     if(is.infinite(Mo0[[2]])) cat("Error: The deviance is infinite!")
-     if(is.nan(Mo0[[2]])) cat("Error: The deviance is not a number!")
-     if(sum(is.na(Mo0[[3]])) > 0) cat("Error: Monitored variable(s) have a missing value!")
-     if(sum(is.infinite(Mo0[[3]])) > 0) cat("Error: Monitored variable(s) have an infinite value!")
-     if(sum(is.nan(Mo0[[3]])) > 0) cat("Error: Monitored variable(s) include a value that is not a number!")
+     if(is.na(Mo0[[1]])) stop("Error: The posterior is a missing value!")
+     if(is.infinite(Mo0[[1]])) stop("Error: The posterior is infinite!")
+     if(is.nan(Mo0[[1]])) stop("Error: The posterior was not a number!")
+     if(is.na(Mo0[[2]])) stop("Error: The deviance is a missing value!")
+     if(is.infinite(Mo0[[2]])) stop("Error: The deviance is infinite!")
+     if(is.nan(Mo0[[2]])) stop("Error: The deviance is not a number!")
+     if(sum(is.na(Mo0[[3]])) > 0) stop("Error: Monitored variable(s) have a missing value!")
+     if(sum(is.infinite(Mo0[[3]])) > 0) stop("Error: Monitored variable(s) have an infinite value!")
+     if(sum(is.nan(Mo0[[3]])) > 0) stop("Error: Monitored variable(s) include a value that is not a number!")
      Dev <- Mo0[[2]]
      Mon <- Mo0[[3]]
      LIV <- length(Initial.Values)
@@ -92,15 +90,15 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
           post[iter+1,] <- post[iter,]
           ### Log-Posterior of the current state
           Mo0 <- Model(post[iter,], Data)
-          if(is.na(Mo0[[1]])) cat("Error: The posterior is a missing value!")
-          if(is.infinite(Mo0[[1]])) cat("Error: The posterior is infinite!")
-          if(is.nan(Mo0[[1]])) cat("Error: The posterior was not a number!")
-          if(is.na(Mo0[[2]])) cat("Error: The deviance is a missing value!")
-          if(is.infinite(Mo0[[2]])) cat("Error: The deviance is infinite!")
-          if(is.nan(Mo0[[2]])) cat("Error: The deviance is not a number!")
-          if(sum(is.na(Mo0[[3]])) > 0) cat("Error: Monitored variable(s) have a missing value!")
-          if(sum(is.infinite(Mo0[[3]])) > 0) cat("Error: Monitored variable(s) have an infinite value!")
-          if(sum(is.nan(Mo0[[3]])) > 0) cat("Error: Monitored variable(s) include a value that is not a number!")
+          if(is.na(Mo0[[1]])) stop("Error: The posterior is a missing value!")
+          if(is.infinite(Mo0[[1]])) stop("Error: The posterior is infinite!")
+          if(is.nan(Mo0[[1]])) stop("Error: The posterior was not a number!")
+          if(is.na(Mo0[[2]])) stop("Error: The deviance is a missing value!")
+          if(is.infinite(Mo0[[2]])) stop("Error: The deviance is infinite!")
+          if(is.nan(Mo0[[2]])) stop("Error: The deviance is not a number!")
+          if(sum(is.na(Mo0[[3]])) > 0) stop("Error: Monitored variable(s) have a missing value!")
+          if(sum(is.infinite(Mo0[[3]])) > 0) stop("Error: Monitored variable(s) have an infinite value!")
+          if(sum(is.nan(Mo0[[3]])) > 0) stop("Error: Monitored variable(s) include a value that is not a number!")
           ### Propose new parameter values
           MVN.rand <- rnorm(LIV, 0, 1)
           MVN.test <- try(MVNz <- matrix(MVN.rand,1,LIV) %*% chol(VarCov),

@@ -1,12 +1,18 @@
-2011-01-23 The horned-Theta replaces the pitchfork-psi as the LD logo
-2011-01-22 Added examples: DLM and Laplace-distributed Linear Regression
-2011-01-21 Added optional parameter constraints
-2011-01-18 Changed style of vignettes
-2011-01-17 The pitchfork-psi logo is adopted
-2011-01-12 Created BayesianInference vignette
+2011-01-27 Removed Software License
+2011-01-26 Added examples: Binomial Probit and Multinomial Logit
+2011-01-25 Added distributions: invwishart, mvt, and wishart 
+2011-01-24 Added distributions: dirichlet, invgamma, laplace, mvn
+2011-01-23 Vectorized some loops and increased speed
+2011-01-22 Logo replacement: the horned-Theta
+2011-01-21 Added examples: Binary Logit, DLM, and Laplace Regression
+2011-01-20 Parameter constraints included
+2011-01-18 Vignette style changes
+2011-01-17 Logo adoption: the pitchfork-psi
+2011-01-16 Vignette included: Examples
+2011-01-12 Vignette included: BayesianInference
 2011-01-11 Refined the LaplacesDemon Tutorial vignette
 2011-01-09 Renamed the ESS function
-2011-01-08 Created LaplacesDemon Tutorial vignette
+2011-01-08 Vignette included: LaplacesDemon Tutorial
 2011-01-07 Corrected typos
 2011-01-06 Included summary.demonoid.ppc and plot.demonoid.ppc functions
 2011-01-03 First appeared on CRAN, as the 2,768th package
@@ -16,6 +22,3 @@
 2010-12-25 Version Nomenclature changes to Year-Date-Month (10.12.24)
 2010-12-24 The LaplacesDemon package was first put together
 2010-12-13 Project Laplace's Demon began, and LaplacesDemon was written
-
- 
-

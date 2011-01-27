@@ -41,5 +41,4 @@
   \emph{Bayesian Statistics 4} (ed JM Bernardo, JO Berger, AP Dawid,
   and AFM Smith). Clarendon Press, Oxford, UK.
 }
-\author{Byron Hall \email{statisticat@gmail.com}}
 \seealso{\code{\link{LaplacesDemon}}}

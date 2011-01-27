@@ -29,5 +29,4 @@ original number of samples.
   been taken into account.
 }
 \references{\url{http://www.statisticat.com/laplacesdemon.html}}
-\author{Byron Hall \email{statisticat@gmail.com}}
 \seealso{\code{\link{LaplacesDemon}}}

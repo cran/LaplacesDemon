@@ -305,23 +305,19 @@ Initial.Values <- c(rep(0,J), log(1))
 Model <- function(parm, Data)
      {
      ### Prior Parameters
-     beta.mu <- rep(0,J)
-     beta.tau <- rep(1.0E-3,J)
+     beta.mu <- rep(0,Data$J)
+     beta.tau <- rep(1.0E-3,Data$J)
      tau.alpha <- 1.0E-3
      tau.beta <- 1.0E-3
      ### Parameters
-     beta <- rep(0,J)
-     beta <- parm[1:J]
-     tau <- exp(parm[J+1])
+     beta <- parm[1:Data$J]
+     tau <- exp(parm[Data$J+1])
      ### Log of Prior Densities
-     beta.prior <- rep(0,J)
-     for (j in 1:J)
-          {beta.prior[j] <- dnorm(beta[j], beta.mu[j],
-               1/sqrt(beta.tau[j]), log=TRUE)}
+     beta.prior <- dnorm(beta, beta.mu, 1/sqrt(beta.tau), log=TRUE)
      tau.prior <- dgamma(tau, tau.alpha, tau.beta, log=TRUE)
      ### Log-Posterior
-     mu <- beta \%*\% t(X)
-     LL <- sum(dnorm(y, mu, 1/sqrt(tau), log=TRUE))
+     mu <- beta \%*\% t(Data$X)
+     LL <- sum(dnorm(Data$y, mu, 1/sqrt(tau), log=TRUE))
      LP <- LL + sum(beta.prior) + tau.prior
      Modelout <- list(LP=LP, Dev=-2*LL, Monitor=c(tau,mu[1]), yhat=mu,
           parm=parm)

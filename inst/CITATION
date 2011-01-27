@@ -1,0 +1,9 @@
+citHeader("To cite LaplacesDemon in publications use:")
+
+citEntry(entry  = "manual",
+         author = "Byron Hall",
+         title  = "LaplacesDemon: Software for Bayesian Inference",
+         year   = "2011",
+         note   = "R package version 11.01.27",
+         url    = "http://www.statisticat.com/laplacesdemon.html",
+     )
