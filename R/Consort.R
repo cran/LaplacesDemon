@@ -7,7 +7,7 @@
 
 Consort <- function(object=NULL)
      {
-     if(is.null(object)) {cat("ERROR: The object argument is empty.\n")}
+     if(is.null(object)) stop("The object argument is empty.\n")
      oname <- deparse(substitute(object))
      dname <- as.vector(strsplit(as.character(object$Call), "=")[3][[1]])
      cat("\n#############################################################\n")
@@ -18,6 +18,15 @@ Consort <- function(object=NULL)
      Acc.Rate.Level <- 2
      Acc.Rate.Low <- 0.15
      Acc.Rate.High <- 0.5
+     if(object$Acceptance.Rate == 0) {
+       cat("\nWARNING: Acceptance Rate = 0\n\n")
+       cat(oname, " <- LaplacesDemon(Model, Data=", dname,
+            ", Adaptive=0,\n", sep="")
+       cat("     Covar=NULL, DR=1, Initial.Values, Iterations=1000000,\n",
+            sep="")
+       cat("     Periodicity=0, Status=1000, Thinning=1000)\n\n", sep="")
+       stop("Try the above code before consorting again.")
+       }
      if(object$Acceptance.Rate < Acc.Rate.Low) Acc.Rate.Level <- 1
      if(object$Acceptance.Rate > Acc.Rate.High) Acc.Rate.Level <- 3
      ### Check MCSE
@@ -42,7 +51,19 @@ Consort <- function(object=NULL)
      ### Suggested Values
      Rec.Iterations <- trunc(object$Rec.Thinning / object$Thinning *
           object$Iterations)
-     Rec.Periodicity <- object$Rec.Thinning
+     if(object$Acceptance.Rate == 0) {
+          Rec.Adaptive <- round(object$Parameters * 1/1.0E-7)
+          Rec.Periodicity <- round(object$Rec.Thinning * 1/1.0E-7)
+          }
+     if(object$Acceptance.Rate > 0) {
+          Rec.Adaptive <- round(object$Parameters *
+               1/object$Acceptance.Rate)
+          Rec.Periodicity <- round(object$Rec.Thinning *
+               1/object$Acceptance.Rate)
+          }
+     if(Rec.Adaptive > Rec.Iterations) Rec.Adaptive <- Rec.Iterations - 1
+     if(Rec.Periodicity > Rec.Iterations) {
+          Rec.Periodicity <- Rec.Iterations - 1}
      Status.temp <- round(Rec.Iterations / (object$Minutes *
           Rec.Iterations / object$Iterations),0)
      if(Status.temp < Rec.Iterations) Rec.Status <- Status.temp
@@ -112,7 +133,7 @@ Consort <- function(object=NULL)
           (ESS.min < ESS.crit) & (Stationarity == FALSE)) {
                ### DRAM
                cat(oname, " <- LaplacesDemon(Model, ",
-                    "Data=", dname, ", Adaptive=2,\n", sep="")
+                    "Data=", dname, ", Adaptive=", Rec.Adaptive, ",\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=1, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
                     ",\n", sep="")
@@ -126,7 +147,7 @@ Consort <- function(object=NULL)
           (ESS.min < ESS.crit) & (Stationarity == TRUE)) {
                ### DRAM
                cat(oname, " <- LaplacesDemon(Model, ",
-                    "Data=", dname, ", Adaptive=2,\n", sep="")
+                    "Data=", dname, ", Adaptive=", Rec.Adaptive, ",\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=1, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
                     ",\n", sep="")
@@ -140,7 +161,7 @@ Consort <- function(object=NULL)
           (ESS.min < ESS.crit) & (Stationarity == TRUE)) {
                ### DRAM
                cat(oname, " <- LaplacesDemon(Model, ",
-                    "Data=", dname, ", Adaptive=2,\n", sep="")
+                    "Data=", dname, ", Adaptive=", Rec.Adaptive, ",\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=1, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
                     ",\n", sep="")
@@ -154,7 +175,7 @@ Consort <- function(object=NULL)
           (ESS.min < ESS.crit) & (Stationarity == FALSE)) {
                ### DRAM
                cat(oname, " <- LaplacesDemon(Model, ",
-                   "Data=", dname, ", Adaptive=2,\n", sep="")
+                   "Data=", dname, ", Adaptive=", Rec.Adaptive, ",\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=1, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
                     ",\n", sep="")
@@ -168,7 +189,7 @@ Consort <- function(object=NULL)
           (ESS.min >= ESS.crit) & (Stationarity == FALSE)) {
                ### DRAM
                cat(oname, " <- LaplacesDemon(Model, ",
-                    "Data=", dname, ", Adaptive=2,\n", sep="")
+                    "Data=", dname, ", Adaptive=", Rec.Adaptive, ",\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=1, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
                     ",\n", sep="")
@@ -182,7 +203,7 @@ Consort <- function(object=NULL)
           (ESS.min >= ESS.crit) & (Stationarity == FALSE)) {
                ### DRAM
                cat(oname, " <- LaplacesDemon(Model, ",
-                    "Data=", dname, ", Adaptive=2,\n", sep="")
+                    "Data=", dname, ", Adaptive=", Rec.Adaptive, ",\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=1, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
                     ",\n", sep="")
@@ -196,7 +217,7 @@ Consort <- function(object=NULL)
           (ESS.min >= ESS.crit) & (Stationarity == TRUE)) {
                ### DRAM
                cat(oname, " <- LaplacesDemon(Model, ",
-                    "Data=", dname, ", Adaptive=2,\n", sep="")
+                    "Data=", dname, ", Adaptive=", Rec.Adaptive, ",\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=1, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
                     ",\n", sep="")
@@ -210,7 +231,7 @@ Consort <- function(object=NULL)
           (ESS.min >= ESS.crit) & (Stationarity == TRUE)) {
                ### DRAM
                cat(oname, " <- LaplacesDemon(Model, ",
-                    "Data=", dname, ", Adaptive=2,\n", sep="")
+                    "Data=", dname, ", Adaptive=", Rec.Adaptive, ",\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=1, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
                     ",\n", sep="")
@@ -224,7 +245,7 @@ Consort <- function(object=NULL)
           (ESS.min < ESS.crit) & (Stationarity == FALSE)) {
                ### AM
                cat(oname, " <- LaplacesDemon(Model, ",
-                    "Data=", dname, ", Adaptive=2,\n", sep="")
+                    "Data=", dname, ", Adaptive=", Rec.Adaptive, ",\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=0, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
                     ",\n", sep="")
@@ -266,7 +287,7 @@ Consort <- function(object=NULL)
           (ESS.min < ESS.crit) & (Stationarity == FALSE)) {
                ### AM
                cat(oname, " <- LaplacesDemon(Model, ",
-                    "Data=", dname, ", Adaptive=2,\n", sep="")
+                    "Data=", dname, ", Adaptive=", Rec.Adaptive, ",\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=0, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
                     ",\n", sep="")
@@ -280,7 +301,7 @@ Consort <- function(object=NULL)
           (ESS.min >= ESS.crit) & (Stationarity == FALSE)) {
                ### AM
                cat(oname, " <- LaplacesDemon(Model, ",
-                    "Data=", dname, ", Adaptive=2,\n", sep="")
+                    "Data=", dname, ", Adaptive=", Rec.Adaptive, ",\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=0, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
                     ",\n", sep="")
@@ -294,7 +315,7 @@ Consort <- function(object=NULL)
           (ESS.min >= ESS.crit) & (Stationarity == FALSE)) {
                ### AM
                cat(oname, " <- LaplacesDemon(Model, ",
-                    "Data=", dname, ", Adaptive=2,\n", sep="")
+                    "Data=", dname, ", Adaptive=", Rec.Adaptive, ",\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=0, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
                     ",\n", sep="")
@@ -308,7 +329,7 @@ Consort <- function(object=NULL)
           (ESS.min >= ESS.crit) & (Stationarity == TRUE)) {
                ### RWM
                cat(oname, " <- LaplacesDemon(Model, ",
-                    "Data=", dname, ", Adaptive=0,\n", sep="")
+                    "Data=", dname, ", Adaptive=", Rec.Adaptive, ",\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=0, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
                     ",\n", sep="")
@@ -336,7 +357,7 @@ Consort <- function(object=NULL)
           (ESS.min < ESS.crit) & (Stationarity == FALSE)) {
                ### AM
                cat(oname, " <- LaplacesDemon(Model, ",
-                    "Data=", dname, ", Adaptive=2,\n", sep="")
+                    "Data=", dname, ", Adaptive=", Rec.Adaptive, ",\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=0, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
                     ",\n", sep="")
@@ -350,7 +371,7 @@ Consort <- function(object=NULL)
           (ESS.min < ESS.crit) & (Stationarity == TRUE)) {
                ### AM
                cat(oname, " <- LaplacesDemon(Model, ",
-                    "Data=", dname, ", Adaptive=2,\n", sep="")
+                    "Data=", dname, ", Adaptive=", Rec.Adaptive, ",\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=0, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
                     ",\n", sep="")
@@ -364,7 +385,7 @@ Consort <- function(object=NULL)
           (ESS.min < ESS.crit) & (Stationarity == TRUE)) {
                ### AM
                cat(oname, " <- LaplacesDemon(Model, ",
-                    "Data=", dname, ", Adaptive=2,\n", sep="")
+                    "Data=", dname, ", Adaptive=", Rec.Adaptive, ",\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=0, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
                     ",\n", sep="")
@@ -378,7 +399,7 @@ Consort <- function(object=NULL)
           (ESS.min < ESS.crit) & (Stationarity == FALSE)) {
                ### AM
                cat(oname, " <- LaplacesDemon(Model, ",
-                    "Data=", dname, ", Adaptive=2,\n", sep="")
+                    "Data=", dname, ", Adaptive=", Rec.Adaptive, ",\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=0, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
                     ",\n", sep="")
@@ -392,7 +413,7 @@ Consort <- function(object=NULL)
           (ESS.min >= ESS.crit) & (Stationarity == FALSE)) {
                ### AM
                cat(oname, " <- LaplacesDemon(Model, ",
-                    "Data=", dname, ", Adaptive=2,\n", sep="")
+                    "Data=", dname, ", Adaptive=", Rec.Adaptive, ",\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=0, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
                     ",\n", sep="")
@@ -406,7 +427,7 @@ Consort <- function(object=NULL)
           (ESS.min >= ESS.crit) & (Stationarity == FALSE)) {
                ### AM
                cat(oname, " <- LaplacesDemon(Model, ",
-                    "Data=", dname, ", Adaptive=2,\n", sep="")
+                    "Data=", dname, ", Adaptive=", Rec.Adaptive, ",\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=0, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
                     ",\n", sep="")
@@ -420,7 +441,7 @@ Consort <- function(object=NULL)
           (ESS.min >= ESS.crit) & (Stationarity == TRUE)) {
                ### AM
                cat(oname, " <- LaplacesDemon(Model, ",
-                    "Data=", dname, ", Adaptive=2,\n", sep="")
+                    "Data=", dname, ", Adaptive=", Rec.Adaptive, ",\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=0, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
                     ",\n", sep="")
@@ -434,7 +455,7 @@ Consort <- function(object=NULL)
           (ESS.min >= ESS.crit) & (Stationarity == TRUE)) {
                ### AM
                cat(oname, " <- LaplacesDemon(Model, ",
-                    "Data=", dname, ", Adaptive=2,\n", sep="")
+                    "Data=", dname, ", Adaptive=", Rec.Adaptive, ",\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=0, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
                     ",\n", sep="")
@@ -448,7 +469,7 @@ Consort <- function(object=NULL)
           (ESS.min < ESS.crit) & (Stationarity == FALSE)) {
                ### DRAM
                cat(oname, " <- LaplacesDemon(Model, ",
-                    "Data=", dname, ", Adaptive=2,\n", sep="")
+                    "Data=", dname, ", Adaptive=", Rec.Adaptive, ",\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=1, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
                     ",\n", sep="")
@@ -462,7 +483,7 @@ Consort <- function(object=NULL)
           (ESS.min < ESS.crit) & (Stationarity == TRUE)) {
                ### DRAM
                cat(oname, " <- LaplacesDemon(Model, ",
-                    "Data=", dname, ", Adaptive=2,\n", sep="")
+                    "Data=", dname, ", Adaptive=", Rec.Adaptive, ",\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=1, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
                     ",\n", sep="")
@@ -476,7 +497,7 @@ Consort <- function(object=NULL)
           (ESS.min < ESS.crit) & (Stationarity == TRUE)) {
                ### DRAM
                cat(oname, " <- LaplacesDemon(Model, ",
-                    "Data=", dname, ", Adaptive=2,\n", sep="")
+                    "Data=", dname, ", Adaptive=", Rec.Adaptive, ",\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=1, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
                     ",\n", sep="")
@@ -490,7 +511,7 @@ Consort <- function(object=NULL)
           (ESS.min < ESS.crit) & (Stationarity == FALSE)) {
                ### DRAM
                cat(oname, " <- LaplacesDemon(Model, ",
-                    "Data=", dname, ", Adaptive=2,\n", sep="")
+                    "Data=", dname, ", Adaptive=", Rec.Adaptive, ",\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=1, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
                     ",\n", sep="")
@@ -504,7 +525,7 @@ Consort <- function(object=NULL)
           (ESS.min >= ESS.crit) & (Stationarity == FALSE)) {
                ### DRAM
                cat(oname, " <- LaplacesDemon(Model, ",
-                    "Data=", dname, ", Adaptive=2,\n", sep="")
+                    "Data=", dname, ", Adaptive=", Rec.Adaptive, ",\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=1, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
                     ",\n", sep="")
@@ -518,7 +539,7 @@ Consort <- function(object=NULL)
           (ESS.min >= ESS.crit) & (Stationarity == FALSE)) {
                ### DRAM
                cat(oname, " <- LaplacesDemon(Model, ",
-                    "Data=", dname, ", Adaptive=2,\n", sep="")
+                    "Data=", dname, ", Adaptive=", Rec.Adaptive, ",\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=1, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
                     ",\n", sep="")
@@ -532,7 +553,7 @@ Consort <- function(object=NULL)
           (ESS.min >= ESS.crit) & (Stationarity == TRUE)) {
                ### DRAM
                cat(oname, " <- LaplacesDemon(Model, ",
-                    "Data=", dname, ", Adaptive=2,\n", sep="")
+                    "Data=", dname, ", Adaptive=", Rec.Adaptive, ",\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=1, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
                     ",\n", sep="")
@@ -560,7 +581,7 @@ Consort <- function(object=NULL)
           (ESS.min < ESS.crit) & (Stationarity == FALSE)) {
                ### AM
                cat(oname, " <- LaplacesDemon(Model, ",
-                    "Data=", dname, ", Adaptive=2,\n", sep="")
+                    "Data=", dname, ", Adaptive=", Rec.Adaptive, ",\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=0, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
                     ",\n", sep="")
@@ -602,7 +623,7 @@ Consort <- function(object=NULL)
           (ESS.min < ESS.crit) & (Stationarity == FALSE)) {
                ### AM
                cat("object <- LaplacesDemon(Model, ",
-                    "Data=", dname, ", Adaptive=2,\n", sep="")
+                    "Data=", dname, ", Adaptive=", Rec.Adaptive, ",\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=0, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
                     ",\n", sep="")
@@ -616,7 +637,7 @@ Consort <- function(object=NULL)
           (ESS.min >= ESS.crit) & (Stationarity == FALSE)) {
                ### AM
                cat(oname, " <- LaplacesDemon(Model, ",
-                    "Data=", dname, ", Adaptive=2,\n", sep="")
+                    "Data=", dname, ", Adaptive=", Rec.Adaptive, ",\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=0, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
                     ",\n", sep="")
@@ -630,7 +651,7 @@ Consort <- function(object=NULL)
           (ESS.min >= ESS.crit) & (Stationarity == FALSE)) {
                ### AM
                cat(oname, " <- LaplacesDemon(Model, ",
-                    "Data=", dname, ", Adaptive=2,\n", sep="")
+                    "Data=", dname, ", Adaptive=", Rec.Adaptive, ",\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=0, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
                     ",\n", sep="")
@@ -644,7 +665,7 @@ Consort <- function(object=NULL)
           (ESS.min >= ESS.crit) & (Stationarity == TRUE)) {
                ### RWM
                cat(oname, " <- LaplacesDemon(Model, ",
-                    "Data=", dname, ", Adaptive=0,\n", sep="")
+                    "Data=", dname, ", Adaptive=", Rec.Adaptive, ",\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=0, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
                     ",\n", sep="")
@@ -658,7 +679,7 @@ Consort <- function(object=NULL)
           (ESS.min < ESS.crit) & (Stationarity == FALSE)) {
                ### AM
                cat(oname, " <- LaplacesDemon(Model, ",
-                    "Data=", dname, ", Adaptive=2,\n", sep="")
+                    "Data=", dname, ", Adaptive=", Rec.Adaptive, ",\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=0, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
                     ",\n", sep="")
@@ -672,7 +693,7 @@ Consort <- function(object=NULL)
           (ESS.min < ESS.crit) & (Stationarity == TRUE)) {
                ### AM
                cat(oname, " <- LaplacesDemon(Model, ",
-                    "Data=", dname, ", Adaptive=2,\n", sep="")
+                    "Data=", dname, ", Adaptive=", Rec.Adaptive, ",\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=0, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
                     ",\n", sep="")
@@ -686,7 +707,7 @@ Consort <- function(object=NULL)
           (ESS.min < ESS.crit) & (Stationarity == TRUE)) {
                ### AM
                cat(oname, " <- LaplacesDemon(Model, ",
-                    "Data=", dname, ", Adaptive=2,\n", sep="")
+                    "Data=", dname, ", Adaptive=", Rec.Adaptive, ",\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=0, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
                     ",\n", sep="")
@@ -700,7 +721,7 @@ Consort <- function(object=NULL)
           (ESS.min < ESS.crit) & (Stationarity == FALSE)) {
                ### AM
                cat(oname, " <- LaplacesDemon(Model, ",
-                    "Data=", dname, ", Adaptive=2,\n", sep="")
+                    "Data=", dname, ", Adaptive=", Rec.Adaptive, ",\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=0, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
                     ",\n", sep="")
@@ -714,7 +735,7 @@ Consort <- function(object=NULL)
           (ESS.min >= ESS.crit) & (Stationarity == FALSE)) {
                ### AM
                cat(oname, " <- LaplacesDemon(Model, ",
-                    "Data=", dname, ", Adaptive=2,\n", sep="")
+                    "Data=", dname, ", Adaptive=", Rec.Adaptive, ",\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=0, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
                     ",\n", sep="")
@@ -728,7 +749,7 @@ Consort <- function(object=NULL)
           (ESS.min >= ESS.crit) & (Stationarity == FALSE)) {
                ### AM
                cat(oname, " <- LaplacesDemon(Model, ",
-                    "Data=", dname, ", Adaptive=2,\n", sep="")
+                    "Data=", dname, ", Adaptive=", Rec.Adaptive, ",\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=0, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
                     ",\n", sep="")
@@ -742,7 +763,7 @@ Consort <- function(object=NULL)
           (ESS.min >= ESS.crit) & (Stationarity == TRUE)) {
                ### AM
                cat(oname, " <- LaplacesDemon(Model, ",
-                    "Data=", dname, ", Adaptive=2,\n", sep="")
+                    "Data=", dname, ", Adaptive=", Rec.Adaptive, ",\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=0, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
                     ",\n", sep="")
@@ -756,7 +777,7 @@ Consort <- function(object=NULL)
           (ESS.min >= ESS.crit) & (Stationarity == TRUE)) {
                ### AM
                cat(oname, " <- LaplacesDemon(Model, ",
-                    "Data=", dname, ", Adaptive=2,\n", sep="")
+                    "Data=", dname, ", Adaptive=", Rec.Adaptive, ",\n", sep="")
                cat("     Covar=", oname, "$Covar, DR=0, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
                     ",\n", sep="")

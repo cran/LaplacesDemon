@@ -7,36 +7,39 @@
      for the inverse Wishart distribution.
 }
 \usage{
-   dinvwishart(W, v, S)
-   rinvwishart(v, S)
+   dinvwishart(Sigma, nu, R, log = FALSE)
+   rinvwishart(nu, R)
 }
 \arguments{
-    \item{W}{This is positive-definite matrix W \eqn{(p \times p)}{(p x p)}.}
-    \item{v}{This is the scalar degrees of freedom, and is more
-      correctly called \code{nu} (which looks like a \code{v}).}
-    \item{S}{This is the scale matrix \eqn{(p \times p)}{(p x p)}.}
+    \item{Sigma}{This is the symmetric, positive-definite matrix Sigma \eqn{(p \times p)}{(p x p)}.}
+    \item{nu}{This is the scalar degrees of freedom.}
+    \item{R}{This is the symmetric scale matrix \eqn{(p \times p)}{(p x p)}.}
+    \item{log}{Logical. If \code{log=TRUE} then the logarithm of the
+    density is returned.}
 }
 \value{
-  \code{dinvwishart} evaluates the density at positive definite matrix \code{W}.
+  \code{dinvwishart} evaluates the density at symmetric, positive-definite matrix \code{Sigma}.
   \code{rinvwishart} generates one random draw from the distribution.
 }
 \details{
   \itemize{
     \item Application: Continuous Multivariate
-    \item Density: p(W) = [|S|^(v/2)det(W)^[-(v+k+1)/2]exp(-Tr[SW^(-1)]/2)]/[2^(vk/2)Gamma[k](v/2)]
+    \item Density: p(Sigma) = [|R|^(nu/2)|Sigma|^[-(nu+p+1)/2]exp(-tr[R*Sigma^(-1)]/2)]/[2^(nu*p/2)Gamma[p](nu/2)]
     \item Inventor: John Wishart (1928)
-    \item Notation 1: IW ~ Inv-Wishart[\code{v}](\code{S})
-    \item Notation 2: p(IW) = Inv-Wishart[\code{v}](\code{W} | \code{S})
-    \item Parameter 1: degrees of freedom \code{v} (or nu)
-    \item Parameter 2: symmetric, positive-definite k x k scale matrix \code{S}
-    \item Mean: E(W) = S / (v - k - 1)
+    \item Notation 1: Sigma ~ Inv-Wishart[\code{nu}](\code{R})
+    \item Notation 2: p(Sigma) = Inv-Wishart[\code{nu}](\code{Sigma} | \code{R})
+    \item Parameter 1: degrees of freedom \code{nu}
+    \item Parameter 2: symmetric, non-singular p x p scale matrix \code{R}
+    \item Mean: E(Sigma) = R / (nu - p - 1)
     \item Variance: 
-    \item Mode: S / (v + k + 1)
+    \item Mode: R / (nu + p + 1)
 }
 
 The inverse Wishart distribution is a probability distribution defined on
 real-valued positive-definite matrices, and is used as the conjugate
-prior for the covariance matrix of a multivariate normal distribution.
+prior for the covariance matrix, \code{Sigma}, of a multivariate normal
+distribution. The inverse-Wishart density is always finite, and the
+integral is always finite.  A degenerate form occurs when \code{nu < p}.
 
 These functions are similar to those in the \code{MCMCpack} package.
 }
@@ -45,6 +48,3 @@ x <- dinvwishart(matrix(c(2,-.3,-.3,4),2,2), 3, matrix(c(1,.1,.1,1),2,2))
 x <- rinvwishart(3, matrix(c(1,.1,.1,1),2,2))
 }
 \keyword{distribution}
-
-
-

@@ -7,14 +7,14 @@
   the multivariate normal distribution.
 }
 \usage{
-dmvn(x, mean = rep(0, d), varcov, log = FALSE) 
-rmvn(n = 1, mean = rep(0, d), varcov)
+dmvn(x, mu = rep(0, d), Sigma, log = FALSE) 
+rmvn(n = 1, mu = rep(0, d), Sigma)
 }
 \arguments{
   \item{x}{This is a vector of quantiles.}
   \item{n}{This is the number of random draws.}
-  \item{mean}{This is the mean vector.}
-  \item{varcov}{This is the covariance matrix.}
+  \item{mu}{This is the mean vector with length \code{d}.}
+  \item{Sigma}{This is the covariance matrix.}
   \item{log}{Logical. If \code{log=TRUE} then the logarithm of the
     density is returned.}
 }
@@ -33,22 +33,25 @@ rmvn(n = 1, mean = rep(0, d), varcov)
   \item Variance: var(theta) = Sigma
   \item Mode: mu
 }
+
 The multivariate normal distribution, or multivariate Gaussian
-distribution,  is a multidimensional extension of the one-dimensional
-or univariate normal or Gaussian distribution.  A random vector is
+distribution, is a multidimensional extension of the one-dimensional
+or univariate normal or Gaussian distribution. A random vector is
 considered to be multivariate normally distributed if every linear
 combination of its components has a univariate normal distribution.
-This distribution has a mean parameter of length \code{k}, and a
-\code{k x k} covariance matrix, which must be positive-definite.
+This distribution has a mean parameter vector \code{mu} of length
+\code{k}, and a \code{k x k} covariance matrix \code{Sigma}, which
+must be positive-definite.
 
-These functions is similar to those in the \code{mnormt} package.
+These functions is similar to those in the \code{mnormt} and
+\code{mvtnorm} packages.
 }
 \value{
   \code{dmvn} gives the density, and 
   \code{rmvn} generates random deviates.
 }
 \examples{
-x <- dmvn(1,c(0,1,2),matrix(c(1,0,0,0,1,0,0,0,1),3,3))
-x <- rmvn(100,c(0,1,2),matrix(c(1,0,0,0,1,0,0,0,1),3,3))
+x <- dmvn(c(1,2,3), c(0,1,2), matrix(c(1,0,0,0,1,0,0,0,1),3,3))
+x <- rmvn(100, c(0,1,2), matrix(c(1,0,0,0,1,0,0,0,1),3,3))
 }
 \keyword{distribution}

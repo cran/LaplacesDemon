@@ -52,3 +52,5 @@ plot.demonoid <- function(x, BurnIn=1, Data=NULL, PDF=FALSE,
           }
      if(PDF == TRUE) dev.off()
      }
+
+#End

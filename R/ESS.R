@@ -7,7 +7,7 @@
 # the same as the effectiveSize function in the coda package.             #
 ###########################################################################
 
-ESS <- function(x) 
+ESS <- function(x)
      {
      x <- as.matrix(x)
      v0 <- order <- numeric(ncol(x))
@@ -29,6 +29,9 @@ ESS <- function(x)
      spec <- list(spec = v0, order = order)
      spec <- spec$spec
      ESS <- ifelse(spec == 0, 0, nrow(x) * apply(x, 2, var)/spec)
+     ESS <- ifelse(ESS <= 0, 1.0E-5, ESS)
      ESS <- ifelse(ESS > nrow(x), nrow(x), ESS)
      return(ESS)
      }
+
+#End

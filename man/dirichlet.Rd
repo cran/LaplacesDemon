@@ -7,7 +7,7 @@
   distribution.
 }
 \usage{
-ddirichlet(x, alpha)
+ddirichlet(x, alpha, log = FALSE)
 rdirichlet(n, alpha)
 }
 \arguments{
@@ -16,6 +16,8 @@ rdirichlet(n, alpha)
   \item{n}{This is the number of random vectors to generate.}
   \item{alpha}{This is a vector of shape parameters, or matrix of shape
     parameters corresponding to the number of draws.}
+  \item{log}{Logical. If \code{log=TRUE} then the logarithm of the
+    density is returned.}
 }
 \details{
   \itemize{

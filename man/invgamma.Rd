@@ -7,14 +7,17 @@
   gamma distribution.
 }
 \usage{
+dinvgamma(x, shape, scale = 1, log = FALSE)
 rinvgamma(n, shape, scale = 1)
-dinvgamma(x, shape, scale = 1)
 }
 \arguments{
   \item{n}{This is the number of draws from the distribution.}
   \item{x}{This is the scalar location to evaluate density.}
   \item{shape}{This is the scalar shape parameter.}
-  \item{scale}{This is the scalar scale parameter (which defaults to one).}
+  \item{scale}{This is the scalar scale parameter (which defaults to
+    one).}
+  \item{log}{Logical. If \code{log=TRUE} then the logarithm of the
+    density is returned.}
 }
 \value{
   \code{dinvgamma} evaluates the density at \code{x}.  \code{rinvgamma} takes

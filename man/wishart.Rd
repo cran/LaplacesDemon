@@ -7,41 +7,47 @@
      for the Wishart distribution.
 }
 \usage{
-   dwishart(W, v, S)
-   rwishart(v, S)
+   dwishart(Omega, nu, S, log = FALSE)
+   rwishart(nu, S)
 }
 \arguments{
-    \item{W}{This is positive-definite matrix W \eqn{(p \times p)}{(p x p)}.}
-    \item{v}{This is the scalar degrees of freedom, and is more
-      correctly called \code{nu} (which looks like a \code{v}).}
-    \item{S}{This is the inverse scale matrix \eqn{(p \times p)}{(p x p)}.}
+    \item{Omega}{This is symmetric, positive-definite matrix Omega \eqn{(p \times p)}{(p x p)}.}
+    \item{nu}{This is the scalar degrees of freedom}
+    \item{S}{This is the symmetric inverse scale matrix \eqn{(p \times p)}{(p x
+	p)}.}
+    \item{log}{Logical. If \code{log=TRUE} then the logarithm of the
+    density is returned.}
 }
 \value{
-  \code{dwishart} evaluates the density at positive definite matrix \code{W}.
+  \code{dwishart} evaluates the density at positive definite matrix \code{Omega}.
   \code{rwishart} generates one random draw from the distribution.
 }
 \details{
   \itemize{
     \item Application: Continuous Multivariate
-    \item Density: p(W) = ({|W|^[(n-k-1)/2]}/[2^(nk/2)det(V)^(n/2)Gamma[k](n/2)])exp[0.5Tr(V^-1W)]
+    \item Density: p(Omega) = |S^(-1)|^(nu/2)|Omega|^[(nu-p-1)/2] exp{-(1/2)tr[S^(-1)Omega]}
     \item Inventor: John Wishart (1928)
-    \item Notation 1: W ~ Wishart[\code{v}](\code{S})
-    \item Notation 2: p(W) = Wishart[\code{v}](\code{W} | \code{S})
-    \item Parameter 1: degrees of freedom \code{v} (or nu)
-    \item Parameter 2: symmetric, positive-definite k x k scale matrix \code{S}
-    \item Mean: E(W) = vS
-    \item Variance: n(v[i,j]^2 + v[i,i]v[j,j])
-    \item Mode: (n-k-1)V, for n >= k + 1
+    \item Notation 1: Omega ~ Wishart[\code{nu}](\code{S})
+    \item Notation 2: p(Omega) = Wishart[\code{nu}](\code{Omega} | \code{S})
+    \item Parameter 1: degrees of freedom \code{nu}
+    \item Parameter 2: symmetric, non-singular p x p inverse scale matrix \code{S}
+    \item Mean: E(Omega) = nuS
+    \item Variance: nu(S[i,j]^2 + S[i,i]S[j,j])
+    \item Mode: (nu-p-1)S, for nu >= p + 1
 }
 
 The Wishart distribution is a generalization to multiple dimensions of
 the chi-square distribution, or, in the case of non-integer degrees of
 freedom, of the gamma distribution. The Wishart is the conjugate prior
-distribution for the inverse covariance matrix (the precision matrix) in
-a multivariate normal distribution.  The integral is finite if the
-degrees of freedom parameter, \code{v}, is greater than or equal to the
-dimension, \code{k}. An uninformative distribution is obtained as
-\code{v -> 0}.
+distribution for the inverse covariance matrix (the precision matrix)
+\code{Omega}, the inverse of which (covariance matrix \code{Sigma}) is
+used in a multivariate normal distribution.  The integral is finite if the
+scalar degrees of freedom parameter, \code{nu}, is greater than or equal
+to the dimension \code{p} of the symmetric, inverse scale matrix
+\code{S}. The degrees of freedom, \code{nu}, is equivalent to specifying
+a prior sample size, indicating the confidence in \code{S}, where
+\code{S} is a prior guess at the order of covariance matrix
+\code{Sigma}. An uninformative distribution is obtained as \code{nu -> 0}.
 
 These functions are similar to those in the \code{MCMCpack} package.
 }

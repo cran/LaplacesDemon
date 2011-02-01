@@ -25,3 +25,5 @@ plot.demonoid.ppc <- function(x, Rows=NULL, PDF=FALSE,  ...)
           }
      if(PDF == TRUE) dev.off()
      }
+
+#End

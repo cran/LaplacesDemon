@@ -55,3 +55,5 @@ print.demonoid <- function(x, ...)
      print(x$Summary2)
      invisible(x)
      }
+
+#End

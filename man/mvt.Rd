@@ -8,20 +8,21 @@
   Student distribution.
 }
 \usage{
-dmvt(x, mean = rep(0, d), S, df=Inf, log = FALSE)
-rmvt(n = 1, mean = rep(0, d), S, df=Inf)
+dmvt(x, mu = rep(0, d), S, df=Inf, log = FALSE)
+rmvt(n = 1, mu = rep(0, d), S, df=Inf)
 }
 \arguments{
   \item{x}{This is either a vector of length \code{d} or a matrix with 
        \code{d} columns, where \code{d=ncol(S)}, giving the coordinates of
        the point(s) where the density must be evaluated.}
   \item{n}{This is the number of random draws.}
-  \item{mean}{This is a numeric vector representing the location parameter
-       of the distribution (equal to the expected value when \code{df>1}).
-       It must be of length \code{d}, as defined above.}
+  \item{mu}{This is a numeric vector representing the location parameter,
+       the mean vector, of the multivariate distribution (equal to the
+       expected value when \code{df > 1}). It must be of length
+       \code{d}, as defined above.}
   \item{S}{This is a positive-definite matrix representing the scale 
        matrix of the distribution, such that \code{S*df/(df-2)} is
-       the variance-covariance matrix when \code{df>2}. A vector of
+       the variance-covariance matrix when \code{df > 2}. A vector of
        length 1 is also allowed (in this case, \code{d=1} is set).}
   \item{df}{This is the degrees of freedom, and is often represented
        with \code{nu}.}
@@ -47,10 +48,12 @@ The multivariate t distribution is a multidimensional extension of the
 one-dimensional or univariate Student's t distribution.  A random vector is
 considered to be multivariate t-distributed if every linear
 combination of its components has a univariate Student t-distribution.
-This distribution has a mean parameter of length \code{d}, and a
-\code{d x d} scale matrix, which must be positive-definite.
+This distribution has a mean parameter vector \code{mu} of length
+\code{d}, and a \code{d x d} scale matrix \code{S}, which must be
+positive-definite.
 
-These functions are similar to those in the \code{mnormt} package.
+These functions are similar to those in the \code{mnormt} and
+\code{mvtnorm} packages.
 }
 \value{
   \code{dmvt} gives the density, and 
