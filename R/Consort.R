@@ -333,7 +333,7 @@ Consort <- function(object=NULL)
                cat("     Covar=", oname, "$Covar, DR=0, ",
                     "Initial.Values, Iterations=", Rec.Iterations,
                     ",\n", sep="")
-               cat("     Periodicity=", 0,
+               cat("     Periodicity=", Rec.Periodicity,
                     ", Status=", Rec.Status, ", Thinning=",
                     object$Rec.Thinning, ")\n\n", sep="")
                }

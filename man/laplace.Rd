@@ -44,14 +44,14 @@ rlaplace(n, location=0, scale=1)
 
 The Laplace distribution is also called the double exponential 
 distribution, because it looks like two exponential distributions back to
-back with respect to location mu.  The PDF of the Laplace distribution is
+back with respect to location mu. The PDF of the Laplace distribution is
 reminiscent of the normal distribution; however, whereas the normal
 distribution is expressed in terms of the squared difference from the mean
 mu, the Laplace density is expressed in terms of the absolute difference
-from the mean, mu.  Consequently, the Laplace distribution has fatter
-tails than the normal distribution.  It has been argued that the Laplace
+from the mean, mu. Consequently, the Laplace distribution has fatter
+tails than the normal distribution. It has been argued that the Laplace
 distribution fits most things in nature better than the normal
-distribution.  Elsewhere, there are also asymmetric versions and
+distribution. Elsewhere, there are also asymmetric versions and
 multivariate versions of the Laplace distribution.
 
 These functions are similar to those in the \code{VGAM} package.

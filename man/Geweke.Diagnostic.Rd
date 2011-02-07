@@ -5,12 +5,12 @@
   Geweke (1992) proposed a convergence diagnostic for Markov chains.
   This diagnostic is based on a test for equality of the means of the
   first and last part of a Markov chain (by default the first 10\% and
-  the last 50\%).  If the samples are drawn from a stationary
+  the last 50\%). If the samples are drawn from a stationary
   distribution of the chain, then the two means are equal and Geweke's
   statistic has an asymptotically standard normal distribution.
 
   The test statistic is a standard Z-score: the difference between the
-  two sample means divided by its estimated standard error.  The
+  two sample means divided by its estimated standard error. The
   standard error is estimated from the spectral density at zero, and so
   takes into account any autocorrelation.
 

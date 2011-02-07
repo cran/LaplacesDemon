@@ -20,8 +20,8 @@ rinvgamma(n, shape, scale = 1)
     density is returned.}
 }
 \value{
-  \code{dinvgamma} evaluates the density at \code{x}.  \code{rinvgamma} takes
-  \code{n} draws from the inverse Gamma distribution.  The parameterization is
+  \code{dinvgamma} evaluates the density at \code{x}. \code{rinvgamma} takes
+  \code{n} draws from the inverse Gamma distribution. The parameterization is
   consistent with the Gamma Distribution in the stats package.
 }
 \details{
@@ -39,8 +39,8 @@ rinvgamma(n, shape, scale = 1)
 }
 
 The inverse-gamma is the conjugate prior distribution for the normal
-or Gaussian variance.  The density is always finite; its integral is
-finite if \code{alpha > 0}.  An uninformative distribution is obtained as
+or Gaussian variance. The density is always finite; its integral is
+finite if \code{alpha > 0}. An uninformative distribution is obtained as
 \code{alpha, beta -> 0}.
 
 These functions are similar to those in the \code{MCMCpack} package.

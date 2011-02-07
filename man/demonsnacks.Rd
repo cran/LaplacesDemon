@@ -4,12 +4,12 @@
 \usage{data(demonsnacks)}
 \description{
   Late one night, after witnessing Laplace's Demon in action, I followed
-  him back to what seemed to be his lair.  Minutes later, he left again.
-  I snuck inside and saw something labeled 'Demon Snacks'.  Hurriedly, I
+  him back to what seemed to be his lair. Minutes later, he left again.
+  I snuck inside and saw something labeled 'Demon Snacks'. Hurriedly, I
   recorded the 39 items, each with a name and 10 nutritional attributes.
 }
 \format{
-  This data frame contains 39 rows (with row names) and 10 columns.  The
+  This data frame contains 39 rows (with row names) and 10 columns. The
   following data dictionary describes each variable or column.
   \describe{
     \item{\code{Serving.Size}}{This is serving size in grams.}

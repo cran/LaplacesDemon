@@ -39,7 +39,7 @@ The inverse Wishart distribution is a probability distribution defined on
 real-valued positive-definite matrices, and is used as the conjugate
 prior for the covariance matrix, \code{Sigma}, of a multivariate normal
 distribution. The inverse-Wishart density is always finite, and the
-integral is always finite.  A degenerate form occurs when \code{nu < p}.
+integral is always finite. A degenerate form occurs when \code{nu < p}.
 
 These functions are similar to those in the \code{MCMCpack} package.
 }

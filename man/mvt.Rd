@@ -45,7 +45,7 @@ rmvt(n = 1, mu = rep(0, d), S, df=Inf)
 }
 
 The multivariate t distribution is a multidimensional extension of the
-one-dimensional or univariate Student's t distribution.  A random vector is
+one-dimensional or univariate Student's t distribution. A random vector is
 considered to be multivariate t-distributed if every linear
 combination of its components has a univariate Student t-distribution.
 This distribution has a mean parameter vector \code{mu} of length

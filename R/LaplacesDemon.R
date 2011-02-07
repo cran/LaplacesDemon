@@ -2,7 +2,8 @@
 # LaplacesDemon                                                           #
 #                                                                         #
 # The purpose of this function is to perform one of four MCMC algorithms  #
-# on the log of a joint posterior distribution of a Bayesian model.       #
+# on the logarithm of the unnormalized joint posterior density of a       #
+# Bayesian model.                                                         #
 ###########################################################################
 
 LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
@@ -11,13 +12,26 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
      {
      cat("\nLaplace's Demon was called on ", date(), "\n", sep="")
      time1 <- proc.time()
-     ### Initial Checks
+     ##########################  Initial Checks  ##########################
      cat("\nPerforming initial checks...\n")
-     if(is.null(Model)) stop("A function must be entered for Model.")
-     if(is.null(Data)) stop("A list containing data must be entered for Data.")
+     if(is.null(Model)) stop("A function must be entered for Model.\n")
+     if(is.null(Data)) stop("A list containing data must be entered for Data.\n")
      if(is.null(Initial.Values)) {
-          cat("WARNING: Initial Values were not supplied, and are set to zero.")
-          Initial.Values <- rep(0, Data$parm.names)}
+          cat("WARNING: Initial Values were not supplied.\n")
+          Initial.Values <- rep(0, length(Data$parm.names))}
+     if(length(Initial.Values) != length(Data$parm.names)) {
+          cat("WARNING: The length of Initial Values differed from ",
+               "Data$parm.names.\n")
+          Initial.Values <- rep(0, length(Data$parm.names))}
+     if(sum(is.na(Initial.Values)) > 0) {
+          cat("WARNING: Initial Values contain missing values.\n")
+          Initial.Values <- rep(0, length(Data$parm.names))}
+     if(sum(is.nan(Initial.Values)) > 0) {
+          cat("WARNING: Initial Values contain NaN values.\n")
+          Initial.Values <- rep(0, length(Data$parm.names))}
+     if(sum(is.infinite(Initial.Values)) > 0) {
+          cat("WARNING: Initial Values contain infinite values.\n")
+          Initial.Values <- rep(0, length(Data$parm.names))}
      if(Iterations < 11) {
           Iterations <- 11
           cat("'Iterations' has been changed to ", Iterations, ".\n",
@@ -39,18 +53,33 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
           Thinning <- 1
           cat("'Thinning' has been changed to ", Thinning, ".\n",
                sep="")}
-     ### Initial Settings
+     #########################  Initial Settings  #########################
      Acceptance <- 0
      Mo0 <- Model(Initial.Values, Data)
-     if(is.na(Mo0[[1]])) stop("The posterior is a missing value!")
-     if(is.infinite(Mo0[[1]])) stop("The posterior is infinite!")
-     if(is.nan(Mo0[[1]])) stop("The posterior was not a number!")
-     if(is.na(Mo0[[2]])) stop("The deviance is a missing value!")
-     if(is.infinite(Mo0[[2]])) stop("The deviance is infinite!")
-     if(is.nan(Mo0[[2]])) stop("The deviance is not a number!")
-     if(sum(is.na(Mo0[[3]])) > 0) stop("Monitored variable(s) have a missing value!")
-     if(sum(is.infinite(Mo0[[3]])) > 0) stop("Monitored variable(s) have an infinite value!")
-     if(sum(is.nan(Mo0[[3]])) > 0) stop("Monitored variable(s) include a value that is not a number!")
+     if(is.na(Mo0[[1]]) | is.nan(Mo0[[1]]) | is.infinite(Mo0[[1]])) {
+          Initial.Values <- runif(length(Initial.Values),-3,3)
+          Mo0 <- Model(Initial.Values, Data)
+          if(is.na(Mo0[[1]]) | is.nan(Mo0[[1]]) | is.infinite(Mo0[[1]])) {
+               Initial.Values <- runif(length(Initial.Values),-3,3)
+               Mo0 <- Model(Initial.Values, Data)
+               }
+          }
+     if(is.na(Mo0[[1]])) stop("The posterior is a missing value!\n")
+     if(is.infinite(Mo0[[1]])) stop("The posterior is infinite!\n")
+     if(is.nan(Mo0[[1]])) stop("The posterior was not a number!\n")
+     if(is.na(Mo0[[2]])) stop("The deviance is a missing value!\n")
+     if(is.infinite(Mo0[[2]])) stop("The deviance is infinite!\n")
+     if(is.nan(Mo0[[2]])) stop("The deviance is not a number!\n")
+     if(sum(is.na(Mo0[[3]])) > 0) stop("Monitored variable(s) have a missing value!\n")
+     if(sum(is.infinite(Mo0[[3]])) > 0) stop("Monitored variable(s) have an infinite value!\n")
+     if(sum(is.nan(Mo0[[3]])) > 0) stop("Monitored variable(s) include a value that is not a number!\n")
+     ##################  Step-Adaptive Gradient Ascent  ###################
+     if(sum(Initial.Values == 0) == length(Initial.Values)) {
+          Fit.IVO = IVO(Model, Initial.Values, Data)
+          Initial.Values <- Fit.IVO$Parms.Final
+          }
+     #########################  Prepare for MCMC  #########################
+     Mo0 <- Model(Initial.Values, Data)
      Dev <- Mo0[[2]]
      Mon <- Mo0[[3]]
      LIV <- length(Initial.Values)
@@ -76,7 +105,8 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
           cat("Algorithm: Delayed Rejection Metropolis\n")}
      if((Adaptive >= Iterations) & (DR == 0)) {
           Algorithm <- "Random-Walk Metropolis"
-          cat("Algorithm: Random-Walk Metropolis\n")}     
+          cat("Algorithm: Random-Walk Metropolis\n")}
+     ############################  Begin MCMC  ############################
      cat("\nLaplace's Demon is beginning to update...\n")
      for (iter in 1:(Iterations-1))
           {
@@ -93,15 +123,15 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
           post[iter+1,] <- post[iter,]
           ### Log-Posterior of the current state
           Mo0 <- Model(post[iter,], Data)
-          if(is.na(Mo0[[1]])) stop("The posterior is a missing value!")
-          if(is.infinite(Mo0[[1]])) stop("The posterior is infinite!")
-          if(is.nan(Mo0[[1]])) stop("The posterior was not a number!")
-          if(is.na(Mo0[[2]])) stop("The deviance is a missing value!")
-          if(is.infinite(Mo0[[2]])) stop("The deviance is infinite!")
-          if(is.nan(Mo0[[2]])) stop("The deviance is not a number!")
-          if(sum(is.na(Mo0[[3]])) > 0) stop("Monitored variable(s) have a missing value!")
-          if(sum(is.infinite(Mo0[[3]])) > 0) stop("Monitored variable(s) have an infinite value!")
-          if(sum(is.nan(Mo0[[3]])) > 0) stop("Monitored variable(s) include a value that is not a number!")
+          if(is.na(Mo0[[1]])) stop("The posterior is a missing value!\n")
+          if(is.infinite(Mo0[[1]])) stop("The posterior is infinite!\n")
+          if(is.nan(Mo0[[1]])) stop("The posterior was not a number!\n")
+          if(is.na(Mo0[[2]])) stop("The deviance is a missing value!\n")
+          if(is.infinite(Mo0[[2]])) stop("The deviance is infinite!\n")
+          if(is.nan(Mo0[[2]])) stop("The deviance is not a number!\n")
+          if(sum(is.na(Mo0[[3]])) > 0) stop("Monitored variable(s) have a missing value!\n")
+          if(sum(is.infinite(Mo0[[3]])) > 0) stop("Monitored variable(s) have an infinite value!\n")
+          if(sum(is.nan(Mo0[[3]])) > 0) stop("Monitored variable(s) include a value that is not a number!\n")
           ### Propose new parameter values
           MVN.rand <- rnorm(LIV, 0, 1)
           MVN.test <- try(MVNz <- matrix(MVN.rand,1,LIV) %*% chol(VarCov),
@@ -363,6 +393,7 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
                var(as.vector(Dev[BurnIn:length(Dev)]))/2)}
                else rep(NA,3),
           DR=DR,
+          Initial.Values=Initial.Values,
           Iterations=Iterations,
           Minutes=round(as.vector(time2[3] - time1[3]) / 60,2),
           Model=Model,

@@ -27,6 +27,7 @@ print.demonoid <- function(x, ...)
      cat("DIC of stationary samples (DIC): ",
           round(x$DIC2[3],3), "\n", sep="")
      cat("DR: ", x$DR, "\n", sep="")
+     cat("Initial Values: ", x$Initial.Values, "\n")
      cat("Iterations: ", x$Iterations, "\n", sep="")
      cat("Minutes of run-time: ", round(x$Minutes,2), "\n",
           sep="")

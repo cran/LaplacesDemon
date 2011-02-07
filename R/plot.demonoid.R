@@ -9,7 +9,7 @@ plot.demonoid <- function(x, BurnIn=1, Data=NULL, PDF=FALSE,
      {
      ### Initial Checks
      if(is.null(Data)) {cat("ERROR: The Data argument is empty.\n")}
-     if(BurnIn == NROW(x$Posterior1)) BurnIn <- 1
+     if(BurnIn >= NROW(x$Posterior1)) BurnIn <- 1
      if(Parms > x$Parameters) Parms <- x$Parameters
      if(PDF == TRUE)
           {
@@ -20,17 +20,23 @@ plot.demonoid <- function(x, BurnIn=1, Data=NULL, PDF=FALSE,
      ### Plot Parameters
      for (j in 1:Parms)
           {
-          plot(x$Posterior1[BurnIn:x$Thinned.Samples,j],
+          plot(BurnIn:x$Thinned.Samples,
+               x$Posterior1[BurnIn:x$Thinned.Samples,j],
                type="l", xlab="Iterations", ylab="Value",
                main=Data$parm.names[j])
+          panel.smooth(BurnIn:x$Thinned.Samples,
+               x$Posterior1[BurnIn:x$Thinned.Samples,j], pch="")
           plot(density(x$Posterior1[BurnIn:x$Thinned.Samples,j]),
                main=Data$parm.names[j])
           acf(x$Posterior1[BurnIn:x$Thinned.Samples,j],
                main=Data$parm.names[j])
           }
      ### Plot Deviance
-     plot(x$Deviance[BurnIn:length(x$Deviance)],
+     plot(BurnIn:length(x$Deviance),
+          x$Deviance[BurnIn:length(x$Deviance)],
           type="l", xlab="Iterations", ylab="Value", main="Deviance")
+     panel.smooth(BurnIn:length(x$Deviance),
+          x$Deviance[BurnIn:length(x$Deviance)], pch="")
      plot(density(x$Deviance[BurnIn:length(x$Deviance)]),
           main="Deviance")
      acf(x$Deviance[BurnIn:length(x$Deviance)],
@@ -42,9 +48,11 @@ plot.demonoid <- function(x, BurnIn=1, Data=NULL, PDF=FALSE,
           {J <- NCOL(x$Monitor); nn <- NROW(x$Monitor)}
      for (j in 1:J)
           {
-          plot(x$Monitor[BurnIn:nn,j],
+          plot(BurnIn:nn,
+               x$Monitor[BurnIn:nn,j],
                type="l", xlab="Iterations", ylab="Value",
                main="Monitor")
+          panel.smooth(BurnIn:nn, x$Monitor[BurnIn:nn,j], pch="")
           plot(density(x$Monitor[BurnIn:nn,j]),
                main="Monitor")
           acf(x$Monitor[BurnIn:nn,j],

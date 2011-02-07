@@ -42,8 +42,8 @@ rdirichlet(n, alpha)
 }
 
 The Dirichlet is the conjugate prior distribution for the parameters of
-the categorical and multinomial distributions.  The Dirichlet is a 
-multivariate generalization of the beta distribution.  Its probability
+the categorical and multinomial distributions. The Dirichlet is a 
+multivariate generalization of the beta distribution. Its probability
 density function returns the belief that the probabilities of k rival
 events are theta[j] given that each event has been observed alpha[j] - 1
 times.

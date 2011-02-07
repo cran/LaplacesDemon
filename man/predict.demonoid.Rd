@@ -4,7 +4,7 @@
 \description{
   This may be used to predict either new, unobserved instances of y
   (called y[new]) or replicates of y (called y[rep]), and then perform
-  posterior predictive checks.  Either y[new] or y[rep] is predicted
+  posterior predictive checks. Either y[new] or y[rep] is predicted
   given an object of class \code{demonoid}, the model specification, and
   data.
 }
@@ -19,9 +19,9 @@
   This function passes each iteration of marginal posterior samples
   along with data to \code{Model}, where the fourth component in the
   return list is labeled \code{yhat}, and is a vector of expectations of
-  y, given the samples, model specification, and data.  To predict
-  y[rep], simply supply the data set used to estimate the model.  To
-  predict y[new], supply a new data set instead.  If the new data set
+  y, given the samples, model specification, and data. To predict
+  y[rep], simply supply the data set used to estimate the model. To
+  predict y[new], supply a new data set instead. If the new data set
   does not have y, then create \code{y} in the list and set it equal to
   something sensible, such as \code{mean(y)} from the original data
   set.
@@ -30,7 +30,7 @@
 }
 \value{
      This function returns an object of class \code{demonoid.ppc} (where
-     ppc stands for posterior predictive checks).  The returned object is
+     ppc stands for posterior predictive checks). The returned object is
      a list with the following components:
      \item{y}{
           This stores y, the dependent variable.

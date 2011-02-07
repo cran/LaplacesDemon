@@ -3,7 +3,7 @@
 \title{Consort with Laplace's Demon}
 \description{
   This may be used to consort with Laplace's Demon regarding an object
-  of class \code{demonoid}.  Laplace's Demon will offer suggestions.
+  of class \code{demonoid}. Laplace's Demon will offer suggestions.
 }
 \usage{Consort( object)}
 \arguments{
@@ -17,20 +17,20 @@
   \code{demonoid}.
 
   Second, Laplace's Demon considers a combination of five conditions
-  when making the largest part of its suggestion.  These conditions are:
-  the algorithm, acceptance rate, MCSE, ESS, and stationarity.  There
+  when making the largest part of its suggestion. These conditions are:
+  the algorithm, acceptance rate, MCSE, ESS, and stationarity. There
   are 48 combinations of these five conditions, though several
-  combinations yield the same suggestion.  Other things are considered
+  combinations yield the same suggestion. Other things are considered
   as well, such as the recommended thinning value is used to suggest a
-  new number of iterations.  The \code{Periodicity} argument is
+  new number of iterations. The \code{Periodicity} argument is
   suggested to be set equal to the value of \code{Rec.Thinning}.
 
   If all five conditions are satisfactory, then Laplace's Demon is
-  appeased.  Otherwise, Laplace's Demon will suggest and supply R
+  appeased. Otherwise, Laplace's Demon will suggest and supply R
   code that is ready to be copy/pasted and executed.
 
   The Demonic Suggestion is usually very helpful, but should not be
-  followed blindly.  Do not let it replace critical thinking.
+  followed blindly. Do not let it replace critical thinking.
 }
 \references{\url{http://www.statisticat.com/laplacesdemon.html}}
 \author{Byron Hall \email{statisticat@gmail.com}}

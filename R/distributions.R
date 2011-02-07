@@ -1,4 +1,19 @@
 ###########################################################################
+# Bernoulli Distribution                                                  #
+#                                                                         #
+# These functions are similar to those in the Rlab package.               #
+###########################################################################
+
+dbern <- function(x, prob, log = FALSE)
+     {dbinom(x, 1, prob, log)}
+pbern <- function(q, prob, lower.tail=TRUE, log.p = FALSE)
+     {pbinom(q, 1, prob, lower.tail, log.p)}
+qbern <- function(p, prob, lower.tail=TRUE, log.p = FALSE)
+     {qbinom(p, 1, prob, lower.tail, log.p)}
+rbern <- function(n, prob)
+     {rbinom(n, 1, prob)}
+
+###########################################################################
 # Dirichlet Distribution                                                  #
 #                                                                         #
 # These functions are similar to those in the MCMCpack package.           #
@@ -49,6 +64,7 @@ dinvgamma <- function(x, shape, scale=1, log=FALSE)
           stop("Shape or scale parameter negative in dinvgamma().\n")}
      alpha <- shape
      beta <- scale
+     x <- as.vector(x)
      # done on log scale to allow for large alphas and betas
      log.density <- alpha * log(beta) - lgamma(alpha) -
           (alpha + 1) * log(x) - (beta/x)
@@ -100,13 +116,14 @@ rinvwishart <- function(nu, R) {return(solve(rwishart(nu,solve(R))))}
 
 dlaplace <- function(x, location=0, scale=1, log=FALSE)
      {
+     x <- as.vector(x); location <- as.vector(location)
      if(scale <= 0) {stop("scale parameter negative in dlaplace().\n")}
      logdens = (-abs(x - location) / scale) - log(2 * scale)
-     if(log == TRUE) logdens
-     else exp(logdens)
+     if(log == FALSE) logdens <- exp(logdens)
      }
 plaplace <- function(q, location=0, scale=1)
      {
+     q <- as.vector(q); location <- as.vector(location)
      if(scale <= 0) {stop("scale parameter negative in plaplace().\n")}
      z = (q - location) / scale
      L = max(length(q), length(location), length(scale))
@@ -117,6 +134,7 @@ plaplace <- function(q, location=0, scale=1)
      }
 qlaplace <- function(p, location=0, scale=1)
      {
+     p <- as.vector(p); location <- as.vector(location)
      if(scale <= 0) {stop("scale parameter negative in qlaplace().\n")}
      L = max(length(p), length(location), length(scale))
      p = rep(p, len=L)
@@ -144,20 +162,6 @@ rlaplace <- function(n, location=0, scale=1)
 
 dmvn <- function(x, mu=rep(0,d), Sigma, log=FALSE)
      {
-     ### Like in the mnormt package...
-     #d  <- if(is.matrix(Sigma)) ncol(Sigma) else 1
-     #x <- if(is.vector(x)) matrix(x, 1, d) else data.matrix(x)
-     #if(is.vector(mu)) mu <- outer(rep(1, nrow(x)), mu)
-     #X  <- t(x - mu)
-     #Sigma <- (Sigma + t(Sigma)) / 2
-     #u <- chol(Sigma, pivot=FALSE)
-     #inv <- chol2inv(u)
-     #inv <- (inv + t(inv)) / 2
-     #Q  <- apply((inv %*% X)* X, 2, sum)
-     #logDet <- 2 * sum(log(diag(u)))
-     #logdens <- as.vector(Q + d*logb(2*pi)+logDet)/(-2)
-     #if(log) logdens else exp(logdens)
-     ### Like in the mvtnorm package...
      if(!is.matrix(Sigma)) Sigma <- matrix(Sigma)
      d  <- if(is.matrix(Sigma)) ncol(Sigma) else 1
      options(warn=-1)
@@ -210,6 +214,71 @@ rmvt <- function(n=1, mu=rep(0,d), S, df=Inf)
      z <- rmvn(n, rep(0,d), S)
      y <- t(mu + t(z/sqrt(x)))
      return(y)
+     }
+
+###########################################################################
+# Truncated Distribution                                                  #
+#                                                                         #
+# These functions are similar to those from Nadarajah, S. and Kotz, S.    #
+# (2006). R Programs for Computing Truncated Distributions. Journal of    #
+# Statistical Software, 16, Code Snippet 2, 1-8.                          #
+###########################################################################
+
+dtrunc <- function(x, spec, a=-Inf, b=Inf, ...)
+     {
+     if(a >= b) stop("Lower bound a is not less than upper bound b in dtrunc().")
+     tt <- rep(0, length(x))
+     g <- get(paste("d", spec, sep = ""), mode = "function")
+     G <- get(paste("p", spec, sep = ""), mode = "function")
+     tt[x>=a & x<=b] <- g(x[x>=a&x<=b], ...) / (G(b, ...) - G(a, ...))
+     return(tt)
+     }
+
+extrunc <- function(spec, a=-Inf, b=Inf, ...)
+     {
+     if(a >= b) stop("Lower bound a is not less than upper bound b in extrunc().")
+     f <- function(x) x * dtrunc(x, spec, a=a, b=b, ...)
+     return(integrate(f, lower=a, upper=b)$value)
+     }
+
+ptrunc <- function(x, spec, a=-Inf, b=Inf, ...)
+     {
+     if(a >= b) stop("Lower bound a is not less than upper bound b in ptrunc().")
+     tt <- x
+     aa <- rep(a, length(x))
+     bb <- rep(b, length(x))
+     G <- get(paste("p", spec, sep = ""), mode = "function")
+     tt <- G(apply(cbind(apply(cbind(x, bb), 1, min), aa), 1, max), ...)
+     tt <- tt - G(aa, ...)
+     tt <- tt/(G(bb, ...) - G(aa, ...))
+     return(tt)
+     }
+
+qtrunc <- function(p, spec, a=-Inf, b=Inf, ...)
+     {
+     if(a >= b) stop("Lower bound a is not less than upper bound b in qtrunc().")
+     tt <- p
+     G <- get(paste("p", spec, sep = ""), mode = "function")
+     Gin <- get(paste("q", spec, sep = ""), mode = "function")
+     tt <- Gin(G(a, ...) + p*(G(b, ...) - G(a, ...)), ...)
+     return(tt)
+     }
+
+rtrunc <- function(n, spec, a=-Inf, b=Inf, ...)
+     {
+     if(a >= b) stop("Lower bound a is not less than upper bound b in rtrunc().")
+     x <- u <- runif(n, min = 0, max = 1)
+     x <- qtrunc(u, spec, a = a, b = b,...)
+     return(x)
+     }
+
+vartrunc <- function(spec, a=-Inf, b=Inf, ...)
+     {
+     if(a >= b) stop("Lower bound a is not less than upper bound b in vartrunc().")
+     ex <- extrunc(spec, a = a, b = b, ...)
+     f <- function(x) (x - ex)^2 * dtrunc(x, spec, a = a, b = b, ...)
+     tt <- integrate(f, lower = a, upper = b)$value
+     return(tt)
      }
 
 ###########################################################################

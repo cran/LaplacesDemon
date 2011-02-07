@@ -1,14 +1,19 @@
+2011-02-06 Caterpillar Plot included
+2011-02-05 CenterScale included for centering and scaling variables
+2011-02-04 Initial Values Optimization (IVO) included
+2011-02-03 Distributions: Added Bernoulli and truncated
+2011-02-02 Vignette Examples: Corrected off-diagonal asymmetry in SUR
 2011-01-31 Vignette Examples: Added Seemingly Unrelated Regression
-2011-01-30 Consort: Adaptive, Periodicity suggestions include Acc. Rate.
-2011-01-29 Missing initial values will be set to zero.
-2011-01-28 Vignette Examples: Corrected Typos.
+2011-01-30 Consort: Adaptive, Periodicity suggestions include Acc. Rate
+2011-01-29 Initial Values: Missings are set to zero
+2011-01-28 Vignette Examples: Corrected Typos
 2011-01-27 Removed Software License
-2011-01-26 Added examples: Binomial Probit and Multinomial Logit
-2011-01-25 Added distributions: invwishart, mvt, and wishart 
-2011-01-24 Added distributions: dirichlet, invgamma, laplace, mvn
+2011-01-26 Vignette Examples: Binomial Probit and Multinomial Logit
+2011-01-25 Distributions: Added invwishart, mvt, and wishart 
+2011-01-24 Distributions: Added dirichlet, invgamma, laplace, mvn
 2011-01-23 Vectorized some loops and increased speed
 2011-01-22 Logo replacement: the horned-Theta
-2011-01-21 Added examples: Binary Logit, DLM, and Laplace Regression
+2011-01-21 Vignette Examples: Binary Logit, DLM, and Laplace Regression
 2011-01-20 Parameter constraints included
 2011-01-18 Vignette style changes
 2011-01-17 Logo adoption: the pitchfork-psi

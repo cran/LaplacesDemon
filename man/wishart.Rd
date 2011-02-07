@@ -41,7 +41,7 @@ the chi-square distribution, or, in the case of non-integer degrees of
 freedom, of the gamma distribution. The Wishart is the conjugate prior
 distribution for the inverse covariance matrix (the precision matrix)
 \code{Omega}, the inverse of which (covariance matrix \code{Sigma}) is
-used in a multivariate normal distribution.  The integral is finite if the
+used in a multivariate normal distribution. The integral is finite if the
 scalar degrees of freedom parameter, \code{nu}, is greater than or equal
 to the dimension \code{p} of the symmetric, inverse scale matrix
 \code{S}. The degrees of freedom, \code{nu}, is equivalent to specifying
