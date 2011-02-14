@@ -15,14 +15,14 @@
 \Shorttitle{LaplacesDemon} %% a short title (if necessary)
 
 \Abstract{
-\pkg{LaplacesDemon}, usually referred to as Laplace's Demon, is a contributed \proglang{R} package for Bayesian inference, and is freely available on the Comprehensive \proglang{R} Archive Network (CRAN). Laplace's Demon allows the choice of four MCMC algorithms to update a Bayesian model according to a user-specified model function. The user-specified model function enables Bayesian inference for any model form, provided the user specifies the likelihood. Laplace's Demon also attempts to assist the user by creating and offering \proglang{R} code, based on a previous model update, that can be copy/pasted and executed. Posterior predictive checks and many other features are included as well. Laplace's Demon seeks to be generalizable and user-friendly to Bayesians, especially Laplacians.
+\pkg{LaplacesDemon}, usually referred to as Laplace's Demon, is a contributed \proglang{R} package for Bayesian inference, and is freely available on the Comprehensive \proglang{R} Archive Network (CRAN). Laplace's Demon allows Laplace Approximation and the choice of four MCMC algorithms to update a Bayesian model according to a user-specified model function. The user-specified model function enables Bayesian inference for any model form, provided the user specifies the likelihood. Laplace's Demon also attempts to assist the user by creating and offering \proglang{R} code, based on a previous model update, that can be copy/pasted and executed. Posterior predictive checks and many other features are included as well. Laplace's Demon seeks to be generalizable and user-friendly to Bayesians, especially Laplacians.
 }
 \Keywords{Adaptive, AM, Bayesian, Delayed Rejection, DR, DRAM, 
-DRM, Gradient Ascent, LaplacesDemon, Laplace's Demon, 
+DRM, Gradient Ascent, Laplace Approximation, LaplacesDemon, Laplace's Demon, 
 Markov chain Monte Carlo, MCMC, Metropolis, Optimization, \proglang{R}, 
 Random Walk, Random-Walk, STATISTICAT}
 \Plainkeywords{adaptive, am, bayesian, delayed rejection, dr, dram, 
-drm, gradient ascent, laplacesdemon, laplace's demon, 
+drm, gradient ascent, laplace approximation, laplacesdemon, laplace's demon, 
 markov chain monte carlo, mcmc, metropolis, optimization, r, random walk, 
 random-walk, statisticat}
 
@@ -87,13 +87,16 @@ J <- NCOL(demonsnacks)
 y <- log(demonsnacks$Calories)
 X <- cbind(1, as.matrix(demonsnacks[,c(1,3:10)]))
 for (j in 2:J) {X[,j] <- CenterScale(X[,j])}
+mon.names <- c("tau","mu[1]")
 parm.names <- rep(NA,J+1)
 for (j in 1:J) {parm.names[j] <- paste("beta[",j,"]",sep="")}
 parm.names[J+1] <- "log.tau"
-MyData <- list(J=J, X=X, parm.names=parm.names, y=y)
+MyData <- list(J=J, X=X, mon.names=mon.names, parm.names=parm.names, y=y)
 \end{Scode}
 
 There are J=\Sexpr{J} independent variables (including the intercept), one for each column in design matrix \textbf{X}. However, there are \Sexpr{J+1} parameters, since the residual precision, tau, must be included as well. The reason why it is called \code{log.tau} will be explained later. Each parameter must have a name specified in the vector \code{parm.names}, and parameter names must be included with the data. Also, note that each predictor has been centered and scaled, as per \citet{gelman08}. Laplace's Demon provides a \code{CenterScale} function to center and scale predictors\footnote{Centering and scaling a predictor is \code{x.cs <- (x - mean(x)) / (2*sd(x))}.}.
+
+If Laplace Approximation is used, then the \code{LaplaceApproximation} function requires that sample size is specified in the data as a scalar \code{n} or \code{N}. If not found, it will attempt to determine sample size as the number of rows in \code{y} or \code{Y}.
 
 \section{Specifying a Model}
 Laplace's Demon is capable with any Bayesian model for which the likelihood is specified\footnote{Examples of numerous Bayesian models may be found in the ``Examples'' vignette that comes with the \pkg{LaplacesDemon} package.}. To use Laplace's Demon, the user must specify a model. Let's consider a linear regression model, which is often denoted as:
@@ -198,9 +201,9 @@ Specifying the model in the \code{Model} function is the most involved aspect fo
 Missing values can be estimated in Laplace's Demon, but each missing value must be specified as a parameter in the \code{Model} function so that an initial value is assigned.
 
 \section{Initial Values}
-Laplace's Demon requires a vector of initial values for the parameters. Each initial value is a starting point for the estimation of a parameter. When all initial values are set to zero, Laplace's Demon will optimize initial values using a step-adaptive gradient ascent algorithm in the \code{IVO} function. Or, the user may prefer to optimize initial values in the \code{IVO} function before using the \code{LaplacesDemon} function. When Laplace's Demon receives initial values that are not all set to zero, it will begin to update each parameter.
+Laplace's Demon requires a vector of initial values for the parameters. Each initial value is a starting point for the estimation of a parameter. When all initial values are set to zero, Laplace's Demon will optimize initial values using a step-adaptive gradient ascent algorithm in the \code{LaplaceApproximation} function. Laplace Approximation is asymptotic with respect to sample size, so it is inappropriate in this example with a sample size of \Sexpr{N} and \Sexpr{J+1} parameters. Or, the user may prefer to optimize initial values in the \code{LaplaceApproximation} function before using the \code{LaplacesDemon} function. When Laplace's Demon receives initial values that are not all set to zero, it will begin to update each parameter.
 
-In this example, there are \Sexpr{J+1} parameters. With no prior knowledge, it is a good idea either to randomize each initial value within an interval, say -3 to 3, or set all of them equal to zero and let the \code{IVO} function optimize the initial values. Here, the \code{IVO} function will be introduced in the \code{LaplacesDemon} function, so the first \Sexpr{J} parameters, the \code{beta} parameters, have been set equal to zero, and the remaining parameter, \code{log.tau}, has been set equal to \code{log(1)}, which is equal to zero. This visually reminds me that I am working with the log of \code{tau}, rather than \code{tau}, and is merely a personal preference. The order of the elements of the vector of initial values must match the order of the parameters associated with each element of \code{parm} passed to the \code{Model} function.
+In this example, there are \Sexpr{J+1} parameters. With no prior knowledge, it is a good idea either to randomize each initial value within an interval, say -3 to 3, or set all of them equal to zero and let the \code{LaplaceApproximation} function optimize the initial values. Here, the \code{LaplaceApproximation} function will be introduced in the \code{LaplacesDemon} function, so the first \Sexpr{J} parameters, the \code{beta} parameters, have been set equal to zero, and the remaining parameter, \code{log.tau}, has been set equal to \code{log(1)}, which is equal to zero. This visually reminds me that I am working with the log of \code{tau}, rather than \code{tau}, and is merely a personal preference. The order of the elements of the vector of initial values must match the order of the parameters associated with each element of \code{parm} passed to the \code{Model} function.
 
 \begin{Scode}
 Initial.Values <- c(rep(0,J), log(1))
@@ -227,7 +230,7 @@ Fit <- LaplacesDemon(Model, Data=MyData, Adaptive=900,
      Periodicity=10, Status=1000, Thinning=10)
 \end{Scode}
 
-In this example, an output object called \code{Fit} will be created as a result of using the \pkg{LaplacesDemon} function. \code{Fit} is an object of class \code{demonoid}, which means that since it has been assigned a customized class, other functions have been custom-designed to work with it. Laplace's Demon offers four MCMC algorithms (which are explained in section \ref{details}). The above example used the \code{IVO} function to optimize initial values, and declares the Delayed Rejection Adaptive Metropolis (DRAM) algorithm for updating.
+In this example, an output object called \code{Fit} will be created as a result of using the \pkg{LaplacesDemon} function. \code{Fit} is an object of class \code{demonoid}, which means that since it has been assigned a customized class, other functions have been custom-designed to work with it. Laplace's Demon offers Laplace Approximation and four MCMC algorithms (which are explained in section \ref{details}). The above example used the \code{LaplaceApproximation} function to optimize initial values and estimate a covariance matrix, and declares the Delayed Rejection Adaptive Metropolis (DRAM) algorithm for updating.
 
 This example tells the \pkg{LaplacesDemon} function to maximize the first component in the list output from the user-specified \code{Model} function, given a data set called \code{Data}, and according to several settings.
 \begin{itemize}
@@ -350,9 +353,16 @@ for (j in 1:3){
      panel.smooth(BurnIn:Fit$Thinned.Samples, 
           Fit$Posterior1[BurnIn:Fit$Thinned.Samples,j], pch="")
      plot(density(Fit$Posterior1[BurnIn:Fit$Thinned.Samples,j]),
-          main=MyData$parm.names[j])
-     acf(Fit$Posterior1[BurnIn:Fit$Thinned.Samples,j],
-          main=MyData$parm.names[j])
+          xlab="Value", main=MyData$parm.names[j])
+     polygon(density(Fit$Posterior1[BurnIn:Fit$Thinned.Samples,j]),
+          col="black", border="black")
+     abline(v=0, col="red", lty=2)
+     z <- acf(Fit$Posterior1[BurnIn:Fit$Thinned.Samples,j], plot=FALSE)
+     se <- 1/sqrt(length(Fit$Posterior1[BurnIn:Fit$Thinned.Samples,j]))
+     plot(z$lag, z$acf, ylim=c(min(z$acf,-2*se),1), type="h",
+          main=MyData$parm.names[j], xlab="Lag", ylab="Correlation")
+     abline(h=(2*se), col="red", lty=2)
+     abline(h=(-2*se), col="red", lty=2)
      }
 \end{Scode}
 \end{center}
@@ -371,9 +381,16 @@ for (j in 4:6){
      panel.smooth(BurnIn:Fit$Thinned.Samples, 
           Fit$Posterior1[BurnIn:Fit$Thinned.Samples,j], pch="")
      plot(density(Fit$Posterior1[BurnIn:Fit$Thinned.Samples,j]),
-          main=MyData$parm.names[j])
-     acf(Fit$Posterior1[BurnIn:Fit$Thinned.Samples,j],
-          main=MyData$parm.names[j])
+          xlab="Value", main=MyData$parm.names[j])
+     polygon(density(Fit$Posterior1[BurnIn:Fit$Thinned.Samples,j]),
+          col="black", border="black")
+     abline(v=0, col="red", lty=2)
+     z <- acf(Fit$Posterior1[BurnIn:Fit$Thinned.Samples,j], plot=FALSE)
+     se <- 1/sqrt(length(Fit$Posterior1[BurnIn:Fit$Thinned.Samples,j]))
+     plot(z$lag, z$acf, ylim=c(min(z$acf,-2*se),1), type="h",
+          main=MyData$parm.names[j], xlab="Lag", ylab="Correlation")
+     abline(h=(2*se), col="red", lty=2)
+     abline(h=(-2*se), col="red", lty=2)
      }
 \end{Scode}
 \end{center}
@@ -392,9 +409,16 @@ for (j in 7:9){
      panel.smooth(BurnIn:Fit$Thinned.Samples, 
           Fit$Posterior1[BurnIn:Fit$Thinned.Samples,j], pch="")
      plot(density(Fit$Posterior1[BurnIn:Fit$Thinned.Samples,j]),
-          main=MyData$parm.names[j])
-     acf(Fit$Posterior1[BurnIn:Fit$Thinned.Samples,j],
-          main=MyData$parm.names[j])
+          xlab="Value", main=MyData$parm.names[j])
+     polygon(density(Fit$Posterior1[BurnIn:Fit$Thinned.Samples,j]),
+          col="black", border="black")
+     abline(v=0, col="red", lty=2)
+     z <- acf(Fit$Posterior1[BurnIn:Fit$Thinned.Samples,j], plot=FALSE)
+     se <- 1/sqrt(length(Fit$Posterior1[BurnIn:Fit$Thinned.Samples,j]))
+     plot(z$lag, z$acf, ylim=c(min(z$acf,-2*se),1), type="h",
+          main=MyData$parm.names[j], xlab="Lag", ylab="Correlation")
+     abline(h=(2*se), col="red", lty=2)
+     abline(h=(-2*se), col="red", lty=2)
      }
 \end{Scode}
 \end{center}
@@ -413,9 +437,16 @@ for (j in 10:11){
      panel.smooth(BurnIn:Fit$Thinned.Samples, 
           Fit$Posterior1[BurnIn:Fit$Thinned.Samples,j], pch="")
      plot(density(Fit$Posterior1[BurnIn:Fit$Thinned.Samples,j]),
-          main=MyData$parm.names[j])
-     acf(Fit$Posterior1[BurnIn:Fit$Thinned.Samples,j],
-          main=MyData$parm.names[j])
+          xlab="Value", main=MyData$parm.names[j])
+     polygon(density(Fit$Posterior1[BurnIn:Fit$Thinned.Samples,j]),
+          col="black", border="black")
+     abline(v=0, col="red", lty=2)
+     z <- acf(Fit$Posterior1[BurnIn:Fit$Thinned.Samples,j], plot=FALSE)
+     se <- 1/sqrt(length(Fit$Posterior1[BurnIn:Fit$Thinned.Samples,j]))
+     plot(z$lag, z$acf, ylim=c(min(z$acf,-2*se),1), type="h",
+          main=MyData$parm.names[j], xlab="Lag", ylab="Correlation")
+     abline(h=(2*se), col="red", lty=2)
+     abline(h=(-2*se), col="red", lty=2)
      }
 plot(BurnIn:length(Fit$Deviance),
      Fit$Deviance[BurnIn:length(Fit$Deviance)],
@@ -423,8 +454,16 @@ plot(BurnIn:length(Fit$Deviance),
 panel.smooth(BurnIn:length(Fit$Deviance), 
      Fit$Deviance[BurnIn:length(Fit$Deviance)], pch="")
 plot(density(Fit$Deviance[BurnIn:length(Fit$Deviance)]),
-     main="Deviance")
-acf(Fit$Deviance[BurnIn:length(Fit$Deviance)], main="Deviance")
+     xlab="Value", main="Deviance")
+polygon(density(Fit$Deviance[BurnIn:length(Fit$Deviance)]),
+     col="black", border="black")
+abline(v=0, col="red", lty=2)
+z <- acf(Fit$Deviance[BurnIn:length(Fit$Deviance)], plot=FALSE)
+se <- 1/sqrt(length(Fit$Deviance[BurnIn:length(Fit$Deviance)]))
+plot(z$lag, z$acf, ylim=c(min(z$acf,-2*se),1), type="h",
+     main="Deviance", xlab="Lag", ylab="Correlation")
+abline(h=(2*se), col="red", lty=2)
+abline(h=(-2*se), col="red", lty=2)
 \end{Scode}
 \end{center}
 \caption{Plots of Marginal Posterior Samples}
@@ -438,11 +477,21 @@ JJ <- NCOL(Fit$Monitor); nn <- NROW(Fit$Monitor)
 for (j in 1:JJ){
      plot(BurnIn:nn, 
           Fit$Monitor[BurnIn:nn,j],
-          type="l", xlab="Iterations", ylab="Value", main="Monitor")
+          type="l", xlab="Iterations", ylab="Value", 
+          main=MyData$mon.names[j])
      panel.smooth(BurnIn:nn, 
           Fit$Monitor[BurnIn:nn,j], pch="")
-     plot(density(Fit$Monitor[BurnIn:nn,j]), main="Monitor")
-     acf(Fit$Monitor[BurnIn:nn,j], main="Monitor")
+     plot(density(Fit$Monitor[BurnIn:nn,j]), xlab="Value", 
+          main=MyData$mon.names[j])
+     polygon(density(Fit$Monitor[BurnIn:nn,j]),
+          col="black", border="black")
+     abline(v=0, col="red", lty=2)
+     z <- acf(Fit$Monitor[BurnIn:nn,j], plot=FALSE)
+     se <- 1/sqrt(length(Fit$Monitor[BurnIn:nn,j]))
+     plot(z$lag, z$acf, ylim=c(min(z$acf,-2*se),1), type="h",
+          main=MyData$mon.names[j], xlab="Lag", ylab="Correlation")
+     abline(h=(2*se), col="red", lty=2)
+     abline(h=(-2*se), col="red", lty=2)
      }
 \end{Scode}
 \end{center}
@@ -488,9 +537,10 @@ Since \code{Pred\$yhat} is a large (39 x 1000) matrix, let's look at the summary
 summary(Pred)
 \end{Scode}
 
-The \code{summary.demonoid.ppc} function returns a list with 2 components:
+The \code{summary.demonoid.ppc} function returns a list with 3 components:
 \begin{itemize}
 \item \code{Concordance} is the predictive concordance of \citet{gelfand96}, that indicates the percentage of times that \code{y} that was within the 95\% probability interval of \code{yhat}. A goal is to have 95\% predictive concordance. For more information, see the accompanying vignette entitled ``Bayesian Inference''. In this case, roughly \Sexpr{round(summary(Pred)$Concordance,0)}\% of the time, \code{y} is within the 95\% probability interval of \code{yhat}. These results suggest that the model should be attempted again under different conditions, such as using different predictors, or specifying a different form to the model.
+\item \code{Discrepancy.Statistic} is a summary of a specified discrepancy measure. There are many options for discrepancy measures that may be specified in the \code{Discrep} argument. In this example, a discrepancy measure was not specified.
 \item The last part of the summarized output reports \code{y}, information about the distribution of \code{yhat}, and the predictive quantile (\code{PQ}). The mean prediction of \code{y[1]}, or $y^{rep}_1$, given the model and data, is \Sexpr{round(summary(Pred)$Summary[1,2],3)}. Most importantly, \code{PQ[1]} is \Sexpr{round(summary(Pred)$Summary[1,7],3)}, indicating that \Sexpr{round(summary(Pred)$Summary[1,7]*100,1)}\% of the time, \code{yhat[1,]} was greater than \code{y[1]}, or that \code{y[1]} is close to the mean of \code{yhat[1,]}. Contrast this with the 6th record, where \code{y[6]}=\Sexpr{round(summary(Pred)$Summary[6,1],3)} and \code{PQ[6]}=\Sexpr{round(summary(Pred)$Summary[6,7],3)}. Therefore, \code{yhat[6,]} was not a good replication of \code{y[6]}, because the distribution of \code{yhat[6,]} is always greater than \code{y[6]}. While \code{y[1]} is within the 95\% probability interval of \code{yhat[1,]}, the 95\% probability interval of \code{yhat[6,]} is above \code{y[6]} 100\% of the time, indicating a strong discrepancy between the model and data, in this case.
 \end{itemize}
 
@@ -505,10 +555,11 @@ plot(Pred, Rows=c(1:9))
 \begin{Scode}{label=fig7,fig=TRUE,echo=FALSE,width=6,height=6}
 par(mfrow=c(3,3))
 for (j in 1:9){
-     plot(density(Pred$yhat[j,]),
+     plot(density(Pred$yhat[j,]), xlab="Value",
           main=paste("Post. Pred. Plot of yhat[", j,
-               ",]", sep=""), sub="Black=Density, Blue=y")
-     abline(v=Pred$y[j], col="blue")
+               ",]", sep=""), sub="Black=Density, Red=y")
+     polygon(density(Pred$yhat[j,]), col="black", border="black")
+     abline(v=Pred$y[j], col="red")
      }
 \end{Scode}
 \end{center}
@@ -527,7 +578,7 @@ Following are general suggestions on how best to use Laplace's Demon:
 \item Once a model has been specified in the \code{Model} function, it may be tempting to specify a large number of iterations and thinning in the \code{LaplacesDemon} function, and simply let the model update a long time, hoping for convergence. Instead, it is wise to begin with few iterations such as \code{Iterations=20}, set \code{Adaptive=0} (preventing adaptation), and set \code{Thinning=1}. User-error in specifying the \code{Model} function will be frustrating otherwise.
 \item As model complexity increases, the number of parameters increases, and as initial values are further from high-probability regions, the initial acceptance rate may be very low. If the previous general suggestion was successful, but the aceptance rate was zero, then update the model again, but for more iterations. The goal here is to verify that proposals are accepted without problems before attempting an ``actual'' model update.
 \item After studying updates with few iterations, the first ``actual'' update should be long enough that proposals are accepted (the acceptance rate is not zero), adaptation begins to occur, and that enough iterations occur after the first adaptation to allow the user to study the adaptation. In the supplied example, adaptation was allowed to begin at the 900th iteration (\code{Adaptive=900}), but also occurred with \code{Periodicity=10}, so every 10th iteration, adaptation occurred. It is also wise to use delayed rejection to assist with the acceptance rate when the algorithm may begin far from its solution, so set \code{DR=1}.
-\item If adaptation does not seem to improve estimation or the initial movement in the chains is worse than expected, then consider optimizing the initial values with the \code{IVO} function, changing the initial values, or setting all initial values equal to zero so the \code{LaplacesDemon} function will use the \code{IVO} function. In MCMC, initial values are most effective when the starting points are close to the target distributions (though, if the target distributions were known \textit{a priori}, then there would be little point in much of this). When initial values are far enough away from the target distributions to be in low-probability regions, the algorithms (both \code{IVO} and MCMC) may take longer than usual. The MCMC algorithms herein will struggle more as the proposal covariance matrix approaches near-singularity. In extreme examples, it is possible for the proposal covariance matrix to become singular, which will stop Laplace's Demon. If there is no information available to make a better selection, then randomize the initial values and use \code{IVO}. Centered and scaled predictors also help by essentially standardizing the possible range of the target distributions.
+\item If adaptation does not seem to improve estimation or the initial movement in the chains is worse than expected, then consider optimizing the initial values with the \code{LaplaceApproximation} function, changing the initial values, or setting all initial values equal to zero so the \code{LaplacesDemon} function will use the \code{LaplaceApproximation} function. In MCMC, initial values are most effective when the starting points are close to the target distributions (though, if the target distributions were known \textit{a priori}, then there would be little point in much of this). When initial values are far enough away from the target distributions to be in low-probability regions, the algorithms (both Laplace Approximation and MCMC) may take longer than usual. The MCMC algorithms herein will struggle more as the proposal covariance matrix approaches near-singularity. In extreme examples, it is possible for the proposal covariance matrix to become singular, which will stop Laplace's Demon. If there is no information available to make a better selection, then randomize the initial values and use \code{LaplaceApproximation}. Centered and scaled predictors also help by essentially standardizing the possible range of the target distributions.
 \item If Laplace's Demon exhibits an unreasonably low acceptance rate (say, arbitrarily, lower than 15\%, but greater than 0\%) and is having a hard time exploring (but is still able to explore) after significant iterations, then investigate the latest proposal covariance matrix by entering \code{Fit\$Covar}. Chances are that the elements of the diagonal, the variances, are large. In this case, it may be best to set \code{Covar=NULL} for the next time it continues to update, which will begin by default with a scaled identity matrix that should get more movement in the chains. As is usual practice, the latest sampled values should also replace the initial values, so it begins from the last update, but with larger proposal variances. The chains will mix better the closer they get to their target distributions. The user can confirm that Laplace's Demon is making progress and moving overall in the right direction by observing the trace-plot of the deviance. If it is decreasing run after run, then the model is continuously fitting better and better, and one possible sign of convergence will be when the deviance seems to become stationary or no longer shows a trend.
 \item If Laplace's Demon is exploring areas of the state space that the user knows \textit{a priori} should not be explored, then the parameters may be constrained in the \code{Model} function before being passed back to the \code{LaplacesDemon} function. Simply change the parameter of interest as appropriate and place the constrained value back in the \code{parm} vector.
 \item \code{Demonic Suggestion} is intended as an aid, not an infallible replacement for critical thinking. As with anything else, its suggestions are based on assumptions, and it is the responsibility of the user to check those assumptions. For example, the \code{Geweke.Diagnostic} may indicate stationarity (lack of a trend) when it does not exist, and this most likely occurs when too few thinned samples remain. Or, the \code{Demonic Suggestion} may indicate that the next update may need to run for a million iterations in a complex model, requiring weeks to complete. Is this really best for the user?
@@ -539,14 +590,41 @@ Following are general suggestions on how best to use Laplace's Demon:
 \section{Independence and Observability}
 For the user, one set of advantages of Laplace's Demon compared to many other available methods is that it was designed with independence and observability in mind. By independence, it is meant that a goal was to minimize dependence on other software. Laplace's Demon is performed completely within base \proglang{R} (though of course the \pkg{LaplacesDemon} package is required). A goal is to provide a complete, Bayesian environment. From personal experience, I've used multiple packages to achieve goals before, and have been trapped when one of those packages failed to keep pace with other changes.
 
-Common Bayesian probability distributions (such as Dirichlet, multivariate normal, Wishart, and others) have been included in \pkg{LaplacesDemon} so the user does not have to load numerous \proglang{R} packages. All functions in Laplace's Demon are written entirely in \proglang{R}, so the user can easily observe or manipulate the algorithm or functions. For example, to print the code for \pkg{LaplacesDemon} to the \proglang{R} console, simply enter:
+Common Bayesian probability distributions (such as Dirichlet, multivariate normal, Wishart, and others, as well as truncated forms of distributions) have been included in \pkg{LaplacesDemon} so the user does not have to load numerous \proglang{R} packages. All functions in Laplace's Demon are written entirely in \proglang{R}, so the user can easily observe or manipulate the algorithm or functions. For example, to print the code for \pkg{LaplacesDemon} to the \proglang{R} console, simply enter:
 
 \begin{Scode}{eval=false}
 LaplacesDemon
 \end{Scode}
 
 \section{Details} \label{details}
-Laplace's Demon accomplishes numerical approximation with Markov chain Monte Carlo (MCMC) algorithms. There are a large number of MCMC algorithms, too many to review here. Popular families (which are often non-distinct) include Gibbs sampling, Metropolis-Hastings, Random-Walk Metropolis (RWM), slice sampling, and many others, including hybrid algorithms. RWM was developed first \citep{metropolis53}, and Metropolis-Hastings was a generalization of RWM \citep{hastings70}. All MCMC algorithms are known as special cases of the Metropolis-Hastings algorithm. Regardless of the algorithm, the goal in Bayesian inference is to maximize the unnormalized joint posterior distribution and collect samples of the target distributions, which are marginal posterior distributions, later to be used for inference.
+The \pkg{LaplacesDemon} package uses two broad types of numerical approximation algorithms: Laplace Approximation and Markov chain Monte Carlo (MCMC). Each are described below, but MCMC is emphasized.
+
+\subsection{Laplace Approximation}
+The Laplace Approximation or Laplace Method is a family of asymptotic techniques used to approximate integrals. Laplace's method seems to accurately approximate uni-modal posterior moments and marginal posterior distributions in many cases. Since it is not applicable in all cases, it is recommended here that Laplace Approximation is used cautiously in its own right, or preferably, it is used before MCMC.
+
+After introducing the Laplace Approximation \citep[p. 366--367]{laplace74}, a proof was published later \citep{laplace14} as part of a mathematical system of inductive reasoning based on probability. Laplace used this method to approximate posterior moments.
+
+Since its introduction, the Laplace Approximation has been applied successfully in many disciplines. In the 1980s, the Laplace Approximation experienced renewed interest, especially in statistics, and some improvements in its implementation were introduced \citep{tierney86, tierney89}. Only since the 1980s has the Laplace Approximation been seriously considered by statisticians in practical applications.
+
+There are many variations of Laplace Approximation, with an effort toward replacing Markov chain Monte Carlo (MCMC) algorithms as the dominant form of numerical approximation in Bayesian inference. The run-time of Laplace Approximation is a little longer than Maximum Likelihood Estimation (MLE), and much shorter than MCMC \citep{azevedo94}. In the \pkg{LaplacesDemon} package, Laplace Approximation may iterate faster or slower than MCMC, so this is not the fastest possible implementation of Laplace Approximation. Laplace Approximation extends MLE, but shares similar limitations, such as its asymptotic nature with respect to sample size. \citet{bernardo00} note that Laplace Approximation is an attractive numerical approximation algorithm, and will continue to develop, though it currently works best with few parameters.
+
+The \code{LaplaceApproximation} function may be called by the user before using \code{LaplacesDemon}, or \code{LaplacesDemon} may call this function if all initial values are zero. Chasing convergence with \code{LaplaceApproximation} may be time-consuming and unimportant. The goal, instead, is to improve the logarithm of the unnormalized joint posterior density so that it is easier for the \code{LaplacesDemon} function to begin updating the parameters in search of the target distributions. This can be difficult when the initial values are in low-probability regions, and can cause unreasonably low acceptance rates.
+
+\code{LaplaceApproximation} seeks a global maximum of the logarithm of the unnormalized joint posterior density by taking adaptive steps proportional to an approximate gradient. This portion of the \code{LaplaceApproximation} function uses a gradient ascent algorithm, and is called a gradient descent or steepest descent algorithm elsewhere for minimization problems. Laplace's Demon uses the \code{LaplaceApproximation} algorithm to optimize initial values, estimate covariance, and save time for the user.
+
+This algorithm assumes that the logarithm of the unnormalized joint posterior density is defined and differentiable. An approximate gradient is taken for each initial value as the difference in the logarithm of the unnormalized joint posterior density due to a slight increase versus decrease in the parameter.
+
+At 10 evenly-space times, \code{LaplaceApproximation} attempts several step sizes, which are also called rate parameters in other literature, and selects the best step size from a set of 10 fixed options. Thereafter, each iteration in which an improvement does not occur, the step size shrinks, being multiplied by 0.999.
+
+Gradient ascent is criticized for sometimes being relatively slow when close to the maximum, and its asymptotic rate of convergence is inferior to other methods. However, compared to other popular optimization algorithms such as Newton-Rhapson, an advantage of the gradient ascent is that it works in infinite dimensions, requiring only sufficient computer memory. Although Newton-Rhapson converges in fewer iterations, calculating the inverse of the negative Hessian matrix of second-derivatives is more computationally expensive and subject to singularities. Therefore, gradient ascent takes longer to converge, but is more generalizable.
+
+After \code{LaplaceApproximation} finishes, due either to early convergence or completing the number of specified iterations, it approximates the Hessian matrix of second derivatives, and attempts to calculate the covariance matrix by taking the inverse of the negative of this matrix. If successful, then this covariance matrix may be passed to \code{LaplacesDemon}, and the diagonal of this matrix is the variance of the parameters. If unsuccessful, a scaled identity matrix is returned, and each parameter's variance will be 1.
+
+One nice advantage to using Laplace Approximation is the ease with which the marginal likelihood can be approximated, and therefore Bayes factors are easily estimated. Bayes factors are estimated in the \code{BayesFactor} function for model comparisons when models are fit with the \code{LaplaceApproximation} function. For more information on Bayes factors, see the accompanying ``Bayesian Inference'' vignette.
+
+\subsection{Markov Chain Monte Carlo}
+
+Although the \code{LaplacesDemon} function may be assisted by Laplace Approximation, Laplace's Demon mainly accomplishes numerical approximation with Markov chain Monte Carlo (MCMC) algorithms. There are a large number of MCMC algorithms, too many to review here. Popular families (which are often non-distinct) include Gibbs sampling, Metropolis-Hastings, Random-Walk Metropolis (RWM), slice sampling, and many others, including hybrid algorithms. RWM was developed first \citep{metropolis53}, and Metropolis-Hastings was a generalization of RWM \citep{hastings70}. All MCMC algorithms are known as special cases of the Metropolis-Hastings algorithm. Regardless of the algorithm, the goal in Bayesian inference is to maximize the unnormalized joint posterior distribution and collect samples of the target distributions, which are marginal posterior distributions, later to be used for inference.
 
 While designing Laplace's Demon, the primary goal in numerical approximation was generalization. The most generalizable MCMC algorithm is the Metropolis-Hastings (MH) generalization of the RWM algorithm. The MH algorithm extended RWM to include asymmetric proposal distributions. Having no need of asymmetric proposals, Laplace's Demon uses variations of the original RWM algorithm, which use symmetric proposal distributions, specifically Gaussian proposals. For years, the main disadvantage of the RWM and MH algorithms was that the proposal variance (see below) had to be tuned manually, and therefore other MCMC algorithms have become popular because they do not need to be tuned.
 
@@ -554,10 +632,10 @@ Gibbs sampling became popular for Bayesian inference, though it requires conditi
 
 There are valid ways to tune the RWM algorithm as it updates. This is known by many names, including adaptive Metropolis and adaptive MCMC, among others. A brief discussion follows of RWM and its adaptive variants.
 
-\subsection{Block Updating}
+\subsubsection{Block Updating}
 Usually, there is more than one target distribution, in which case it must be determined whether it is best to sample from target distributions individually, in groups, or all at once. Block updating refers to splitting a multivariate vector into groups called blocks, so each block may be treated differently. A block may contain one or more variables. Advantages of block updating are that a different MCMC algorithm may be used for each block (or variable, for that matter), creating a more specialized approach, and the acceptance of a newly proposed state is likely to be higher than sampling from all target distributions at once in high dimensions. Disadvantages of block updating are that correlations probably exist between variables between blocks, and each block is updated while holding the other blocks constant, ignoring these correlations of variables between blocks. Without simultaneously taking everything into account, the algorithm may converge slowly or never arrive at the proper solution. Also, as the number of blocks increases, more computation is required, which slows the algorithm. In general, block updating allows a more specialized approach at the expense of accuracy, generalization, and speed. Laplace's Demon avoids block updating, though this increases the importance that the initial values are not in low-probability regions, and may cause Laplace's Demon to have chains that are slow to begin moving.
 
-\subsection{Random-Walk Metropolis}
+\subsubsection{Random-Walk Metropolis}
 In MCMC algorithms, each iterative estimate of a parameter is part of a changing state. The succession of states or iterations constitutes a Markov chain when the current state is influenced only by the previous state. In random-walk Metropolis (RWM), a proposed future estimate, called a proposal\footnote{Laplace's Demon allows the user to constrain proposals in the \code{Model} function. Laplace's Demon generates a proposal vector, which is passed to the \code{Model} function in the \code{parm} vector. In the \code{Model} function, the user may constrain the proposal to prevent the sampler from exploring certain areas of the state space by altering the proposed values and placing them back into the \code{parm} vector, which will be passed back to Laplace's Demon.} or candidate, of the joint posterior density is calculated, and a ratio of the proposed to the current joint posterior density, called $\alpha$, is compared to a random number drawn uniformly from the interval (0,1). In practice, the logarithm of the unnormalized joint posterior density is used, so $\log(\alpha)$ is the proposal density minus the current density. The proposed state is accepted, replacing the current state with probability 1 when the proposed state is an improvement over the current state, and may still be accepted if the logarithm of a random draw from a uniform distribution is less than $\log(\alpha)$. Otherwise, the proposed state is rejected, and the current state is repeated so that another proposal may be estimated at the next iteration. By comparing $\log(\alpha)$ to the log of a random number when $\log(\alpha)$ is not an improvement, random-walk behavior is included in the algorithm, and it is possible for the algorithm to backtrack while it explores.
 
 Random-walk behavior is desirable because it allows the algorithm to explore, and hopefully avoid getting trapped in undesirable regions. On the other hand, random-walk behavior is undesirable because it takes longer to converge to the target distribution while the algorithm explores. The algorithm generally progresses in the right direction, but may periodically wander away. Such exploration may uncover multi-modal target distributions, which other algorithms may fail to recognize, and then converge incorrectly. With enough iterations, RWM is guaranteed theoretically to converge to the correct target distribution, regardless of the starting point of each parameter, provided the proposal variance for each proposal of a target distribution is sensible.
@@ -568,12 +646,12 @@ Throughout the RWM algorithm, the proposal covariance or variance remains fixed.
 
 The acceptance or rejection of each proposal should be observed at the completion of the RWM algorithm as the acceptance rate, which is the number of acceptances divided by the total number of iterations. If the acceptance rate is too high, then the proposal variance or covariance is too small. In this case, the algorithm will take longer than necessary to find the target distribution and the samples will be highly autocorrelated. If the acceptance rate is too low, then the proposal variance or covariance is too large, and the algorithm is ineffective at exploration. In the worst case scenario, no proposals are accepted and the algorithm fails to move. Under theoretical conditions, the optimal acceptance rate for a sole, independent and identically distributed (IID), Gaussian, marginal posterior distribution is 0.44 or 44\%. The optimal acceptance rate for an infinite number of distributions that are IID and Gaussian is 0.234 or 23.4\%.
 
-\subsection{Delayed Rejection Metropolis}
+\subsubsection{Delayed Rejection Metropolis}
 The Delayed Rejection Metropolis (DRM or DR) algorithm is a RWM with one, small twist. Whenever a proposal is rejected, the DRM algorithm will try one or more alternate proposals, and correct for the probability of this conditional acceptance. By delaying rejection, autocorrelation in the chains may be decreased, and the algorithm is encouraged to move. Currently, Laplace's Demon will attempt one alternate proposal when using the DRAM (see below) or DRM algorithm. The additional calculations may slow each iteration of the algorithm in which the first set of proposals is rejected, but it may also converge faster. For more information on DRM, see \citet{mira01}.
 
 DRM may be considered to be an adaptive MCMC algorithm, because it adapts the proposal based on a rejection. However, DRM does not violate the Markov property (see below), because the proposal is based on the current state. For the purposes of Laplace's Demon, DRM is not considered to be an adaptive MCMC algorithm, because it is not adapting to the target distribution by considering previous states in the Markov chain, but merely makes more attempts from the current state. DRM is rarely suggested by Laplace's Demon, though the combination of DRM and AM, called DRAM (see below), is suggested frequently.
 
-\subsection{Adaptive Metropolis}
+\subsubsection{Adaptive Metropolis}
 In traditional, non-adaptive RWM, the Markov property is satisfied, creating valid Markov chains, but it is difficult to manually optimize the proposal variance or covariance, and it is crucial that it is optimized for good mixing of the Markov chains. Adaptive MCMC may be used to automatically optimize the proposal variance or covariance based on the history of the chains, though this violates the Markov property, which declares the proposed state is influenced only by the current state. To retain the Markov property, and therefore valid Markov chains, a two-phase approach may be used, in which adaptive MCMC is used in the first phase to arrive at the target distributions while violating the Markov property, and non-adaptive DRM or RWM is used in the second phase to sample from the target distributions for inference, while possessing the Markov property.
 
 There are too many adaptive MCMC algorithms to review here. All of them adapt the proposal variance to improve mixing. Some adapt the proposal variance to also optimize the acceptance rate (which becomes difficult as dimensionality increases), minimize autocorrelation, or optimize a scale factor. Laplace's Demon uses a variation of the Adaptive Metropolis (AM) algorithm of \citet{haario01}.
@@ -598,24 +676,11 @@ In both the multivariate and independent cases, the AM algorithm begins with a f
 
 As recommended by \citet{haario01}, there are two tricks that may be used to assist the AM algorithm in the beginning. Although Laplace's Demon does not use the suggested ``greedy start'' method, it uses the second suggested trick of shrinking the proposal as long as the acceptance rate is less than 5\%. \citet{haario01} suggest loosely that if ``it has not moved enough during some number of iterations, the proposal could be shrunk by a constant factor''. For each iteration that the acceptance rate is less than 5\% and that the AM algorithm is used but the current iteration is prior to adaptation, Laplace's Demon multiplies the proposal covariance or variance by 99\%. Over pre-adaptive time, this encourages a smaller proposal covariance or variance to increase the acceptance rate so that when adaptation begins, the observed covariance or variance of the chains will not be constant, and then shrinkage will cease and adaptation will take it from there.
 
-\subsection{Delayed Rejection Adaptive Metropolis}
+\subsubsection{Delayed Rejection Adaptive Metropolis}
 The Delayed Rejection Adaptive Metropolis (DRAM) algorithm is merely the combination of both DRM (or DR) and AM \citep{haario06}. DRAM has been demonstrated as robust in extreme situations where DRM or AM fail separately. \citet{haario06} present an example involving ordinary differential equations in which least squares could not find a stable solution, and DRAM did well.
 
-\subsection{Initial Values Optimization}
-Initial Values Optimization, the \code{IVO} function, may be called by the user before using \code{LaplacesDemon}, or \code{LaplacesDemon} may call this function if all initial values are zero. Chasing convergence with \code{IVO} may be time-consuming and unimportant. The goal, instead, is to improve the logarithm of the unnormalized joint posterior density so that it is easier for the \code{LaplacesDemon} function to begin updating the parameters in search of the target distributions. This can be difficult when the initial values are in low-probability regions, and can cause unreasonably low acceptance rates.
-
-\code{IVO} uses a first-order optimization algorithm that seeks a global maximum of the logarithm of the unnormalized joint posterior density by taking adaptive steps proportional to an approximate gradient. This is a gradient ascent algorithm, and is called a gradient descent or steepest descent algorithm elsewhere for minimization. Laplace's Demon uses the \code{IVO} algorithm to optimize initial values and save time for the user.
-
-This algorithm assumes that the logarithm of the unnormalized joint posterior density is defined and differentiable. An approximate gradient is taken for each initial value as the difference in the logarithm of the unnormalized joint posterior density due to a slight increase versus decrease in the parameter.
-
-At 10 evenly-space times, \code{IVO} attempts several step sizes, which are also called rate parameters in other literature, and selects the best step size. Thereafter, each iteration in which an improvement does not occur, the step size shrinks, being multiplied by 0.999.
-
-An $n$th order approximation has an order of magnitude of error of $x^n$, where a Taylor polynomial of $n$ degrees is an $n$th order approximation. \code{IVO} uses only a first-order, or linear, approximation, and is equivalent to a polynomial of degree one. For example, Newton-Rhapson is a second-order algorithm, using quadratic polynomials due to the Hessian matrix.
-
-Gradient ascent is criticized for sometimes being relatively slow when close to the maximum, and its asymptotic rate of convergence is inferior to other methods. However, compared to other popular optimization algorithms such as Newton-Rhapson, an advantage of the gradient ascent is that it works in infinite dimensions, requiring only sufficient computer memory. Although Newton-Rhapson converges in fewer iterations and is a second-order approximation, calculating the inverse of the Hessian matrix of second-derivatives is more computationally expensive and subject to singularities. Therefore, gradient ascent takes longer to converge, but is more generalizable.
-
 \subsection{Afterward}
-Once the model is updated, the \code{Geweke.Diagnostic} function of \citet{geweke92} is iteratively applied to successively smaller tail-sections of the thinned samples to assess stationarity (or lack of trend). When all parameters are estimated as stationary beyond a given iteration, the previous iterations are suggested to be considered as burn-in and discarded. The number of thinned samples is divided into cumulative 10\% groups, and the \code{Geweke.Diagnostic} function is applied by beginning with each cumulative group.
+Once the model is updated with the \code{LaplacesDemon} function, the \code{Geweke.Diagnostic} function of \citet{geweke92} is iteratively applied to successively smaller tail-sections of the thinned samples to assess stationarity (or lack of trend). When all parameters are estimated as stationary beyond a given iteration, the previous iterations are suggested to be considered as burn-in and discarded. The number of thinned samples is divided into cumulative 10\% groups, and the \code{Geweke.Diagnostic} function is applied by beginning with each cumulative group.
 
 The importance of Monte Carlo Standard Error (MCSE) is debated. Here, it is considered important enough to be one of five main criteria to appease Laplace's Demon. It is often recommended that one of several competing batch methods should be used to estimate MCSE, arguing that the simple method \code{(MCSE = }$\sigma/\sqrt{m}$) is biased and reports less error (where $m$ is the ESS). I have calculated both the simple method and non-overlapping batch MCSE's on a wide range of applied models, and noted just as many cases of the simple method producing higher MCSE's as lower MCSE's. As far as Laplace's Demon is concerned, the simple method is used to estimate MCSE, but it is open to debate.
 
@@ -628,7 +693,7 @@ The current version of BUGS, OpenBUGS, allows the user to specify an MCMC algori
 
 Based on years of almost daily experience with WinBUGS and JAGS, which are excellent software packages for Bayesian inference, Gibbs sampling is selected too often in these automatic, MCMC engines. A suggestion for BUGS and JAGS would be to attempt Gibbs sampling and abandon it if correlations are too high. An advantage of Gibbs sampling is that the proposals are accepted with probability 1, so convergence may be faster, whereas the RWM algorithm backtracks due to its random-walk behavior. Unfortunately, Gibbs sampling is not as generalizable, because it can function only when certain conjugate distributional forms are known \textit{a priori}. Moreover, Gibbs sampling was avoided for Laplace's Demon because it doesn't perform well with correlated variables or parameters, which usually exist, and I have been bitten by that \textit{bug} many times.
 
-The BUGS and JAGS families of MCMC software are excellent. BUGS is capable of several things that Laplace's Demon is not. For example, BUGS automatically handles missing values in the dependent variable, where Laplace's Demon requires specifications for each one in the \code{Model} function. BUGS also allows the user to specify the model graphically as a directed acyclic graph (DAG) in Doodle BUGS. Lastly, many textbooks in several fields have been written that are full of WinBUGS examples.
+The BUGS and JAGS families of MCMC software are excellent. BUGS is capable of several things that Laplace's Demon is not. For example, BUGS automatically handles missing values in the dependent variable, where Laplace's Demon requires specifications for each one in the \code{Model} function. BUGS also allows the user to specify the model graphically as a directed acyclic graph (DAG) in Doodle BUGS. Laplace's Demon limits the user to one chain per parameter per update, where BUGS can update multiple chains per parameter simultaneously. Lastly, many textbooks in several fields have been written that are full of WinBUGS examples.
 
 The four MCMC algorithms in Laplace's Demon are generalizable, and generally robust to correlation between variables or parameters. The disadvantages are that convergence is slower and RWM may get stuck in regions of low probability. The advantages, however, are faster convergence when correlations are high, and more confidence in the results.
 

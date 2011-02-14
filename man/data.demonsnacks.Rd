@@ -1,4 +1,4 @@
-\name{demonsnacks}
+\name{data.demonsnacks}
 \alias{demonsnacks}
 \title{Demon Snacks Data Set}
 \usage{data(demonsnacks)}

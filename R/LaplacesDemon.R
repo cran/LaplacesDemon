@@ -16,6 +16,8 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
      cat("\nPerforming initial checks...\n")
      if(is.null(Model)) stop("A function must be entered for Model.\n")
      if(is.null(Data)) stop("A list containing data must be entered for Data.\n")
+     if(is.null(Data$mon.names)) stop("In Data, mon.names is NULL.\n")
+     if(is.null(Data$parm.names)) stop("In Data, parm.names is NULL.\n")
      if(is.null(Initial.Values)) {
           cat("WARNING: Initial Values were not supplied.\n")
           Initial.Values <- rep(0, length(Data$parm.names))}
@@ -73,10 +75,11 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
      if(sum(is.na(Mo0[[3]])) > 0) stop("Monitored variable(s) have a missing value!\n")
      if(sum(is.infinite(Mo0[[3]])) > 0) stop("Monitored variable(s) have an infinite value!\n")
      if(sum(is.nan(Mo0[[3]])) > 0) stop("Monitored variable(s) include a value that is not a number!\n")
-     ##################  Step-Adaptive Gradient Ascent  ###################
-     if(sum(Initial.Values == 0) == length(Initial.Values)) {
-          Fit.IVO = IVO(Model, Initial.Values, Data)
-          Initial.Values <- Fit.IVO$Parms.Final
+     ######################  Laplace Approximation  #######################
+     if(sum(abs(Initial.Values) == 0) == length(Initial.Values)) {
+          Fit.LA = LaplaceApproximation(Model, Initial.Values, Data)
+          Covar <- 2.381204 / sqrt(length(Initial.Values)) * Fit.LA$Covar
+          Initial.Values <- Fit.LA$Summary[1:length(Initial.Values),1]
           }
      #########################  Prepare for MCMC  #########################
      Mo0 <- Model(Initial.Values, Data)
@@ -330,6 +333,7 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
           Monitor[7] <- as.numeric(quantile(Mon[,j], probs=0.975,
                na.rm=TRUE))
           Summ1 <- rbind(Summ1, Monitor)
+          rownames(Summ1)[nrow(Summ1)] <- Data$mon.names[j]
           }
      ### Posterior Summary Table 2: Stationary Samples
      Summ2 <- matrix(NA, LIV, 7, dimnames=list(Data$parm.names,
@@ -372,6 +376,7 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
                Monitor[7] <- as.numeric(quantile(Mon[BurnIn:NROW(Mon),j],
                     probs=0.975, na.rm=TRUE))
                Summ2 <- rbind(Summ2, Monitor)
+               rownames(Summ2)[nrow(Summ2)] <- Data$mon.names[j]
                }
           }
      time2 <- proc.time()

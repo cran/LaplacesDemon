@@ -3,16 +3,20 @@
 \title{Caterpillar Plot}
 \description{
   This may be used to produce a caterpillar plot of posterior samples
-  from an object of class \code{demonoid}. A caterpillar plot is a
-  horizontal plot of 3 quantiles of selected parameters.
+  from an object either of class \code{demonoid} or class
+  \code{laplace}. A caterpillar plot is a horizontal plot of 3
+  quantiles of selected distributions.
 }
 \usage{caterpillar.plot(x, Parms=NULL, Title=NULL)}
 \arguments{
      \item{x}{
-     This required argument is an object of class \code{demonoid}. The
-     parameters of the stationary posterior summary (\code{Summary2})
+     This required argument is an object of class \code{demonoid} or
+     class \code{laplace}. For an object of class \code{demonoid}, the
+     distributions of the stationary posterior summary (\code{Summary2})
      will be attempted first, and if missing, then the parameters of all
-     posterior samples (\code{Summary1}) will be plotted.
+     posterior samples (\code{Summary1}) will be plotted. For an object
+     of class \code{laplace}, the distributions in the posterior
+     summary, \code{Summary}, are plotted.
      }
      \item{Parms}{
        This argument accepts a concatenation of rows of the posterior
@@ -28,8 +32,10 @@
    }
 \details{
   Caterpillar plots are popular plots in Bayesian inference for
-  summarizing the quantiles of posterior samples. The following
-  quantiles are plotted as a line for each parameter: 0.025 and
+  summarizing the quantiles of posterior samples. A caterpillar plot is
+  similar to a horizontal boxplot, though without quartiles, making it
+  easier for the user to study more distributions in a single plot. The
+  following quantiles are plotted as a line for each parameter: 0.025 and
   0.975. The median appears as a black dot. A vertical, gray line
   is included at zero.
 }

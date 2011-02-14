@@ -27,7 +27,10 @@ LaplacesDemon( Model=NULL, Data=NULL, Adaptive=0, Covar=NULL, DR=1,
 	  model function.
           }
      \item{Data}{
-          This required argument accepts a list of data.
+          This required argument accepts a list of data. The list of
+	  data must contain \code{mon.names} which contains monitored
+	  variable names, and must contain \code{parm.names} which
+	  contains parameter names.
           } 
      \item{Adaptive}{
           This argument instructs Laplace's Demon to adapt the proposal
@@ -51,7 +54,9 @@ LaplacesDemon( Model=NULL, Data=NULL, Adaptive=0, Covar=NULL, DR=1,
           target distribution as well as the associated covariances. Once
           Laplace's Demon has finished updating, it may be desired to
           continue updating where it left off, in which case the proposal
-          covariance matrix from the last run can be input into the next run.
+          covariance matrix from the last run can be input into the next
+	  run. The covariance matrix may also be input from the
+	  \code{LaplaceApproximation} function, if used.
         }
      \item{DR}{
 	  This argument indicates whether or not Delayed Rejection will
@@ -66,7 +71,7 @@ LaplacesDemon( Model=NULL, Data=NULL, Adaptive=0, Covar=NULL, DR=1,
           the starting point for an adaptive chain or a non-adaptive
 	  Markov chain of a parameter. If all initial values are set to
 	  zero, then Laplace's Demon will attempt to optimize the
-	  initial values with the Initial Values Optimization (\code{IVO}) 
+	  initial values with the (\code{LaplaceApproximation}) 
 	  function. After Laplace's Demon finishes updating, it may be
 	  desired to continue updating from where it left off. To
 	  continue, this argument should receive the last iteration of
@@ -115,9 +120,9 @@ LaplacesDemon( Model=NULL, Data=NULL, Adaptive=0, Covar=NULL, DR=1,
      Random-Walk Metropolis (RWM). References are provided below.
      All algorithms attempt multivariate proposals, but are modified
      to use independent proposals if multivariate estimation is
-     problematic. Additionally, the Initial Values Optimization
-     (\code{IVO}) function may be used to attempt to optimize initial
-     values with a gradient ascent algorithm, which \code{LaplacesDemon}
+     problematic. Additionally, the \code{LaplaceApproximation} function
+     function may be used to attempt to optimize initial values with a
+     gradient ascent algorithm, which the \code{LaplacesDemon} function
      attempts automatically when all initial values are set to zero. For
      more information, see the accompanying vignettes entitled 
      "Bayesian Inference" and "LaplacesDemon Tutorial".
@@ -178,7 +183,7 @@ LaplacesDemon( Model=NULL, Data=NULL, Adaptive=0, Covar=NULL, DR=1,
           }
      \item{Initial.Values}{
           This is the vector of \code{Initial.Values}, which may have 
-          been optimized with the \code{IVO} function.
+          been optimized with the \code{LaplaceApproximation} function.
           }
      \item{Iterations}{
           This reports the number of \code{Iterations} for updating.
@@ -186,9 +191,9 @@ LaplacesDemon( Model=NULL, Data=NULL, Adaptive=0, Covar=NULL, DR=1,
      \item{Minutes}{
           This indicates the number of minutes that \code{LaplacesDemon}
           was running, and this includes the initial checks as well as
-	  time it took to optimize initial values with the \code{IVO}
-	  function, assess stationarity, effective sample size
-	  (ESS), and create summaries.
+	  time it took the \code{LaplaceApproximation} function,
+	  assessing stationarity, effective sample size (ESS), and
+	  creating summaries.
 	}
      \item{Model}{
           This contains the model specification \code{Model}.
@@ -272,8 +277,8 @@ LaplacesDemon( Model=NULL, Data=NULL, Adaptive=0, Covar=NULL, DR=1,
           }
 }
 \references{
-     Gelman, A., Carlin, J., Stern, H., and Rubin, D. (2004). Bayesian
-     Data Analysis, Texts in Statistical Science, 2nd ed., Chapman and
+     Gelman, A., Carlin, J., Stern, H., and Rubin, D. (2004). "Bayesian
+     Data Analysis, Texts in Statistical Science, 2nd ed.". Chapman and
      Hall, London.
   
      Hall, B. (2011), "Laplace's Demon", STATISTICAT, LLC.
@@ -292,7 +297,6 @@ LaplacesDemon( Model=NULL, Data=NULL, Adaptive=0, Covar=NULL, DR=1,
      Mira, A. (2001). "On Metropolis-Hastings Algorithms with Delayed
      Rejection". Metron, Vol. LIX, n. 3-4, pp. 231-241.
 }
-
 \author{Byron Hall \email{statisticat@gmail.com}}
 \seealso{\code{\link{LaplacesDemon}}}
 \examples{
@@ -307,10 +311,11 @@ J <- NCOL(demonsnacks)
 y <- log(demonsnacks$Calories)
 X <- cbind(1, as.matrix(demonsnacks[,c(1,3:10)]))
 for (j in 2:J) {X[,j] <- CenterScale(X[,j])}
+mon.names <- c("tau","mu[1]")
 parm.names <- rep(NA,J+1)
 for (j in 1:J) {parm.names[j] <- paste("beta[",j,"]",sep="")}
 parm.names[J+1] <- "log.tau"
-MyData <- list(J=J, X=X, parm.names=parm.names, y=y)
+MyData <- list(J=J, X=X, mon.names=mon.names, parm.names=parm.names, y=y)
 
 ############################  Initial Values  #############################
 Initial.Values <- c(rep(0,J), log(1))
@@ -377,7 +382,7 @@ Fit <- LaplacesDemon(Model, Data=MyData, Adaptive=0,
 }
 \keyword{
 Adaptive, Adaptive MCMC, AM, Bayesian Inference, Delayed Rejection,
-DR, DRAM, DRM, IVO, LaplacesDemon, Laplace's Demon,
+DR, DRAM, DRM, Laplace Approximation, LaplacesDemon, Laplace's Demon,
 Markov chain Monte Carlo, MCMC, Metropolis, Random Walk, Random-Walk,
 RWM
 }

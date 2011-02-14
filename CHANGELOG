@@ -1,6 +1,12 @@
+2011-02-13 Test statistics included in summary.(class).ppc
+2011-02-12 BayesFactor included
+2011-02-11 Monitor names included
+2011-02-09 Plot.laplace.ppc and summary.laplace.ppc included
+2011-02-08 Predict.laplace, print.laplace, plot.laplace included
+2011-02-07 Joint Density Plot, logit, and Mode functions included
 2011-02-06 Caterpillar Plot included
 2011-02-05 CenterScale included for centering and scaling variables
-2011-02-04 Initial Values Optimization (IVO) included
+2011-02-04 LaplaceApproximation included
 2011-02-03 Distributions: Added Bernoulli and truncated
 2011-02-02 Vignette Examples: Corrected off-diagonal asymmetry in SUR
 2011-01-31 Vignette Examples: Added Seemingly Unrelated Regression

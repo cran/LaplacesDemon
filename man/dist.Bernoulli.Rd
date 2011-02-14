@@ -1,4 +1,4 @@
-\name{bernoulli}
+\name{dist.Bernoulli}
 \alias{dbern}
 \alias{pbern}
 \alias{qbern}

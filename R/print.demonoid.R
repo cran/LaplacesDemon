@@ -7,6 +7,7 @@
 
 print.demonoid <- function(x, ...)
      {
+     if(is.null(x)) stop("x is NULL.\n")
      cat("Call:\n")
      print(x$Call)
      cat("\nAcceptance Rate: ", round(x$Acceptance.Rate,3),
@@ -27,8 +28,9 @@ print.demonoid <- function(x, ...)
      cat("DIC of stationary samples (DIC): ",
           round(x$DIC2[3],3), "\n", sep="")
      cat("DR: ", x$DR, "\n", sep="")
-     cat("Initial Values: ", x$Initial.Values, "\n")
-     cat("Iterations: ", x$Iterations, "\n", sep="")
+     cat("Initial Values:\n")
+     print(x$Initial.Values)
+     cat("\nIterations: ", x$Iterations, "\n", sep="")
      cat("Minutes of run-time: ", round(x$Minutes,2), "\n",
           sep="")
      cat("Model: (NOT SHOWN HERE)\n")

@@ -1,4 +1,4 @@
-\name{Dirichlet}
+\name{dist.Dirichlet}
 \alias{ddirichlet}
 \alias{rdirichlet}
 \title{The Dirichlet Distribution}

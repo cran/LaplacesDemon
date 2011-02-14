@@ -1,4 +1,4 @@
-\name{laplace}
+\name{dist.Laplace}
 \alias{dlaplace}
 \alias{plaplace}
 \alias{qlaplace}

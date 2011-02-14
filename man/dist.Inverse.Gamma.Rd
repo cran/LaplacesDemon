@@ -1,4 +1,4 @@
-\name{invgamma}
+\name{dist.Inverse.Gamma}
 \alias{dinvgamma}
 \alias{rinvgamma}
 \title{The Inverse Gamma Distribution}

@@ -1,4 +1,4 @@
-\name{wishart}
+\name{dist.Wishart}
 \alias{dwishart}
 \alias{rwishart}
 \title{The Wishart Distribution}

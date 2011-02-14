@@ -1,30 +1,33 @@
-\name{summary.demonoid.ppc}
-\alias{summary.demonoid.ppc}
+\name{summary.laplace.ppc}
+\alias{summary.laplace.ppc}
 \title{Posterior Predictive Check Summary}
 \description{
   This may be used to summarize either new, unobserved instances of y
-  (called y[new]) or replicates of y (called y[rep]). Either y[new] or
-  y[rep] is summarized, depending on \code{predict.demonoid}.
+  (called y[new]) or replicates of y (called y[rep]), as well as the
+  deviance and monitored variables. These variables are summarized,
+  depending on \code{predict.laplace}.
 }
-\usage{\method{summary}{demonoid.ppc}( object, Rows, Discrep, d, \dots)}
+\usage{\method{summary}{laplace.ppc}( object, Rows, Discrep, d, \dots)}
 \arguments{
-     \item{object}{An object of class \code{demonoid.ppc} is required.}
+     \item{object}{An object of class \code{laplace.ppc} is required.}
      \item{Rows}{An optional vector of row numbers, for example
           \code{c(1:10)}. All rows will be estimated, but only these
           rows will appear in the summary.}
-     \item{Discrep}{A character string indicating a discrepancy test.
+     \item{Discrep}{A character string indicating a discrepancy measure.
           \code{Discrep} defaults to \code{NULL}. Valid character
-          strings are: "max(yhat[i,]) > max(y)",
+	  strings are: "max(yhat[i,]) > max(y)",
 	  "min(yhat[i,]) < min(y)", "round(yhat[i,]) = d".}
      \item{d}{This is an optional integer to be used with the
 	  \code{Discrep} argument above, and it defaults to \code{d=0}.}
      \item{\dots}{Additional arguments are unused.}
 }
 \details{
-  This function summarizes an object of class \code{demonoid.ppc}, which
+  This function summarizes an object of class \code{laplace.ppc}, which
   consists of posterior predictive checks on either y[new] or y[rep],
   depending respectively on whether unobserved instances of y or the
-  model sample of y was used in the \code{predict.demonoid} function.
+  model sample of y was used in the \code{predict.laplace} function. The
+  deviance and monitored variables are also summarized, though these are
+  not posterior predictive checks.
   
   The purpose of a posterior predictive check is to assess how well (or
   poorly) the model fits the data, or to assess discrepancies between
@@ -48,7 +51,20 @@
 	  indicate too many outliers and a poor fit of the model to the
 	  data, and higher percentages may suggest overfitting.
           }
-     \item{Discrepancy.Statistic}{
+     \item{DIC (Dbar)}{
+          This is the mean deviance, and is a component of the Deviance
+          Information Criterion.
+          }
+     \item{DIC (pD)}{
+          This is the effective number of parameters, and is a component
+          of the Deviance Information Criterion. \code{pD} is calculated
+	  as \code{var(Deviance) / 2}.
+          }
+     \item{DIC (DIC)}{
+          This is the Deviance Information Criterion, a measure of model
+          fit. It is the sum of Dbar and pD.
+          }
+\item{Discrepancy.Statistic}{
           This is only reported if the \code{Discrep} argument receives a
           valid discrepancy measure as listed above. The \code{Discrep}
 	  applies to each record of y, and the
@@ -59,6 +75,11 @@
 	  sample of yhat was less than the overall minimum y. This is
 	  Pr(min(yhat[i,]) < min(y) | y, Theta), where Theta is the
 	  parameter set.}
+     \item{Monitor}{
+          This is a n x 5 matrix, where n is the number of monitored 
+          variables and there are 5 columns, as follows: Mean, SD, LB (the
+	  2.5\% quantile), Median, and UB (the 97.5\% quantile).
+          }
      \item{Summary}{
           This is a n x 8 matrix, where n is the number of records of
           y and there are 8 columns, as follows: y, Mean, SD, LB (the
@@ -81,4 +102,4 @@ Hall, B. (2011), "Laplace's Demon", STATISTICAT, LLC.
 URL=\url{http://www.statisticat.com/laplacesdemon.html}
 }
 \author{Byron Hall \email{statisticat@gmail.com}}
-\seealso{\code{\link{predict.demonoid}}}
+\seealso{\code{\link{predict.laplace}}}

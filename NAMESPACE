@@ -1,4 +1,5 @@
-export(caterpillar.plot,
+export(BayesFactor,
+       caterpillar.plot,
        CenterScale,
        Consort,
        dbern,
@@ -14,8 +15,12 @@ export(caterpillar.plot,
        extrunc,
        Geweke.Diagnostic,
        HPD,
-       IVO,
+       invlogit,
+       joint.density.plot,
+       LaplaceApproximation,
        LaplacesDemon,
+       logit,
+       Mode,
        pbern,
        plaplace,
        ptrunc,
@@ -34,7 +39,12 @@ export(caterpillar.plot,
        vartrunc)
 
 S3method("predict","demonoid")
+S3method("predict","laplace")
 S3method("print","demonoid")
+S3method("print","laplace")
 S3method("plot","demonoid")
+S3method("plot","laplace")
 S3method("plot","demonoid.ppc")
+S3method("plot","laplace.ppc")
 S3method("summary","demonoid.ppc")
+S3method("summary","laplace.ppc")

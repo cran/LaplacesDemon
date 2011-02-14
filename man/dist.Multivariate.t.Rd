@@ -1,4 +1,4 @@
-\name{mvt}
+\name{dist.Multivariate.t}
 \alias{dmvt}
 \alias{rmvt}
 \title{Multivariate t distribution}

@@ -1,4 +1,4 @@
-\name{mvn}
+\name{dist.Multivariate.Normal}
 \alias{dmvn}
 \alias{rmvn}
 \title{Multivariate Normal Distribution}

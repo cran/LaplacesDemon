@@ -1,4 +1,4 @@
-\name{invwishart}
+\name{dist.Inverse.Wishart}
 \alias{dinvwishart}
 \alias{rinvwishart}
 \title{The Inverse Wishart Distribution}

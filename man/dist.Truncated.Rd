@@ -1,4 +1,4 @@
-\name{truncated}
+\name{dist.Truncated}
 \alias{dtrunc}
 \alias{extrunc}
 \alias{ptrunc}

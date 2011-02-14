@@ -133,8 +133,7 @@ $$\Theta = \theta_1,...,\theta_j$$
 
 The denominator
 
-$$
-p(y) = \int p(y | \Theta)p(\Theta) d\Theta$$
+$$p(y) = \int p(y | \Theta)p(\Theta) d\Theta$$
 
 defines the ``marginal likelihood'' of $y$, or the ``prior predictive distribution'' of $y$, and may be set to an unknown constant $c$. The prior predictive distribution indicates what $y$ should look like, given the model, before $y$ has been observed. Only the set of prior probabilities and the model's likelihood function are used for the marginal likelihood of $y$. The presence of the marginal likelihood of $y$ normalizes the joint posterior distribution, $p(\Theta | y)$, ensuring it is a proper distribution and integrates to one.
 
@@ -333,7 +332,9 @@ The logarithm of the unnormalized joint posterior distribution is maximized with
 
 The technical problem of evaluating quantities required for Bayesian inference typically reduces to the calculation of a ratio of two integrals \citep[p. 339]{bernardo00}. In all cases, the technical key to the implementation of the formal solution given by Bayes' theorem is the ability to perform a number of integrations \citep[p. 340]{bernardo00}. Except in certain rather stylized problems, the required integrations will not be feasible analytically and, thus, efficient approximation strategies are required.
 
-There are too many different types of numerical approximation algorithms in Bayesian inference to cover in any detail in this article. An incomplete list of broad categories of Bayesian numerical approximation may include Approximate Bayesian Computation (ABC), Iterative Quadrature, Laplace Approximation, Markov chain Monte Carlo (MCMC), and Variational Bayes (VB). Since MCMC is most common, and because the \proglang{R} package entitled \pkg{LaplacesDemon} offers four MCMC algorithms, MCMC is introduced below. For more information on MCMC algorithms in \pkg{LaplacesDemon}, see the accompanying vignette entitled ``\pkg{LaplacesDemon} Tutorial''.
+There are too many different types of numerical approximation algorithms in Bayesian inference to cover in any detail in this article. An incomplete list of broad categories of Bayesian numerical approximation may include Approximate Bayesian Computation (ABC), Iterative Quadrature, Laplace Approximation, Markov chain Monte Carlo (MCMC), and Variational Bayes (VB). Since MCMC is most common, and because the \proglang{R} package entitled \pkg{LaplacesDemon} offers Laplace Approximation and four MCMC algorithms, Laplace Approximation and MCMC are introduced below. For more information on MCMC algorithms in \pkg{LaplacesDemon}, see the accompanying vignette entitled ``\pkg{LaplacesDemon} Tutorial''.
+
+Laplace Approximation dates back to \citet{laplace74, laplace14}, and is used to approximate the posterior moments of integrals. Specifically, the posterior mode is estimated for each parameter, assumed to be unimodal and Gaussian. As a Gaussian distribution, the posterior mean is the same as the posterior mode, and the variance is estimated. Laplace Approximation is a family of deterministic algorithms that usually converge faster than MCMC, and just a little slower than Maximum Likelihood Estimation (MLE) /citep{azevedo94}. Laplace Approximation shares many limitations of MLE, including asymptotic estimation with respect to sample size.
 
 MCMC algorithms originated in statistical physics and are now used in Bayesian inference to sample from probability distributions by constructing Markov chains. In Bayesian inference, the target distribution of each Markov chain is usually a marginal posterior distribution, such as each parameter $\theta$. Each Markov chain begins with an initial value and the algorithm iterates, attempting to maximize the logarithm of the unnormalized joint posterior distribution and eventually arriving at each target distribution. Each iteration is considered a state. A Markov chain is a random process with a finite state-space and the Markov property, meaning that the next state depends only on the current state, not on the past. The quality of the marginal samples usually improves with the number of iterations.
 
@@ -361,7 +362,53 @@ where $\mu$ = \textbf{X}$\beta$, and $\mu$ is the conditional mean, while $\tau$
 
 \section{Bayes Factors}
 
-Introduced by Harold Jeffreys, a `Bayes factor' is a Bayesian alternative to frequentist hypothesis testing that is most often used for the comparison of multiple models by hypothesis testing, usually to determine which model better fits the data \citep{jeffreys61}. Bayes factors are notoriously difficult to compute, and the Bayes factor is only defined when the marginal density of $y$ under each model is proper. Gelman finds Bayes factors generally to be irrelevant, because they compute the relative probabilities of the models conditional on one of them being true. Gelman prefers approaches that measure the distance of the data to each of the approximate models \citep[p. 180]{gelman04}.
+Introduced by Harold Jeffreys, a `Bayes factor' is a Bayesian alternative to frequentist hypothesis testing that is most often used for the comparison of multiple models by hypothesis testing, usually to determine which model better fits the data \citep{jeffreys61}. Bayes factors are notoriously difficult to compute, and the Bayes factor is only defined when the marginal density of $y$ under each model is proper. However, Bayes factors are easy to approximate with Laplace Approximation \citep{kass95}\footnote{A Bayes factor may be estimated with the \code{BayesFactor} function in \pkg{LaplacesDemon} to compare two models that were fit with the \code{LaplaceApproximation} function.}.
+
+Hypothesis testing with Bayes factors is more robust than frequentist hypothesis testing, since the Bayesian form avoids model selection bias, evaluates evidence in favor the null hypothesis, includes model uncertainty, and allows non-nested models to be compared (though of course the model must have the same dependent variable). Also, frequentist significance tests become biased in favor of rejecting the null hypothesis with sufficiently large sample size.
+
+The Bayes factor for comparing two models may be approximated as the ratio of the marginal likelihood of the data in model 1 and model2. Formally, the Bayes factor in this case is
+
+$$B = \frac{p(y|M_1)}{p(y|M_2)} = \frac{\int p(y|\Theta_1,M_1)p(\Theta_1|M_1)d\Theta_1}{\int p(y|\Theta_2,M_2)p(\Theta_2|M_2)d\Theta_2}$$
+
+where $p(y|M_1)$ is the marginal likelihood of the data in model 1.
+
+The Bayes factor, $B$, is the posterior odds in favor of the hypothesis divided by the prior odds in favor of the hypothesis, where the hypothesis is usually $M_1 > M_2$. Put another way,
+
+\begin{center}
+(Posterior model odds) = (Bayes factor) x (prior model odds)
+\end{center}
+
+For example, when $B=2$, the data favor $M_1$ over $M_2$ with 2:1 odds. Table \ref{bf} shows Jeffreys' interpretation of the Bayes factor \citep{jeffreys61}.
+
+\begin{Scode}{echo=false}
+library(xtable)
+BF <- matrix(NA,6,2, dimnames=list(1:6, 
+     c("Bayes Factor","Strength of Evidence")))
+BF[1,1] <- "B < 0.1"
+BF[2,1] <- "0.1 < B < 1/3"
+BF[3,1] <- "1/3 < B < 1"
+BF[4,1] <- "1 < B < 3"
+BF[5,1] <- "3 < B < 10"
+BF[6,1] <- "B > 10"
+BF[1,2] <- "Strong against M[1]"
+BF[2,2] <- "Substantial against M[1]"
+BF[3,2] <- "Barely worth mentioning against M[1]"
+BF[4,2] <- "Barely worth mentioning for M[1]"
+BF[5,2] <- "Substantial for M[1]"
+BF[6,2] <- "Strong for M[1]"
+\end{Scode}
+
+\begin{Scode}{echo=false,results=tex}
+print(xtable(BF, caption="Jeffreys' Bayes Factors and Strength of Evidence", label="bf"))
+\end{Scode}
+
+In a Laplace Approximation, the marginal likelihood may easily be approximated for model $m$ as
+
+$$p(y|m) = (2\pi)^{d_m/2}|\Sigma_m|^{1/2}p(y|\Theta_m,m)p(\Theta_m|m)$$
+
+where $d$ is the number of parameters and $\Sigma$ is the inverse of the negative of the Hessian matrix of second derivatives. \citet{lewis97} introduce the Laplace-Metropolis method of approximating the marginal likelihood in MCMC.
+
+Gelman finds Bayes factors generally to be irrelevant, because they compute the relative probabilities of the models conditional on one of them being true. Gelman prefers approaches that measure the distance of the data to each of the approximate models \citep[p. 180]{gelman04}. However, \citet{kass95} explain that ``the logarithm of the marginal probability of the data may also be viewed as a predictive score. This is of interest, because it leads to an interpretation of the Bayes factor that does not depend on viewing one of the models as 'true'''.
 
 Two of many possible alternatives are to use
 
@@ -398,7 +445,7 @@ The sum of both the mean model-level deviance and the model complexity ($pD$ or 
 
 $$DIC = \bar{D} + pV$$
 
-$DIC$ may be compared across different models and even different methods, as long as the dependent variable does not change between models, making $DIC$ the most flexible model fit statistic. $DIC$ is a hierarchical modeling generalization of the Akaike Information Criterion (AIC) and Bayesian Information Criterion (BIC). Like AIC and BIC, it is an asymptotic approximation as the sample size becomes large. $DIC$ is valid only when the posterior distribution is approximately multivariate normal. Models should be preferred with smaller $DIC$. Since $DIC$ increases with model complexity ($pD$ or $pV$), simpler models are preferred.
+$DIC$ may be compared across different models and even different methods, as long as the dependent variable does not change between models, making $DIC$ the most flexible model fit statistic. $DIC$ is a hierarchical modeling generalization of the Akaike Information Criterion (AIC) and Bayesian Information Criterion (BIC). Like AIC and BIC, it is an asymptotic approximation as the sample size becomes large. $DIC$ is valid only when the joint posterior distribution is approximately multivariate normal. Models should be preferred with smaller $DIC$. Since $DIC$ increases with model complexity ($pD$ or $pV$), simpler models are preferred.
 
 It is difficult to say what would constitute an important difference in DIC. Very roughly, differences of more than 10 might rule out the model with the higher $DIC$, differences between 5 and 10 are substantial, but if the difference in $DIC$ is, say, less than 5, and the models make very different inferences, then it could be misleading just to report the model with the lowest $DIC$. 
 
@@ -453,23 +500,23 @@ Following is a short list of advantages of Bayesian inference over
 frequentist inference.
 
 \begin{itemize}
-\item Bayesian inference allows informative priors so that prior knowledge or results of a previous model to be used to inform the current model.
+\item Bayesian inference allows informative priors so that prior knowledge or results of a previous model can be used to inform the current model.
 \item Bayesian inference can avoid problems with model identification by manipulating prior distributions (usually in complex models). Frequentist inference with any numerical approximation algorithm does not have prior distributions, and can become stuck in regions of flat density, causing problems with model identification.
-\item Bayesian inference considers the data to be fixed (which it is), and parameters to be random because they are unknowns. Frequentist inference considers the unknown parameters to be fixed, and the data to be random, estimating not based on the data at hand, but the data at hand plus hypothetical repeated sampling in the future of similar data. ``The Bayesian approach delivers the answer to the right question in the sense that Bayesian inference provides answers conditional on the observed data and not based on the distribution of estimators or test statistics over imaginary samples not observed'' \citep[p. 4]{rossi05}.
-\item Bayesian inference estimates a full probability model. Frequentist inference does not. There is no probability distribution associated with parameters or hypotheses.
+\item Bayesian inference considers the data to be fixed (which it is), and parameters to be random because they are unknowns. Frequentist inference considers the unknown parameters to be fixed, and the data to be random, estimating not based on the data at hand, but the data at hand plus hypothetical repeated sampling in the future with similar data. ``The Bayesian approach delivers the answer to the right question in the sense that Bayesian inference provides answers conditional on the observed data and not based on the distribution of estimators or test statistics over imaginary samples not observed'' \citep[p. 4]{rossi05}.
+\item Bayesian inference estimates a full probability model. Frequentist inference does not. There is no frequentist probability distribution associated with parameters or hypotheses.
 \item Bayesian inference estimates $p(hypothesis | data)$. In contrast, frequentist inference estimates $p(data | hypothesis)$. Even the term 'hypothesis testing' suggests it should be the hypothesis that is tested, given the data, not the other way around.
-\item Bayesian inference has an axiomatic foundation that is uncontested by frequentists. Therefore, Bayesian inference is coherent to a frequentist, but frequentist inference is incoherent to a Bayesian.
+\item Bayesian inference has an axiomatic foundation \citep{cox46} that is uncontested by frequentists. Therefore, Bayesian inference is coherent to a frequentist, but frequentist inference is incoherent to a Bayesian.
 \item Bayesian inference includes uncertainty in the probability model, yielding more realistic predictions. Frequentist inference does not include uncertainty of the parameter estimates, yielding less realistic predictions.
 \item Bayesian inference may use DIC to compare models with different methods including hierarchical models, where frequentist model fit statistics cannot compare different methods or hierarchical models.
 \item Bayesian inference obeys the likelihood principle. Frequentist inference, including Maximum Likelihood Estimation (MLE) and the General Method of Moments (GMM) or Generalized Estimating Equations (GEE), violates the likelihood principle. ``The likelihood principle, by itself, is not sufficient to build a method of inference but should be regarded as a minimum requirement of any viable form of inference. This is a controversial point of view for anyone familiar with modern econometrics literature. Much of this literature is devoted to methods that do not obey the likelihood principle...'' \citep[p. 15]{rossi05}.
-\item Bayesian inference uses observed data only. Frequentist inference uses both observed data and unobserved, hypothetical, future data.
+\item Bayesian inference uses observed data only. Frequentist inference uses both observed data and future data that is unobserved and hypothetical.
 \item Bayesian inference uses prior distributions, so more information is used and 95\% probability intervals of posterior distributions should be narrower than 95\% confidence intervals of frequentist point-estimates.
 \item Bayesian inference uses probability intervals to state the probability that $\theta$ is between two points. Frequentist inference uses confidence intervals, which must be interpreted with probability of zero or one that $\theta$ is in the region, and the frequentist never knows whether it is or is not, but can only say that if 100 repeated samples were drawn in the future, that it would be in the region for 95 samples.
 \item Bayesian inference via MCMC algorithms allows more complicated models that frequentists are unable to estimate.
 \item Bayesian inference via MCMC has a theoretic guarantee than the MCMC algorithm will converge if run long enough. Frequentist inference with Maximum Likelihood Estimation (MLE) has no guarantee of convergence.
 \item Bayesian inference via MCMC is unbiased with respect to sample size and can accommodate any sample size no matter how small. Frequentist inference becomes more biased as sample size decreases from infinity, and is often wildly biased with small samples, so minimum sample size is an issue. Conversely, frequentist inference with large sample sizes biases p-values to indicate that insignificant effects are significant.
-\item Bayesian inference via MCMC uses exact estimation. Frequentist inference uses approximate estimation that relies on asymptotic theory.
-\item Bayesian inference with correlated predictors sometimes allows the prior parameters to be distributed multivariate-normal, therefore including such correlation into the MCMC algorithm to improve estimation. Frequentist inference does not use prior distributions, so standard errors are wider.
+\item Bayesian inference via MCMC uses exact estimation with respect to sample size. Frequentist inference uses approximate estimation that relies on asymptotic theory.
+\item Bayesian inference with correlated predictors sometimes allows the prior parameters to be distributed multivariate-normal, therefore including such correlation into the MCMC algorithm to improve estimation. Frequentist inference does not use prior distributions, so confidence intervals are wider and less certain with correlated predictors.
 \item Bayesian inference with proper priors is immune to singularities and near-singularities with matrix inversions, unlike frequentist inference.
 \end{itemize}
   

@@ -1,14 +1,14 @@
-\name{plot.demonoid.ppc}
-\alias{plot.demonoid.ppc}
+\name{plot.laplace.ppc}
+\alias{plot.laplace.ppc}
 \title{Plots of Posterior Predictive Checks}
 \description{
   This may be used to plot, or save plots of, samples in an object of
   class \code{demonoid.ppc} Density plots are provided.
 }
-\usage{\method{plot}{demonoid.ppc}( x, Rows=NULL, PDF=FALSE, \dots)}
+\usage{\method{plot}{laplace.ppc}( x, Rows=NULL, PDF=FALSE, \dots)}
 \arguments{
      \item{x}{
-     This required argument is an object of class \code{demonoid.ppc}.
+     This required argument is an object of class \code{laplace.ppc}.
      } 
      \item{Rows}{
      This optional argument is for a vector of row numbers that 
@@ -36,4 +36,4 @@
 }
 \references{\url{http://www.statisticat.com/laplacesdemon.html}}
 \author{Byron Hall \email{statisticat@gmail.com}}
-\seealso{\code{\link{predict.demonoid}}}
+\seealso{\code{\link{predict.laplace}}}
