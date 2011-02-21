@@ -36,8 +36,8 @@
   chain supplied as \code{x} to \code{Geweke.Diagnostic}.
 }
 \references{
-  Geweke, J. (1992). Evaluating the Accuracy of Sampling-Based
-  Approaches to Calculating Posterior Moments. In
+  Geweke, J. (1992). "Evaluating the Accuracy of Sampling-Based
+  Approaches to Calculating Posterior Moments". In
   \emph{Bayesian Statistics 4} (ed JM Bernardo, JO Berger, AP Dawid,
   and AFM Smith). Clarendon Press, Oxford, UK.
 }

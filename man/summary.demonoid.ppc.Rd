@@ -6,7 +6,7 @@
   (called y[new]) or replicates of y (called y[rep]). Either y[new] or
   y[rep] is summarized, depending on \code{predict.demonoid}.
 }
-\usage{\method{summary}{demonoid.ppc}( object, Rows, Discrep, d, \dots)}
+\usage{\method{summary}{demonoid.ppc}(object, Rows, Discrep, d, \dots)}
 \arguments{
      \item{object}{An object of class \code{demonoid.ppc} is required.}
      \item{Rows}{An optional vector of row numbers, for example
@@ -82,3 +82,5 @@ URL=\url{http://www.statisticat.com/laplacesdemon.html}
 }
 \author{Byron Hall \email{statisticat@gmail.com}}
 \seealso{\code{\link{predict.demonoid}}}
+\examples{### See the LaplacesDemon function for an example.}
+\keyword{summary}

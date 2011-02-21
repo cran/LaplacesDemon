@@ -8,7 +8,7 @@
   given an object of class \code{demonoid}, the model specification, and
   data.
 }
-\usage{\method{predict}{demonoid}( object, Model, Data, \dots)}
+\usage{\method{predict}{demonoid}(object, Model, Data, \dots)}
 \arguments{
      \item{object}{An object of class \code{demonoid} is required.}
      \item{Model}{The model specification function is required.}
@@ -51,3 +51,4 @@
 }
 \author{Byron Hall \email{statisticat@gmail.com}}
 \seealso{\code{\link{LaplacesDemon}}}
+\keyword{predict}

@@ -5,7 +5,7 @@
   This may be used to plot, or save plots of, samples in an object of
   class \code{demonoid.ppc} Density plots are provided.
 }
-\usage{\method{plot}{demonoid.ppc}( x, Rows=NULL, PDF=FALSE, \dots)}
+\usage{\method{plot}{demonoid.ppc}(x, Rows=NULL, PDF=FALSE, \dots)}
 \arguments{
      \item{x}{
      This required argument is an object of class \code{demonoid.ppc}.
@@ -37,3 +37,5 @@
 \references{\url{http://www.statisticat.com/laplacesdemon.html}}
 \author{Byron Hall \email{statisticat@gmail.com}}
 \seealso{\code{\link{predict.demonoid}}}
+\examples{### See the LaplacesDemon function for an example.}
+\keyword{plot}

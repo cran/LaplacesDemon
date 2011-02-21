@@ -3,10 +3,11 @@
 \title{Plot samples from the output of \code{LaplacesDemon}}
 \description{
   This may be used to plot, or save plots of, samples in an object of
-  class \code{demonoid}. Plots include a trace plot, density plot, and
-  autocorrelation or ACF plot.
+  class \code{demonoid}. Plots include a trace plot, density plot, 
+  autocorrelation or ACF plot, and if an adaptive algorithm was used,
+  the absolute difference in the proposal variance across adaptations.
 }
-\usage{\method{plot}{demonoid}( x, BurnIn=1, Data, PDF=FALSE, Parms, \dots)}
+\usage{\method{plot}{demonoid}(x, BurnIn=1, Data, PDF=FALSE, Parms, \dots)}
 \arguments{
      \item{x}{
      This required argument is an object of class \code{demonoid}.
@@ -61,7 +62,15 @@
   to samples by iteration, and the y-axis represents autocorrelation.
   The ideal autocorrelation plot shows perfect correlation at zero lag,
   and quickly falls to zero autocorrelation for all other lags.
+
+  If an adaptive algorithm was used, then the distribution of absolute
+  differences in the proposal variances is plotted across each
+  adaptation. The proposal variance should change less as the adaptive
+  algorithm approaches the target distributions.  The following
+  quantiles are plotted: 0.025, 0.500, and 0.975.
 }
 \references{\url{http://www.statisticat.com/laplacesdemon.html}}
 \author{Byron Hall \email{statisticat@gmail.com}}
 \seealso{\code{\link{LaplacesDemon}}}
+\examples{### See the LaplacesDemon function for an example.}
+\keyword{plot}

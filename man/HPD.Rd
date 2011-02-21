@@ -6,7 +6,7 @@
   of posterior samples.
 }
 \usage{
-HPD(obj, prob = 0.95, \dots)
+HPD(obj, prob=0.95, \dots)
 }
 \arguments{
   \item{obj}{This is a vector or matrix of posterior samples.}

@@ -49,7 +49,7 @@ vartrunc(spec, a = -Inf, b = Inf, ...)
 }
 \references{
 Nadarajah, S. and Kotz, S. (2006). R Programs for Computing Truncated
-Distributions. Journal of Statistical Software, 16, Code Snippet 2, 1-8.
+Distributions. Journal of Statistical Software, 16, Code Snippet 2, p. 1--8.
 }
 \examples{
 x <- seq(-3, 3, by = 0.1)

@@ -7,7 +7,7 @@
      for the inverse Wishart distribution.
 }
 \usage{
-   dinvwishart(Sigma, nu, R, log = FALSE)
+   dinvwishart(Sigma, nu, R, log=FALSE)
    rinvwishart(nu, R)
 }
 \arguments{

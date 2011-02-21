@@ -7,8 +7,8 @@
   the multivariate normal distribution.
 }
 \usage{
-dmvn(x, mu = rep(0, d), Sigma, log = FALSE) 
-rmvn(n = 1, mu = rep(0, d), Sigma)
+dmvn(x, mu=rep(0,d), Sigma, log=FALSE) 
+rmvn(n=1, mu=rep(0,d), Sigma)
 }
 \arguments{
   \item{x}{This is a vector of quantiles.}

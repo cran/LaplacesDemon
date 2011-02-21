@@ -7,7 +7,7 @@
   deviance and monitored variables. These variables are summarized,
   depending on \code{predict.laplace}.
 }
-\usage{\method{summary}{laplace.ppc}( object, Rows, Discrep, d, \dots)}
+\usage{\method{summary}{laplace.ppc}(object, Rows, Discrep, d, \dots)}
 \arguments{
      \item{object}{An object of class \code{laplace.ppc} is required.}
      \item{Rows}{An optional vector of row numbers, for example
@@ -103,3 +103,5 @@ URL=\url{http://www.statisticat.com/laplacesdemon.html}
 }
 \author{Byron Hall \email{statisticat@gmail.com}}
 \seealso{\code{\link{predict.laplace}}}
+\examples{### See the LaplaceApproximation function for an example.}
+\keyword{summary}

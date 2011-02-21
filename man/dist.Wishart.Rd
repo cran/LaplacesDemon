@@ -7,7 +7,7 @@
      for the Wishart distribution.
 }
 \usage{
-   dwishart(Omega, nu, S, log = FALSE)
+   dwishart(Omega, nu, S, log=FALSE)
    rwishart(nu, S)
 }
 \arguments{

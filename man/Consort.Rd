@@ -5,7 +5,7 @@
   This may be used to consort with Laplace's Demon regarding an object
   of class \code{demonoid}. Laplace's Demon will offer suggestions.
 }
-\usage{Consort( object)}
+\usage{Consort(object)}
 \arguments{
      \item{object}{
      This required argument is an object of class \code{demonoid}.

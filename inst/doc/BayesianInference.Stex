@@ -334,7 +334,7 @@ The technical problem of evaluating quantities required for Bayesian inference t
 
 There are too many different types of numerical approximation algorithms in Bayesian inference to cover in any detail in this article. An incomplete list of broad categories of Bayesian numerical approximation may include Approximate Bayesian Computation (ABC), Iterative Quadrature, Laplace Approximation, Markov chain Monte Carlo (MCMC), and Variational Bayes (VB). Since MCMC is most common, and because the \proglang{R} package entitled \pkg{LaplacesDemon} offers Laplace Approximation and four MCMC algorithms, Laplace Approximation and MCMC are introduced below. For more information on MCMC algorithms in \pkg{LaplacesDemon}, see the accompanying vignette entitled ``\pkg{LaplacesDemon} Tutorial''.
 
-Laplace Approximation dates back to \citet{laplace74, laplace14}, and is used to approximate the posterior moments of integrals. Specifically, the posterior mode is estimated for each parameter, assumed to be unimodal and Gaussian. As a Gaussian distribution, the posterior mean is the same as the posterior mode, and the variance is estimated. Laplace Approximation is a family of deterministic algorithms that usually converge faster than MCMC, and just a little slower than Maximum Likelihood Estimation (MLE) /citep{azevedo94}. Laplace Approximation shares many limitations of MLE, including asymptotic estimation with respect to sample size.
+Laplace Approximation dates back to \citet{laplace74, laplace14}, and is used to approximate the posterior moments of integrals. Specifically, the posterior mode is estimated for each parameter, assumed to be unimodal and Gaussian. As a Gaussian distribution, the posterior mean is the same as the posterior mode, and the variance is estimated. Laplace Approximation is a family of deterministic algorithms that usually converge faster than MCMC, and just a little slower than Maximum Likelihood Estimation (MLE) \citep{azevedo94}. Laplace Approximation shares many limitations of MLE, including asymptotic estimation with respect to sample size.
 
 MCMC algorithms originated in statistical physics and are now used in Bayesian inference to sample from probability distributions by constructing Markov chains. In Bayesian inference, the target distribution of each Markov chain is usually a marginal posterior distribution, such as each parameter $\theta$. Each Markov chain begins with an initial value and the algorithm iterates, attempting to maximize the logarithm of the unnormalized joint posterior distribution and eventually arriving at each target distribution. Each iteration is considered a state. A Markov chain is a random process with a finite state-space and the Markov property, meaning that the next state depends only on the current state, not on the past. The quality of the marginal samples usually improves with the number of iterations.
 
@@ -378,7 +378,7 @@ The Bayes factor, $B$, is the posterior odds in favor of the hypothesis divided 
 (Posterior model odds) = (Bayes factor) x (prior model odds)
 \end{center}
 
-For example, when $B=2$, the data favor $M_1$ over $M_2$ with 2:1 odds. Table \ref{bf} shows Jeffreys' interpretation of the Bayes factor \citep{jeffreys61}.
+For example, when $B=2$, the data favor $M_1$ over $M_2$ with 2:1 odds. Table \ref{bf} shows a variation of Jeffreys' interpretation of the Bayes factor \citep{jeffreys61}.
 
 \begin{Scode}{echo=false}
 library(xtable)
@@ -399,7 +399,7 @@ BF[6,2] <- "Strong for M[1]"
 \end{Scode}
 
 \begin{Scode}{echo=false,results=tex}
-print(xtable(BF, caption="Jeffreys' Bayes Factors and Strength of Evidence", label="bf"))
+print(xtable(BF, caption="Bayes Factors and Strength of Evidence", label="bf"))
 \end{Scode}
 
 In a Laplace Approximation, the marginal likelihood may easily be approximated for model $m$ as

@@ -2,17 +2,16 @@
 \alias{LaplaceApproximation}
 \title{Laplace Approximation}
 \description{
-  The \code{LaplaceApproximation} function is a deterministic algorithm
-  that maximizes the logarithm of the unnormalized joint posterior
-  density with an adaptive gradient ascent algorithm. The goal of
-  Laplace Approximation is to estimate the posterior mode and variance
-  of each parameter. This function is useful for optimizing initial
-  values and estimating a covariance matrix to be input into the
-  \code{LaplacesDemon} function, or sometimes for model estimation in
-  its own right.
+  The \code{LaplaceApproximation} function deterministically maximizes
+  the logarithm of the unnormalized joint posterior density with an
+  adaptive gradient ascent algorithm. The goal of Laplace Approximation
+  is to estimate the posterior mode and variance of each parameter.
+  This function is useful for optimizing initial values and estimating
+  a covariance matrix to be input into the \code{LaplacesDemon}
+  function, or sometimes for model estimation in its own right.
 }
 \usage{
-LaplaceApproximation( Model=NULL, parm=NULL, Data=NULL, Interval=1.0E-6,
+LaplaceApproximation(Model=NULL, parm=NULL, Data=NULL, Interval=1.0E-6,
      Iterations=100, Stop.Tolerance=1.0E-5)
 }
 \arguments{
@@ -34,14 +33,14 @@ LaplaceApproximation( Model=NULL, parm=NULL, Data=NULL, Interval=1.0E-6,
      \item{Data}{
           This required argument accepts a list of data. The list of
 	  data must include \code{mon.names} which contains monitored
-	  variable names, and must include \code{parm.names} which
-	  contains parameter names. \code{LaplaceApproximation} must be
-	  able to determine the sample size of the data, and will look
-	  for a scalar sample size variable \code{n} or \code{N}. If not
-	  found, it will look for variable \code{y} or \code{Y}, and
-	  attempt to take its number of rows as sample size.
-	  \code{LaplaceApproximation} needs to determine sample size due
-	  to the asymptotic nature of this method.
+	  variable names, and \code{parm.names} which contains parameter
+	  names. \code{LaplaceApproximation} must be able to determine
+	  the sample size of the data, and will look for a scalar sample
+	  size variable \code{n} or \code{N}. If not found, it will look
+	  for variable \code{y} or \code{Y}, and attempt to take its
+	  number of rows as sample size. \code{LaplaceApproximation}
+	  needs to determine sample size due to the asymptotic nature
+	  of this method.
           }
      \item{Interval}{
           This argument receives an interval for estimating approximate
@@ -105,7 +104,8 @@ LaplaceApproximation( Model=NULL, parm=NULL, Data=NULL, Interval=1.0E-6,
 
   The \code{LaplaceApproximation} function may be called by the user
   before using \code{LaplacesDemon}, or \code{LaplacesDemon} may call
-  this function if all initial values are zero. Chasing convergence with
+  this function if all initial values are zero and the sample size is at
+  least five times the number of parameters. Chasing convergence with
   \code{LaplaceApproximation} may be time-consuming and unimportant. The
   goal, instead, is to improve the logarithm of the unnormalized joint
   posterior density so that it is easier for the \code{LaplacesDemon}
@@ -173,13 +173,16 @@ LaplaceApproximation( Model=NULL, parm=NULL, Data=NULL, Interval=1.0E-6,
      \item{Covar}{
           This covariance matrix is the negative inverse of an
 	  approximate Hessian matrix. If an error is encountered in
-	  attempting to solve the matrix inversion, then a scaled
+	  attempting to solve the matrix inversion, then an
 	  identity matrix is returned. The \code{Covar} matrix may be
-	  input into the \code{Covar} argument of the
+	  scaled and input into the \code{Covar} argument of the
 	  \code{LaplacesDemon} function for further MCMC estimation, or
 	  the diagonal of this matrix may be used to represent the
 	  posterior variance of the parameters, provided the algorithm
-	  converged and matrix inversion was successful.
+	  converged and matrix inversion was successful. To scale this
+	  matrix for use with Laplace's Demon, multiply it by
+	  \code{2.38^2/d}, where \code{d} is the number of initial
+	  values.
           }
      \item{Deviance}{
 	  This is a vector of the iterative history of the deviance in
@@ -286,10 +289,10 @@ library(LaplacesDemon)
 ##############################  Demon Data  ###############################
 data(demonsnacks)
 N <- NROW(demonsnacks)
-J <- NCOL(demonsnacks)
+J <- 6
 y <- log(demonsnacks$Calories)
-X <- cbind(1, as.matrix(demonsnacks[,c(1,3:10)]))
-for (j in 2:J) {X[,j] <- (X[,j] - mean(X[,j])) / (2*sd(X[,j]))}
+X <- cbind(1, as.matrix(demonsnacks[,c(1,3:6)]))
+for (j in 2:J) {X[,j] <- CenterScale(X[,j])}
 mon.names <- c("tau","mu[1]")
 parm.names <- rep(NA,J+1)
 for (j in 1:J) {parm.names[j] <- paste("beta[",j,"]",sep="")}
@@ -325,11 +328,12 @@ Model <- function(parm, Data)
 Fit <- LaplaceApproximation(Model, Initial.Values, Data=MyData, Iterations=1000)
 Fit
 print(Fit)
-caterpillar.plot(Fit, Parms=1:10)
+caterpillar.plot(Fit, Parms=1:6)
 plot(Fit,MyData, PDF=FALSE)
 Pred <- predict(Fit, Model, MyData)
 summary(Pred)
 plot(Pred)
+#Fit$Covar is scaled (2.38^2/d) and submitted to LaplacesDemon as Covar.
 #Fit$Summary[,1] is submitted to LaplacesDemon as Initial.Values.
 #End
 }

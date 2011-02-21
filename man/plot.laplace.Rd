@@ -5,7 +5,7 @@
   This may be used to plot, or save plots of, the iterated history of
   the parameters in an object of class \code{laplace}.
 }
-\usage{\method{plot}{laplace}( x, Data, PDF=FALSE, Parms, \dots)}
+\usage{\method{plot}{laplace}(x, Data, PDF=FALSE, Parms, \dots)}
 \arguments{
      \item{x}{
      This required argument is an object of class \code{laplace}.
@@ -36,3 +36,5 @@
 \references{\url{http://www.statisticat.com/laplacesdemon.html}}
 \author{Byron Hall \email{statisticat@gmail.com}}
 \seealso{\code{\link{LaplaceApproximation}}}
+\examples{### See the LaplaceApproximation function for an example.}
+\keyword{plot}

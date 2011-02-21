@@ -3,9 +3,9 @@
 \title{Bayes Factor}
 \description{
 This function calculates the Bayes factor of two fitted objects of class
-\code{laplace} from the \code{LaplaceApproximation} object, and
-indicates the strength of evidence in favor of the hypothesis (that the
-first model is better than the second model).
+\code{laplace} that were estimated with the \code{LaplaceApproximation}
+function, and indicates the strength of evidence in favor of the
+hypothesis (that the first model is better than the second model).
 }
 \usage{
 BayesFactor(x)

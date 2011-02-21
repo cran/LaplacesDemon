@@ -26,7 +26,8 @@ summary.demonoid.ppc <- function(object=NULL, Rows=NULL, Discrep=NULL,
          Summ[i,7] <- mean(yhat[i,] >= y[i])
        }
      ### Discrepancy Statistics
-     Concordance <- 1 - mean((Summ[,7] < 0.025) | (Summ[,7] > 0.975))
+     Concordance <- 1 - mean(((Summ[,7] < 0.025) | (Summ[,7] > 0.975)),
+          na.rm=TRUE)
      Discrepancy.Statistic <- 0
      if(!is.null(Discrep) && (Discrep == "max(yhat[i,]) > max(y)")) {
           for (i in 1:length(y)) {Summ[i,8] <- max(yhat[i,]) > max(y)}

@@ -42,4 +42,4 @@
 \references{\url{http://www.statisticat.com/laplacesdemon.html}}
 \author{Byron Hall \email{statisticat@gmail.com}}
 \seealso{\code{\link{LaplacesDemon}}}
-\examples{#An example is provided in the \code{LaplacesDemon} function.}
+\examples{#An example is provided in the LaplacesDemon function.}

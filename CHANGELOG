@@ -1,3 +1,6 @@
+2011-02-21 Plot.demonoid now also plots proposal variance changes
+2011-02-18 Changed Proposal Shrinkage and Scale
+2011-02-17 Corrected typos in documentation
 2011-02-13 Test statistics included in summary.(class).ppc
 2011-02-12 BayesFactor included
 2011-02-11 Monitor names included

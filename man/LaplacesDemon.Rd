@@ -9,7 +9,7 @@ posterior density and provides samples of the marginal posterior
 distributions, deviance, and other monitored variables.
 }
 \usage{
-LaplacesDemon( Model=NULL, Data=NULL, Adaptive=0, Covar=NULL, DR=1,
+LaplacesDemon(Model=NULL, Data=NULL, Adaptive=0, Covar=NULL, DR=1,
      Initial.Values=NULL, Iterations=1000, Periodicity=1, Status=100,
      Thinning=1)
 }
@@ -62,8 +62,9 @@ LaplacesDemon( Model=NULL, Data=NULL, Adaptive=0, Covar=NULL, DR=1,
 	  This argument indicates whether or not Delayed Rejection will
           occur, and it defaults to \code{DR=1}. If Delayed Rejection
           does occur, then a rejected proposal will be followed by
-          another proposal. Otherwise, rejections are handled in the
-          traditional way for a Metropolis sampler.
+          another proposal made with half the covariance. Otherwise,
+	  rejections are handled in the traditional way for a Metropolis
+	  sampler.
 	  }
      \item{Initial.Values}{
           This argument requires a vector of initial values equal in
@@ -121,9 +122,10 @@ LaplacesDemon( Model=NULL, Data=NULL, Adaptive=0, Covar=NULL, DR=1,
      All algorithms attempt multivariate proposals, but are modified
      to use independent proposals if multivariate estimation is
      problematic. Additionally, the \code{LaplaceApproximation} function
-     function may be used to attempt to optimize initial values with a
-     gradient ascent algorithm, which the \code{LaplacesDemon} function
-     attempts automatically when all initial values are set to zero. For
+     may be used to attempt to optimize initial values with a gradient
+     ascent algorithm, which the \code{LaplacesDemon} function attempts
+     automatically when all initial values are set to zero and sample
+     size is at least five times the number of parameters. For
      more information, see the accompanying vignettes entitled 
      "Bayesian Inference" and "LaplacesDemon Tutorial".
 }
@@ -150,10 +152,19 @@ LaplacesDemon( Model=NULL, Data=NULL, Adaptive=0, Covar=NULL, DR=1,
 	  This is the matched call of \code{LaplacesDemon}.
 	  }
      \item{Covar}{
-	  This stores the proposal covariance matrix of the most recent
-          adaptation. If the model is updated in the future, then this 
+	  This stores the d x d proposal covariance matrix of the most recent
+          adaptation, where d is the dimension or number of parameters
+	  or initial values. If the model is updated in the future, then this 
           matrix can be used to start the next update where the last update
-	  left off.
+	  left off. Only the diagonal of this matrix is reported in the
+	  associated \code{print} function.
+	  }
+     \item{CovarDHis}{
+	  This n x d matrix stores the diagonal of the proposal
+	  covariance matrix of each adaptation in each of n rows for d
+	  dimensions, where the dimension is the number of parameters or
+	  length of the initial values vector. The proposal covariance
+	  matrix should change less over time.
 	  }
      \item{Deviance}{
           This is a vector of the deviance of the model, with a length
@@ -288,14 +299,14 @@ LaplacesDemon( Model=NULL, Data=NULL, Adaptive=0, Covar=NULL, DR=1,
      Efficient Adaptive MCMC". Statistical Computing, 16, p. 339-354.
      
      Haario, H., Saksman, E., and Tamminen, J. (2001). "An Adaptive
-     Metropolis Algorithm". Bernoulli, 7, 223-242.
+     Metropolis Algorithm". Bernoulli, 7, p. 223-242.
 
      Metropolis, N., Rosenbluth, A.W., Rosenbluth, M.N., and Teller,
      E. (1953). "Equation of State Calculations by Fast Computing
      Machines". Journal of Chemical Physics, 21, p. 1087-1092.
 
      Mira, A. (2001). "On Metropolis-Hastings Algorithms with Delayed
-     Rejection". Metron, Vol. LIX, n. 3-4, pp. 231-241.
+     Rejection". Metron, Vol. LIX, n. 3-4, p. 231-241.
 }
 \author{Byron Hall \email{statisticat@gmail.com}}
 \seealso{\code{\link{LaplacesDemon}}}

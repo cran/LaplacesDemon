@@ -76,10 +76,21 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
      if(sum(is.infinite(Mo0[[3]])) > 0) stop("Monitored variable(s) have an infinite value!\n")
      if(sum(is.nan(Mo0[[3]])) > 0) stop("Monitored variable(s) include a value that is not a number!\n")
      ######################  Laplace Approximation  #######################
-     if(sum(abs(Initial.Values) == 0) == length(Initial.Values)) {
+     ### Sample Size of Data
+     if(!is.null(Data$n)) if(length(Data$n) == 1) N <- Data$n
+     if(!is.null(Data$N)) if(length(Data$N) == 1) N <- Data$N
+     if(!is.null(Data$y)) N <- nrow(matrix(Data$y))
+     if(!is.null(Data$Y)) N <- nrow(matrix(Data$Y))
+     if(is.null(N)) stop("Sample size of Data not found in n, N, y, or Y.")
+     if((sum(abs(Initial.Values) == 0) == length(Initial.Values)) &
+          (N >= 5*length(Initial.Values))) {
+          cat("\nLaplace Approximation will be used on initial values.\n")
           Fit.LA = LaplaceApproximation(Model, Initial.Values, Data)
-          Covar <- 2.381204 / sqrt(length(Initial.Values)) * Fit.LA$Covar
+          Covar <- 2.381204^2 / length(Initial.Values) * Fit.LA$Covar
           Initial.Values <- Fit.LA$Summary[1:length(Initial.Values),1]
+          cat("The covariance matrix from Laplace Approximation has been scaled\n")
+          cat("for Laplace's Demon, and the posterior modes are now the initial\n")
+          cat("values for Laplace's Demon.\n\n")
           }
      #########################  Prepare for MCMC  #########################
      Mo0 <- Model(Initial.Values, Data)
@@ -89,13 +100,14 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
      post <- matrix(0, Iterations, LIV)
      thinned <- Initial.Values
      post[1,] <- prop <- Initial.Values
-     ScaleF <- 2.381204 / sqrt(LIV) #2.381204^2 / LIV
+     ScaleF <- 2.381204^2 / LIV
      if(is.matrix(Covar)) {tuning <- diag(Covar); VarCov <- Covar}
      else {
           tuning <- rep(ScaleF, LIV)
           VarCov <- matrix(0, LIV, LIV)
           diag(VarCov) <- ScaleF / LIV}
      Iden.Mat <- VarCov
+     DiagCovar <- matrix(diag(VarCov), 1, LIV)
      ### Determine Algorithm
      if((Adaptive < Iterations) & (DR == 0)) {
           Algorithm <- "Adaptive Metropolis"
@@ -181,12 +193,12 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
                {
                MVN.rand <- rnorm(LIV, 0, 1)
                MVN.test <- try(MVNz <- matrix(MVN.rand,1,LIV) %*%
-                    chol(VarCov), silent=TRUE)
+                    chol(VarCov * 0.5), silent=TRUE)
                if(is.numeric(MVN.test[1])) {
-                    MVNz <- matrix(MVN.rand,1,LIV) %*% chol(VarCov)
+                    MVNz <- matrix(MVN.rand,1,LIV) %*% chol(VarCov * 0.5)
                     prop <- t(post[iter,] + t(MVNz))}
                if(is.character(MVN.test[1])) {for (j in 1:LIV) {
-                         prop[j] <- rnorm(1, prop[j], tuning[j])}}
+                         prop[j] <- rnorm(1, prop[j], tuning[j] * 0.5)}}
                ### Log-Posterior of the proposed state
                Mo12 <- Model(prop, Data)
                if(is.na(Mo12[[1]])) {Mo12 <- Mo0; prop <- post[iter,]}
@@ -222,10 +234,11 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
                     }
                }
           ### Shrinkage of Adaptive Proposal Variance
-          if((Adaptive < Iterations) & (Acceptance / iter < 0.05))
+          if((Adaptive < Iterations) & (Acceptance > 5) &
+               (Acceptance / iter < 0.05))
                {
-               VarCov <- VarCov * 0.99
-               tuning <- tuning * 0.99
+               VarCov <- VarCov * (1 - (1 / Iterations))
+               tuning <- tuning * (1 - (1 / Iterations))
                }
           ### Adapt the Proposal Variance
           if((iter >= Adaptive) & (iter %% Periodicity == 0))
@@ -233,6 +246,7 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
                ### Covariance Matrix (Preferred if it works)
                VarCov <- (ScaleF * cov(post[1:iter,])) +
                     (ScaleF * 1.0E-5 * Iden.Mat)
+               DiagCovar <- rbind(DiagCovar, diag(VarCov))
                ### Univariate Standard Deviations
                for (j in 1:LIV)
                     {
@@ -241,6 +255,7 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
                     }
                }
           }
+     #########################  MCMC is Finished  #########################
      ### Warnings (After Updating)
      if (Acceptance == 0) cat("\nWARNING: All proposals were rejected.\n")
      ### Real Values
@@ -387,6 +402,7 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
           Algorithm=Algorithm,
           Call=match.call(),
           Covar=VarCov,
+          CovarDHis=DiagCovar,
           Deviance=as.vector(Dev),
           DIC1=c(mean(as.vector(Dev)),
                var(as.vector(Dev))/2,

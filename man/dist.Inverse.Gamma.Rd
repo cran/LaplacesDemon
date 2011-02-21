@@ -7,8 +7,8 @@
   gamma distribution.
 }
 \usage{
-dinvgamma(x, shape, scale = 1, log = FALSE)
-rinvgamma(n, shape, scale = 1)
+dinvgamma(x, shape, scale=1, log=FALSE)
+rinvgamma(n, shape, scale=1)
 }
 \arguments{
   \item{n}{This is the number of draws from the distribution.}

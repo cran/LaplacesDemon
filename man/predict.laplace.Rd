@@ -8,7 +8,7 @@
   given an object of class \code{laplace}, the model specification, and
   data. This function also samples the deviance and monitored variables.
 }
-\usage{\method{predict}{laplace}( object, Model, Data, Samples, \dots)}
+\usage{\method{predict}{laplace}(object, Model, Data, Samples, \dots)}
 \arguments{
      \item{object}{An object of class \code{laplace} is required.}
      \item{Model}{The model specification function is required.}
@@ -62,3 +62,4 @@
 }
 \author{Byron Hall \email{statisticat@gmail.com}}
 \seealso{\code{\link{LaplaceApproximation}}}
+\keyword{predict}

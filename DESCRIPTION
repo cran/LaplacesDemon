@@ -1,6 +1,6 @@
 Package: LaplacesDemon
-Version: 11.02.14
-Date: 2011-02-14
+Version: 11.02.21
+Date: 2011-02-21
 Title: Laplace's Demon: Software for Bayesian Inference
 Author: Byron Hall <statisticat@gmail.com>
 Maintainer: Byron Hall <statisticat@gmail.com>
@@ -10,6 +10,6 @@ Description: Laplace's Demon is MCMC-based software for Bayesian
 License: GPL-2
 URL: http://www.r-project.org,
         http://www.statisticat.com/laplacesdemon.html
-Packaged: 2011-02-14 06:06:06 UTC; hall
+Packaged: 2011-02-21 06:06:06 UTC; hall
 Repository: CRAN
-Date/Publication: 2011-02-14 16:38:28
+Date/Publication: 2011-02-22 08:08:26

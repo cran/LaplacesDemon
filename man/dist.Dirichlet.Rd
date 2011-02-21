@@ -7,7 +7,7 @@
   distribution.
 }
 \usage{
-ddirichlet(x, alpha, log = FALSE)
+ddirichlet(x, alpha, log=FALSE)
 rdirichlet(n, alpha)
 }
 \arguments{

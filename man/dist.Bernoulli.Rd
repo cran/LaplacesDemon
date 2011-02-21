@@ -9,9 +9,9 @@
   generation for the Bernoulli distribution with parameter \code{prob}.
 }
 \usage{
-dbern(x, prob, log = FALSE)
-pbern(q, prob, lower.tail = TRUE, log.p = FALSE)
-qbern(p, prob, lower.tail = TRUE, log.p = FALSE)
+dbern(x, prob, log=FALSE)
+pbern(q, prob, lower.tail=TRUE, log.p=FALSE)
+qbern(p, prob, lower.tail=TRUE, log.p=FALSE)
 rbern(n, prob)
 }
 \arguments{
@@ -31,13 +31,10 @@ rbern(n, prob)
 }
 \details{
   The Bernoulli distribution with \code{prob} \eqn{= p} has density
-  \deqn{p(x) = {p}^{x} {(1-p)}^{1-x}}{
-    p(x) = p^x (1-p)^(1-x)}
+  \deqn{p(x) = {p}^{x} {(1-p)}^{1-x}}{p(x) = p^x (1-p)^(1-x)}
   for \eqn{x = 0 or 1}.
 
-  If an element of \code{x} is not \code{0} or \code{1}, the result of \code{dbern}
-  is zero, without a warning.
-  \eqn{p(x)} is computed using Loader's algorithm, see the reference below.
+  If an element of \code{x} is not \code{0} or \code{1}, the result of \code{dbern} is zero, without a warning.
 
   The quantile is defined as the smallest value \eqn{x} such that
   \eqn{F(x) \ge p}, where \eqn{F} is the distribution function.

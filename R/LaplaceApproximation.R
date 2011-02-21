@@ -46,7 +46,7 @@ LaplaceApproximation <- function(Model=NULL, parm=NULL, Data=NULL,
      parm.new <- parm.old - 0.1 #First step
      names(parm.new) <- Data$parm.names
      tol.new <- tol.old <- sqrt(sum((parm.new - parm.old)^2))
-     Step.Size.Initial <- Step.Size  <- 0.001
+     Step.Size  <- 0.001
      post <- matrix(parm.new, 1, parm.len)
      iter <- 0
      ### Attempt prior to starting...
@@ -108,6 +108,7 @@ LaplaceApproximation <- function(Model=NULL, parm=NULL, Data=NULL,
                     Step.Size <- step.size[which.max(lujpd)]
                     parm.new <- parm.temp[which.max(lujpd),]}
                if(max(lujpd) <= m.old[[1]]) {parm.new <- parm.old}
+               if(iter == 1) Step.Size.Initial <- Step.Size
                }
           ### Otherwise, work with the current and adaptive Step.Size
           parm.new <- parm.old - Step.Size * c(approx.grad)
@@ -157,10 +158,12 @@ LaplaceApproximation <- function(Model=NULL, parm=NULL, Data=NULL,
      Inverse.test <- try(VarCov.t <- -solve(Approx.Hessian), silent=TRUE)
      if(is.numeric(Inverse.test[1])) {
           VarCov <- -solve(Approx.Hessian)
-          VarCov <- ifelse(VarCov < 0, VarCov * -1, VarCov)} #Better method?
+          diag(VarCov) <- ifelse(diag(VarCov) < 0, diag(VarCov) * -1,
+               diag(VarCov)) #Better method of preventing negative variance?
+          diag(VarCov) <- ifelse(diag(VarCov) == 0, 1.0E-10, diag(VarCov))}
      if(is.character(Inverse.test[1])) {
-          cat("WARNING: Failure to solve matrix inversion of Approx. Hessian.\n")
-          cat("NOTE: Identiy Matrix is supplied instead.")
+          cat("\nWARNING: Failure to solve matrix inversion of Approx. Hessian.\n")
+          cat("NOTE: Identiy Matrix is supplied instead.\n")
           VarCov <- matrix(0, length(parm.new), length(parm.new))
           diag(VarCov) <- 1
           }

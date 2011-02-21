@@ -10,11 +10,13 @@ print.demonoid <- function(x, ...)
      if(is.null(x)) stop("x is NULL.\n")
      cat("Call:\n")
      print(x$Call)
-     cat("\nAcceptance Rate: ", round(x$Acceptance.Rate,3),
+     cat("\nAcceptance Rate: ", round(x$Acceptance.Rate,5),
           "\n", sep="")
      cat("Adaptive: ", x$Adaptive, "\n", sep="")
      cat("Algorithm: ", x$Algorithm, "\n", sep="")
-     cat("Covar: (NOT SHOWN HERE)\n")
+     cat("Covar: (NOT SHOWN HERE; diagonal shown instead)\n")
+     print(diag(x$Covar))
+     cat("\nCovarDHis: (NOT SHOWN HERE)\n")
      cat("DIC of all samples (Dbar): ", round(x$DIC1[1],3),
           "\n", sep="")
      cat("DIC of all samples (pD): ", round(x$DIC1[2],3),
