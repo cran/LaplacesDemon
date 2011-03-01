@@ -158,9 +158,9 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
                prop <- t(post[iter,] + t(MVNz))}
           if(is.character(MVN.test[1])) {
                if(iter %% Status == 0) {
-                    cat(",   Proposal: Independent\n")}
-               for (j in 1:LIV) {
-                    prop[j] <- rnorm(1, post[iter,j], tuning[j])}}
+                    cat(",   Proposal: Componentwise\n")}
+               j <- round(runif(1,0.5,(LIV+0.49)))
+               prop[j] <- rnorm(1, post[iter,j], tuning[j])}
           ### Log-Posterior of the proposed state
           Mo1 <- Model(prop, Data)
           if(is.na(Mo1[[1]])) {Mo1 <- Mo0; prop <- post[iter,]}
@@ -197,8 +197,9 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
                if(is.numeric(MVN.test[1])) {
                     MVNz <- matrix(MVN.rand,1,LIV) %*% chol(VarCov * 0.5)
                     prop <- t(post[iter,] + t(MVNz))}
-               if(is.character(MVN.test[1])) {for (j in 1:LIV) {
-                         prop[j] <- rnorm(1, prop[j], tuning[j] * 0.5)}}
+               if(is.character(MVN.test[1])) {
+                    j <- round(runif(1,0.5,(LIV+0.49)))
+                    prop[j] <- rnorm(1, post[iter,j], tuning[j])}
                ### Log-Posterior of the proposed state
                Mo12 <- Model(prop, Data)
                if(is.na(Mo12[[1]])) {Mo12 <- Mo0; prop <- post[iter,]}

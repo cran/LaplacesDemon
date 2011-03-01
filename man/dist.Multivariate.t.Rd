@@ -8,22 +8,23 @@
   Student distribution.
 }
 \usage{
-dmvt(x, mu=rep(0,d), S, df=Inf, log=FALSE)
-rmvt(n=1, mu=rep(0,d), S, df=Inf)
+dmvt(x, mu=rep(0,k), S, df=Inf, log=FALSE)
+rmvt(n=1, mu=rep(0,k), S, df=Inf)
 }
 \arguments{
   \item{x}{This is either a vector of length \code{d} or a matrix with 
-       \code{d} columns, where \code{d=ncol(S)}, giving the coordinates of
+       \code{k} columns, where \code{k=ncol(S)}, giving the coordinates of
        the point(s) where the density must be evaluated.}
   \item{n}{This is the number of random draws.}
   \item{mu}{This is a numeric vector representing the location parameter,
        the mean vector, of the multivariate distribution (equal to the
        expected value when \code{df > 1}). It must be of length
-       \code{d}, as defined above.}
-  \item{S}{This is a positive-definite matrix representing the scale 
-       matrix of the distribution, such that \code{S*df/(df-2)} is
-       the variance-covariance matrix when \code{df > 2}. A vector of
-       length 1 is also allowed (in this case, \code{d=1} is set).}
+       \code{k}, as defined above.}
+  \item{S}{This is a \code{k x k} positive-definite matrix representing
+       the scale matrix of the distribution, such that
+       \code{S*df/(df-2)} is the variance-covariance matrix when
+       \code{df > 2}. A vector of length 1 is also allowed (in this case, 
+       \code{k=1} is set).}
   \item{df}{This is the degrees of freedom, and is often represented
        with \code{nu}.}
   \item{log}{Logical. If \code{TRUE}, then the logarithm of the density
@@ -32,7 +33,7 @@ rmvt(n=1, mu=rep(0,d), S, df=Inf)
 \details{
   \itemize{
   \item Application: Continuous Multivariate
-  \item Density: p(theta) = Gamma[(nu+d)/2] / {Gamma(nu/2)nu^(d/2)pi^(d/2)|Sigma|^(1/2)[1+(1/nu)(theta-mu)^T*Sigma^(-1)(theta-mu)]^[(nu+d)/2]}
+  \item Density: p(theta) = Gamma[(nu+k)/2] / {Gamma(nu/2)nu^(k/2)pi^(k/2)|Sigma|^(1/2)[1+(1/nu)(theta-mu)^T*Sigma^(-1)(theta-mu)]^[(nu+k)/2]}
   \item Inventor: Unknown (to me, anyway)
   \item Notation 1: theta ~ t[nu](mu, Sigma)
   \item Notation 2: p(theta) = t[nu](theta | mu, Sigma)
@@ -49,7 +50,7 @@ one-dimensional or univariate Student's t distribution. A random vector is
 considered to be multivariate t-distributed if every linear
 combination of its components has a univariate Student t-distribution.
 This distribution has a mean parameter vector \code{mu} of length
-\code{d}, and a \code{d x d} scale matrix \code{S}, which must be
+\code{k}, and a \code{k x k} scale matrix \code{S}, which must be
 positive-definite.
 
 These functions are similar to those in the \code{mnormt} and

@@ -160,23 +160,32 @@ rlaplace <- function(n, location=0, scale=1)
 # packages.                                                               #
 ###########################################################################
 
-dmvn <- function(x, mu=rep(0,d), Sigma, log=FALSE)
+dmvn <- function(x, mu=rep(0,k), Sigma, log=FALSE)
      {
+     if(is.vector(x)) x <- matrix(x, ncol=length(x))
+     if(missing(Sigma)) Sigma <- diag(ncol(x))
      if(!is.matrix(Sigma)) Sigma <- matrix(Sigma)
-     d  <- if(is.matrix(Sigma)) ncol(Sigma) else 1
+     if(NCOL(x) != NCOL(Sigma))
+          stop("Dimensions of x and Sigma differ in dmvn().")
+     k  <- if(is.matrix(Sigma)) ncol(Sigma) else 1
+     if(missing(mu)) mu <- rep(0,k)
+     if(is.vector(mu)) mu <- matrix(mu, ncol=length(mu))
+     if(NCOL(mu) != NCOL(Sigma))
+          stop("Dimensions of mu and Sigma differ in dmvn().")
      options(warn=-1)
-     distval <- mahalanobis(x, center = mu, cov = Sigma)
-     logdet <- sum(log(eigen(Sigma, symmetric=TRUE, only.values=TRUE)$values))
+     distval <- mahalanobis(x, center=mu, cov=Sigma)
+     logdet <- sum(log(eigen(Sigma, symmetric=TRUE,
+          only.values=TRUE)$values))
      logdens <- -(ncol(x)*log(2*pi) + logdet + distval)/2
      options(warn=0)
      if(log) return(logdens)
      exp(logdens)
      }
 
-rmvn <- function(n=1, mu=rep(0,d), Sigma)
+rmvn <- function(n=1, mu=rep(0,k), Sigma)
      {
-     d <- if(is.matrix(Sigma)) ncol(Sigma) else 1
-     z <- matrix(rnorm(n*d),n,d) %*% chol(Sigma)
+     k <- if(is.matrix(Sigma)) ncol(Sigma) else 1
+     z <- matrix(rnorm(n*k),n,k) %*% chol(Sigma)
      y <- t(mu + t(z))
      return(y)
      }
@@ -187,12 +196,12 @@ rmvn <- function(n=1, mu=rep(0,d), Sigma)
 # These functions are similar to those in the mnormt package.             #
 ###########################################################################
 
-dmvt <- function (x, mu=rep(0,d), S, df=Inf, log=FALSE)
+dmvt <- function (x, mu=rep(0,k), S, df=Inf, log=FALSE)
      {
      if(!is.matrix(S)) S <- matrix(S)
      if(df == Inf) return(dmvn(x, mu, S, log = log))
-     d  <- if(is.matrix(S)) ncol(S) else 1
-     x <- if(is.vector(x)) matrix(x, 1, d) else data.matrix(x)
+     k  <- if(is.matrix(S)) ncol(S) else 1
+     x <- if(is.vector(x)) matrix(x, 1, k) else data.matrix(x)
      if(is.vector(mu)) mu <- outer(rep(1, nrow(x)), mu)
      X  <- t(x - mu)
      S <- (S + t(S)) / 2
@@ -201,17 +210,17 @@ dmvt <- function (x, mu=rep(0,d), S, df=Inf, log=FALSE)
      S.inv <- (S.inv + t(S.inv)) / 2
      Q <- apply((S.inv %*% X) * X, 2, sum)
      logDet <- 2 * sum(log(diag(u)))
-     logdens <- (lgamma((df + d)/2) - 0.5 * (d * logb(pi * df) + logDet)
-          - lgamma(df/2) - 0.5 * (df + d) * logb(1 + Q/df))
+     logdens <- (lgamma((df + k)/2) - 0.5 * (k * logb(pi * df) + logDet)
+          - lgamma(df/2) - 0.5 * (df + k) * logb(1 + Q/df))
      if(log) logdens else exp(logdens)
      }
 
-rmvt <- function(n=1, mu=rep(0,d), S, df=Inf)
+rmvt <- function(n=1, mu=rep(0,k), S, df=Inf)
      {
      if(!is.matrix(S)) S <- matrix(S)
-     d <- if(is.matrix(S)) ncol(S) else 1
+     k <- if(is.matrix(S)) ncol(S) else 1
      if(df==Inf) x <- 1 else x <- rchisq(n,df)/df
-     z <- rmvn(n, rep(0,d), S)
+     z <- rmvn(n, rep(0,k), S)
      y <- t(mu + t(z/sqrt(x)))
      return(y)
      }

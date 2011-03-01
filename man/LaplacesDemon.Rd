@@ -91,25 +91,26 @@ LaplacesDemon(Model=NULL, Data=NULL, Adaptive=0, Covar=NULL, DR=1,
           periodicity of adaptation in terms of iterations. For example,
           if \code{Periodicity=10}, then adaptation will occur every 10
           iterations, and begins after the number of iterations specified
-          in the \code{Adaptive} argument (above). When \code{Periodicity=1}, it will
-          adapt every iteration. Frequent adaptation is desirable, but
-          requires more time due to calculations.
+          in the \code{Adaptive} argument (above). When
+	  \code{Periodicity=1}, it will adapt every iteration. Frequent
+	  adaptation is desirable, but requires more time due to
+	  calculations.
           }
      \item{Status}{
           This argument accepts integers between 1 and the number of 
           iterations, and indicates how often the user would like the status
           of the number of iterations and proposal type (multivariate or 
-          independent) printed to the screen. For example, if a model is 
-          updated for 1,000 iterations and \code{Status=200}, then a status message
-          will be printed at the following iterations: 200, 400, 600, and
-	  800.
+          componentwise) printed to the screen. For example, if a model is 
+          updated for 1,000 iterations and \code{Status=200}, then a
+	  status message will be printed at the following iterations:
+	  200, 400, 600, and 800.
           }
      \item{Thinning}{
           This argument accepts integers between 1 and the number of
           iterations, and indicates that every nth iteration will be
           retained, while the other iterations are discarded. If
-          \code{Thinning=5}, then every 5th iteration will be retained. Thinning
-          is performed to reduce autocorrelation and the number of
+          \code{Thinning=5}, then every 5th iteration will be retained.
+	  Thinning is performed to reduce autocorrelation and the number of
           marginal posterior samples.
 	  }
 }
@@ -120,7 +121,7 @@ LaplacesDemon(Model=NULL, Data=NULL, Adaptive=0, Covar=NULL, DR=1,
      (DRM), 3) Delayed Rejection Adaptive Metropolis (DRAM), and 4)
      Random-Walk Metropolis (RWM). References are provided below.
      All algorithms attempt multivariate proposals, but are modified
-     to use independent proposals if multivariate estimation is
+     to use componentwise proposals if multivariate estimation is
      problematic. Additionally, the \code{LaplaceApproximation} function
      may be used to attempt to optimize initial values with a gradient
      ascent algorithm, which the \code{LaplacesDemon} function attempts

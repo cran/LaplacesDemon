@@ -7,14 +7,14 @@
   the multivariate normal distribution.
 }
 \usage{
-dmvn(x, mu=rep(0,d), Sigma, log=FALSE) 
-rmvn(n=1, mu=rep(0,d), Sigma)
+dmvn(x, mu=rep(0,k), Sigma, log=FALSE) 
+rmvn(n=1, mu=rep(0,k), Sigma)
 }
 \arguments{
   \item{x}{This is a vector of quantiles.}
   \item{n}{This is the number of random draws.}
-  \item{mu}{This is the mean vector with length \code{d}.}
-  \item{Sigma}{This is the covariance matrix.}
+  \item{mu}{This is the mean vector with length \code{k}.}
+  \item{Sigma}{This is the \code{k x k} covariance matrix.}
   \item{log}{Logical. If \code{log=TRUE} then the logarithm of the
     density is returned.}
 }

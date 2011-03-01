@@ -163,7 +163,7 @@ LaplaceApproximation <- function(Model=NULL, parm=NULL, Data=NULL,
           diag(VarCov) <- ifelse(diag(VarCov) == 0, 1.0E-10, diag(VarCov))}
      if(is.character(Inverse.test[1])) {
           cat("\nWARNING: Failure to solve matrix inversion of Approx. Hessian.\n")
-          cat("NOTE: Identiy Matrix is supplied instead.\n")
+          cat("NOTE: Identity matrix is supplied instead.\n")
           VarCov <- matrix(0, length(parm.new), length(parm.new))
           diag(VarCov) <- 1
           }
@@ -177,7 +177,7 @@ LaplaceApproximation <- function(Model=NULL, parm=NULL, Data=NULL,
                as.vector(Model(parm.new, Data)[[1]])}
      options(warn=0)
      ### Summary
-     cat("Creating Summary...\n")
+     cat("\nCreating Summary...\n")
      Summ <- matrix(NA, parm.len, 4, dimnames=list(Data$parm.names,
           c("Mode","SD","LB","UB")))
      Summ[,1] <- parm.new

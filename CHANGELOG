@@ -1,3 +1,6 @@
+2011-02-27 Laplace's Demon single-component updating replaces independent
+2011-02-25 Distributions: MVN is improved
+2011-02-24 LaplaceApproximation: Corrected typo in error message
 2011-02-21 Plot.demonoid now also plots proposal variance changes
 2011-02-18 Changed Proposal Shrinkage and Scale
 2011-02-17 Corrected typos in documentation
