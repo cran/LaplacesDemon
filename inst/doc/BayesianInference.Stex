@@ -48,9 +48,9 @@ This article is an introduction to Bayesian inference for users of the \pkg{Lapl
 
 In statistical inference, there are two broad categories of interpretations of probability: Bayesian inference and frequentist inference. These views often differ with each other on the fundamental nature of probability. Frequentist inference loosely defines probability as the limit of an event's relative frequency in a large number of trials, and only in the context of experiments that are random and well-defined. Bayesian inference, on the other hand, is able to assign probabilities to any statement, even when a random process is not involved. In Bayesian inference, probability is a way to represent an individual's degree of belief in a statement, or given evidence.
 
-Within Bayesian inference, there are also different interpretations of probability, and different approaches based on those interpretations. The most popular interpretations and approaches are objective Bayesian inference \citep{berger06} and subjective Bayesian inference \citep{goldstein06}. These differences are best explored outside of this article\footnote{If these terms are new to the reader, then please do not focus too much on the words `objective' and `subjective', since there is a lot of debate over them. For what it's worth, \textit{STATISTICAT, LLC} and myself, the author of this \proglang{R} package entitled \pkg{LaplacesDemon}, favor the `subjective' interpretation.}.
+Within Bayesian inference, there are also different interpretations of probability, and different approaches based on those interpretations. The most popular interpretations and approaches are objective Bayesian inference \citep{berger06} and subjective Bayesian inference \citep{anscombe63, goldstein06}. These differences are best explored outside of this article\footnote{If these terms are new to the reader, then please do not focus too much on the words `objective' and `subjective', since there is a lot of debate over them. For what it's worth, \textit{STATISTICAT, LLC} and myself, the author of this \proglang{R} package entitled \pkg{LaplacesDemon}, favor the `subjective' interpretation.}.
 
-This article is intended as an approachable introduction to Bayesian inference, or as a handy summary for experienced Bayesians. It is assumed that the reader has at least an elementary understanding of statistics, and this article focuses on applied, rather than theoretical material. Equations and statistical notation are included, but it is hopefully presented so the reader does not need an intricate understanding of solving integrals, for example, but should understand the basic concept of integration. Please be aware that it is difficult to summarize Bayesian inference in such a short article. In which case, consider \citet{gelman04} for a more thorough and formal introduction.
+This article is intended as an approachable introduction to Bayesian inference, or as a handy summary for experienced Bayesians. It is assumed that the reader has at least an elementary understanding of statistics, and this article focuses on applied, rather than theoretical, material. Equations and statistical notation are included, but it is hopefully presented so the reader does not need an intricate understanding of solving integrals, for example, but should understand the basic concept of integration. Please be aware that it is difficult to summarize Bayesian inference in such a short article. In which case, consider \citet{gelman04} for a more thorough and formal introduction.
 
 \section{Bayes' Theorem}
 
@@ -169,7 +169,7 @@ The components of Bayesian inference are
 
 \section{Prior Distributions}
 
-In Bayesian inference, a prior probability distribution, often called simply the prior, of an uncertain parameter $\theta$ or latent variable is a probability distribution that expresses uncertainty about $\theta$ before the data are taken into account\footnote{One so-called version of Bayesian inference is `empirical Bayes', which sounds enticing because anything `empirical' seems desirable. However, empirical Bayes is a term for the use of data-dependent priors, where the prior is first modeled usually with maximum likelihood and then used in the Bayesian model. This is an undesirable double-use of the data and is most problematic with small sample sizes \citep{berger06}. It also seems to violate the elementary concept that a prior probability distribution expresses uncertainty about $\theta$ \textit{before} the data are taken into account. It has been claimed that ``empirical Bayes methods are not Bayesian'' \citep{bernardo08}}. The parameters of a prior distribution are called hyperparameters, to distinguish them from the parameters ($\Theta$) of the model.
+In Bayesian inference, a prior probability distribution, often called simply the prior, of an uncertain parameter $\theta$ or latent variable is a probability distribution that expresses uncertainty about $\theta$ before the data are taken into account\footnote{One so-called version of Bayesian inference is `empirical Bayes', which sounds enticing because anything `empirical' seems desirable. However, empirical Bayes is a term for the use of data-dependent priors, where the prior is first modeled usually with maximum likelihood and then used in the Bayesian model. This is an undesirable double-use of the data and is most problematic with small sample sizes \citep{berger06}. It also seems to violate the elementary concept that a prior probability distribution expresses uncertainty about $\theta$ \textit{before} the data are taken into account. It has been claimed that ``empirical Bayes methods are not Bayesian'' \citep{bernardo08}.}. The parameters of a prior distribution are called hyperparameters, to distinguish them from the parameters ($\Theta$) of the model.
 
 When applying Bayes' theorem, the prior is multiplied by the likelihood function and then normalized to estimate the posterior probability distribution, which is the conditional distribution of $\Theta$ given the data.
 
@@ -362,11 +362,11 @@ where $\mu$ = \textbf{X}$\beta$, and $\mu$ is the conditional mean, while $\tau$
 
 \section{Bayes Factors}
 
-Introduced by Harold Jeffreys, a `Bayes factor' is a Bayesian alternative to frequentist hypothesis testing that is most often used for the comparison of multiple models by hypothesis testing, usually to determine which model better fits the data \citep{jeffreys61}. Bayes factors are notoriously difficult to compute, and the Bayes factor is only defined when the marginal density of $y$ under each model is proper. However, Bayes factors are easy to approximate with Laplace Approximation \citep{kass95}\footnote{A Bayes factor may be estimated with the \code{BayesFactor} function in \pkg{LaplacesDemon} to compare two models that were fit with the \code{LaplaceApproximation} function.}.
+Introduced by Harold Jeffreys, a `Bayes factor' is a Bayesian alternative to frequentist hypothesis testing that is most often used for the comparison of multiple models by hypothesis testing, usually to determine which model better fits the data \citep{jeffreys61}. Bayes factors are notoriously difficult to compute, and the Bayes factor is only defined when the marginal density of $y$ under each model is proper. However, Bayes factors are easy to approximate with the Laplace-Metropolis Estimator \citep{kass95, lewis97}\footnote{A Bayes factor may be estimated with the \code{BayesFactor} function in \pkg{LaplacesDemon} to compare multiple models that were fit with the \code{LaplaceApproximation} or \code{LaplacesDemon} functions.}.
 
 Hypothesis testing with Bayes factors is more robust than frequentist hypothesis testing, since the Bayesian form avoids model selection bias, evaluates evidence in favor the null hypothesis, includes model uncertainty, and allows non-nested models to be compared (though of course the model must have the same dependent variable). Also, frequentist significance tests become biased in favor of rejecting the null hypothesis with sufficiently large sample size.
 
-The Bayes factor for comparing two models may be approximated as the ratio of the marginal likelihood of the data in model 1 and model2. Formally, the Bayes factor in this case is
+The Bayes factor for comparing two models may be approximated as the ratio of the marginal likelihood of the data in model 1 and model 2. Formally, the Bayes factor in this case is
 
 $$B = \frac{p(y|M_1)}{p(y|M_2)} = \frac{\int p(y|\Theta_1,M_1)p(\Theta_1|M_1)d\Theta_1}{\int p(y|\Theta_2,M_2)p(\Theta_2|M_2)d\Theta_2}$$
 
@@ -402,11 +402,11 @@ BF[6,2] <- "Strong for M[1]"
 print(xtable(BF, caption="Bayes Factors and Strength of Evidence", label="bf"))
 \end{Scode}
 
-In a Laplace Approximation, the marginal likelihood may easily be approximated for model $m$ as
+In a non-hierarchical model, the marginal likelihood may easily be approximated with the Laplace-Metropolis Estimator for model $m$ as
 
 $$p(y|m) = (2\pi)^{d_m/2}|\Sigma_m|^{1/2}p(y|\Theta_m,m)p(\Theta_m|m)$$
 
-where $d$ is the number of parameters and $\Sigma$ is the inverse of the negative of the Hessian matrix of second derivatives. \citet{lewis97} introduce the Laplace-Metropolis method of approximating the marginal likelihood in MCMC.
+where $d$ is the number of parameters and $\Sigma$ is the inverse of the negative of the Hessian matrix of second derivatives. \citet{lewis97} introduce the Laplace-Metropolis method of approximating the marginal likelihood in MCMC, though it naturally works with Laplace Approximation as well. For a hierarchical model that involves both fixed and random effects, the Compound Laplace-Metropolis Estimator must be used.
 
 Gelman finds Bayes factors generally to be irrelevant, because they compute the relative probabilities of the models conditional on one of them being true. Gelman prefers approaches that measure the distance of the data to each of the approximate models \citep[p. 180]{gelman04}. However, \citet{kass95} explain that ``the logarithm of the marginal probability of the data may also be viewed as a predictive score. This is of interest, because it leads to an interpretation of the Bayes factor that does not depend on viewing one of the models as 'true'''.
 
@@ -417,7 +417,7 @@ Two of many possible alternatives are to use
 \item Deviance Information Criterion ($DIC$)
 \end{enumerate}
 
-$DIC$ is the most popular method of assessing model fit and comparing models.
+$DIC$ is the most popular method of assessing model fit and comparing models, though Bayes Factor are better, when appropriate, because they take more into account.
 
 \section{Model Fit}
 

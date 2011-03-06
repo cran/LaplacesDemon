@@ -9,30 +9,30 @@ BayesFactor <- function(x)
      {
      ### Initial Checks
      if(is.null(x)) stop("x is required in BayesFactor().")
-     if(class(x[[1]]) != "laplace")
-          stop("x is not of class laplace in BayesFactor().")
-     if(class(x[[2]]) != "laplace")
-          stop("x is not of class laplace in BayesFactor().")
-     if(x[[1]]$Converged == FALSE) 
-          cat("WARNING: LaplaceApproximation() did not converge in M[1].\n")
-     if(x[[2]]$Converged == FALSE) 
-          cat("WARNING: LaplaceApproximation() did not converge in M[2].\n")
-     LML1 <- x[[1]]$LML
-     LML2 <- x[[2]]$LML
-     if(is.na(LML1)) stop("LML is missing for M[1].")
-     if(is.na(LML2)) stop("LML is missing for M[2].")
+     Model.num <- length(x)
+     for (i in 1:Model.num) {
+          if((class(x[[i]]) != "demonoid") & (class(x[[i]]) != "laplace"))
+            stop("x is not of class demonoid or laplace in BayesFactor().")
+          if((class(x[[i]]) == "laplace") && (x[[i]]$Converged == FALSE)) { 
+               cat("WARNING: LaplaceApproximation() did not converge in ",
+                    "M[",i,"].\n", sep="")}
+          if(is.na(x[[i]]$LML))
+               stop(cat("LML is missing in M[",i,"].", sep=""))
+          }
      ### Bayes factor
-     B <- exp(LML1 - LML2)
+     B <- matrix(NA, Model.num, Model.num)
+     for (i in 1:Model.num) {for (j in 1:Model.num) {
+          B[i,j] <- exp(x[[i]]$LML - x[[j]]$LML)
+          }}
+     strength <- rep(NA,6)
+     strength[1] <- "-Inf  <  B <= 0.1   Strong against"
+     strength[2] <- "0.1   <  B <= (1/3) Substantial against"
+     strength[3] <- "(1/3) <  B < 1      Barely worth mentioning against"
+     strength[4] <- "1     <= B < 3      Barely worth mentioning for"
+     strength[5] <- "3     <= B < 10     Substantial for"
+     strength[6] <- "10    <= B < Inf    Strong for"
      ### Output
-     hypothesis <- "M[1] > M[2]"
-     if(B <= 0.1) strength <- "Strong against M[1]"
-     if((B > 0.1) & (B <= (1/3))) strength <- "Substantial against M[1]"
-     if((B > (1/3)) & (B < 1)) {
-          strength <- "Barely worth mentioning against M[1]"}
-     if((B >= 1) & (B < 3)) strength <- "Barely worth mentioning for M[1]"
-     if((B >= 3) & (B < 10)) strength <- "Substantial for M[1]"
-     if(B >= 10) strength <- "Strong for M[1]"
-     BF.out <- list(B=B, Hypothesis=hypothesis, 
+     BF.out <- list(B=B, Hypothesis="row > column", 
           Strength.of.Evidence=strength)
      return(BF.out)
      }

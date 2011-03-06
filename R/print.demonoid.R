@@ -33,6 +33,7 @@ print.demonoid <- function(x, ...)
      cat("Initial Values:\n")
      print(x$Initial.Values)
      cat("\nIterations: ", x$Iterations, "\n", sep="")
+     cat("Log-Marginal Likelihood: ", x$LML, "\n", sep="")
      cat("Minutes of run-time: ", round(x$Minutes,2), "\n",
           sep="")
      cat("Model: (NOT SHOWN HERE)\n")

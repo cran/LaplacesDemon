@@ -133,55 +133,14 @@ LaplaceApproximation <- function(Model=NULL, parm=NULL, Data=NULL,
                if(Step.Size < 1.0E-8) Step.Size <- 1.0E-8
                parm.new <- parm.old}
           }
-     ### Approximate Hessian
-     eps <- Interval * parm.new
-     Approx.Hessian <- matrix(0, parm.len, parm.len)
-     for (i in 1:parm.len) {
-          for (j in 1:parm.len) {
-          x1 <- parm.new
-          x1[i] <- x1[i] + eps[i]
-          x1[j] <- x1[j] + eps[j]
-          x2 <- parm.new
-          x2[i] <- x2[i] + eps[i]
-          x2[j] <- x2[j] - eps[j]
-          x3 <- parm.new
-          x3[i] <- x3[i] - eps[i]
-          x3[j] <- x3[j] + eps[j]
-          x4 <- parm.new
-          x4[i] <- x4[i] - eps[i]
-          x4[j] <- x4[j] - eps[j]
-          Approx.Hessian[i, j] <- (Model(x1, Data)[[1]] -
-               Model(x2, Data)[[1]] - Model(x3, Data)[[1]] +
-               Model(x4, Data)[[1]]) / (4 * eps[i] * eps[j])
-               }
-          }
-     Inverse.test <- try(VarCov.t <- -solve(Approx.Hessian), silent=TRUE)
-     if(is.numeric(Inverse.test[1])) {
-          VarCov <- -solve(Approx.Hessian)
-          diag(VarCov) <- ifelse(diag(VarCov) < 0, diag(VarCov) * -1,
-               diag(VarCov)) #Better method of preventing negative variance?
-          diag(VarCov) <- ifelse(diag(VarCov) == 0, 1.0E-10, diag(VarCov))}
-     if(is.character(Inverse.test[1])) {
-          cat("\nWARNING: Failure to solve matrix inversion of Approx. Hessian.\n")
-          cat("NOTE: Identity matrix is supplied instead.\n")
-          VarCov <- matrix(0, length(parm.new), length(parm.new))
-          diag(VarCov) <- 1
-          }
      ### Logarithm of the Marginal Likelihood
-     LML <- NA
-     options(warn=-1)
-     LML.test <- try(LML <- parm.len/2 * log(2*pi) + 0.5*log(det(VarCov)) +
-          as.vector(Model(parm.new, Data)[[1]]), silent=TRUE)
-     if(is.numeric(LML.test[1])) {
-          LML <- parm.len/2 * log(2*pi) + 0.5*log(det(VarCov)) +
-               as.vector(Model(parm.new, Data)[[1]])}
-     options(warn=0)
+     LML <- LML(Model, Data, parm.new)
      ### Summary
      cat("\nCreating Summary...\n")
      Summ <- matrix(NA, parm.len, 4, dimnames=list(Data$parm.names,
           c("Mode","SD","LB","UB")))
      Summ[,1] <- parm.new
-     Summ[,2] <- sqrt(diag(VarCov))
+     Summ[,2] <- sqrt(diag(LML[[2]]))
      Summ[,3] <- parm.new - 2*Summ[,2]
      Summ[,4] <- parm.new + 2*Summ[,2]
      time2 <- proc.time()
@@ -189,12 +148,12 @@ LaplaceApproximation <- function(Model=NULL, parm=NULL, Data=NULL,
      converged <- ifelse(tol.new <= Stop.Tolerance, TRUE, FALSE)
      LA <- list(Call=match.call(),
           Converged = converged,
-          Covar = VarCov,
+          Covar = LML[[2]],
           Deviance = as.vector(Dev),
           History = post,
           Initial.Values = parm,
           Iterations=iter,
-          LML=LML,
+          LML=LML[[1]],
           LP.Final = as.vector(Model(parm.new, Data)[[1]]),
           LP.Initial = Model(parm, Data)[[1]],
           Minutes=round(as.vector(time2[3] - time1[3]) / 60,2),

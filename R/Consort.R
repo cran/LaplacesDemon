@@ -64,8 +64,8 @@ Consort <- function(object=NULL)
      if(Rec.Adaptive > Rec.Iterations) Rec.Adaptive <- Rec.Iterations - 1
      if(Rec.Periodicity > Rec.Iterations) {
           Rec.Periodicity <- Rec.Iterations - 1}
-     Status.temp <- round(Rec.Iterations / (object$Minutes *
-          Rec.Iterations / object$Iterations),0)
+     Status.temp <- trunc(Rec.Iterations / (object$Minutes *
+          Rec.Iterations / object$Iterations))
      if(Status.temp < Rec.Iterations) Rec.Status <- Status.temp
      else Rec.Status <- sqrt(Rec.Iterations)
      ### The Demonic Suggestion of Laplace's Demon

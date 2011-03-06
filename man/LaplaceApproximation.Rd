@@ -202,12 +202,17 @@ LaplaceApproximation(Model=NULL, parm=NULL, Data=NULL, Interval=1.0E-6,
      \item{LML}{
           This is an approximation of the logarithm of the marginal
           likelihood of the data, and is the logarithmic form of
-	  equation 4 in Kass and Raftery (1995). As a rough estimate of
-	  Kass and Raftery, \code{LML} is worrisome when the sample size
-	  of the data is less than five times the number of parameters, and
-	  \code{LML} should be adequate in most problems when the sample
-	  size of the data exceeds twenty times the number of parameters
-	  (p. 778).
+	  equation 4 in Lewis and Raftery (1997). As a rough estimate of
+	  Kass and Raftery (1995), \code{LML} is worrisome when the
+	  sample size of the data is less than five times the number of
+	  parameters, and \code{LML} should be adequate in most problems
+	  when the sample size of the data exceeds twenty times the
+	  number of parameters (p. 778). \code{LML} is useful for
+	  comparing multiple models with the \code{BayesFactor}
+	  function. The Laplace-Metropolis estimator isinappropriate
+	  with hierarchical models, and the extension (the Compound
+	  Laplace-Metropolis estimator) will soon be attempted to be
+	  included.
           }
      \item{LP.Final}{
           This reports the final scalar value for the logarithm of the
@@ -270,6 +275,11 @@ LaplaceApproximation(Model=NULL, parm=NULL, Data=NULL, Interval=1.0E-6,
      (1902) as "A Philosophical Essay on Probabilities". ISBN
      1602063281, translated from the French 6th ed. (1840).
 
+     Lewis, S.M. and Raftery, A.E. (1997). "Estimating Bayes Factors via
+     Posterior Simulation with the Laplace-Metropolis
+     Estimator". Journal of the American Statistical Association, 92,
+     p. 648--655.
+     
      Tierney, L. and Kadane, J.B. (1986). "Accurate Approximations for
      Posterior Moments and Marginal Densities". Journal of the American
      Statistical Association, 81(393), p. 82--86.

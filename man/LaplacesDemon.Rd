@@ -100,8 +100,8 @@ LaplacesDemon(Model=NULL, Data=NULL, Adaptive=0, Covar=NULL, DR=1,
           This argument accepts integers between 1 and the number of 
           iterations, and indicates how often the user would like the status
           of the number of iterations and proposal type (multivariate or 
-          componentwise) printed to the screen. For example, if a model is 
-          updated for 1,000 iterations and \code{Status=200}, then a
+          single-component) printed to the screen. For example, if a model
+          is updated for 1,000 iterations and \code{Status=200}, then a
 	  status message will be printed at the following iterations:
 	  200, 400, 600, and 800.
           }
@@ -121,7 +121,7 @@ LaplacesDemon(Model=NULL, Data=NULL, Adaptive=0, Covar=NULL, DR=1,
      (DRM), 3) Delayed Rejection Adaptive Metropolis (DRAM), and 4)
      Random-Walk Metropolis (RWM). References are provided below.
      All algorithms attempt multivariate proposals, but are modified
-     to use componentwise proposals if multivariate estimation is
+     to use single-component proposals if multivariate estimation is
      problematic. Additionally, the \code{LaplaceApproximation} function
      may be used to attempt to optimize initial values with a gradient
      ascent algorithm, which the \code{LaplacesDemon} function attempts
@@ -199,6 +199,21 @@ LaplacesDemon(Model=NULL, Data=NULL, Adaptive=0, Covar=NULL, DR=1,
           }
      \item{Iterations}{
           This reports the number of \code{Iterations} for updating.
+          }
+     \item{LML}{
+          This is an approximation of the logarithm of the marginal
+          likelihood of the data, and is the logarithmic form of
+	  equation 4 in Lewis and Raftery (1997). As a rough estimate of
+	  Kass and Raftery (1995), \code{LML} is worrisome when the
+	  sample size of the data is less than five times the number of
+	  parameters, and \code{LML} should be adequate in most problems
+	  when the sample size of the data exceeds twenty times the
+	  number of parameters (p. 778). \code{LML} is useful for
+	  comparing multiple models with the \code{BayesFactor}
+	  function. The Laplace-Metropolis estimator isinappropriate
+	  with hierarchical models, and the extension (the Compound
+	  Laplace-Metropolis estimator) will soon be attempted to be
+	  included.
           }
      \item{Minutes}{
           This indicates the number of minutes that \code{LaplacesDemon}
@@ -302,6 +317,14 @@ LaplacesDemon(Model=NULL, Data=NULL, Adaptive=0, Covar=NULL, DR=1,
      Haario, H., Saksman, E., and Tamminen, J. (2001). "An Adaptive
      Metropolis Algorithm". Bernoulli, 7, p. 223-242.
 
+     Kass, R.E. and Raftery, A.E. (1995). "Bayes Factors". Journal of the
+     American Statistical Association, 90(430), p. 773--795.
+
+     Lewis, S.M. and Raftery, A.E. (1997). "Estimating Bayes Factors via
+     Posterior Simulation with the Laplace-Metropolis
+     Estimator". Journal of the American Statistical Association, 92,
+     p. 648--655.
+     
      Metropolis, N., Rosenbluth, A.W., Rosenbluth, M.N., and Teller,
      E. (1953). "Equation of State Calculations by Fast Computing
      Machines". Journal of Chemical Physics, 21, p. 1087-1092.
@@ -323,7 +346,7 @@ J <- NCOL(demonsnacks)
 y <- log(demonsnacks$Calories)
 X <- cbind(1, as.matrix(demonsnacks[,c(1,3:10)]))
 for (j in 2:J) {X[,j] <- CenterScale(X[,j])}
-mon.names <- c("tau","mu[1]")
+mon.names <- c("LP","tau")
 parm.names <- rep(NA,J+1)
 for (j in 1:J) {parm.names[j] <- paste("beta[",j,"]",sep="")}
 parm.names[J+1] <- "log.tau"
@@ -350,7 +373,7 @@ Model <- function(parm, Data)
      mu <- beta \%*\% t(Data$X)
      LL <- sum(dnorm(Data$y, mu, 1/sqrt(tau), log=TRUE))
      LP <- LL + sum(beta.prior) + tau.prior
-     Modelout <- list(LP=LP, Dev=-2*LL, Monitor=c(tau,mu[1]), yhat=mu,
+     Modelout <- list(LP=LP, Dev=-2*LL, Monitor=c(LP,tau), yhat=mu,
           parm=parm)
      return(Modelout)
      }

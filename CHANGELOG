@@ -1,4 +1,8 @@
-2011-02-27 Laplace's Demon single-component updating replaces independent
+2011-03-06 BayesFactor extended to more than two model comparisons
+2011-03-05 LaplacesDemon now estimates LML (log-marginal likelihood)
+2011-03-03 Vignette Examples: Zero-Inflated Poisson (ZIP)
+2011-03-02 Distributions: dmvn requires vectors for x and mu
+2011-02-27 LaplacesDemon single-component updating replaces independent
 2011-02-25 Distributions: MVN is improved
 2011-02-24 LaplaceApproximation: Corrected typo in error message
 2011-02-21 Plot.demonoid now also plots proposal variance changes
@@ -15,7 +19,7 @@
 2011-02-04 LaplaceApproximation included
 2011-02-03 Distributions: Added Bernoulli and truncated
 2011-02-02 Vignette Examples: Corrected off-diagonal asymmetry in SUR
-2011-01-31 Vignette Examples: Added Seemingly Unrelated Regression
+2011-01-31 Vignette Examples: Added Seemingly Unrelated Regression (SUR)
 2011-01-30 Consort: Adaptive, Periodicity suggestions include Acc. Rate
 2011-01-29 Initial Values: Missings are set to zero
 2011-01-28 Vignette Examples: Corrected Typos

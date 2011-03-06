@@ -162,14 +162,16 @@ rlaplace <- function(n, location=0, scale=1)
 
 dmvn <- function(x, mu=rep(0,k), Sigma, log=FALSE)
      {
-     if(is.vector(x)) x <- matrix(x, ncol=length(x))
+     if(!is.vector(x)) stop("x must be a vector in dmvn().")
+     x <- matrix(x, ncol=length(x))
      if(missing(Sigma)) Sigma <- diag(ncol(x))
      if(!is.matrix(Sigma)) Sigma <- matrix(Sigma)
      if(NCOL(x) != NCOL(Sigma))
           stop("Dimensions of x and Sigma differ in dmvn().")
      k  <- if(is.matrix(Sigma)) ncol(Sigma) else 1
      if(missing(mu)) mu <- rep(0,k)
-     if(is.vector(mu)) mu <- matrix(mu, ncol=length(mu))
+     if(!is.vector(mu)) stop("mu must be a vector in dmvn().")
+     mu <- matrix(mu, ncol=length(mu))
      if(NCOL(mu) != NCOL(Sigma))
           stop("Dimensions of mu and Sigma differ in dmvn().")
      options(warn=-1)

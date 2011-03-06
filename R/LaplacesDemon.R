@@ -72,9 +72,12 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
      if(is.na(Mo0[[2]])) stop("The deviance is a missing value!\n")
      if(is.infinite(Mo0[[2]])) stop("The deviance is infinite!\n")
      if(is.nan(Mo0[[2]])) stop("The deviance is not a number!\n")
-     if(sum(is.na(Mo0[[3]])) > 0) stop("Monitored variable(s) have a missing value!\n")
-     if(sum(is.infinite(Mo0[[3]])) > 0) stop("Monitored variable(s) have an infinite value!\n")
-     if(sum(is.nan(Mo0[[3]])) > 0) stop("Monitored variable(s) include a value that is not a number!\n")
+     if(sum(is.na(Mo0[[3]])) > 0)
+          stop("Monitored variable(s) have a missing value!\n")
+     if(sum(is.infinite(Mo0[[3]])) > 0)
+          stop("Monitored variable(s) have an infinite value!\n")
+     if(sum(is.nan(Mo0[[3]])) > 0)
+          stop("Monitored variable(s) include a value that is not a number!\n")
      ######################  Laplace Approximation  #######################
      ### Sample Size of Data
      if(!is.null(Data$n)) if(length(Data$n) == 1) N <- Data$n
@@ -144,21 +147,25 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
           if(is.na(Mo0[[2]])) stop("The deviance is a missing value!\n")
           if(is.infinite(Mo0[[2]])) stop("The deviance is infinite!\n")
           if(is.nan(Mo0[[2]])) stop("The deviance is not a number!\n")
-          if(sum(is.na(Mo0[[3]])) > 0) stop("Monitored variable(s) have a missing value!\n")
-          if(sum(is.infinite(Mo0[[3]])) > 0) stop("Monitored variable(s) have an infinite value!\n")
-          if(sum(is.nan(Mo0[[3]])) > 0) stop("Monitored variable(s) include a value that is not a number!\n")
+          if(sum(is.na(Mo0[[3]])) > 0)
+               stop("Monitored variable(s) have a missing value!\n")
+          if(sum(is.infinite(Mo0[[3]])) > 0)
+               stop("Monitored variable(s) have an infinite value!\n")
+          if(sum(is.nan(Mo0[[3]])) > 0)
+               stop("Monitored variable(s) include a value that is not a number!\n")
           ### Propose new parameter values
           MVN.rand <- rnorm(LIV, 0, 1)
           MVN.test <- try(MVNz <- matrix(MVN.rand,1,LIV) %*% chol(VarCov),
                silent=TRUE)
-          if(is.numeric(MVN.test[1])) {
+          if(is.numeric(MVN.test[1]) & ((Acceptance / Iterations) >= 0.05)) {
                if(iter %% Status == 0) {
                    cat(",   Proposal: Multivariate\n")}
                MVNz <- matrix(MVN.rand,1,LIV) %*% chol(VarCov)
                prop <- t(post[iter,] + t(MVNz))}
-          if(is.character(MVN.test[1])) {
+          if(is.character(MVN.test[1]) || ((Acceptance / Iterations) < 0.05)) {
                if(iter %% Status == 0) {
-                    cat(",   Proposal: Componentwise\n")}
+                    cat(",   Proposal: Single-Component\n")}
+               prop <- post[iter,]
                j <- round(runif(1,0.5,(LIV+0.49)))
                prop[j] <- rnorm(1, post[iter,j], tuning[j])}
           ### Log-Posterior of the proposed state
@@ -194,10 +201,11 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
                MVN.rand <- rnorm(LIV, 0, 1)
                MVN.test <- try(MVNz <- matrix(MVN.rand,1,LIV) %*%
                     chol(VarCov * 0.5), silent=TRUE)
-               if(is.numeric(MVN.test[1])) {
+               if(is.numeric(MVN.test[1]) & ((Acceptance / Iterations) >= 0.05)) {
                     MVNz <- matrix(MVN.rand,1,LIV) %*% chol(VarCov * 0.5)
                     prop <- t(post[iter,] + t(MVNz))}
-               if(is.character(MVN.test[1])) {
+               if(is.character(MVN.test[1]) || ((Acceptance / Iterations) < 0.05)) {
+                    prop <- post[iter,]
                     j <- round(runif(1,0.5,(LIV+0.49)))
                     prop[j] <- rnorm(1, post[iter,j], tuning[j])}
                ### Log-Posterior of the proposed state
@@ -395,6 +403,9 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
                rownames(Summ2)[nrow(Summ2)] <- Data$mon.names[j]
                }
           }
+     ### Logarithm of the Marginal Likelihood
+     if(BurnIn >= NROW(thinned)) LML <- LML(Model, Data, Summ1[1:LIV,6])
+     if(BurnIn < NROW(thinned)) LML <- LML(Model, Data, Summ2[1:LIV,6])
      time2 <- proc.time()
      ### Compile Output
      cat("Creating Output\n")
@@ -417,6 +428,7 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
           DR=DR,
           Initial.Values=Initial.Values,
           Iterations=Iterations,
+          LML=LML[[1]],
           Minutes=round(as.vector(time2[3] - time1[3]) / 60,2),
           Model=Model,
           Monitor=Mon,
