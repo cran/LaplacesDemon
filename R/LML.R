@@ -48,9 +48,8 @@ LML <- function(Model, Data, Modes)
      options(warn=-1)
      LML.test <- try(LML <- parm.len/2 * log(2*pi) + 0.5*log(det(VarCov)) +
           as.vector(Model(Modes, Data)[[1]]), silent=TRUE)
-     if(is.numeric(LML.test[1])) {
-          LML <- parm.len/2 * log(2*pi) + 0.5*log(det(VarCov)) +
-               as.vector(Model(Modes, Data)[[1]])}
+     if(is.numeric(LML.test[1]) & !is.nan(LML.test[1]) &
+          !is.infinite(LML.test[1])) {LML <- LML.test[1]}
      options(warn=0)
      ### Output
      LML.out <- list(LML=LML, VarCov=VarCov)

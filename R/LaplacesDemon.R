@@ -38,35 +38,46 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
           Iterations <- 11
           cat("'Iterations' has been changed to ", Iterations, ".\n",
                sep="")}
-     if((Adaptive <= 1) | (Adaptive > Iterations)) {
+     if((Adaptive <= 1) || (Adaptive > Iterations)) {
           Adaptive <- Iterations + 1
           cat("Adaptation will not occur due to the Adaptive argument.\n")}
      if((DR != 0) & (DR != 1)) {
           DR <- 0
           cat("Delayed Rejection will not occur due to the DR argument.\n")}
-     if((Periodicity <= 1) | (Periodicity > Iterations)) {
+     if((Periodicity <= 1) || (Periodicity > Iterations)) {
           Periodicity <- Iterations + 1
           cat("Adaptation will not occur due to the Periodicity argument.\n")}
-     if((Status < 1) | (Status > Iterations)) {
+     if((Status < 1) || (Status > Iterations)) {
           Status <- Iterations
           cat("'Status' has been changed to ", Status, ".\n",
                sep="")}
-     if((Thinning < 1) | (Thinning > Iterations)) {
+     if((Thinning < 1) || (Thinning > Iterations)) {
           Thinning <- 1
           cat("'Thinning' has been changed to ", Thinning, ".\n",
                sep="")}
      #########################  Initial Settings  #########################
      Acceptance <- 0
      Mo0 <- Model(Initial.Values, Data)
-     if(is.na(Mo0[[1]]) | is.nan(Mo0[[1]]) | is.infinite(Mo0[[1]])) {
+     if(is.na(Mo0[[1]]) || is.nan(Mo0[[1]]) || is.infinite(Mo0[[1]])) {
           Initial.Values <- runif(length(Initial.Values),-3,3)
           Mo0 <- Model(Initial.Values, Data)
-          if(is.na(Mo0[[1]]) | is.nan(Mo0[[1]]) | is.infinite(Mo0[[1]])) {
+          if(is.na(Mo0[[1]]) || is.nan(Mo0[[1]]) || is.infinite(Mo0[[1]])) {
                Initial.Values <- runif(length(Initial.Values),-3,3)
                Mo0 <- Model(Initial.Values, Data)
                }
           }
      if(is.na(Mo0[[1]])) stop("The posterior is a missing value!\n")
+     if(is.infinite(Mo0[[1]])) {
+          cat("Initial values are being randomized due to an infinite posterior.\n")
+          for (i in 1:1000) {
+               Initial.Values <- runif(length(Initial.Values),-2,2)
+               Mo0 <- Model(Initial.Values, Data)
+               if(!is.infinite(Mo0[[1]])) {
+                    cat("Initial values now result in a finite posterior.\n")
+                    break
+                    }
+               }
+          }
      if(is.infinite(Mo0[[1]])) stop("The posterior is infinite!\n")
      if(is.nan(Mo0[[1]])) stop("The posterior was not a number!\n")
      if(is.na(Mo0[[2]])) stop("The deviance is a missing value!\n")
@@ -295,8 +306,7 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
      geweke <- ifelse(is.na(geweke), 9, geweke)
      geweke <- ifelse(is.nan(geweke), 9, geweke)
      geweke <- ifelse((geweke > -2) & (geweke < 2), TRUE, FALSE)
-     for (j in 1:LIV)
-          {geweke.ct[j] <- which(geweke[,j] == TRUE)[1]}
+     for (j in 1:LIV) {geweke.ct[j] <- which(geweke[,j] == TRUE)[1]}
      geweke.ct <- ifelse(is.na(geweke.ct), NROW(thinned), geweke.ct)
      BurnIn <- burn.start[max(geweke.ct)]
      BurnIn <- ifelse(is.na(BurnIn), NROW(thinned), BurnIn)
@@ -404,7 +414,8 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
                }
           }
      ### Logarithm of the Marginal Likelihood
-     if(BurnIn >= NROW(thinned)) LML <- LML(Model, Data, Summ1[1:LIV,6])
+     if(BurnIn >= NROW(thinned)) {LML <- LML(Model, Data,
+          thinned[nrow(thinned),])}
      if(BurnIn < NROW(thinned)) LML <- LML(Model, Data, Summ2[1:LIV,6])
      time2 <- proc.time()
      ### Compile Output

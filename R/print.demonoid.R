@@ -14,26 +14,20 @@ print.demonoid <- function(x, ...)
           "\n", sep="")
      cat("Adaptive: ", x$Adaptive, "\n", sep="")
      cat("Algorithm: ", x$Algorithm, "\n", sep="")
-     cat("Covar: (NOT SHOWN HERE; diagonal shown instead)\n")
+     cat("Covariance Matrix: (NOT SHOWN HERE; diagonal shown instead)\n")
      print(diag(x$Covar))
-     cat("\nCovarDHis: (NOT SHOWN HERE)\n")
-     cat("DIC of all samples (Dbar): ", round(x$DIC1[1],3),
-          "\n", sep="")
-     cat("DIC of all samples (pD): ", round(x$DIC1[2],3),
-          "\n", sep="")
-     cat("DIC of all samples (DIC): ", round(x$DIC1[3],3),
-          "\n", sep="")
-     cat("DIC of stationary samples (Dbar): ",
-          round(x$DIC2[1],3), "\n", sep="")
-     cat("DIC of stationary samples (pD): ",
-          round(x$DIC2[2],3), "\n", sep="")
-     cat("DIC of stationary samples (DIC): ",
-          round(x$DIC2[3],3), "\n", sep="")
-     cat("DR: ", x$DR, "\n", sep="")
+     cat("\nCovariance (Diagonal) History: (NOT SHOWN HERE)\n")
+     cat("Deviance Information Criterion (DIC):\n")
+     DIC <- matrix(c(round(x$DIC1[1],3), round(x$DIC1[2],3),
+          round(x$DIC1[3],3), round(x$DIC2[1],3), round(x$DIC2[2],3),
+          round(x$DIC2[3],3)), 3, 2,
+          dimnames=list(c("Dbar","pD","DIC"),c("All","Stationary")))
+     print(DIC)
+     cat("\nDelayed Rejection (DR): ", x$DR, "\n", sep="")
      cat("Initial Values:\n")
      print(x$Initial.Values)
      cat("\nIterations: ", x$Iterations, "\n", sep="")
-     cat("Log-Marginal Likelihood: ", x$LML, "\n", sep="")
+     cat("Log(Marginal Likelihood): ", x$LML, "\n", sep="")
      cat("Minutes of run-time: ", round(x$Minutes,2), "\n",
           sep="")
      cat("Model: (NOT SHOWN HERE)\n")

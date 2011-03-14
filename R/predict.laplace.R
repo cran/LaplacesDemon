@@ -1,7 +1,7 @@
 ###########################################################################
 # predict.laplace                                                         #
 #                                                                         #
-# The purpose of this function is to predict y[new] or y[rep], and        #
+# The purpose of this function is to predict y[new] or y[rep], and later  #
 # provide posterior predictive checks for objects of class laplace.       #
 ###########################################################################
 

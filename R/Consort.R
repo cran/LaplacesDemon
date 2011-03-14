@@ -67,7 +67,7 @@ Consort <- function(object=NULL)
      Status.temp <- trunc(Rec.Iterations / (object$Minutes *
           Rec.Iterations / object$Iterations))
      if(Status.temp < Rec.Iterations) Rec.Status <- Status.temp
-     else Rec.Status <- sqrt(Rec.Iterations)
+     else Rec.Status <- trunc(sqrt(Rec.Iterations))
      ### The Demonic Suggestion of Laplace's Demon
      cat("\nDemonic Suggestion\n\n")
      

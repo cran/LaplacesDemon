@@ -1,3 +1,8 @@
+2011-03-12 Vignette Examples: Factor Analysis, Exploratory
+2011-03-11 Vignette Examples: Omega and S changed in SUR
+2011-03-09 Bug Fix: Rec.Status in Consort was continuous in some cases
+2011-03-08 Vignette Examples: Linear Regression with Full Missingness
+2011-03-07 Vignette Examples: Linear Regression with Missing Response
 2011-03-06 BayesFactor extended to more than two model comparisons
 2011-03-05 LaplacesDemon now estimates LML (log-marginal likelihood)
 2011-03-03 Vignette Examples: Zero-Inflated Poisson (ZIP)

@@ -210,7 +210,7 @@ LaplacesDemon(Model=NULL, Data=NULL, Adaptive=0, Covar=NULL, DR=1,
 	  when the sample size of the data exceeds twenty times the
 	  number of parameters (p. 778). \code{LML} is useful for
 	  comparing multiple models with the \code{BayesFactor}
-	  function. The Laplace-Metropolis estimator isinappropriate
+	  function. The Laplace-Metropolis estimator is inappropriate
 	  with hierarchical models, and the extension (the Compound
 	  Laplace-Metropolis estimator) will soon be attempted to be
 	  included.
