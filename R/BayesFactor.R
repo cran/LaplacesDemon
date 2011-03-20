@@ -31,9 +31,14 @@ BayesFactor <- function(x)
      strength[4] <- "1     <= B < 3      Barely worth mentioning for"
      strength[5] <- "3     <= B < 10     Substantial for"
      strength[6] <- "10    <= B < Inf    Strong for"
+     ### Posterior Probability
+     ML <- rep(NA, Model.num)
+     for (i in 1:Model.num) {ML[i] <- exp(x[[i]]$LML)}
+     Posterior.Probability <- ML / sum(ML)
      ### Output
      BF.out <- list(B=B, Hypothesis="row > column", 
-          Strength.of.Evidence=strength)
+          Strength.of.Evidence=strength,
+          Posterior.Probability=Posterior.Probability)
      return(BF.out)
      }
 

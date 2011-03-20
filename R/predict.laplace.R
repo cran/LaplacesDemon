@@ -37,6 +37,13 @@ predict.laplace <- function(object, Model, Data, Samples=1000, ...)
           yhat[,i] <- as.vector(temp[[4]])
           }
      rownames(monitor) <- Data$mon.names
+     ### Warnings
+     if(sum(is.na(yhat)) > 0) cat("\nWARNING: Matrix yhat has ",
+          sum(is.na(yhat)), " missing values.")
+     if(sum(is.nan(yhat)) > 0) cat("\nWARNING: Matrix yhat has ",
+          sum(is.nan(yhat)), " non-numeric (NaN) values.")
+     if(sum(is.infinite(yhat)) > 0) cat("\nWARNING: Matrix yhat has ",
+          sum(is.infinite(yhat)), " infinite values.")
      ### Create Output
      predicted <- list(y=y, yhat=yhat, deviance=deviance,
           monitor=monitor)

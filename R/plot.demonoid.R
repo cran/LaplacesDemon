@@ -32,12 +32,18 @@ plot.demonoid <- function(x, BurnIn=1, Data=NULL, PDF=FALSE,
           polygon(density(x$Posterior1[BurnIn:x$Thinned.Samples,j]),
                col="black", border="black")
           abline(v=0, col="red", lty=2)
-          z <- acf(x$Posterior1[BurnIn:x$Thinned.Samples,j], plot=FALSE)
-          se <- 1/sqrt(length(x$Posterior1[BurnIn:x$Thinned.Samples,j]))
-          plot(z$lag, z$acf, ylim=c(min(z$acf,-2*se),1), type="h",
-               main=Data$parm.names[j], xlab="Lag", ylab="Correlation")
-          abline(h=(2*se), col="red", lty=2)
-          abline(h=(-2*se), col="red", lty=2)
+          ### Only plot an ACF if there's > 1 unique values
+          if(length(unique(x$Posterior1[BurnIn:x$Thinned.Samples,j])) > 1) {
+               z <- acf(x$Posterior1[BurnIn:x$Thinned.Samples,j], plot=FALSE)
+               se <- 1/sqrt(length(x$Posterior1[BurnIn:x$Thinned.Samples,j]))
+               plot(z$lag, z$acf, ylim=c(min(z$acf,-2*se),1), type="h",
+                    main=Data$parm.names[j], xlab="Lag", ylab="Correlation")
+               abline(h=(2*se), col="red", lty=2)
+               abline(h=(-2*se), col="red", lty=2)
+               }
+          if(length(unique(x$Posterior1[BurnIn:x$Thinned.Samples,j])) == 1) {
+               plot(0,0, main=paste(Data$parm.names[j], "is a constant."))
+               }
           }
      ### Plot Deviance
      plot(BurnIn:length(x$Deviance),
@@ -73,12 +79,18 @@ plot.demonoid <- function(x, BurnIn=1, Data=NULL, PDF=FALSE,
           polygon(density(x$Monitor[BurnIn:nn,j]), col="black",
                border="black")
           abline(v=0, col="red", lty=2)
-          z <- acf(x$Monitor[BurnIn:nn,j], plot=FALSE)
-          se <- 1/sqrt(length(x$Monitor[BurnIn:nn,j]))
-          plot(z$lag, z$acf, ylim=c(min(z$acf,-2*se),1), type="h",
-               main=Data$mon.names[j], xlab="Lag", ylab="Correlation")
-          abline(h=(2*se), col="red", lty=2)
-          abline(h=(-2*se), col="red", lty=2)
+          ### Only plot an ACF if there's > 1 unique values
+          if(length(unique(x$Monitor[BurnIn:nn,j])) > 1) {
+               z <- acf(x$Monitor[BurnIn:nn,j], plot=FALSE)
+               se <- 1/sqrt(length(x$Monitor[BurnIn:nn,j]))
+               plot(z$lag, z$acf, ylim=c(min(z$acf,-2*se),1), type="h",
+                    main=Data$mon.names[j], xlab="Lag", ylab="Correlation")
+               abline(h=(2*se), col="red", lty=2)
+               abline(h=(-2*se), col="red", lty=2)
+               }
+          if(length(unique(x$Monitor[BurnIn:nn,j])) == 1) {
+               plot(0,0, main=paste(Data$mon.names[j], "is a constant."))
+               }
           }
      ### Proposal Variance (Adaptive Algorithms only)
      if(nrow(x$CovarDHis) > 1) {

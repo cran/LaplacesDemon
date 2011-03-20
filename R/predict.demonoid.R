@@ -15,11 +15,19 @@ predict.demonoid <- function(object, Model, Data, ...)
      if(!is.null(Data$y)) y <- as.vector(Data$y)
      if(!is.null(Data$Y)) y <- as.vector(Data$Y)
      ### p(y[rep] | y)
-     if(sum(is.na(object$Posterior2)) == 0)
-          {post <- as.matrix(object$Posterior2)}
-     else {post <- as.matrix(object$Posterior1)}
+     post <- as.matrix(object$Posterior1)
+     if(sum(is.na(object$Posterior2)) == 0) {
+          post <- as.matrix(object$Posterior2)}
      yhat <- matrix(NA, length(y), NROW(post))
-     for (i in 1:NROW(post)) {yhat[,i] <- Model(post[i,], Data)[[4]]}
+     for (i in 1:NROW(post)) {
+          yhat[,i] <- as.vector(Model(post[i,], Data)[[4]])}
+     ### Warnings
+     if(sum(is.na(yhat)) > 0) cat("\nWARNING: Matrix yhat has ",
+          sum(is.na(yhat)), " missing values.")
+     if(sum(is.nan(yhat)) > 0) cat("\nWARNING: Matrix yhat has ",
+          sum(is.nan(yhat)), " non-numeric (NaN) values.")
+     if(sum(is.infinite(yhat)) > 0) cat("\nWARNING: Matrix yhat has ",
+          sum(is.infinite(yhat)), " infinite values.")
      ### Create Output
      predicted <- list(y=y, yhat=yhat)
      class(predicted) <- "demonoid.ppc"

@@ -171,7 +171,7 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
           if(is.numeric(MVN.test[1]) & ((Acceptance / Iterations) >= 0.05)) {
                if(iter %% Status == 0) {
                    cat(",   Proposal: Multivariate\n")}
-               MVNz <- matrix(MVN.rand,1,LIV) %*% chol(VarCov)
+               MVNz <- as.vector(MVN.test)
                prop <- t(post[iter,] + t(MVNz))}
           if(is.character(MVN.test[1]) || ((Acceptance / Iterations) < 0.05)) {
                if(iter %% Status == 0) {
@@ -213,7 +213,7 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
                MVN.test <- try(MVNz <- matrix(MVN.rand,1,LIV) %*%
                     chol(VarCov * 0.5), silent=TRUE)
                if(is.numeric(MVN.test[1]) & ((Acceptance / Iterations) >= 0.05)) {
-                    MVNz <- matrix(MVN.rand,1,LIV) %*% chol(VarCov * 0.5)
+                    MVNz <- as.vector(MVN.test)
                     prop <- t(post[iter,] + t(MVNz))}
                if(is.character(MVN.test[1]) || ((Acceptance / Iterations) < 0.05)) {
                     prop <- post[iter,]
@@ -299,7 +299,7 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
           thinned2 <- thinned[burn.start[i]:NROW(thinned),]
           test <- try(as.vector(Geweke.Diagnostic(thinned2)), silent=TRUE)
           if(is.numeric(test)) {
-               geweke[i,] <- as.vector(Geweke.Diagnostic(thinned2))
+               geweke[i,] <- as.vector(test)
           }}
      options(warn=0)
      rm(thinned2)

@@ -1,11 +1,19 @@
-2011-03-12 Vignette Examples: Factor Analysis, Exploratory
+2011-03-20 Vignette Examples: Added Variable Selection
+2011-03-19 Vignette Examples: Added Factor Analysis, Confirmatory
+2011-03-18 Vignette Examples: Added ANOVA, One-Way
+2011-03-17 parm.names function added
+2011-03-16 Vignette Examples: Added Contingency Table
+2011-03-15 BayesFactor: Included posterior probability of each model
+2011-03-14 Cov2Cor included
+2011-03-13 Vignette Examples: Added Linear Regression, Multilevel
+2011-03-12 Vignette Examples: Added Factor Analysis, Exploratory
 2011-03-11 Vignette Examples: Omega and S changed in SUR
 2011-03-09 Bug Fix: Rec.Status in Consort was continuous in some cases
-2011-03-08 Vignette Examples: Linear Regression with Full Missingness
-2011-03-07 Vignette Examples: Linear Regression with Missing Response
+2011-03-08 Vignette Examples: Added Linear Regression with Full Missingness
+2011-03-07 Vignette Examples: Added Linear Regression with Missing Response
 2011-03-06 BayesFactor extended to more than two model comparisons
 2011-03-05 LaplacesDemon now estimates LML (log-marginal likelihood)
-2011-03-03 Vignette Examples: Zero-Inflated Poisson (ZIP)
+2011-03-03 Vignette Examples: Added Zero-Inflated Poisson (ZIP)
 2011-03-02 Distributions: dmvn requires vectors for x and mu
 2011-02-27 LaplacesDemon single-component updating replaces independent
 2011-02-25 Distributions: MVN is improved
@@ -29,12 +37,12 @@
 2011-01-29 Initial Values: Missings are set to zero
 2011-01-28 Vignette Examples: Corrected Typos
 2011-01-27 Removed Software License
-2011-01-26 Vignette Examples: Binomial Probit and Multinomial Logit
+2011-01-26 Vignette Examples: Added Binomial Probit and Multinomial Logit
 2011-01-25 Distributions: Added invwishart, mvt, and wishart 
 2011-01-24 Distributions: Added dirichlet, invgamma, laplace, mvn
 2011-01-23 Vectorized some loops and increased speed
 2011-01-22 Logo replacement: the horned-Theta
-2011-01-21 Vignette Examples: Binary Logit, DLM, and Laplace Regression
+2011-01-21 Vignette Examples: Added Binary Logit, DLM, and Laplace Reg.
 2011-01-20 Parameter constraints included
 2011-01-18 Vignette style changes
 2011-01-17 Logo adoption: the pitchfork-psi
@@ -49,6 +57,6 @@
 2010-12-30 Included a predict.demonoid function
 2010-12-29 Included plot.demonoid and print.demonoid functions
 2010-12-28 Demonic Suggestions has expanded dramatically
-2010-12-25 Version Nomenclature changes to Year-Date-Month (10.12.24)
+2010-12-25 Version Nomenclature changes to Year-Month-Day (10.12.24)
 2010-12-24 The LaplacesDemon package was first put together
 2010-12-13 Project Laplace's Demon began, and LaplacesDemon was written

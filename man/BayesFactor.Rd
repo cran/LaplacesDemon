@@ -75,6 +75,10 @@ true model.
      \item{Strength.of.Evidence}{
           This is the strength of evidence in favor of the hypothesis.
           }
+     \item{Posterior.Probability}{
+          This is a vector of the posterior probability of each model,
+          given flat priors.
+	  }
 }
 \references{
      Gelman, A., Carlin, J., Stern, H., and Rubin, D. (2004). "Bayesian
@@ -108,9 +112,7 @@ y <- log(demonsnacks$Calories)
 X <- cbind(1, as.matrix(demonsnacks[,7]))
 X[,2] <- CenterScale(X[,2])
 mon.names <- c("LP","tau")
-parm.names <- rep(NA,J+1)
-for (j in 1:J) {parm.names[j] <- paste("beta[",j,"]",sep="")}
-parm.names[J+1] <- "log.tau"
+parm.names <- parm.names(list(beta=rep(0,J), log.tau=0))
 MyData <- list(J=J, X=X, mon.names=mon.names, parm.names=parm.names, y=y)
 
 ############################  Initial Values  #############################
@@ -153,9 +155,7 @@ X <- cbind(1, as.matrix(demonsnacks[,c(7,8)]))
 X[,2] <- CenterScale(X[,2])
 X[,3] <- CenterScale(X[,3])
 mon.names <- c("tau","mu[1]")
-parm.names <- rep(NA,J+1)
-for (j in 1:J) {parm.names[j] <- paste("beta[",j,"]",sep="")}
-parm.names[J+1] <- "log.tau"
+parm.names <- parm.names(list(beta=rep(0,J), log.tau=0))
 MyData <- list(J=J, X=X, mon.names=mon.names, parm.names=parm.names, y=y)
 
 ############################  Initial Values  #############################

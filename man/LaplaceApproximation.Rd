@@ -304,9 +304,7 @@ y <- log(demonsnacks$Calories)
 X <- cbind(1, as.matrix(demonsnacks[,c(1,3:6)]))
 for (j in 2:J) {X[,j] <- CenterScale(X[,j])}
 mon.names <- c("tau","mu[1]")
-parm.names <- rep(NA,J+1)
-for (j in 1:J) {parm.names[j] <- paste("beta[",j,"]",sep="")}
-parm.names[J+1] <- "log.tau"
+parm.names <- parm.names(list(beta=rep(0,J), log.tau=0))
 MyData <- list(J=J, X=X, mon.names=mon.names, parm.names=parm.names, y=y)
 
 ############################  Initial Values  #############################
