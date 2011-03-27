@@ -40,7 +40,7 @@
 
 \begin{document}
 
-This article is an introduction to Bayesian inference for users of the \pkg{LaplacesDemon} package \citep{hall11} in \proglang{R} \citep{rdct:r}, otherwise referred to as Laplace's Demon. A formal introduction to Laplace's Demon is provided in an accompanying vignette entitled ``\pkg{LaplacesDemon} Tutorial''. Merriam-Webster defines `Bayesian' as follows
+This article is an introduction to Bayesian inference for users of the \pkg{LaplacesDemon} package \citep{r:laplacesdemon} in \proglang{R} \citep{rdct:r}, otherwise referred to as Laplace's Demon. A formal introduction to Laplace's Demon is provided in an accompanying vignette entitled ``\pkg{LaplacesDemon} Tutorial''. Merriam-Webster defines `Bayesian' as follows
 
 \begin{quote}
 \textbf{Bayesian} : being, relating to, or involving statistical methods that assign probabilities or distributions to events (as rain tomorrow) or parameters (as a population mean) based on experience or best guesses before experimentation and data collection and that apply Bayes' theorem to revise the probabilities and distributions after obtaining experimental data. 
@@ -66,7 +66,7 @@ Bayes' theorem provides an expression for the conditional probability of $A$ giv
 
 For example, suppose one asks the question: what is the probability of going to Hell, conditional on consorting (or given that a person consorts) with Laplace's Demon\footnote{This example is, of course, intended with humor.}. By replacing $A$ with $Hell$ and $B$ with $Consort$, the question becomes
 
-$$\Pr(Hell | Consort) = \frac{\Pr(Consort | Hell)\Pr(Hell)}{\Pr(Consort)}$$
+$$\Pr(\mathrm{Hell} | \mathrm{Consort}) = \frac{\Pr(\mathrm{Consort} | \mathrm{Hell}) \Pr(\mathrm{Hell})}{\Pr(\mathrm{Consort})}$$
 
 Note that a common fallacy is to assume that $\Pr(A | B) = \Pr(B | A)$, which is called the conditional probability fallacy.
 
@@ -76,16 +76,16 @@ Another way to state Bayes' theorem is
 
 $$\frac{\Pr(A_i | B) = \Pr(B | A_i)\Pr(A_i)}{\Pr(B | A_i)\Pr(A_i) +...+ \Pr(B | A_n)\Pr(A_n)}$$
 
-Let's examine our \textit{burning} question, by replacing $A_i$ with $Hell$ or $Heaven$, and replacing $B$ with $Consort$
+Let's examine our \textit{burning} question, by replacing $A_i$ with Hell or Heaven, and replacing $B$ with Consort
 
 \begin{itemize}
-\item $Pr(A_1) = Pr(Hell)$
-\item $Pr(A_2) = Pr(Heaven)$
-\item $Pr(B) = Pr(Consort)$
-\item $Pr(A_1 | B) = Pr(Hell | Consort)$
-\item $Pr(A_2 | B) = Pr(Heaven | Consort)$
-\item $Pr(B | A_1) = Pr(Consort | Hell)$
-\item $Pr(B | A_2) = Pr(Consort | Heaven)$
+\item $\Pr(A_1) = \Pr(\mathrm{Hell})$
+\item $\Pr(A_2) = \Pr(\mathrm{Heaven})$
+\item $\Pr(B) = \Pr(\mathrm{Consort})$
+\item $\Pr(A_1 | B) = \Pr(\mathrm{Hell} | \mathrm{Consort})$
+\item $\Pr(A_2 | B) = \Pr(\mathrm{Heaven} | \mathrm{Consort})$
+\item $\Pr(B | A_1) = \Pr(\mathrm{Consort} | \mathrm{Hell})$
+\item $\Pr(B | A_2) = \Pr(\mathrm{Consort} | \mathrm{Heaven})$
 \end{itemize}
 
 Laplace's Demon was conjured and asked for some data. He was glad to oblige.
@@ -101,17 +101,17 @@ Laplace's Demon was conjured and asked for some data. He was glad to oblige.
 Now, Bayes' theorem is applied to the data. Four pieces are worked out as follows
 
 \begin{itemize}
-\item $Pr(Consort | Hell) = 6/9 = 0.666$
-\item $Pr(Consort | Heaven) = 5/7 = 0.714$
-\item $Pr(Hell)$ = 0.75
-\item $Pr(Heaven)$ = 0.25
+\item $\Pr(\mathrm{Consort} | \mathrm{Hell}) = 6/9 = 0.666$
+\item $\Pr(\mathrm{Consort} | \mathrm{Heaven}) = 5/7 = 0.714$
+\item $\Pr(\mathrm{Hell})$ = 0.75
+\item $\Pr(\mathrm{Heaven})$ = 0.25
 \end{itemize}
 
-Finally, the desired conditional probability $\Pr(Hell | Consort)$ is calculated using Bayes' theorem
+Finally, the desired conditional probability $\Pr(\mathrm{Hell} | \mathrm{Consort})$ is calculated using Bayes' theorem
 
 \begin{itemize}
-\item $Pr(Hell | Consort) = \frac{0.666(0.75)}{0.666(0.75) + 0.714(0.25)}$
-\item $Pr(Hell | Consort) = 0.737$
+\item $\Pr(\mathrm{Hell} | \mathrm{Consort}) = \frac{0.666(0.75)}{0.666(0.75) + 0.714(0.25)}$
+\item $\Pr(\mathrm{Hell} | \mathrm{Consort}) = 0.737$
 \end{itemize}
 
 The probability of someone consorting with Laplace's Demon and going to Hell is 73.7\%, which is less than the prevalence of 75\% in the population. According to these findings, consorting with Laplace's Demon does not increase the probability of going to Hell. With that in mind, please continue\dots
@@ -185,7 +185,7 @@ When prior information is unavailable about $\theta$, which is more common, an u
 
 Uninformative prior distributions (also called diffuse, minimal, non-informative, objective, reference, uniform, or vague priors\footnote{These terms are not all equivalent. For example, `reference priors' are proposed, and are quite different from typical vague priors \citep{bernardo00}. With reference priors, the idea is to maximize the expected Kullback-Leibler divergence of the posterior distribution relative to the prior. This maximizes the expected posterior information about $y$ when the prior density is $p(y)$. In some sense, $p(y)$ is the `least informative' prior about $y$. Reference priors are often the objective prior of choice in multivariate problems, since other rules (e.g., Jeffreys' rule) may result in priors with problematic behavior.}) attempt to minimize the impact of the selection of the prior distribution. The rationale for using uninformative prior distributions is often said to be 'to let the data speak for themselves'. The epitome of uninformative prior distributions is the unbounded, uniform distribution, often called a flat prior, such as
 
-$$\theta \sim U(-\infty, \infty)$$
+$$\theta \sim \mathrm{U}(-\infty, \infty)$$
 
 where $\theta$ is uniformly-distributed from negative infinity to positive infinity. Although this allows the posterior distribution to be affected soley by the data with no impact from prior information, this should generally be avoided because the posterior distribution is improper, meaning it will not integrate to one, because the integral of the assumed $p(\theta)$ is infinity, which violates the assumption that the probabilities sum to one.
 
@@ -193,13 +193,15 @@ Reverend Thomas Bayes (1702-1761) was the first to use inverse probability \cite
 
 There is often at least some information about $\theta$ to include in a prior distribution of $\theta$, such as $\theta$ must be positive, or $\theta$ must be less than some limit. It is popular, for good reasons, to center and scale all continuous predictors \citep{gelman08}. Although centering and scaling predictors is not discussed here, it should be obvious that the potential range of the posterior distribution of $\theta$ for a centered and scaled predictor should be small. A popular, uninformative prior distribution for a centered and scaled predictor may be
 
-$$\theta \sim N(0, 10000)$$
+$$\theta \sim \mathcal{N}(0, 10000)$$
 
 where $\theta$ is normally-distributed according to a mean of 0 and a variance of 10,000, which is equivalent to a standard deviation of 100, or precision of 1.0E-4. In this case, the density for $\theta$ is nearly flat. Nonetheless, the fact that it is not perfectly flat yields good properties for numerical approximation algorithms. In both Bayesian and frequentist inference, it is possible for numerical approximation algorithms to become stuck in regions of flat density, which become more common as sample size decreases or model complexity increases. Numerical approximation algorithms in frequentist inference function as though a completely flat, uninformative prior were used, so numerical approximation algorithms in frequentist inference become stuck more frequently than numerical approximation algorithms in Bayesian inference. Prior distributions that are not completely flat provide enough information for the numerical approximation algorithm to continue to explore the target density, the posterior distribution.
 
 \section{Hierarchical Bayes}
 
-Prior distributions may be estimated within the model via hyperprior distributions, which are usually uninformative and nearly flat. Using hyperprior distributions to estimate prior distributions is known as hierarchical Bayes. In theory, this process could continue further, using hyper-hyperprior distributions to estimate the hyperprior distributions. Recall that the unnormalized joint posterior distribution (equation \ref{jointposterior}) is proportional to the likelihood times the prior distribution
+Prior distributions may be estimated within the model via hyperprior distributions, which are usually uninformative and nearly flat. Using hyperprior distributions to estimate prior distributions is known as hierarchical Bayes. In theory, this process could continue further, using hyper-hyperprior distributions to estimate the hyperprior distributions. Estimating priors through hyperpriors, and from the data, is a method to elicit the optimal prior distributions. One of many natural uses for hierarchical Bayes is multilevel modeling.
+
+Recall that the unnormalized joint posterior distribution (equation \ref{jointposterior}) is proportional to the likelihood times the prior distribution
 
 $$p(\Theta | y) \propto p(y | \Theta)p(\Theta)$$
 
@@ -213,14 +215,14 @@ where $\Phi$ is a set of hyperprior distributions. By reading the equation from 
 
 When the posterior distribution $p(\Theta | y)$ is in the same family as the prior probability distribution $p(\Theta)$, the prior and posterior are then called conjugate distributions, and the prior is called a conjugate prior for the likelihood. For example, the Gaussian family is conjugate to itself (or self-conjugate) with respect to a Gaussian likelihood function: if the likelihood function is Gaussian, then choosing a Gaussian prior for the mean will ensure that the posterior distribution is also Gaussian. All probability distributions in the exponential family have conjugate priors. See \citet{gelman04} for a catalog.
 
-Although the gamma distribution is the conjugate prior distribution for the precision of a normal distribution, better properties for hierarchical Bayes are yielded with the non-congjuate, proper, half-Cauchy distribution \citep{gelman06}, such as
+Although the gamma distribution is the conjugate prior distribution for the precision of a normal distribution \citep{spiegelhalter03}, 
 
-$$\sigma \sim U(0, 100)$$
+$$\tau \sim \Gamma(0.001, 0.001),$$
+
+better properties for variance parameters in hierarchical Bayes are yielded with the non-conjugate, proper, half-Cauchy distribution, or more usually, by placing a uniform distribution on $\sigma$ \citep{gelman06}, such as
+
+$$\sigma \sim \mathrm{U}(0, 100)$$
 $$\tau = \sigma^{-2}$$
-
-This is noteworthy because most examples of Bayesian inference use Spiegelhalter's suggested form \citep{spiegelhalter03}
-
-$$\tau \sim \Gamma(0.001, 0.001)$$
 
 Conjugacy is mathematically convenient in that the posterior distribution follows a known parametric form \citep[p. 40]{gelman04}. It is obviously easier to summarize a normal distribution than a complex, multi-modal distribution with no known form. If information is available that contradicts a conjugate parametric family, then it may be necessary to use a more realistic, inconvenient, prior distribution.
 
@@ -297,8 +299,8 @@ where $y$ is the observed outcome of an experiment, and the likelihood ($\mathsc
 
 For example, in a Bayesian linear regression with an intercept and two independent variables, the model may be specified as
 
-$$y_i \sim N(\mu_i, \tau^{-1})$$
-$$\mu_i = \beta_1 + \beta_2X_{i,1} + \beta_3X_{i,2}$$
+$$y_i \sim \mathcal{N}(\mu_i, \tau^{-1})$$
+$$\mu_i = \beta_1 + \beta_2\textbf{X}_{i,1} + \beta_3\textbf{X}_{i,2}$$
 
 The dependent variable $y$, indexed by $i=1,...,n$, is stochastic, and normally-distributed according to the expectation vector $\mu$, and the inverse of the residual precision $\tau$, where the scalar $\tau$ is the inverse of the variance. Expectation vector $\mu$ is an additive, linear function of a vector of regression parameters, $\beta$, and the design matrix \textbf{X}.
 
@@ -356,7 +358,7 @@ $$p(y^{new} | y) = \int p(y^{new} | \beta,\tau^{-1})p(\beta,\tau^{-1} | y) d\bet
 
 The posterior predictive distribution is easy to estimate, since it is the same thing as the expectation $\mu$ in
 
-$$y^{new} \sim N(\mu, \tau^{-1})$$
+$$y^{new} \sim \mathcal{N}(\mu, \tau^{-1})$$
 
 where $\mu$ = \textbf{X}$\beta$, and $\mu$ is the conditional mean, while $\tau$ is the residual precision, which is equal to the inverse of the variance, $\sigma^2$.
 
@@ -368,17 +370,17 @@ Hypothesis testing with Bayes factors is more robust than frequentist hypothesis
 
 The Bayes factor for comparing two models may be approximated as the ratio of the marginal likelihood of the data in model 1 and model 2. Formally, the Bayes factor in this case is
 
-$$B = \frac{p(y|M_1)}{p(y|M_2)} = \frac{\int p(y|\Theta_1,M_1)p(\Theta_1|M_1)d\Theta_1}{\int p(y|\Theta_2,M_2)p(\Theta_2|M_2)d\Theta_2}$$
+$$B = \frac{p(y|\mathcal{M}_1)}{p(y|\mathcal{M}_2)} = \frac{\int p(y|\Theta_1,\mathcal{M}_1)p(\Theta_1|\mathcal{M}_1)d\Theta_1}{\int p(y|\Theta_2,\mathcal{M}_2)p(\Theta_2|\mathcal{M}_2)d\Theta_2}$$
 
-where $p(y|M_1)$ is the marginal likelihood of the data in model 1.
+where $p(y|\mathcal{M}_1)$ is the marginal likelihood of the data in model 1.
 
-The Bayes factor, $B$, is the posterior odds in favor of the hypothesis divided by the prior odds in favor of the hypothesis, where the hypothesis is usually $M_1 > M_2$. Put another way,
+The Bayes factor, $B$, is the posterior odds in favor of the hypothesis divided by the prior odds in favor of the hypothesis, where the hypothesis is usually $\mathcal{M}_1 > \mathcal{M}_2$. Put another way,
 
 \begin{center}
 (Posterior model odds) = (Bayes factor) x (prior model odds)
 \end{center}
 
-For example, when $B=2$, the data favor $M_1$ over $M_2$ with 2:1 odds. Table \ref{bf} shows a variation of Jeffreys' interpretation of the Bayes factor \citep{jeffreys61}.
+For example, when $B=2$, the data favor $\mathcal{M}_1$ over $\mathcal{M}_2$ with 2:1 odds. Table \ref{bf} shows a variation of Jeffreys' interpretation of the Bayes factor \citep{jeffreys61}.
 
 \begin{Scode}{echo=false}
 library(xtable)
@@ -408,7 +410,7 @@ $$p(y|m) = (2\pi)^{d_m/2}|\Sigma_m|^{1/2}p(y|\Theta_m,m)p(\Theta_m|m)$$
 
 where $d$ is the number of parameters and $\Sigma$ is the inverse of the negative of the Hessian matrix of second derivatives. \citet{lewis97} introduce the Laplace-Metropolis method of approximating the marginal likelihood in MCMC, though it naturally works with Laplace Approximation as well. For a hierarchical model that involves both fixed and random effects, the Compound Laplace-Metropolis Estimator must be used.
 
-Gelman finds Bayes factors generally to be irrelevant, because they compute the relative probabilities of the models conditional on one of them being true. Gelman prefers approaches that measure the distance of the data to each of the approximate models \citep[p. 180]{gelman04}. However, \citet{kass95} explain that ``the logarithm of the marginal probability of the data may also be viewed as a predictive score. This is of interest, because it leads to an interpretation of the Bayes factor that does not depend on viewing one of the models as 'true'''.
+Gelman finds Bayes factors generally to be irrelevant, because they compute the relative probabilities of the models conditional on one of them being true. Gelman prefers approaches that measure the distance of the data to each of the approximate models \citep[p. 180]{gelman04}. However, \citet{kass95} explain that ``the logarithm of the marginal probability of the data may also be viewed as a predictive score. This is of interest, because it leads to an interpretation of the Bayes factor that does not depend on viewing one of the models as `true'''.
 
 Two of many possible alternatives are to use
 
@@ -431,25 +433,25 @@ Just as with the likelihood, $p(y | \Theta)$, or log-likelihood, the deviance ex
 
 It is possible to have a negative deviance. Deviance is derived from the likelihood, which is derived from probability density functions (PDF). Evaluated at a certain point in parameter space, a PDF can have a density larger than 1 due to a small standard deviation or lack of variation. Likelihoods greater than 1 lead to negative deviance, and are appropriate.
 
-On its own, the deviance is an insufficient model fit statistic, because it does not take model complexity into account. The effect of model fitting, $pD$, is used as the `effective number of parameters' of a Bayesian model. The sum of the differences between the posterior mean of the model-level deviance and the deviance at each draw $i$ of $\theta_i$ is the $pD$.
+On its own, the deviance is an insufficient model fit statistic, because it does not take model complexity into account. The effect of model fitting, pD, is used as the `effective number of parameters' of a Bayesian model. The sum of the differences between the posterior mean of the model-level deviance and the deviance at each draw $i$ of $\theta_i$ is the pD.
 
-A related way to measure model complexity is as half the posterior variance of the model-level deviance, known as $pV$ \citep[p. 182]{gelman04}
+A related way to measure model complexity is as half the posterior variance of the model-level deviance, known as pV \citep[p. 182]{gelman04}
 
-$$pV = var(D) / 2$$
+$$\mathrm{pV} = \mathrm{var}(D) / 2$$
 
-The effect of model fitting, $pD$ or $pV$, can be thought of as the number of `unconstrained' parameters in the model, where a parameter counts as: 1 if it is estimated with no constraints or prior information; 0 if it is fully constrained or if all the information about the parameter comes from the prior distribution; or an intermediate value if both the data and the prior are informative \citep[p. 182]{gelman04}. Therefore, by including prior information, Bayesian inference is more efficient in terms of the effective number of parameters than frequentist inference. Hierarchical, mixed effects, or multilevel models are even more efficient regarding the effective number of parameters.
+The effect of model fitting, pD or pV, can be thought of as the number of `unconstrained' parameters in the model, where a parameter counts as: 1 if it is estimated with no constraints or prior information; 0 if it is fully constrained or if all the information about the parameter comes from the prior distribution; or an intermediate value if both the data and the prior are informative \citep[p. 182]{gelman04}. Therefore, by including prior information, Bayesian inference is more efficient in terms of the effective number of parameters than frequentist inference. Hierarchical, mixed effects, or multilevel models are even more efficient regarding the effective number of parameters.
 
-Model complexity, $pD$ or $pV$, should be positive. Although $pV$ must be positive since it is related to variance, it is possible for $pD$ to be negative, which indicates one or more problems: log-likelihood is non-concave, a conflict between the prior and the data, or that the posterior mean is a poor estimator (such as with a bimodal posterior).
+Model complexity, pD or pV, should be positive. Although pV must be positive since it is related to variance, it is possible for pD to be negative, which indicates one or more problems: log-likelihood is non-concave, a conflict between the prior and the data, or that the posterior mean is a poor estimator (such as with a bimodal posterior).
 
-The sum of both the mean model-level deviance and the model complexity ($pD$ or $pV$) is the Deviance Information Criterion ($DIC$), a model fit statistic
+The sum of both the mean model-level deviance and the model complexity (pD or pV) is the Deviance Information Criterion (DIC), a model fit statistic
 
-$$DIC = \bar{D} + pV$$
+$$\mathrm{DIC} = \bar{D} + \mathrm{pV}$$
 
-$DIC$ may be compared across different models and even different methods, as long as the dependent variable does not change between models, making $DIC$ the most flexible model fit statistic. $DIC$ is a hierarchical modeling generalization of the Akaike Information Criterion (AIC) and Bayesian Information Criterion (BIC). Like AIC and BIC, it is an asymptotic approximation as the sample size becomes large. $DIC$ is valid only when the joint posterior distribution is approximately multivariate normal. Models should be preferred with smaller $DIC$. Since $DIC$ increases with model complexity ($pD$ or $pV$), simpler models are preferred.
+DIC may be compared across different models and even different methods, as long as the dependent variable does not change between models, making DIC the most flexible model fit statistic. DIC is a hierarchical modeling generalization of the Akaike Information Criterion (AIC) and Bayesian Information Criterion (BIC). Like AIC and BIC, it is an asymptotic approximation as the sample size becomes large. DIC is valid only when the joint posterior distribution is approximately multivariate normal. Models should be preferred with smaller DIC. Since DIC increases with model complexity (pD or pV), simpler models are preferred.
 
-It is difficult to say what would constitute an important difference in DIC. Very roughly, differences of more than 10 might rule out the model with the higher $DIC$, differences between 5 and 10 are substantial, but if the difference in $DIC$ is, say, less than 5, and the models make very different inferences, then it could be misleading just to report the model with the lowest $DIC$. 
+It is difficult to say what would constitute an important difference in DIC. Very roughly, differences of more than 10 might rule out the model with the higher DIC, differences between 5 and 10 are substantial, but if the difference in DIC is, say, less than 5, and the models make very different inferences, then it could be misleading just to report the model with the lowest DIC.
 
-The expected predictive deviance has been suggested as a criterion of model fit when the goal is to pick a model with the best out-of-sample predictive power. It can be approximately estimated with a predictive $DIC$, estimated by comparing the deviance between $y^{new}$ and $y^{holdout}$.
+The expected predictive deviance has been suggested as a criterion of model fit when the goal is to pick a model with the best out-of-sample predictive power. It can be approximately estimated with a predictive DIC, estimated by comparing the deviance between $y^{new}$ and $y^{holdout}$.
 
 \section{Posterior Predictive Checks}
 
@@ -463,7 +465,7 @@ Gelman recommends at the most basic level to compare $y^{rep}$ to $y$, looking f
 
 A Bayesian form of p-value may be estimated with a variety of test statistics \citep{gelman96a}. Usually the minimum or maximum observed $y$ is compared to the minimum or maximum $y^{rep}$.
 
-Frequentist p-values have many problems, but here it will only be noted that the frequentist p-value estimates $p(data | hypothesis)$, while in this case the Bayesian form estimates $p(hypothesis | data)$. The frequentist estimates the wrong probability, because the frequentist is forced to consider the parameters to be fixed and the data random, projecting long-run frequencies of what should happen with future, repeated sampling of similar data, given a fixed parameter, or in this case hypothesis. Even the term hypothesis testing suggests you want to test the hypothesis given the data, not the data given the hypothesis\footnote{Numerous problems with frequentist p-values, confidence intervals, point estimates, and hypothesis testing are worth exploring, but not detailed in this article.}.
+Frequentist p-values have many problems, but here it will only be noted that the frequentist p-value estimates $p(\mathrm{data} | \mathrm{hypothesis})$, while in this case the Bayesian form estimates $p(\mathrm{hypothesis} | \mathrm{data})$. The frequentist estimates the wrong probability, because the frequentist is forced to consider the parameters to be fixed and the data random, projecting long-run frequencies of what should happen with future, repeated sampling of similar data, given a fixed parameter, or in this case hypothesis. Even the term hypothesis testing suggests you want to test the hypothesis given the data, not the data given the hypothesis\footnote{Numerous problems with frequentist p-values, confidence intervals, point estimates, and hypothesis testing are worth exploring, but not detailed in this article.}.
 
 \subsection{Conditional Predictive Ordinate}
 
@@ -475,7 +477,7 @@ $$p(y_i | y_{[i]}) = \int p(y_i |\Theta)p(\Theta | y_{[i]})d\Theta$$
 
 where $y_i$ is each instance of an observed $y$, and $y_{[i]}$ is $y$ without the current observation $i$. The CPO is easy to calculate with MCMC numerical approximation. By considering the inverse likelihood across $T$ iterations, the CPO for each individual $i$ is
 
-$$CPO_i = \frac{1}{T^{-1} \sum^T_{t=1} p(y_i | \Theta_t)^{-1}}$$
+$$\mathrm{CPO}_i = \frac{1}{T^{-1} \displaystyle\sum^T_{t=1} p(y_i | \Theta_t)^{-1}}$$
 
 The CPO is a handy posterior predictive check because it may be used to identify outliers, influential observations, and for hypothesis testing across different non-nested models. However, it may be difficult to calculate with latent mixtures.
 
@@ -490,7 +492,7 @@ The sum of the logged CPO's can be an estimator for the log marginal likelihood,
 \subsection{Predictive Concordance}
 \citet{gelfand96} suggests that any $y_i$ that is in either 2.5\% tail area of $y^{rep}_i$ should be considered an outlier. For each $i$, I am calling this the predictive quantile (PQ), which is calculated as
 
-$$PQ_i = p(y^{rep}_i > y_i)$$
+$$\mathrm{PQ}_i = p(y^{rep}_i > y_i)$$
 
 and is somewhat similar to the Bayesian p-value. The percentage of $y_i$'s that are not outliers is called the `Predictive Concordance'. \citet{gelfand96} suggests the goal is to attempt to achieve 95\% predictive concordance. In the case of, say 80\% predictive concordance, the discrepancy between the model and data is undesirable because the model does not fit the data well and many outliers have resulted. On the other hand, if the predictive concordance is too high, say 100\%, then overfitting may have occurred, and it may be worth considering a more parsimonious model. Kernel density plots of each $y^{rep}_i$ distribution are useful in this case with the actual $y_i$ included as a vertical bar to show its position.
 
@@ -516,7 +518,7 @@ frequentist inference.
 \item Bayesian inference via MCMC has a theoretic guarantee than the MCMC algorithm will converge if run long enough. Frequentist inference with Maximum Likelihood Estimation (MLE) has no guarantee of convergence.
 \item Bayesian inference via MCMC is unbiased with respect to sample size and can accommodate any sample size no matter how small. Frequentist inference becomes more biased as sample size decreases from infinity, and is often wildly biased with small samples, so minimum sample size is an issue. Conversely, frequentist inference with large sample sizes biases p-values to indicate that insignificant effects are significant.
 \item Bayesian inference via MCMC uses exact estimation with respect to sample size. Frequentist inference uses approximate estimation that relies on asymptotic theory.
-\item Bayesian inference with correlated predictors sometimes allows the prior parameters to be distributed multivariate-normal, therefore including such correlation into the MCMC algorithm to improve estimation. Frequentist inference does not use prior distributions, so confidence intervals are wider and less certain with correlated predictors.
+\item Bayesian inference with correlated predictors sometimes allows the hyperparameters to be distributed multivariate-normal, therefore including such correlation into the MCMC algorithm to improve estimation. Frequentist inference does not use prior distributions, so confidence intervals are wider and less certain with correlated predictors.
 \item Bayesian inference with proper priors is immune to singularities and near-singularities with matrix inversions, unlike frequentist inference.
 \end{itemize}
   

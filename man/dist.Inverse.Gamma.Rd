@@ -29,8 +29,8 @@ rinvgamma(n, shape, scale=1)
     \item Application: Continuous Univariate
     \item Density: p(theta) = (beta^alpha / gamma(alpha)) * theta^(-(alpha + 1)) *exp(-beta / theta), theta > 0
     \item Inventor: Unknown (to me, anyway)
-    \item Notation 1: theta ~ Inv-gamma(alpha, beta)
-    \item Notation 2: p(theta) = Inv-gamma(theta | alpha, beta)
+    \item Notation 1: theta ~ Gamma^-1(alpha, beta)
+    \item Notation 2: p(theta) = Gamma^-1(theta | alpha, beta)
     \item Parameter 1: shape alpha > 0
     \item Parameter 2: scale beta > 0
     \item Mean: E(theta) = beta / (alpha - 1), for alpha > 1

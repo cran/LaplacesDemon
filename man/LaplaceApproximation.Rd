@@ -313,7 +313,7 @@ Initial.Values <- c(rep(0,J), log(1))
 ##########################  Model Specification  ##########################
 Model <- function(parm, Data)
      {
-     ### Prior Parameters
+     ### Hyperparameters
      beta.mu <- rep(0,Data$J)
      beta.tau <- rep(1.0E-3,Data$J)
      tau.alpha <- 1.0E-3

@@ -15,6 +15,7 @@ Cov2Cor(Sigma)
     \item{Sigma}{This is a covariance matrix, and may be entered as
       either a matrix or vector.}
 }
+\details{\code{Cov2Cor} is an expanded form of the \code{cov2cor} function in the \code{stats} package, where \code{Cov2Cor} is also able to accept and return a vectorized matrix.}
 \value{
      \code{Cov2Cor} returns a correlation matrix, either as a matrix or
      vector according to whether the covariance matrix was passed to it

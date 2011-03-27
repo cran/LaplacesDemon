@@ -59,7 +59,7 @@ In 1814, Laplace published his ``Essai Philosophique sur les Probabilites'', whi
 
 The `intellect' has been referred to by future biographers as Laplace's Demon. In this quote, Laplace expresses his philosophical belief in hard determinism and his wish for a computational machine that is capable of estimating the universe.
 
-This article is an introduction to an \proglang{R} \citep{rdct:r} package called \pkg{LaplacesDemon} \citep{hall11}, which was designed without consideration for hard determinism, but instead with a lofty goal toward facilitating high-dimensional Bayesian (or Laplacian) inference\footnote{Even though the \pkg{LaplacesDemon} package is dedicated to Bayesian inference, frequentist inference may be used instead with the same functions by omitting the prior distributions and maximizing the likelihood.}, posing as its own intellect that is capable of impressive analysis. The \pkg{LaplacesDemon} \proglang{R} package is often referred to as Laplace's Demon. This article guides the user through installation, data, specifying a model, initial values, updating Laplace's Demon, summarizing and plotting output, posterior predictive checks, general suggestions, discusses independence and observability, covers details of the algorithm, software comparisons, discusses large data sets and speed, and explains future goals.
+This article is an introduction to an \proglang{R} \citep{rdct:r} package called \pkg{LaplacesDemon} \citep{r:laplacesdemon}, which was designed without consideration for hard determinism, but instead with a lofty goal toward facilitating high-dimensional Bayesian (or Laplacian) inference\footnote{Even though the \pkg{LaplacesDemon} package is dedicated to Bayesian inference, frequentist inference may be used instead with the same functions by omitting the prior distributions and maximizing the likelihood.}, posing as its own intellect that is capable of impressive analysis. The \pkg{LaplacesDemon} \proglang{R} package is often referred to as Laplace's Demon. This article guides the user through installation, data, specifying a model, initial values, updating Laplace's Demon, summarizing and plotting output, posterior predictive checks, general suggestions, discusses independence and observability, covers details of the algorithm, software comparisons, discusses large data sets and speed, and explains future goals.
 
 Herein, it is assumed that the reader has basic familiarity with Bayesian inference, numerical approximation, and \proglang{R}. If any part of this assumption is violated, then suggested sources include the vignette entitled ``Bayesian Inference'' that comes with the \pkg{LaplacesDemon} package, \citet{gelman04}, and \citet{crawley07}.
 
@@ -99,24 +99,24 @@ Laplace's Demon will consider using Laplace Approximation, and part of this cons
 \section{Specifying a Model} \label{specification}
 Laplace's Demon is capable with any Bayesian model for which the likelihood is specified\footnote{Examples of numerous Bayesian models may be found in the ``Examples'' vignette that comes with the \pkg{LaplacesDemon} package.}. To use Laplace's Demon, the user must specify a model. Let's consider a linear regression model, which is often denoted as:
 
-$$y \sim N(\mu, \sigma^2)$$
+$$y \sim \mathcal{N}(\mu, \sigma^2)$$
 $$\mu = \textbf{X}\beta$$
 
 The dependent variable, $y$, is normally distributed according to expectation vector $\mu$ and scalar variance $\sigma^2$, and expectation vector $\mu$ is equal to the inner product of design matrix \textbf{X} and parameter vector $\beta$.
 
 For a Bayesian model, the notation for the residual variance, $\sigma^2$, is often replaced with the residual precision, $\tau^{-1}$. Prior probabilities are specified for $\beta$ and $\tau$:
 
-$$\beta_j \sim N(0, 1000), \quad j=1,\dots,J$$
+$$\beta_j \sim \mathcal{N}(0, 1000), \quad j=1,\dots,J$$
 $$\tau \sim \Gamma(0.001, 0.001)$$
 
-Each of the J $\beta$ parameters is assigned an uninformative prior probability distribution that is normally-distributed according to $\mu=0$ and $\sigma^2=1000$, where the precision is $\tau=0.001$. The large variance or small precision indicates a lot of uncertainty about each $\beta$, and is hence a uninformative distribution. The residual precision $\tau$ is gamma-distributed according to two parameters of its distribution: $\alpha=0.001$ and $\beta=0.001$.
+Each of the J $\beta$ parameters is assigned an uninformative prior probability distribution that is normally-distributed according to $\mu=0$ and $\sigma^2=1000$, where the precision is $\tau=0.001$. The large variance or small precision indicates a lot of uncertainty about each $\beta$, and is hence an uninformative distribution. The residual precision $\tau$ is gamma-distributed according to two parameters of its distribution: $\alpha=0.001$ and $\beta=0.001$.
 
 To specify a model, the user must create a function called \code{Model}. Here is an example for a linear regression model:
 
 \begin{Scode}
 Model <- function(parm, Data)
      {
-     ### Prior Parameters
+     ### Hyperparameters
      beta.mu <- rep(0,Data$J)
      beta.tau <- rep(1.0E-3,Data$J)
      tau.alpha <- 1.0E-3
@@ -155,7 +155,7 @@ Then, the \code{Model} function is evaluated and the logarithm of the unnormaliz
 \hspace*{0.27 in} \code{yhat=mu, parm=parm)} \\
 \code{return(Modelout)}
 
-The rest of the function specifies the prior parameters, parameters, log of the prior densities, and calculates the log-likelihood. The prior parameters specify the parameters for the prior distributions. Since design matrix \textbf{X} has J=\Sexpr{J} column vectors (including the intercept), there are \Sexpr{J} \code{beta} parameters and a \code{tau} parameter for residual precision, the inverse of the variance. Each of the \code{J beta} parameters will be distributed normally according to mean \code{beta.mu} and precision \code{beta.tau}, and the additional \code{tau} parameter will be gamma-distributed according to \code{tau.alpha} and \code{tau.beta}. Here are the specifications for the prior parameters:
+The rest of the function specifies the hyperparameters, parameters, log of the prior densities, and calculates the log-likelihood. The hyperparameters specify the parameters for the prior distributions. Since design matrix \textbf{X} has J=\Sexpr{J} column vectors (including the intercept), there are \Sexpr{J} \code{beta} parameters and a \code{tau} parameter for residual precision, the inverse of the variance. Each of the \code{J beta} parameters will be distributed normally according to mean \code{beta.mu} and precision \code{beta.tau}, and the additional \code{tau} parameter will be gamma-distributed according to \code{tau.alpha} and \code{tau.beta}. Here are the specifications for the hyperparameters:
 
 \code{beta.mu <- rep(0,Data$J)} \\
 \code{beta.tau <- rep(1.0E-3,Data$J)} \\
@@ -167,7 +167,7 @@ Since Laplace's Demon passes a vector of parameters called \code{parm} to \code{
 \code{beta <- parm[1:Data$J]} \\
 \code{tau <- exp(parm[Data$J+1])}
 
-To work with the log of the prior densities and according to the assigned names of the parameters and prior parameters, they are specified as follows:
+To work with the log of the prior densities and according to the assigned names of the parameters and hyperparameters, they are specified as follows:
 
 \code{beta.prior <- dnorm(beta, beta.mu, 1/sqrt(beta.tau), log=TRUE)} \\
 \code{tau.prior <- dgamma(tau, tau.alpha, tau.beta, log=TRUE)}
@@ -184,7 +184,7 @@ Laplace's Demon will increase or decrease \code{parm[Data$J+1]}, which is effect
 
 Finally, everything is put together to calculate \code{LP}, the logarithm of the unnormalized joint posterior density. The expectation vector \code{mu} is the inner product (\code{\%*\%}) of the vector \code{beta} and the transposed design matrix, \code{t(Data$X)}. Expectation vector \code{mu}, vector \code{Data$y}, and scalar \code{tau} are used to estimate the sum of the log-likelihoods, where:
 
-$$y \sim N(\mu, \tau^{-1})$$
+$$y \sim \mathcal{N}(\mu, \tau^{-1})$$
 
 and as noted before, the logarithm of the unnormalized joint posterior density is:
 
@@ -614,7 +614,7 @@ At 10 evenly-space times, \code{LaplaceApproximation} attempts several step size
 
 Gradient ascent is criticized for sometimes being relatively slow when close to the maximum, and its asymptotic rate of convergence is inferior to other methods. However, compared to other popular optimization algorithms such as Newton-Rhapson, an advantage of the gradient ascent is that it works in infinite dimensions, requiring only sufficient computer memory. Although Newton-Rhapson converges in fewer iterations, calculating the inverse of the negative Hessian matrix of second-derivatives is more computationally expensive and subject to singularities. Therefore, gradient ascent takes longer to converge, but is more generalizable.
 
-After \code{LaplaceApproximation} finishes, due either to early convergence or completing the number of specified iterations, it approximates the Hessian matrix of second derivatives, and attempts to calculate the covariance matrix by taking the inverse of the negative of this matrix. If successful, then this covariance matrix may be passed to \code{LaplacesDemon}, and the diagonal of this matrix is the variance of the parameters. If unsuccessful, a scaled identity matrix is returned, and each parameter's variance will be 1.
+After \code{LaplaceApproximation} finishes, due either to early convergence or completing the number of specified iterations, it approximates the Hessian matrix of second derivatives, and attempts to calculate the covariance matrix by taking the inverse of the negative of this matrix. If successful, then this covariance matrix may be passed to \code{LaplacesDemon}, and the diagonal of this matrix is the variance of the parameters. If unsuccessful, then a scaled identity matrix is returned, and each parameter's variance will be 1.
 
 \subsection{Markov Chain Monte Carlo}
 
@@ -658,13 +658,13 @@ Given the number of dimensions (\textit{d}) or parameters, the optimal scale of 
 
 For multivariate adaptive tuning, the formula across \code{K} parameters and \code{t} iterations is:
 
-$$\Sigma^* = [\phi_K cov(\Theta_{1:t,1:K})] + (\phi_KC\textbf{I}_K)$$
+$$\Sigma^* = [\phi_K \mathrm{cov}(\Theta_{1:t,1:K})] + (\phi_KC\textbf{I}_K)$$
 
-where $\phi_K$ is the scale according to \code{K} parameters, $C$ is a small (1.0E-5) constant to ensure the proposal covariance matrix is positive definite (does not have zero or negative variance on the diagonal), and \textbf{I}$_K$ is a \code{K} x \code{K} identity matrix. The initial proposal covariance matrix, when none is provided, defaults to the scaling component multiplied by its identity matrix: $phi_K$\textbf{I}$_K$.
+where $\phi_K$ is the scale according to \code{K} parameters, $C$ is a small (1.0E-5) constant to ensure the proposal covariance matrix is positive definite (does not have zero or negative variance on the diagonal), and \textbf{I}$_K$ is a \code{K} x \code{K} identity matrix. The initial proposal covariance matrix, when none is provided, defaults to the scaling component multiplied by its identity matrix: $\phi_K$\textbf{I}$_K$.
 
 For single-component adaptive tuning, the formula across \code{K} parameters and \code{t} iterations is:
 
-$$\sigma^{*2}_k = \phi_k var(\Theta_{1:t_,k}) + \phi_kC$$
+$$\sigma^{*2}_k = \phi_k \mathrm{var}(\Theta_{1:t_,k}) + \phi_kC$$
 
 Each element in the initial vector of proposal variances is set equal to the asymptotic scale according to its dimensions: $\phi_k$.
 
@@ -695,11 +695,11 @@ The four MCMC algorithms in Laplace's Demon are generalizable, and generally rob
 
 At the time this article was written, the \pkg{AMCMC} package in \proglang{R} is unavailable on CRAN, but may be downloaded from the author's website\footnote{\pkg{AMCMC} is available from J. S. Rosenthal's website at \url{http://www.probability.ca/amcmc/}}. This download is best suited for a Linux, Mac, or UNIX operating system, because it requires the \code{gcc} \proglang{C} compiler, which is unavailable in Windows. It performs adaptive Metropolis-within-Gibbs \citep{roberts07}, and uses \proglang{C} language for significantly faster sampling. Metropolis-within-Gibbs is not as generalizable as adaptive MCMC. Otherwise, if the user wishes to see the code of the \pkg{AMCMC} sampler, then the user must also be familiar with \proglang{C} language.
 
-Also in \proglang{R}, the \pkg{mcmc} package \citep{geyer10} offers RWM with multivariate Gaussian proposals and allows batching, as well as a simulated tempering algorithm, but it does not have any adaptive algorithms.
+Also in \proglang{R}, the \pkg{mcmc} package \citep{r:mcmc} offers RWM with multivariate Gaussian proposals and allows batching, as well as a simulated tempering algorithm, but it does not have any adaptive algorithms.
 
-The \pkg{MCMCpack} package \citep{martin10} in \proglang{R} takes a canned-function approach to RWM, which is convenient if the user needs the specific form provided, but is otherwise not generalizable. General-purpose RWM is included, but adaptive algorithms are not. It also offers the option of Laplace Approximation to optimize initial values, though the algorithm is evaluated in \code{optim}, which has not performed well in my testing of Laplace Approximations.
+The \pkg{MCMCpack} package \citep{r:mcmcpack} in \proglang{R} takes a canned-function approach to RWM, which is convenient if the user needs the specific form provided, but is otherwise not generalizable. General-purpose RWM is included, but adaptive algorithms are not. It also offers the option of Laplace Approximation to optimize initial values, though the algorithm is evaluated in \code{optim}, which has not performed well in my testing of Laplace Approximations.
 
-At the time this article was written, the \pkg{UMACS} package \citep{kerman07} has been removed from CRAN. It became outdated due to lack of interest, but did include an adaptive MCMC algorithm as well as Gibbs sampling.
+At the time this article was written, the \pkg{UMACS} package \citep{r:umacs} has been removed from CRAN. It became outdated due to lack of interest, but did include an adaptive MCMC algorithm as well as Gibbs sampling.
 
 In SAS 9.2 \citep{sas08}, an experimental procedure called \code{PROC MCMC} has been introduced. It is undeniably a rip-off of BUGS (including its syntax), though OpenBUGS is much more powerful, tested, and generalizable. Since SAS is proprietary, the user cannot see or manipulate the source code, and should expect much more from it than OpenBUGS or any open-source software, given the absurd price.
 
@@ -719,7 +719,7 @@ Following are some predictions of the future of Laplace's Demon:
 \item Additional MCMC algorithms will be explored and considered for inclusion.
 \item The MCMC algorithms will be attempted to be coded in \proglang{C++} for faster sampling, but will remain available in \proglang{R} code. The user will have the option to run the algorithm in \proglang{R} or \proglang{C++}, probably with an additional command such as \code{C=TRUE} in the \code{LaplacesDemon} function.
 \item The ``Examples'' vignette will grow as numerous examples of methods are included.
-\item Posterior predictive checks will be attempted to be expanded to accommodate a wider variety of methods, and more checks and plotting options will be included.
+\item Everything else will be expanded. Posterior predictive checks will be attempted to be expanded to accommodate a wider variety of methods, and more checks and plotting options will be included. More methods will be included for calculating the logarithm of the marginal likelihood. Attempts will be made to make \code{LaplaceApproximation} faster. 
 \end{enumerate}
 
 The \pkg{LaplacesDemon} package is a significant contribution toward Bayesian inference in \proglang{R}. In turn, contributions toward the development of Laplace's Demon are welcome. Please send an email to \email{statisticat@gmail.com} with constructive criticism, reports of software bugs, or offers to contribute to Laplace's Demon.

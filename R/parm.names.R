@@ -17,8 +17,8 @@ parm.names <- function(x, uppertri=NULL) {
      ### Length of parm.names
      totlen <- 0
      for (i in 1:parm.length) {
-          #if(is.array(x[[i]]) && (dim(x[[i]]) > 2))
-          #     stop("Arrays have yet to be included in parm.names().")
+          if(is.array(x[[i]])) {if(length(dim(x[[i]])) > 2) {
+               stop("Arrays have yet to be included in parm.names().")}}
           ### Scalar, Vector, or Non-Upper-Triangular Matrix
           if(uppertri[i] == 0) {
                xlen <- length(as.vector(x[[i]]))

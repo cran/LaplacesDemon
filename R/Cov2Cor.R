@@ -9,8 +9,14 @@
 
 Cov2Cor <- function(Sigma)
      {
+     if(any(is.na(Sigma))) stop("Sigma has missing values in Cov2Cor().")
+     if(any(is.nan(Sigma)))
+          stop("Sigma has non-numeric values (NaN's) in Cov2Cor().")
+     if(any(is.infinite(Sigma)))
+          stop("Sigma has infinite values in Cov2Cor().")
      if(is.matrix(Sigma)) {
-          if(nrow(Sigma) != ncol(Sigma)) stop("Sigma is not symmetric in cov2cor().")
+          if(nrow(Sigma) != ncol(Sigma))
+               stop("Sigma is not symmetric in Cov2Cor().")
           x <- 1 / sqrt(diag(Sigma))
           R <- x * t(x * Sigma)}
      if(is.vector(Sigma)) {

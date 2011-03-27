@@ -26,8 +26,8 @@
     \item Application: Continuous Multivariate
     \item Density: p(Sigma) = [|R|^(nu/2)|Sigma|^[-(nu+p+1)/2]exp(-tr[R*Sigma^(-1)]/2)]/[2^(nu*p/2)Gamma[p](nu/2)]
     \item Inventor: John Wishart (1928)
-    \item Notation 1: Sigma ~ Inv-Wishart[\code{nu}](\code{R})
-    \item Notation 2: p(Sigma) = Inv-Wishart[\code{nu}](\code{Sigma} | \code{R})
+    \item Notation 1: Sigma ~ W^-1[\code{nu}](\code{R})
+    \item Notation 2: p(Sigma) = W^-1[\code{nu}](\code{Sigma} | \code{R})
     \item Parameter 1: degrees of freedom \code{nu}
     \item Parameter 2: symmetric, non-singular p x p scale matrix \code{R}
     \item Mean: E(Sigma) = R / (nu - p - 1)

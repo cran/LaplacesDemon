@@ -413,6 +413,9 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
                rownames(Summ2)[nrow(Summ2)] <- Data$mon.names[j]
                }
           }
+     ### Column names to samples
+     if(NCOL(Mon) == length(Data$mon.names)) colnames(Mon) <- Data$mon.names
+     if(NCOL(thinned) == length(Data$parm.names)) colnames(thinned) <- Data$parm.names
      ### Logarithm of the Marginal Likelihood
      if(BurnIn >= NROW(thinned)) {LML <- LML(Model, Data,
           thinned[nrow(thinned),])}

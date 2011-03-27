@@ -27,8 +27,8 @@
     \item Application: Continuous Multivariate
     \item Density: p(Omega) = |S^(-1)|^(nu/2)|Omega|^[(nu-p-1)/2] exp{-(1/2)tr[S^(-1)Omega]}
     \item Inventor: John Wishart (1928)
-    \item Notation 1: Omega ~ Wishart[\code{nu}](\code{S})
-    \item Notation 2: p(Omega) = Wishart[\code{nu}](\code{Omega} | \code{S})
+    \item Notation 1: Omega ~ W[\code{nu}](\code{S})
+    \item Notation 2: p(Omega) = W[\code{nu}](\code{Omega} | \code{S})
     \item Parameter 1: degrees of freedom \code{nu}
     \item Parameter 2: symmetric, non-singular p x p inverse scale matrix \code{S}
     \item Mean: E(Omega) = nuS

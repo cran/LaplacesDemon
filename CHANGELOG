@@ -1,3 +1,8 @@
+2011-03-27 Bug Fix: predict.demonoid wasn't working with non-stationary samples
+2011-03-26 Vignette Examples: Added Panel, Autoregressive Poisson
+2011-03-25 Vignette Examples: Added Multinomial Logit, Nested
+2011-03-24 Vignette Examples: Added Binary Probit and Binomial Logit
+2011-03-23 Added interval function
 2011-03-20 Vignette Examples: Added Variable Selection
 2011-03-19 Vignette Examples: Added Factor Analysis, Confirmatory
 2011-03-18 Vignette Examples: Added ANOVA, One-Way

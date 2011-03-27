@@ -121,7 +121,7 @@ Initial.Values <- c(rep(0,J), log(1))
 ##########################  Model Specification  ##########################
 Model <- function(parm, Data)
      {
-     ### Prior Parameters
+     ### Hyperparameters
      beta.mu <- rep(0,Data$J)
      beta.tau <- rep(1.0E-3,Data$J)
      tau.alpha <- 1.0E-3
@@ -129,7 +129,7 @@ Model <- function(parm, Data)
      ### Parameters
      beta <- parm[1:Data$J]
      tau <- exp(parm[Data$J+1])
-     ### Log of Prior Densities
+     ### Log(Prior Densities)
      beta.prior <- dnorm(beta, beta.mu, 1/sqrt(beta.tau), log=TRUE)
      tau.prior <- dgamma(tau, tau.alpha, tau.beta, log=TRUE)
      ### Log-Posterior

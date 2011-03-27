@@ -2,8 +2,7 @@
 \alias{parm.names}
 \title{Parameter Names}
 \description{
-This function creates a vector of parameter names from a list of named
-parameter, and the list may contain any combination of scalars, vectors,
+This function creates a vector of parameter names from a list of parameters, and the list may contain any combination of scalars, vectors,
 matrices, and upper-triangular matrices.
 }
 \usage{
