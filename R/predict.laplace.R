@@ -29,6 +29,8 @@ predict.laplace <- function(object, Model, Data, Samples=1000, ...)
      ### p(y[rep] | y), Deviance, and Monitors
      deviance <- rep(NA, Samples)
      monitor <- matrix(NA, length(Data$mon.names), Samples)
+     lengthcomp <- as.vector(Model(post[1,], Data)[[4]])
+     if(length(lengthcomp) != length(y)) stop("y and yhat differ in length.\n")
      yhat <- matrix(NA, length(y), Samples)
      for (i in 1:Samples) {
           temp <- Model(post[i,], Data)
@@ -38,11 +40,11 @@ predict.laplace <- function(object, Model, Data, Samples=1000, ...)
           }
      rownames(monitor) <- Data$mon.names
      ### Warnings
-     if(sum(is.na(yhat)) > 0) cat("\nWARNING: Matrix yhat has ",
+     if(sum(is.na(yhat)) > 0) cat("\nWARNING: Output matrix yhat has ",
           sum(is.na(yhat)), " missing values.")
-     if(sum(is.nan(yhat)) > 0) cat("\nWARNING: Matrix yhat has ",
+     if(sum(is.nan(yhat)) > 0) cat("\nWARNING: Output matrix yhat has ",
           sum(is.nan(yhat)), " non-numeric (NaN) values.")
-     if(sum(is.infinite(yhat)) > 0) cat("\nWARNING: Matrix yhat has ",
+     if(sum(is.infinite(yhat)) > 0) cat("\nWARNING: Output matrix yhat has ",
           sum(is.infinite(yhat)), " infinite values.")
      ### Create Output
      predicted <- list(y=y, yhat=yhat, deviance=deviance,

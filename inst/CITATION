@@ -4,6 +4,6 @@ citEntry(entry  = "manual",
          author = "Byron Hall",
          title  = "LaplacesDemon: Software for Bayesian Inference",
          year   = "2011",
-         note   = "R package version 11.03.27",
+         note   = "R package version 11.04.04",
          url    = "http://cran.r-project.org/web/packages/LaplacesDemon/index.html",
      )
