@@ -322,12 +322,12 @@ Model <- function(parm, Data)
      beta <- parm[1:Data$J]
      tau <- exp(parm[Data$J+1])
      ### Log of Prior Densities
-     beta.prior <- dnorm(beta, beta.mu, 1/sqrt(beta.tau), log=TRUE)
+     beta.prior <- sum(dnorm(beta, beta.mu, 1/sqrt(beta.tau), log=TRUE))
      tau.prior <- dgamma(tau, tau.alpha, tau.beta, log=TRUE)
      ### Log-Posterior
      mu <- beta \%*\% t(Data$X)
      LL <- sum(dnorm(Data$y, mu, 1/sqrt(tau), log=TRUE))
-     LP <- LL + sum(beta.prior) + tau.prior
+     LP <- LL + beta.prior + tau.prior
      Modelout <- list(LP=LP, Dev=-2*LL, Monitor=c(tau,mu[1]), yhat=mu,
           parm=parm)
      return(Modelout)
@@ -337,7 +337,7 @@ Fit <- LaplaceApproximation(Model, Initial.Values, Data=MyData, Iterations=1000)
 Fit
 print(Fit)
 caterpillar.plot(Fit, Parms=1:6)
-plot(Fit,MyData, PDF=FALSE)
+plot(Fit, MyData, PDF=FALSE)
 Pred <- predict(Fit, Model, MyData)
 summary(Pred)
 plot(Pred)

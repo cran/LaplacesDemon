@@ -31,7 +31,7 @@
  Byron Hall\\
  STATISTICAT, LLC\\
  Farmington, CT\\
- E-mail: \email{statisticat@gmail.com}\\
+ E-mail: \email{laplacesdemon@statisticat.com}\\
  URL: \url{http://www.statisticat.com/laplacesdemon.html}
 }
 
@@ -532,7 +532,7 @@ Following is a short list of advantages of frequentist inference over Bayesian i
 \item Frequentist models have much shorter run-times than Bayesian models via MCMC (though Laplace Approximation yields run-times that are almost as fast as the frequentist MLE). Simple models with small sample sizes may be similar, but complex models with larger sample sizes may be minutes (frequentist) vs. weeks (Bayesian via MCMC).
 \end{itemize}
 
-Please send an email to \email{statisticat@gmail.com} with any questions or concerns about this article.
+Please send an email to \email{laplacesdemon@statisticat.com} with any questions or concerns about this article.
 
 \bibliography{References.bib}
 

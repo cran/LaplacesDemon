@@ -228,6 +228,60 @@ rmvt <- function(n=1, mu=rep(0,k), S, df=Inf)
      }
 
 ###########################################################################
+# Student t distribution (3-parameter)                                    #
+#                                                                         #
+# These functions are similar to those in the gamlss.dist package.        #
+###########################################################################
+
+dst<-function(x, mu=0, sigma=1, nu=10, log=FALSE)
+     {
+     if(any(sigma <= 0)) stop("sigma must be positive in dst().")
+     if(any(nu <= 0))  stop("nu must be positive in dst().")
+     if(length(nu) > 1) dens <- ifelse(nu > 1000000,
+          dnorm(x, mu, sigma, log=FALSE),
+          (1/sigma) * dt((x-mu)/sigma, df=nu, log=FALSE))
+     else dens <- if(nu > 1000000) dnorm(x, mu, sigma, log=FALSE)
+     else (1/sigma) * dt((x-mu)/sigma, df=nu, log=FALSE)
+     dens <- if(log == FALSE) dens else log(dens)
+     return(dens)
+     }
+pst <- function(q, mu=0, sigma=1, nu=10, lower.tail=TRUE, log.p=FALSE)
+     {
+     if(any(sigma <= 0)) stop("sigma must be positive in pst().")
+     if(any(nu <= 0)) stop("nu must be positive in pst().")
+     if(length(nu)>1) cdf <- ifelse(nu>1000000,
+          pnorm(q, mu, sigma, lower.tail=lower.tail, log.p=log.p),
+          pt((q-mu)/sigma, df=nu,   lower.tail=lower.tail, log.p=log.p))
+     else cdf <- if(nu > 1000000) pnorm(q, mu, sigma,
+          lower.tail=lower.tail, log.p=log.p)
+     else pt((q-mu)/sigma, df=nu, lower.tail=lower.tail, log.p=log.p)
+     return(cdf)
+     }
+qst <- function(p, mu=0, sigma=1, nu=10, lower.tail=TRUE, log.p=FALSE)
+     {
+     if(any(sigma <= 0)) stop("sigma must be positive in qst().")
+     if(any(nu <= 0)) stop("nu must be positive in qst().")
+     if(any(p < 0)|any(p > 1)) stop("p must be between 0 and 1 in qst().")
+     if(length(nu)>1) q <- ifelse(nu > 1000000,
+          qnorm(p, mu, sigma, lower.tail=lower.tail, log.p=log.p),
+          mu + sigma * qt(p, df=nu, lower.tail=lower.tail))
+     else q <- if(nu > 1000000) qnorm(p, mu, sigma,
+          lower.tail=lower.tail, log.p=log.p)
+     else mu + sigma * qt(p, df=nu, lower.tail=lower.tail)
+     return(q)
+     }
+rst <- function(n, mu=0, sigma=1, nu=10)
+     {
+     if(any(sigma <= 0)) stop("sigma must be positive in rst().")
+     if(any(nu <= 0)) stop("nu must be positive in rst().")
+     if(any(n <= 0)) stop("n must be a positive integer in rst().")
+     n <- ceiling(n)
+     p <- runif(n)
+     r <- qst(p, mu=mu, sigma=sigma, nu=nu)
+     return(r)
+     }
+
+###########################################################################
 # Truncated Distribution                                                  #
 #                                                                         #
 # These functions are similar to those from Nadarajah, S. and Kotz, S.    #

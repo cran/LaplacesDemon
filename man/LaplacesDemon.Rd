@@ -365,12 +365,12 @@ Model <- function(parm, Data)
      beta <- parm[1:Data$J]
      tau <- exp(parm[Data$J+1])
      ### Log of Prior Densities
-     beta.prior <- dnorm(beta, beta.mu, 1/sqrt(beta.tau), log=TRUE)
+     beta.prior <- sum(dnorm(beta, beta.mu, 1/sqrt(beta.tau), log=TRUE))
      tau.prior <- dgamma(tau, tau.alpha, tau.beta, log=TRUE)
      ### Log-Posterior
      mu <- beta \%*\% t(Data$X)
      LL <- sum(dnorm(Data$y, mu, 1/sqrt(tau), log=TRUE))
-     LP <- LL + sum(beta.prior) + tau.prior
+     LP <- LL + beta.prior + tau.prior
      Modelout <- list(LP=LP, Dev=-2*LL, Monitor=c(LP,tau), yhat=mu,
           parm=parm)
      return(Modelout)
@@ -391,7 +391,7 @@ print(Fit)
 Consort(Fit)
 caterpillar.plot(Fit, Parms=1:10)
 BurnIn <- Fit$Rec.BurnIn.Thinned
-plot(Fit, BurnIn, MyData, PDF=FALSE, Parms=Fit$Parameters)
+plot(Fit, BurnIn, MyData, PDF=FALSE)
 Pred <- predict(Fit, Model, MyData)
 summary(Pred)
 plot(Pred)

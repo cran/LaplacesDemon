@@ -27,9 +27,14 @@
      Laplace's Demon to save the plots as a .pdf file.
      }
      \item{Parms}{
-     This argument accepts a positive integer that indicates how
-     many parameters should be plotted, in case there are numerous
-     parameters and only a quick glance is desired.
+     This argument accepts a vector of quoted strings to be matched for
+     selecting parameters for plotting. This argument defaults to
+     \code{NULL} and selects every parameter for plotting. Each quoted
+     string is matched to one or more parameter names with the
+     \code{grep} function. For example, if the user specifies
+     \code{Parms=c("eta","tau")}, and if the parameter names
+     are beta[1], beta[2], eta[1], eta[2], and tau, then all parameters
+     will be selected, because the string \code{eta} is within \code{beta}.
      }
      \item{\dots}{Additional arguments are unused.}
    }

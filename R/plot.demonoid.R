@@ -5,13 +5,26 @@
 ###########################################################################
 
 plot.demonoid <- function(x, BurnIn=1, Data=NULL, PDF=FALSE,
-     Parms=x$Parameters, ...)
+     Parms=NULL, ...)
      {
      ### Initial Checks
      if(is.null(x)) stop("x is NULL.\n")
      if(is.null(Data)) stop("The Data argument is NULL.\n")
      if(BurnIn >= NROW(x$Posterior1)) BurnIn <- 1
-     if(Parms > x$Parameters) Parms <- x$Parameters
+     if(is.null(Parms)) Posterior <- x$Posterior1
+     if(!is.null(Parms)) {
+          for (i in 1:length(Parms)) {
+               if(i == 1) {keepcols <- grep(Parms[i], fixed=TRUE,
+                    colnames(x$Posterior1))}
+               if(i > 1) {
+                    newcols <- grep(Parms[i], fixed=TRUE,
+                         colnames(x$Posterior1))
+                    keepcols <- c(keepcols, newcols)
+                    }
+               }
+          Posterior <- as.matrix(x$Posterior1[,keepcols])
+          colnames(Posterior) <- colnames(x$Posterior1)[keepcols]
+          }
      if(PDF == TRUE)
           {
           pdf("LaplacesDemon.Plots.pdf")
@@ -19,29 +32,29 @@ plot.demonoid <- function(x, BurnIn=1, Data=NULL, PDF=FALSE,
           }
      if(PDF == FALSE) par(mfrow=c(3,3), ask=TRUE)
      ### Plot Parameters
-     for (j in 1:Parms)
+     for (j in 1:NCOL(Posterior))
           {
           plot(BurnIn:x$Thinned.Samples,
-               x$Posterior1[BurnIn:x$Thinned.Samples,j],
+               Posterior[BurnIn:x$Thinned.Samples,j],
                type="l", xlab="Iterations", ylab="Value",
                main=Data$parm.names[j])
           panel.smooth(BurnIn:x$Thinned.Samples,
-               x$Posterior1[BurnIn:x$Thinned.Samples,j], pch="")
-          plot(density(x$Posterior1[BurnIn:x$Thinned.Samples,j]),
+               Posterior[BurnIn:x$Thinned.Samples,j], pch="")
+          plot(density(Posterior[BurnIn:x$Thinned.Samples,j]),
                xlab="Value", main=Data$parm.names[j])
-          polygon(density(x$Posterior1[BurnIn:x$Thinned.Samples,j]),
+          polygon(density(Posterior[BurnIn:x$Thinned.Samples,j]),
                col="black", border="black")
           abline(v=0, col="red", lty=2)
           ### Only plot an ACF if there's > 1 unique values
-          if(length(unique(x$Posterior1[BurnIn:x$Thinned.Samples,j])) > 1) {
-               z <- acf(x$Posterior1[BurnIn:x$Thinned.Samples,j], plot=FALSE)
-               se <- 1/sqrt(length(x$Posterior1[BurnIn:x$Thinned.Samples,j]))
+          if(length(unique(Posterior[BurnIn:x$Thinned.Samples,j])) > 1) {
+               z <- acf(Posterior[BurnIn:x$Thinned.Samples,j], plot=FALSE)
+               se <- 1/sqrt(length(Posterior[BurnIn:x$Thinned.Samples,j]))
                plot(z$lag, z$acf, ylim=c(min(z$acf,-2*se),1), type="h",
                     main=Data$parm.names[j], xlab="Lag", ylab="Correlation")
                abline(h=(2*se), col="red", lty=2)
                abline(h=(-2*se), col="red", lty=2)
                }
-          if(length(unique(x$Posterior1[BurnIn:x$Thinned.Samples,j])) == 1) {
+          if(length(unique(Posterior[BurnIn:x$Thinned.Samples,j])) == 1) {
                plot(0,0, main=paste(Data$parm.names[j], "is a constant."))
                }
           }
