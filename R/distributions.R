@@ -52,6 +52,42 @@ rdirichlet <- function(n, alpha)
      }
 
 ###########################################################################
+# Half-Cauchy Distribution                                                #
+#                                                                         #
+###########################################################################
+
+dhalfcauchy <- function(x, scale=25, log=FALSE)
+     {
+     x <- as.vector(x)
+     if(scale <= 0) {stop("scale parameter negative in dhalfcauchy().\n")}
+     dens = 2*scale / (pi*(x^2 + scale^2))
+     if(log == TRUE) dens <- log(dens)
+     return(dens)
+     }
+phalfcauchy <- function(q, scale=25)
+     {
+     q <- as.vector(q)
+     if(scale <= 0) {stop("scale parameter negative in phalfcauchy().\n")}
+     z = (2/pi)*atan(q/scale)
+     return(z)
+     }
+qhalfcauchy <- function(p, scale=25)
+     {
+     p <- as.vector(p)
+     if(scale <= 0) {stop("scale parameter negative in qhalfcauchy().\n")}
+     x = scale*tan((pi*p)/2)
+     return(x)
+     }
+rhalfcauchy <- function(n, scale=25)
+     {
+     n <- as.vector(n)
+     if(scale <= 0) {stop("scale parameter negative in rhalfcauchy().\n")}
+     p <- runif(n, 0, 1)
+     x = scale*tan((pi*p)/2)
+     return(x)
+     }
+
+###########################################################################
 # Inverse Gamma Distribution                                              #
 #                                                                         #
 # These functions are similar to those in the MCMCpack package.           #

@@ -219,7 +219,12 @@ Although the gamma distribution is the conjugate prior distribution for the prec
 
 $$\tau \sim \Gamma(0.001, 0.001),$$
 
-better properties for variance parameters in hierarchical Bayes are yielded with the non-conjugate, proper, half-Cauchy distribution, or more usually, by placing a uniform distribution on $\sigma$ \citep{gelman06}, such as
+better properties for variance parameters in hierarchical Bayes are yielded with the non-conjugate, proper, half-Cauchy distribution with scale 25 for a standard deviation parameter \citep{gelman06}, 
+
+$$\sigma \sim \mathrm{HC}(25)$$
+$$\tau = \sigma^{-2}$$
+
+When the half-Cauchy is unavailable, a uniform distribution is often placed on $\sigma$, 
 
 $$\sigma \sim \mathrm{U}(0, 100)$$
 $$\tau = \sigma^{-2}$$

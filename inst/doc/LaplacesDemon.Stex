@@ -39,7 +39,7 @@ random-walk, statisticat}
  Byron Hall\\
  STATISTICAT, LLC\\
  Farmington, CT\\
- E-mail: \email{statisticat@gmail.com}\\
+ E-mail: \email{laplacesdemon@statisticat.com}\\
  URL: \url{http://www.statisticat.com/laplacesdemon.html}
 }
 
@@ -312,8 +312,8 @@ Notice that since stationarity has been estimated beginning with the \Sexpr{Fit$
 \begin{Scode}
 Initial.Values <- Fit$Posterior1[Fit$Thinned.Samples,]
 Fit <- LaplacesDemon(Model, Data=MyData, Adaptive=0,
-     Covar=Fit$Covar, DR=0, Initial.Values, Iterations=180000,
-     Periodicity=0, Status=10000, Thinning=180)
+     Covar=Fit$Covar, DR=0, Initial.Values, Iterations=290000,
+     Periodicity=0, Status=10000, Thinning=290)
 \end{Scode}
 
 Next, the user consorts with Laplace's Demon:
@@ -722,7 +722,7 @@ Following are some predictions of the future of Laplace's Demon:
 \item Everything else will be expanded. Posterior predictive checks will be attempted to be expanded to accommodate a wider variety of methods, and more checks and plotting options will be included. More methods will be included for calculating the logarithm of the marginal likelihood. Attempts will be made to make \code{LaplaceApproximation} faster. 
 \end{enumerate}
 
-The \pkg{LaplacesDemon} package is a significant contribution toward Bayesian inference in \proglang{R}. In turn, contributions toward the development of Laplace's Demon are welcome. Please send an email to \email{statisticat@gmail.com} with constructive criticism, reports of software bugs, or offers to contribute to Laplace's Demon.
+The \pkg{LaplacesDemon} package is a significant contribution toward Bayesian inference in \proglang{R}. In turn, contributions toward the development of Laplace's Demon are welcome. Please send an email to \email{laplacesdemon@statisticat.com} with constructive criticism, reports of software bugs, or offers to contribute to Laplace's Demon.
 
 \bibliography{References.bib}
 

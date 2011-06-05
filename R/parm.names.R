@@ -66,15 +66,3 @@ parm.names <- function(x, uppertri=NULL) {
          }
      return(parm.names)
      }
-
-### Testing
-N <- 100
-J <- 5
-y <- rnorm(N,0,1)
-X <- matrix(runif(N*J,-2,2),N,J)
-S <- diag(J)
-T <- diag(2)
-MyData <- list(J=J, N=N, S=S, T=T, X=X, y=y,
-     parm.names=parm.names(list(alpha=0, beta=rep(0,J), S=diag(J), T=diag(2)),
-     uppertri=c(0,0,0,1)))
-MyData
