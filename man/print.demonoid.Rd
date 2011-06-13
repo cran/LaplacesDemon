@@ -10,7 +10,7 @@
      \item{x}{An object of class \code{demonoid} is required.}
      \item{\dots}{Additional arguments are unused.}
 }
-\author{Byron Hall \email{statisticat@gmail.com}}
+\author{Byron Hall \email{laplacesdemon@statisticat.com}}
 \seealso{\code{\link{LaplacesDemon}}}
 \examples{### See the LaplacesDemon function for an example.}
 \keyword{print}

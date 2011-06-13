@@ -15,8 +15,9 @@ parm.names(x, uppertri=NULL)
      \item{uppertri}{This optional argument must be a vector with a
        length equal to the number of named parameters. Each element in
        \code{uppertri} must be either a 0 or 1, where a 1 indicates that
-       an upper triangular matrix. Each element of \code{uppertri} is
-       associated with a named parameter.}
+       an upper triangular matrix will be used for the associated
+       element in the vector of named parameters. Each element of
+       \code{uppertri} is associated with a named parameter.}
 }
 \details{
 Each \code{model} function for \code{LaplaceApproximation} or
@@ -31,7 +32,7 @@ complicated models. The \code{parm.names} function is a utility function
 designed to minimize programming by the user.
 
 For example, a simple model may only require \code{parm.names <-
-  c("alpha","beta[1]","beta[2]","log.tau")}. A more complicated model
+  c("alpha","beta[1]","beta[2]","log.sigma")}. A more complicated model
   may contain hundreds of parameters that are combinations of scalars,
   vectors, matrices, and upper-triangular matrices, and is the reason
   for the \code{parm.names} function.
@@ -51,8 +52,8 @@ y <- rnorm(N,0,1)
 X <- matrix(runif(N*J,-2,2),N,J)
 S <- diag(J)
 T <- diag(2)
-mon.names <- c("LP","tau")
-parm.names <- parm.names(list(alpha=0, beta=rep(0,J), S=diag(J),
+mon.names <- c("LP","sigma")
+parm.names <- parm.names(list(log.sigma=0, beta=rep(0,J), S=diag(J),
      T=diag(2)), uppertri=c(0,0,0,1))
 MyData <- list(J=J, N=N, S=S, T=T, X=X, mon.names=mon.names,
      parm.names=parm.names, y=y)

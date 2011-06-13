@@ -10,7 +10,7 @@
      \item{x}{An object of class \code{laplace} is required.}
      \item{\dots}{Additional arguments are unused.}
 }
-\author{Byron Hall \email{statisticat@gmail.com}}
+\author{Byron Hall \email{laplacesdemon@statisticat.com}}
 \seealso{\code{\link{LaplaceApproximation}}}
 \examples{### See the LaplaceApproximation function for an example.}
 \keyword{print}

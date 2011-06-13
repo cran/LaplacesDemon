@@ -68,14 +68,14 @@ phalfcauchy <- function(q, scale=25)
      {
      q <- as.vector(q)
      if(scale <= 0) {stop("scale parameter negative in phalfcauchy().\n")}
-     z = (2/pi)*atan(q/scale)
+     z <- (2/pi)*atan(q/scale)
      return(z)
      }
 qhalfcauchy <- function(p, scale=25)
      {
      p <- as.vector(p)
      if(scale <= 0) {stop("scale parameter negative in qhalfcauchy().\n")}
-     x = scale*tan((pi*p)/2)
+     x <- scale*tan((pi*p)/2)
      return(x)
      }
 rhalfcauchy <- function(n, scale=25)
@@ -83,7 +83,42 @@ rhalfcauchy <- function(n, scale=25)
      n <- as.vector(n)
      if(scale <= 0) {stop("scale parameter negative in rhalfcauchy().\n")}
      p <- runif(n, 0, 1)
-     x = scale*tan((pi*p)/2)
+     x <- scale*tan((pi*p)/2)
+     return(x)
+     }
+
+###########################################################################
+# Half-t Distribution                                                     #
+#                                                                         #
+###########################################################################
+
+dhalft <- function(x, scale=25, nu=1, log=FALSE)
+     {
+     x <- as.vector(x)
+     if(scale <= 0) {stop("scale parameter negative in dhalft().\n")}
+     dens = (1 + (1/nu)*(x/scale)^2)^(-(nu+1)/2)
+     if(log == TRUE) dens <- log(dens)
+     return(dens)
+     }
+phalft <- function(q, scale=25, nu=1)
+     {
+     q <- as.vector(q)
+     if(scale <= 0) {stop("scale parameter negative in phalft().\n")}
+     z <- ptrunc(q, "st", a=0, b=Inf, mu=0, sigma=scale, nu=nu)
+     return(z)
+     }
+qhalft <- function(p, scale=25, nu=1)
+     {
+     p <- as.vector(p)
+     if(scale <= 0) {stop("scale parameter negative in qhalft().\n")}
+     x <- rtrunc(p, "st", a=0, b=Inf, mu=0, sigma=scale, nu=nu)
+     return(x)
+     }
+rhalft <- function(n, scale=25, nu=1)
+     {
+     n <- as.vector(n)
+     if(scale <= 0) {stop("scale parameter negative in rhalft().\n")}
+     x <- rtrunc(n, "st", a=0, b=Inf, mu=0, sigma=scale, nu=nu)
      return(x)
      }
 
@@ -198,12 +233,9 @@ rlaplace <- function(n, location=0, scale=1)
 
 dmvn <- function(x, mu=rep(0,k), Sigma, log=FALSE)
      {
-     if(!is.vector(x)) stop("x must be a vector in dmvn().")
-     x <- matrix(x, ncol=length(x))
+     if(is.vector(x)) x <- matrix(x, ncol=length(x))
      if(missing(Sigma)) Sigma <- diag(ncol(x))
      if(!is.matrix(Sigma)) Sigma <- matrix(Sigma)
-     if(NCOL(x) != NCOL(Sigma))
-          stop("Dimensions of x and Sigma differ in dmvn().")
      k  <- if(is.matrix(Sigma)) ncol(Sigma) else 1
      if(missing(mu)) mu <- rep(0,k)
      if(!is.vector(mu)) stop("mu must be a vector in dmvn().")

@@ -60,6 +60,6 @@
      Hall, B. (2011), "Laplace's Demon", STATISTICAT, LLC.
      URL=\url{http://www.statisticat.com/laplacesdemon.html}
 }
-\author{Byron Hall \email{statisticat@gmail.com}}
+\author{Byron Hall \email{laplacesdemon@statisticat.com}}
 \seealso{\code{\link{LaplaceApproximation}}}
 \keyword{predict}

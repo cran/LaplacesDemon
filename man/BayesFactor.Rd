@@ -111,8 +111,8 @@ J <- 2
 y <- log(demonsnacks$Calories)
 X <- cbind(1, as.matrix(demonsnacks[,7]))
 X[,2] <- CenterScale(X[,2])
-mon.names <- c("LP","tau")
-parm.names <- parm.names(list(beta=rep(0,J), log.tau=0))
+mon.names <- c("LP","sigma")
+parm.names <- parm.names(list(beta=rep(0,J), log.sigma=0))
 MyData <- list(J=J, X=X, mon.names=mon.names, parm.names=parm.names, y=y)
 
 ############################  Initial Values  #############################
@@ -121,22 +121,17 @@ Initial.Values <- c(rep(0,J), log(1))
 ##########################  Model Specification  ##########################
 Model <- function(parm, Data)
      {
-     ### Hyperparameters
-     beta.mu <- rep(0,Data$J)
-     beta.tau <- rep(1.0E-3,Data$J)
-     tau.alpha <- 1.0E-3
-     tau.beta <- 1.0E-3
      ### Parameters
      beta <- parm[1:Data$J]
-     tau <- exp(parm[Data$J+1])
+     sigma <- exp(parm[Data$J+1])
      ### Log(Prior Densities)
-     beta.prior <- dnorm(beta, beta.mu, 1/sqrt(beta.tau), log=TRUE)
-     tau.prior <- dgamma(tau, tau.alpha, tau.beta, log=TRUE)
+     beta.prior <- dnorm(beta, 0, sqrt(1000), log=TRUE)
+     sigma.prior <- dhalfcauchy(sigma, 25, log=TRUE)
      ### Log-Posterior
      mu <- beta \%*\% t(Data$X)
-     LL <- sum(dnorm(Data$y, mu, 1/sqrt(tau), log=TRUE))
-     LP <- LL + sum(beta.prior) + tau.prior
-     Modelout <- list(LP=LP, Dev=-2*LL, Monitor=c(LP,tau), yhat=mu,
+     LL <- sum(dnorm(Data$y, mu, sigma, log=TRUE))
+     LP <- LL + sum(beta.prior) + sigma.prior
+     Modelout <- list(LP=LP, Dev=-2*LL, Monitor=c(LP,sigma), yhat=mu,
           parm=parm)
      return(Modelout)
      }
@@ -154,8 +149,8 @@ y <- log(demonsnacks$Calories)
 X <- cbind(1, as.matrix(demonsnacks[,c(7,8)]))
 X[,2] <- CenterScale(X[,2])
 X[,3] <- CenterScale(X[,3])
-mon.names <- c("tau","mu[1]")
-parm.names <- parm.names(list(beta=rep(0,J), log.tau=0))
+mon.names <- c("sigma","mu[1]")
+parm.names <- parm.names(list(beta=rep(0,J), log.sigma=0))
 MyData <- list(J=J, X=X, mon.names=mon.names, parm.names=parm.names, y=y)
 
 ############################  Initial Values  #############################

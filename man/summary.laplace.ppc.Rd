@@ -101,7 +101,7 @@ Sinica, 6, p. 733--807.
 Hall, B. (2011), "Laplace's Demon", STATISTICAT, LLC.
 URL=\url{http://www.statisticat.com/laplacesdemon.html}
 }
-\author{Byron Hall \email{statisticat@gmail.com}}
+\author{Byron Hall \email{laplacesdemon@statisticat.com}}
 \seealso{\code{\link{predict.laplace}}}
 \examples{### See the LaplaceApproximation function for an example.}
 \keyword{summary}

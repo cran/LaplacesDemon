@@ -75,7 +75,7 @@
   quantiles are plotted: 0.025, 0.500, and 0.975.
 }
 \references{\url{http://www.statisticat.com/laplacesdemon.html}}
-\author{Byron Hall \email{statisticat@gmail.com}}
+\author{Byron Hall \email{laplacesdemon@statisticat.com}}
 \seealso{\code{\link{LaplacesDemon}}}
 \examples{### See the LaplacesDemon function for an example.}
 \keyword{plot}

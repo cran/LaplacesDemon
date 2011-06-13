@@ -38,8 +38,8 @@ rhalfcauchy(n, scale=25)
   \item Mode: 0
 }
 
-The Half-Cauchy distribution with scale alpha=25 is a recommended
-default uninformative prior distribution for a standard deviation parameter.
+The half-Cauchy distribution with scale alpha=25 is a recommended
+default uninformative prior distribution for a scale parameter.
 }
 \value{
   \code{dhalfcauchy} gives the density,

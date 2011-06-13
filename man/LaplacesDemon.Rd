@@ -332,7 +332,7 @@ LaplacesDemon(Model=NULL, Data=NULL, Adaptive=0, Covar=NULL, DR=1,
      Mira, A. (2001). "On Metropolis-Hastings Algorithms with Delayed
      Rejection". Metron, Vol. LIX, n. 3-4, p. 231-241.
 }
-\author{Byron Hall \email{statisticat@gmail.com}}
+\author{Byron Hall \email{laplacesdemon@statisticat.com}}
 \seealso{\code{\link{LaplacesDemon}}}
 \examples{
 # The accompanying Examples vignette is a compendium of examples.
@@ -346,8 +346,8 @@ J <- NCOL(demonsnacks)
 y <- log(demonsnacks$Calories)
 X <- cbind(1, as.matrix(demonsnacks[,c(1,3:10)]))
 for (j in 2:J) {X[,j] <- CenterScale(X[,j])}
-mon.names <- c("LP","tau")
-parm.names <- parm.names(list(beta=rep(0,J), log.tau=0))
+mon.names <- c("LP","sigma")
+parm.names <- parm.names(list(beta=rep(0,J), log.sigma=0))
 MyData <- list(J=J, X=X, mon.names=mon.names, parm.names=parm.names, y=y)
 
 ############################  Initial Values  #############################
@@ -356,22 +356,17 @@ Initial.Values <- c(rep(0,J), log(1))
 ##########################  Model Specification  ##########################
 Model <- function(parm, Data)
      {
-     ### Hyperparameters
-     beta.mu <- rep(0,Data$J)
-     beta.tau <- rep(1.0E-3,Data$J)
-     tau.alpha <- 1.0E-3
-     tau.beta <- 1.0E-3
      ### Parameters
      beta <- parm[1:Data$J]
-     tau <- exp(parm[Data$J+1])
+     sigma <- exp(parm[Data$J+1])
      ### Log of Prior Densities
-     beta.prior <- sum(dnorm(beta, beta.mu, 1/sqrt(beta.tau), log=TRUE))
-     tau.prior <- dgamma(tau, tau.alpha, tau.beta, log=TRUE)
+     beta.prior <- sum(dnorm(beta, 0, sqrt(1000), log=TRUE))
+     sigma.prior <- dhalfcauchy(sigma, 25, log=TRUE)
      ### Log-Posterior
      mu <- beta \%*\% t(Data$X)
-     LL <- sum(dnorm(Data$y, mu, 1/sqrt(tau), log=TRUE))
-     LP <- LL + beta.prior + tau.prior
-     Modelout <- list(LP=LP, Dev=-2*LL, Monitor=c(LP,tau), yhat=mu,
+     LL <- sum(dnorm(Data$y, mu, sigma, log=TRUE))
+     LP <- LL + beta.prior + sigma.prior
+     Modelout <- list(LP=LP, Dev=-2*LL, Monitor=c(LP,sigma), yhat=mu,
           parm=parm)
      return(Modelout)
      }
@@ -389,7 +384,7 @@ Fit <- LaplacesDemon(Model, Data=MyData, Adaptive=500,
 Fit
 print(Fit)
 Consort(Fit)
-caterpillar.plot(Fit, Parms=1:10)
+caterpillar.plot(Fit, Parms=1:J)
 BurnIn <- Fit$Rec.BurnIn.Thinned
 plot(Fit, BurnIn, MyData, PDF=FALSE)
 Pred <- predict(Fit, Model, MyData)

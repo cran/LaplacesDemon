@@ -39,7 +39,7 @@
   unnormalized joint posterior density.
 }
 \references{\url{http://www.statisticat.com/laplacesdemon.html}}
-\author{Byron Hall \email{statisticat@gmail.com}}
+\author{Byron Hall \email{laplacesdemon@statisticat.com}}
 \seealso{\code{\link{LaplaceApproximation}}}
 \examples{### See the LaplaceApproximation function for an example.}
 \keyword{plot}

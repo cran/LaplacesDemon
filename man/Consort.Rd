@@ -33,5 +33,5 @@
   followed blindly. Do not let it replace critical thinking.
 }
 \references{\url{http://www.statisticat.com/laplacesdemon.html}}
-\author{Byron Hall \email{statisticat@gmail.com}}
+\author{Byron Hall \email{laplacesdemon@statisticat.com}}
 \seealso{\code{\link{LaplacesDemon}}}

@@ -289,7 +289,7 @@ LaplaceApproximation(Model=NULL, parm=NULL, Data=NULL, Interval=1.0E-6,
      Functions". Journal of the American Statistical Association,
      84(407), p. 710--716.
 }
-\author{Byron Hall \email{statisticat@gmail.com}}
+\author{Byron Hall \email{laplacesdemon@statisticat.com}}
 \seealso{\code{\link{LaplacesDemon}}}
 \examples{
 # The accompanying Examples vignette is a compendium of examples.
@@ -303,8 +303,8 @@ J <- 6
 y <- log(demonsnacks$Calories)
 X <- cbind(1, as.matrix(demonsnacks[,c(1,3:6)]))
 for (j in 2:J) {X[,j] <- CenterScale(X[,j])}
-mon.names <- c("tau","mu[1]")
-parm.names <- parm.names(list(beta=rep(0,J), log.tau=0))
+mon.names <- c("sigma","mu[1]")
+parm.names <- parm.names(list(beta=rep(0,J), log.sigma=0))
 MyData <- list(J=J, X=X, mon.names=mon.names, parm.names=parm.names, y=y)
 
 ############################  Initial Values  #############################
@@ -313,22 +313,17 @@ Initial.Values <- c(rep(0,J), log(1))
 ##########################  Model Specification  ##########################
 Model <- function(parm, Data)
      {
-     ### Hyperparameters
-     beta.mu <- rep(0,Data$J)
-     beta.tau <- rep(1.0E-3,Data$J)
-     tau.alpha <- 1.0E-3
-     tau.beta <- 1.0E-3
      ### Parameters
      beta <- parm[1:Data$J]
-     tau <- exp(parm[Data$J+1])
+     sigma <- exp(parm[Data$J+1])
      ### Log of Prior Densities
-     beta.prior <- sum(dnorm(beta, beta.mu, 1/sqrt(beta.tau), log=TRUE))
-     tau.prior <- dgamma(tau, tau.alpha, tau.beta, log=TRUE)
+     beta.prior <- sum(dnorm(beta, 0, sqrt(1000), log=TRUE))
+     sigma.prior <- dhalfcauchy(sigma, 25, log=TRUE)
      ### Log-Posterior
      mu <- beta \%*\% t(Data$X)
-     LL <- sum(dnorm(Data$y, mu, 1/sqrt(tau), log=TRUE))
-     LP <- LL + beta.prior + tau.prior
-     Modelout <- list(LP=LP, Dev=-2*LL, Monitor=c(tau,mu[1]), yhat=mu,
+     LL <- sum(dnorm(Data$y, mu, sigma, log=TRUE))
+     LP <- LL + beta.prior + sigma.prior
+     Modelout <- list(LP=LP, Dev=-2*LL, Monitor=c(sigma,mu[1]), yhat=mu,
           parm=parm)
      return(Modelout)
      }
@@ -336,7 +331,7 @@ Model <- function(parm, Data)
 Fit <- LaplaceApproximation(Model, Initial.Values, Data=MyData, Iterations=1000)
 Fit
 print(Fit)
-caterpillar.plot(Fit, Parms=1:6)
+caterpillar.plot(Fit, Parms=1:J)
 plot(Fit, MyData, PDF=FALSE)
 Pred <- predict(Fit, Model, MyData)
 summary(Pred)

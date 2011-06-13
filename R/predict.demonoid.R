@@ -24,6 +24,8 @@ predict.demonoid <- function(object, Model, Data, ...)
      for (i in 1:NROW(post)) {
           yhat[,i] <- as.vector(Model(post[i,], Data)[[4]])}
      ### Warnings
+     if(is.matrix(object$Posterior2) == FALSE) {
+          cat("\nWARNING: Non-stationary samples were used.")}
      if(sum(is.na(yhat)) > 0) cat("\nWARNING: Output matrix yhat has ",
           sum(is.na(yhat)), " missing values.")
      if(sum(is.nan(yhat)) > 0) cat("\nWARNING: Output matrix yhat has ",

@@ -189,13 +189,27 @@ $$\theta \sim \mathrm{U}(-\infty, \infty)$$
 
 where $\theta$ is uniformly-distributed from negative infinity to positive infinity. Although this allows the posterior distribution to be affected soley by the data with no impact from prior information, this should generally be avoided because the posterior distribution is improper, meaning it will not integrate to one, because the integral of the assumed $p(\theta)$ is infinity, which violates the assumption that the probabilities sum to one.
 
-Reverend Thomas Bayes (1702-1761) was the first to use inverse probability \citep{bayes63}, and used a flat prior for his billiard example so that all possible values of $\theta$ are equally likely \textit{a priori} \citep[p. 34-36]{gelman04}. Pierre-Simon Laplace (1749-1827) also used the flat prior to estimate the proportion of female births in a population. Laplace's use of this prior distribution was later referred to as the 'principle of insufficient reason', and is now called the flat prior \citep[p. 39]{gelman04}.
+Reverend Thomas Bayes (1702-1761) was the first to use inverse probability \citep{bayes63}, and used a flat prior for his billiard example so that all possible values of $\theta$ are equally likely \textit{a priori} \citep[p. 34-36]{gelman04}. Pierre-Simon Laplace (1749-1827) also used the flat prior to estimate the proportion of female births in a population, and for all estimation problems presented or justified as a reasonable expression of ignorance. Laplace's use of this prior distribution was later referred to as the 'principle of insufficient reason', and is now called the flat prior \citep[p. 39]{gelman04}.
 
 There is often at least some information about $\theta$ to include in a prior distribution of $\theta$, such as $\theta$ must be positive, or $\theta$ must be less than some limit. It is popular, for good reasons, to center and scale all continuous predictors \citep{gelman08}. Although centering and scaling predictors is not discussed here, it should be obvious that the potential range of the posterior distribution of $\theta$ for a centered and scaled predictor should be small. A popular, uninformative prior distribution for a centered and scaled predictor may be
 
 $$\theta \sim \mathcal{N}(0, 10000)$$
 
 where $\theta$ is normally-distributed according to a mean of 0 and a variance of 10,000, which is equivalent to a standard deviation of 100, or precision of 1.0E-4. In this case, the density for $\theta$ is nearly flat. Nonetheless, the fact that it is not perfectly flat yields good properties for numerical approximation algorithms. In both Bayesian and frequentist inference, it is possible for numerical approximation algorithms to become stuck in regions of flat density, which become more common as sample size decreases or model complexity increases. Numerical approximation algorithms in frequentist inference function as though a completely flat, uninformative prior were used, so numerical approximation algorithms in frequentist inference become stuck more frequently than numerical approximation algorithms in Bayesian inference. Prior distributions that are not completely flat provide enough information for the numerical approximation algorithm to continue to explore the target density, the posterior distribution.
+
+\subsection{Proper and Improper Priors}
+
+It is important for the prior distribution to be proper. A prior distribution, $p(\theta)$, is improper when
+
+$$\int p(\theta) d(\theta) = \infty$$
+
+As noted previously, an unbounded uniform prior distribution is an improper prior distribution because $p(\theta) \propto 1$, for $-\infty < \theta < \infty$. An improper prior distribution can cause an improper posterior distribution. When the posterior distribution is improper, inferences are invalid, it is non-integrable, and Bayes factors cannot be used (though there are exceptions).
+
+To determine the propriety of a posterior distribution, the marginal likelihood must be finite for all $y$. Again, the marginal likelihood is
+
+$$p(y) = \int p(y | \Theta) p(\Theta) d(\Theta)$$
+
+Although improper prior distributions can be used, it is good practice to avoid them.
 
 \section{Hierarchical Bayes}
 
@@ -219,12 +233,12 @@ Although the gamma distribution is the conjugate prior distribution for the prec
 
 $$\tau \sim \Gamma(0.001, 0.001),$$
 
-better properties for variance parameters in hierarchical Bayes are yielded with the non-conjugate, proper, half-Cauchy distribution with scale 25 for a standard deviation parameter \citep{gelman06}, 
+better properties for scale parameters are yielded with the non-conjugate, proper, half-Cauchy\footnote{The half-t distribution is another option.} distribution, with a general recommendation of scale=25 for an uninformative scale parameter \citep{gelman06}, 
 
-$$\sigma \sim \mathrm{HC}(25)$$
+$$\sigma \sim \mathcal{HC}(25)$$
 $$\tau = \sigma^{-2}$$
 
-When the half-Cauchy is unavailable, a uniform distribution is often placed on $\sigma$, 
+When the half-Cauchy is unavailable, a uniform distribution is often placed on $\sigma$ in hierarchical Bayes when the number of groups is, say, at least five, 
 
 $$\sigma \sim \mathrm{U}(0, 100)$$
 $$\tau = \sigma^{-2}$$
@@ -239,7 +253,7 @@ When conjugate distributions are used, a summary statistic for a posterior distr
 
 \section{Likelihood}
 
-In order to complete the definition of a Bayesian model, both the prior distributions and the likelihood must be fully specified. The likelihood, likelihood function, or $p(y | \Theta)$, contains the available information provided by the sample. The likelihood is
+In order to complete the definition of a Bayesian model, both the prior distributions and the likelihood\footnote{Ronald A. Fisher, a prominent frequentist, introduced the term likelihood in 1921 \citep{fisher21}, though the concept of likelihood was used by Bayes and Laplace. Fisher's introduction preceded a series of the most influential papers in statistics (mostly in 1922 and 1925), in which Fisher introduced numerous terms that are now common: consistency, efficiency, estimation, information, maximum likelihood estimate, optimality, parameter, statistic, sufficiency, and variance. He was the first to use Greek letters for unknown parameters and Latin letters for the estimates. Later contributions include F statistics, design of experiments, ANOVA, and many more.} must be fully specified. The likelihood, likelihood function, or $p(y | \Theta)$, contains the available information provided by the sample. The likelihood is
 
 $$p(y | \Theta) = \prod^n_{i=1} p(y_i | \Theta)$$
 
@@ -304,18 +318,18 @@ where $y$ is the observed outcome of an experiment, and the likelihood ($\mathsc
 
 For example, in a Bayesian linear regression with an intercept and two independent variables, the model may be specified as
 
-$$y_i \sim \mathcal{N}(\mu_i, \tau^{-1})$$
+$$y_i \sim \mathcal{N}(\mu_i, \sigma^2)$$
 $$\mu_i = \beta_1 + \beta_2\textbf{X}_{i,1} + \beta_3\textbf{X}_{i,2}$$
 
-The dependent variable $y$, indexed by $i=1,...,n$, is stochastic, and normally-distributed according to the expectation vector $\mu$, and the inverse of the residual precision $\tau$, where the scalar $\tau$ is the inverse of the variance. Expectation vector $\mu$ is an additive, linear function of a vector of regression parameters, $\beta$, and the design matrix \textbf{X}.
+The dependent variable $y$, indexed by $i=1,...,n$, is stochastic, and normally-distributed according to the expectation vector $\mu$, and variance $\sigma^2$. Expectation vector $\mu$ is an additive, linear function of a vector of regression parameters, $\beta$, and the design matrix \textbf{X}.
 
 Since $y$ is normally-distributed, the probability density function (PDF) of a normal distribution will be used, and is usually denoted as
 
 $$f(y) = \frac{1}{\sqrt{2\pi}\sigma}\exp[(-\frac{1}{2}\sigma^2)(y_i-\mu_i)^2]; \quad -\infty < y < \infty$$
 
-By replacing the variance, $\sigma^2$, with its inverse, $\tau$, and by considering a conditional distribution, the equivalent record-level likelihood in Bayesian notation is
+By considering a conditional distribution, the record-level likelihood in Bayesian notation is
 
-$$p(y_i | \Theta) = \sqrt{\frac{\tau}{2\pi}} \exp[(-\frac{\tau}{2})(y_i-\mu_i)^2]; \quad -\infty < y < \infty$$
+$$p(y_i | \Theta) = \frac{1}{\sqrt{2\pi}\sigma}\exp[(-\frac{1}{2}\sigma^2)(y_i-\mu_i)^2]; \quad -\infty < y < \infty$$
 
 In both theory and practice, and in both frequentist and Bayesian inference, the log-likelihood is used instead of the likelihood, on both the record- and model-level. The model-level product of record-level likelihoods can exceed the range of a number that can be stored by a computer, which is usually affected by sample size. By estimating a record-level log-likelihood, rather than likelihood, the model-level log-likelihood is the sum of the record-level log-likelihoods, rather than a product of the record-level likelihoods.
 
@@ -327,11 +341,11 @@ $$p(y | \theta) = \prod^n_{i=1} p(y_i | \theta)$$
 
 As a function of $\theta$, the unnormalized joint posterior distribution is the product of the likelihood function and the prior distributions. To continue with the example of Bayesian linear regression, here is the unnormalized joint posterior distribution
 
-$$p(\beta, \tau | y) = p(y | \beta, \tau)p(\beta_1)p(\beta_2)p(\beta_3)p(\tau)$$
+$$p(\beta, \sigma^2 | y) = p(y | \beta, \sigma^2)p(\beta_1)p(\beta_2)p(\beta_3)p(\sigma^2)$$
 
 More usually, the logarithm of the unnormalized joint posterior distribution is used, which is the sum of the log-likelihood and prior distributions. Here is the logarithm of the unnormalized joint posterior distribution for this example
 
-$$\log[p(\beta, \tau | y)] = \log[p(y | \beta, \tau)] + \log[p(\beta_1)] + \log[p(\beta_2)] + \log[p(\beta_3)] + \log[p(\tau)]$$
+$$\log[p(\beta, \sigma^2 | y)] = \log[p(y | \beta, \sigma^2)] + \log[p(\beta_1)] + \log[p(\beta_2)] + \log[p(\beta_3)] + \log[p(\sigma^2)]$$
 
 The logarithm of the unnormalized joint posterior distribution is maximized with numerical approximation.
 
@@ -359,13 +373,13 @@ $$p(y^{new} | y) = \int p(y^{new} | \Theta)p(\Theta | y) d\Theta$$
 
 If $y$ has missing values, then the missing $y$'s can be estimated with the posterior predictive distribution as $y^{new}$ from within the model. For the linear regression example, the integral for prediction is
 
-$$p(y^{new} | y) = \int p(y^{new} | \beta,\tau^{-1})p(\beta,\tau^{-1} | y) d\beta d\tau^{-1}$$
+$$p(y^{new} | y) = \int p(y^{new} | \beta,\sigma^2)p(\beta,\sigma^2 | y) d\beta d\sigma^2$$
 
 The posterior predictive distribution is easy to estimate, since it is the same thing as the expectation $\mu$ in
 
-$$y^{new} \sim \mathcal{N}(\mu, \tau^{-1})$$
+$$y^{new} \sim \mathcal{N}(\mu, \sigma^2)$$
 
-where $\mu$ = \textbf{X}$\beta$, and $\mu$ is the conditional mean, while $\tau$ is the residual precision, which is equal to the inverse of the variance, $\sigma^2$.
+where $\mu$ = \textbf{X}$\beta$, and $\mu$ is the conditional mean, while $\sigma^2$ is the residual variance.
 
 \section{Bayes Factors}
 

@@ -40,6 +40,6 @@
   is included at zero.
 }
 \references{\url{http://www.statisticat.com/laplacesdemon.html}}
-\author{Byron Hall \email{statisticat@gmail.com}}
+\author{Byron Hall \email{laplacesdemon@statisticat.com}}
 \seealso{\code{\link{LaplacesDemon}}}
 \examples{#An example is provided in the LaplacesDemon function.}

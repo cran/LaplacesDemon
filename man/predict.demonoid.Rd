@@ -20,12 +20,13 @@
   This function passes each iteration of marginal posterior samples
   along with data to \code{Model}, where the fourth component in the
   return list is labeled \code{yhat}, and is a vector of expectations of
-  y, given the samples, model specification, and data. To predict
-  y[rep], simply supply the data set used to estimate the model. To
-  predict y[new], supply a new data set instead. If the new data set
-  does not have y, then create \code{y} in the list and set it equal to
-  something sensible, such as \code{mean(y)} from the original data
-  set.
+  y, given the samples, model specification, and data. Stationary
+  samples are used if detected, otherwise non-stationary samples will be
+  used. To predict y[rep], simply supply the data set used to estimate
+  the model. To predict y[new], supply a new data set instead. If the
+  new data set does not have y, then create \code{y} in the list and
+  set it equal to something sensible, such as \code{mean(y)} from the
+  original data set.
 
   The variable \code{y} must be a vector. If instead it is matrix
   \code{Y}, then it will be converted to vector \code{y}. The vectorized
@@ -49,6 +50,6 @@
      Hall, B. (2011), "Laplace's Demon", STATISTICAT, LLC.
      URL=\url{http://www.statisticat.com/laplacesdemon.html}
 }
-\author{Byron Hall \email{statisticat@gmail.com}}
+\author{Byron Hall \email{laplacesdemon@statisticat.com}}
 \seealso{\code{\link{LaplacesDemon}}}
 \keyword{predict}

@@ -35,7 +35,7 @@
   considered.
 }
 \references{\url{http://www.statisticat.com/laplacesdemon.html}}
-\author{Byron Hall \email{statisticat@gmail.com}}
+\author{Byron Hall \email{laplacesdemon@statisticat.com}}
 \seealso{\code{\link{predict.laplace}}}
 \examples{### See the LaplaceApproximation function for an example.}
 \keyword{plot}
