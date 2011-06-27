@@ -231,25 +231,29 @@ rlaplace <- function(n, location=0, scale=1)
 # packages.                                                               #
 ###########################################################################
 
-dmvn <- function(x, mu=rep(0,k), Sigma, log=FALSE)
+dmvn <- function(x, mu, Sigma, log=FALSE)
      {
-     if(is.vector(x)) x <- matrix(x, ncol=length(x))
+     if(!is.matrix(x)) x <- rbind(x)
      if(missing(Sigma)) Sigma <- diag(ncol(x))
      if(!is.matrix(Sigma)) Sigma <- matrix(Sigma)
-     k  <- if(is.matrix(Sigma)) ncol(Sigma) else 1
-     if(missing(mu)) mu <- rep(0,k)
-     if(!is.vector(mu)) stop("mu must be a vector in dmvn().")
-     mu <- matrix(mu, ncol=length(mu))
-     if(NCOL(mu) != NCOL(Sigma))
-          stop("Dimensions of mu and Sigma differ in dmvn().")
+     p <- nrow(Sigma)
+     ed <- eigen(Sigma, symmetric = TRUE)
+     ev <- ed$values
+     #if(!all(ev >= -1e-06 * abs(ev[1])))
+     #     stop("Sigma is not positive definite in dmvn().")
+     ss <- if(!is.matrix(mu)) {
+          x - rep(mu, each = nrow(x))
+          } else {
+               x - mu}
+     inv.Sigma <- ed$vectors %*% (t(ed$vectors)/ev)
+     quad <- 0.5 * rowSums((ss %*% inv.Sigma) * ss)
      options(warn=-1)
-     distval <- mahalanobis(x, center=mu, cov=Sigma)
-     logdet <- sum(log(eigen(Sigma, symmetric=TRUE,
-          only.values=TRUE)$values))
-     logdens <- -(ncol(x)*log(2*pi) + logdet + distval)/2
+     if(is.nan(sum(log(ev)))) z <- log(1.0E-100) else z <- sum(log(ev))
      options(warn=0)
-     if(log) return(logdens)
-     exp(logdens)
+     fact <- -0.5 * (p * log(2 * pi) + z)
+     dens <- as.vector(fact - quad)
+     if(log == FALSE) dens <- exp(dens)
+     return(dens)
      }
 
 rmvn <- function(n=1, mu=rep(0,k), Sigma)
@@ -266,23 +270,28 @@ rmvn <- function(n=1, mu=rep(0,k), Sigma)
 # These functions are similar to those in the mnormt package.             #
 ###########################################################################
 
-dmvt <- function (x, mu=rep(0,k), S, df=Inf, log=FALSE)
+dmvt <- function(x, mu, S, df=Inf, log=FALSE)
      {
-     if(!is.matrix(S)) S <- matrix(S)
-     if(df == Inf) return(dmvn(x, mu, S, log = log))
-     k  <- if(is.matrix(S)) ncol(S) else 1
-     x <- if(is.vector(x)) matrix(x, 1, k) else data.matrix(x)
-     if(is.vector(mu)) mu <- outer(rep(1, nrow(x)), mu)
-     X  <- t(x - mu)
-     S <- (S + t(S)) / 2
-     u <- chol(S, pivot=FALSE)
-     S.inv <- chol2inv(u)
-     S.inv <- (S.inv + t(S.inv)) / 2
-     Q <- apply((S.inv %*% X) * X, 2, sum)
-     logDet <- 2 * sum(log(diag(u)))
-     logdens <- (lgamma((df + k)/2) - 0.5 * (k * logb(pi * df) + logDet)
-          - lgamma(df/2) - 0.5 * (df + k) * logb(1 + Q/df))
-     if(log) logdens else exp(logdens)
+     if(!is.matrix(x)) x <- rbind(x)
+     p <- nrow(S)
+     ed <- eigen(S, symmetric = TRUE)
+     ev <- ed$values
+     #if (!all(ev >= -1e-06 * abs(ev[1])))
+     #    stop("S is not positive definite in dmvt().")
+     ss <- if(!is.matrix(mu)) {
+          x - rep(mu, each = nrow(x))
+          } else {
+               x - mu}
+     inv.S <- ed$vectors %*% (t(ed$vectors)/ev)
+     quad <- rowSums((ss %*% inv.S) * ss)/df
+     options(warn=-1)
+     if(is.nan(sum(log(ev)))) z <- log(1.0E-100) else z <- sum(log(ev))
+     options(warn=0)
+     fact <- lgamma((df + p)/2) - lgamma(df/2) -
+          0.5 * (p * (log(pi) + log(df)) + z)
+     dens <- fact - 0.5 * (df + p) * log(1 + quad)
+     if(log == FALSE) dens <- exp(fact) * ((1 + quad)^(-(df + p)/2))
+     return(dens)
      }
 
 rmvt <- function(n=1, mu=rep(0,k), S, df=Inf)

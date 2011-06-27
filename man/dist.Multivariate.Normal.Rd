@@ -7,8 +7,8 @@
   the multivariate normal distribution.
 }
 \usage{
-dmvn(x, mu=rep(0,k), Sigma, log=FALSE) 
-rmvn(n=1, mu=rep(0,k), Sigma)
+dmvn(x, mu, Sigma, log=FALSE) 
+rmvn(n=1, mu, Sigma)
 }
 \arguments{
   \item{x}{This is a vector of quantiles.}
@@ -43,7 +43,7 @@ This distribution has a mean parameter vector \code{mu} of length
 \code{k}, and a \code{k x k} covariance matrix \code{Sigma}, which
 must be positive-definite.
 
-These functions is similar to those in the \code{mnormt} and
+These functions are similar to those in the \code{mnormt} and
 \code{mvtnorm} packages.
 }
 \value{

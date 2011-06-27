@@ -55,6 +55,28 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
           Thinning <- 1
           cat("'Thinning' has been changed to ", Thinning, ".\n",
                sep="")}
+     Mo0 <- Model(Initial.Values, Data)
+     if(length(Mo0[[1]]) > 1) stop("Multiple joint posteriors exist!\n")
+     as.character.function <- function(x, ... )
+          {
+          fname <- deparse( substitute( x ) )
+          f <- match.fun( x ) 
+          out <- c( sprintf( '"%s" <- ', fname), capture.output( f ) ) 
+          if(grepl( "^[<]", tail(out,1))) out <- head( out, -1)
+          out
+          }
+     acount <- length(grep("apply", as.character.function(Model)))
+     if(acount > 0) {
+          cat("Suggestion:", acount, "possible instance(s) of apply functions\n")
+          cat("     were found in the Model specification. Iteration speed will\n")
+          cat("     increase if apply functions are 'vectorized'.\n")
+     }
+     acount <- length(grep("for", as.character.function(Model)))
+     if(acount > 0) {
+          cat("Suggestion:", acount, "possible instance(s) of for loops\n")
+          cat("     were found in the Model specification. Iteration speed will\n")
+          cat("     increase if for loops are 'vectorized'.\n")
+     }
      #########################  Initial Settings  #########################
      Acceptance <- 0
      Mo0 <- Model(Initial.Values, Data)

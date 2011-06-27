@@ -26,6 +26,26 @@ LaplaceApproximation <- function(Model=NULL, parm=NULL, Data=NULL,
      if(Iterations < 10) Iterations <- 10
      if(Iterations > 1000000) Iterations <- 1000000
      if(Stop.Tolerance <= 0) Stop.Tolerance <- 1.0E-5
+     as.character.function <- function(x, ... )
+          {
+          fname <- deparse( substitute( x ) )
+          f <- match.fun( x ) 
+          out <- c( sprintf( '"%s" <- ', fname), capture.output( f ) ) 
+          if(grepl( "^[<]", tail(out,1))) out <- head( out, -1)
+          out
+          }
+     acount <- length(grep("apply", as.character.function(Model)))
+     if(acount > 0) {
+          cat("Suggestion:", acount, " possible instance(s) of apply functions\n")
+          cat(     "were found in the Model specification. Iteration speed will\n")
+          cat("     increase if apply functions are 'vectorized'.\n")
+     }
+     acount <- length(grep("for", as.character.function(Model)))
+     if(acount > 0) {
+          cat("Suggestion:", acount, " possible instance(s) of for loops\n")
+          cat("     were found in the Model specification. Iteration speed will\n")
+          cat("     increase if for loops are 'vectorized'.\n")
+     }
      ### Sample Size of Data
      if(!is.null(Data$n)) if(length(Data$n) == 1) N <- Data$n
      if(!is.null(Data$N)) if(length(Data$N) == 1) N <- Data$N
@@ -37,6 +57,7 @@ LaplaceApproximation <- function(Model=NULL, parm=NULL, Data=NULL,
      parm <- as.vector(parm)
      parm.len <- length(parm)
      ans.len <- length(Model(parm, Data)[[1]])
+     if(ans.len > 1) stop("Multiple joint posteriors exist!\n")
      parm.int <- (diag(parm.len) * Interval) / 2
      parm.int <- ifelse(is.na(parm.int), 0, parm.int)
      parm.int <- ifelse(is.nan(parm.int), 0, parm.int)

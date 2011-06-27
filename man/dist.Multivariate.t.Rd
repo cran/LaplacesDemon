@@ -8,8 +8,8 @@
   Student distribution.
 }
 \usage{
-dmvt(x, mu=rep(0,k), S, df=Inf, log=FALSE)
-rmvt(n=1, mu=rep(0,k), S, df=Inf)
+dmvt(x, mu, S, df=Inf, log=FALSE)
+rmvt(n=1, mu, S, df=Inf)
 }
 \arguments{
   \item{x}{This is either a vector of length \code{d} or a matrix with 

@@ -1,4 +1,9 @@
-2011-06-09 predict.demonoid warns about use of non-stationary samples
+2011-06-27 Distributions: 'Vectorized' dmvn and dmvt
+2011-06-26 LaplaceApproximation and LaplacesDemon: Suggestion about loops
+2011-06-25 LaplaceApproximation and LaplacesDemon: Warning for multiple LPs
+2011-06-18 Added indmat function
+2011-06-15 Vignette Examples: Added ANOVA, Two-Way
+2011-06-09 predict.demonoid now warns about use of non-stationary samples
 2011-06-08 Distributions: Added the half-t density
 2011-06-03 Distributions: Added the half-Cauchy
 2011-04-09 Email Address: Changed to laplacesdemon@statisticat.com
