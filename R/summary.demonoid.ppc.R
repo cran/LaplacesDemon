@@ -16,7 +16,7 @@ summary.demonoid.ppc <- function(object=NULL, Rows=NULL, Discrep=NULL,
      Summ <- matrix(NA, length(y), 8, dimnames=list(1:length(y),
           c("y","Mean","SD","LB","Median","UB","PQ","Discrep")))
      Summ[,1] <- y
-     Summ[,2] <- apply(yhat, 1, mean)
+     Summ[,2] <- rowMeans(yhat)
      Summ[,3] <- apply(yhat, 1, sd)
      for(i in 1:length(y))
          {
@@ -28,6 +28,7 @@ summary.demonoid.ppc <- function(object=NULL, Rows=NULL, Discrep=NULL,
      ### Discrepancy Statistics
      Concordance <- 1 - mean(((Summ[,7] < 0.025) | (Summ[,7] > 0.975)),
           na.rm=TRUE)
+     if(identical(yhat,y)) Concordance <- 1
      Discrepancy.Statistic <- 0
      if(!is.null(Discrep) && (Discrep == "max(yhat[i,]) > max(y)")) {
           for (i in 1:length(y)) {Summ[i,8] <- max(yhat[i,]) > max(y)}

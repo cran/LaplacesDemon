@@ -122,29 +122,29 @@ The basis for Bayesian inference is derived from Bayes' theorem. Here is Bayes' 
 
 $$\Pr(A | B) = \frac{\Pr(B | A)\Pr(A)}{\Pr(B)}$$
 
-Replacing $B$ with observations $y$, $A$ with parameter set $\Theta$, and probabilities $\Pr$ with densities $p$ (or sometimes function $f$), results in the following
+Replacing $B$ with observations $\textbf{y}$, $A$ with parameter set $\Theta$, and probabilities $\Pr$ with densities $p$ (or sometimes function $f$), results in the following
 
 $$
-p(\Theta | y) = \frac{p(y | \Theta)p(\Theta)}{p(y)}$$
+p(\Theta | \textbf{y}) = \frac{p(\textbf{y} | \Theta)p(\Theta)}{p(\textbf{y})}$$
 
-where $p(y)$ will be discussed below, p($\Theta$) is the set of prior distributions of parameter set $\Theta$ before $y$ is observed, $p(y | \Theta)$ is the likelihood of $y$ under a model, and $p(\Theta | y)$ is the joint posterior distribution, sometimes called the full posterior distribution, of parameter set $\Theta$ that expresses uncertainty about parameter set $\Theta$ after taking both the prior and data into account. Since there are usually multiple parameters, $\Theta$ represents a set of $j$ parameters, and may be considered hereafter in this article as
+where $p(\textbf{y})$ will be discussed below, p($\Theta$) is the set of prior distributions of parameter set $\Theta$ before $\textbf{y}$ is observed, $p(\textbf{y} | \Theta)$ is the likelihood of $\textbf{y}$ under a model, and $p(\Theta | \textbf{y})$ is the joint posterior distribution, sometimes called the full posterior distribution, of parameter set $\Theta$ that expresses uncertainty about parameter set $\Theta$ after taking both the prior and data into account. Since there are usually multiple parameters, $\Theta$ represents a set of $j$ parameters, and may be considered hereafter in this article as
 
 $$\Theta = \theta_1,...,\theta_j$$
 
 The denominator
 
-$$p(y) = \int p(y | \Theta)p(\Theta) d\Theta$$
+$$p(\textbf{y}) = \int p(\textbf{y} | \Theta)p(\Theta) d\Theta$$
 
-defines the ``marginal likelihood'' of $y$, or the ``prior predictive distribution'' of $y$, and may be set to an unknown constant $c$. The prior predictive distribution indicates what $y$ should look like, given the model, before $y$ has been observed. Only the set of prior probabilities and the model's likelihood function are used for the marginal likelihood of $y$. The presence of the marginal likelihood of $y$ normalizes the joint posterior distribution, $p(\Theta | y)$, ensuring it is a proper distribution and integrates to one.
+defines the ``marginal likelihood'' of $\textbf{y}$, or the ``prior predictive distribution'' of $\textbf{y}$, and may be set to an unknown constant $\textbf{c}$. The prior predictive distribution indicates what $\textbf{y}$ should look like, given the model, before $\textbf{y}$ has been observed. Only the set of prior probabilities and the model's likelihood function are used for the marginal likelihood of $\textbf{y}$. The presence of the marginal likelihood of $\textbf{y}$ normalizes the joint posterior distribution, $p(\Theta | \textbf{y})$, ensuring it is a proper distribution and integrates to one.
 
-By replacing $p(y)$ with $c$, which is short for a `constant of proportionality', the model-based formulation of Bayes' theorem becomes
+By replacing $p(\textbf{y})$ with $\textbf{c}$, which is short for a `constant of proportionality', the model-based formulation of Bayes' theorem becomes
 
-$$p(\Theta | y) = \frac{p(y | \Theta)p(\Theta)}{c}$$
+$$p(\Theta | \textbf{y}) = \frac{p(\textbf{y} | \Theta)p(\Theta)}{\textbf{c}}$$
 
-By removing $c$ from the equation, the relationship changes from 'equals' ($=$) to 'proportional to' ($\propto$)\footnote{For those unfamiliar with $\propto$, this symbol simply means that two quantities are proportional if they vary in such a way that one is a constant multiplier of the other. This is due to the constant of proportionality $c$ in the equation. Here, this can be treated as `equal to'.}
+By removing $\textbf{c}$ from the equation, the relationship changes from 'equals' ($=$) to 'proportional to' ($\propto$)\footnote{For those unfamiliar with $\propto$, this symbol simply means that two quantities are proportional if they vary in such a way that one is a constant multiplier of the other. This is due to the constant of proportionality $\textbf{c}$ in the equation. Here, this can be treated as `equal to'.}
 
 \begin{equation} \label{jointposterior}
-p(\Theta | y) \propto p(y | \Theta)p(\Theta)
+p(\Theta | \textbf{y}) \propto p(\textbf{y} | \Theta)p(\Theta)
 \end{equation}
 
 This form can be stated as the unnormalized joint posterior being proportional to the likelihood times the prior. However, the goal in model-based Bayesian inference is usually not to summarize the unnormalized joint posterior distribution, but to summarize the marginal distributions of the parameters. The full parameter set $\Theta$ can typically be partitioned into
@@ -153,7 +153,7 @@ $$\Theta = \{\Phi, \Lambda\}$$
 
 where $\Phi$ is the sub-vector of interest, and $\Lambda$ is the complementary sub-vector of $\Theta$, often referred to as a vector of nuisance parameters. In a Bayesian framework, the presence of nuisance parameters does not pose any formal, theoretical problems. A nuisance parameter is a parameter that exists in the joint posterior distribution of a model, though it is not a parameter of interest. The marginal posterior distribution of $\phi$, the parameter of interest, can simply be written as
 
-$$p(\phi | y) = \int p(\phi, \Lambda | y) d\Lambda$$
+$$p(\phi | \textbf{y}) = \int p(\phi, \Lambda | \textbf{y}) d\Lambda$$
 
 In model-based Bayesian inference, Bayes' theorem is used to estimate the unnormalized joint posterior distribution, and finally the user can assess and make inferences from the marginal posterior distributions.
 
@@ -163,8 +163,8 @@ The components of Bayesian inference are
 
 \begin{enumerate}
 \item $p(\Theta)$ is the set of prior distributions for parameter set $\Theta$, and uses probability as a means of quantifying uncertainty about $\Theta$ before taking the data into account.
-\item $p(y | \Theta)$ is the likelihood or likelihood function, in which all variables are related in a full probability model.
-\item $p(\Theta | y)$ is the joint posterior distribution that expresses uncertainty about parameter set $\Theta$ after taking both the prior and the data into account. If parameter set $\Theta$ is partitioned into a single parameter of interest $\phi$ and the remaining parameters are considered nuisance parameters, then $p(\phi | y)$ is the marginal posterior distribution.
+\item $p(\textbf{y} | \Theta)$ is the likelihood or likelihood function, in which all variables are related in a full probability model.
+\item $p(\Theta | \textbf{y})$ is the joint posterior distribution that expresses uncertainty about parameter set $\Theta$ after taking both the prior and the data into account. If parameter set $\Theta$ is partitioned into a single parameter of interest $\phi$ and the remaining parameters are considered nuisance parameters, then $p(\phi | \textbf{y})$ is the marginal posterior distribution.
 \end{enumerate}
 
 \section{Prior Distributions}
@@ -183,9 +183,9 @@ In this way, each version of a model is not starting from scratch, based only on
 
 When prior information is unavailable about $\theta$, which is more common, an uninformative prior distribution could be used, or the prior distribution could in turn be estimated from hyperprior distributions in a hierarchical context.
 
-Uninformative prior distributions (also called diffuse, minimal, non-informative, objective, reference, uniform, or vague priors\footnote{These terms are not all equivalent. For example, `reference priors' are proposed, and are quite different from typical vague priors \citep{bernardo00}. With reference priors, the idea is to maximize the expected Kullback-Leibler divergence of the posterior distribution relative to the prior. This maximizes the expected posterior information about $y$ when the prior density is $p(y)$. In some sense, $p(y)$ is the `least informative' prior about $y$. Reference priors are often the objective prior of choice in multivariate problems, since other rules (e.g., Jeffreys' rule) may result in priors with problematic behavior.}) attempt to minimize the impact of the selection of the prior distribution. The rationale for using uninformative prior distributions is often said to be 'to let the data speak for themselves'. The epitome of uninformative prior distributions is the unbounded, uniform distribution, often called a flat prior, such as
+Uninformative prior distributions (also called diffuse, minimal, non-informative, objective, reference, uniform, or vague priors\footnote{These terms are not all equivalent. For example, `reference priors' are proposed, and are quite different from typical vague priors \citep{bernardo00}. With reference priors, the idea is to maximize the expected Kullback-Leibler divergence of the posterior distribution relative to the prior. This maximizes the expected posterior information about $\textbf{y}$ when the prior density is $p(\textbf{y})$. In some sense, $p(\textbf{y})$ is the `least informative' prior about $\textbf{y}$. Reference priors are often the objective prior of choice in multivariate problems, since other rules (e.g., Jeffreys' rule) may result in priors with problematic behavior.}) attempt to minimize the impact of the selection of the prior distribution. The rationale for using uninformative prior distributions is often said to be 'to let the data speak for themselves'. The epitome of uninformative prior distributions is the unbounded, uniform distribution, often called a flat prior, such as
 
-$$\theta \sim \mathrm{U}(-\infty, \infty)$$
+$$\theta \sim \mathcal{U}(-\infty, \infty)$$
 
 where $\theta$ is uniformly-distributed from negative infinity to positive infinity. Although this allows the posterior distribution to be affected soley by the data with no impact from prior information, this should generally be avoided because the posterior distribution is improper, meaning it will not integrate to one, because the integral of the assumed $p(\theta)$ is infinity, which violates the assumption that the probabilities sum to one.
 
@@ -205,9 +205,9 @@ $$\int p(\theta) d(\theta) = \infty$$
 
 As noted previously, an unbounded uniform prior distribution is an improper prior distribution because $p(\theta) \propto 1$, for $-\infty < \theta < \infty$. An improper prior distribution can cause an improper posterior distribution. When the posterior distribution is improper, inferences are invalid, it is non-integrable, and Bayes factors cannot be used (though there are exceptions).
 
-To determine the propriety of a posterior distribution, the marginal likelihood must be finite for all $y$. Again, the marginal likelihood is
+To determine the propriety of a posterior distribution, the marginal likelihood must be finite for all $\textbf{y}$. Again, the marginal likelihood is
 
-$$p(y) = \int p(y | \Theta) p(\Theta) d(\Theta)$$
+$$p(\textbf{y}) = \int p(\textbf{y} | \Theta) p(\Theta) d(\Theta)$$
 
 Although improper prior distributions can be used, it is good practice to avoid them.
 
@@ -217,21 +217,21 @@ Prior distributions may be estimated within the model via hyperprior distributio
 
 Recall that the unnormalized joint posterior distribution (equation \ref{jointposterior}) is proportional to the likelihood times the prior distribution
 
-$$p(\Theta | y) \propto p(y | \Theta)p(\Theta)$$
+$$p(\Theta | \textbf{y}) \propto p(\textbf{y} | \Theta)p(\Theta)$$
 
 The simplest hierarchical Bayes model takes the form
 
-$$p(\Theta, \Phi | y) \propto p(y | \Theta)p(\Theta | \Phi)p(\Phi)$$
+$$p(\Theta, \Phi | \textbf{y}) \propto p(\textbf{y} | \Theta)p(\Theta | \Phi)p(\Phi)$$
 
-where $\Phi$ is a set of hyperprior distributions. By reading the equation from right to left, it begins with hyperpriors $\Phi$, which are used conditionally to estimate $p(\Theta | \Phi)$, which in turn is used, as per usual, to estimate the likelihood $p(y | \Theta)$, and finally the posterior is $p(\Theta, \Phi | y)$.
+where $\Phi$ is a set of hyperprior distributions. By reading the equation from right to left, it begins with hyperpriors $\Phi$, which are used conditionally to estimate $p(\Theta | \Phi)$, which in turn is used, as per usual, to estimate the likelihood $p(\textbf{y} | \Theta)$, and finally the posterior is $p(\Theta, \Phi | \textbf{y})$.
 
 \section{Conjugacy}
 
-When the posterior distribution $p(\Theta | y)$ is in the same family as the prior probability distribution $p(\Theta)$, the prior and posterior are then called conjugate distributions, and the prior is called a conjugate prior for the likelihood. For example, the Gaussian family is conjugate to itself (or self-conjugate) with respect to a Gaussian likelihood function: if the likelihood function is Gaussian, then choosing a Gaussian prior for the mean will ensure that the posterior distribution is also Gaussian. All probability distributions in the exponential family have conjugate priors. See \citet{gelman04} for a catalog.
+When the posterior distribution $p(\Theta | \textbf{y})$ is in the same family as the prior probability distribution $p(\Theta)$, the prior and posterior are then called conjugate distributions, and the prior is called a conjugate prior for the likelihood. For example, the Gaussian family is conjugate to itself (or self-conjugate) with respect to a Gaussian likelihood function: if the likelihood function is Gaussian, then choosing a Gaussian prior for the mean will ensure that the posterior distribution is also Gaussian. All probability distributions in the exponential family have conjugate priors. See \citet{gelman04} for a catalog.
 
 Although the gamma distribution is the conjugate prior distribution for the precision of a normal distribution \citep{spiegelhalter03}, 
 
-$$\tau \sim \Gamma(0.001, 0.001),$$
+$$\tau \sim \mathcal{G}(0.001, 0.001),$$
 
 better properties for scale parameters are yielded with the non-conjugate, proper, half-Cauchy\footnote{The half-t distribution is another option.} distribution, with a general recommendation of scale=25 for an uninformative scale parameter \citep{gelman06}, 
 
@@ -249,21 +249,21 @@ The basic justification for the use of conjugate prior distributions is similar 
 
 Nonconjugate prior distributions can make interpretations of posterior inferences less transparent and computation more difficult, though this alternative does not pose any conceptual problems. In practice, for complicated models, conjugate prior distributions may not even be possible \citep[p. 41-42]{gelman04}.
 
-When conjugate distributions are used, a summary statistic for a posterior distribution of $\theta$ may be represented as $t(y)$ and said to be a sufficient statistic \citep[p. 42]{gelman04}. When nonconjugate distributions are used, a summary statistic for a posterior distribution is usually not a sufficient statistic. A sufficient statistic is a statistic that has the property of sufficiency with respect to a statistical model and the associated unknown parameter. The quantity $t(y)$ is said to be a sufficient statistic for $\theta$, because the likelihood for $\theta$ depends on the data $y$ only through the value of $t(y)$. Sufficient statistics are useful in algebraic manipulations of likelihoods and posterior distributions.
+When conjugate distributions are used, a summary statistic for a posterior distribution of $\theta$ may be represented as $t(\textbf{y})$ and said to be a sufficient statistic \citep[p. 42]{gelman04}. When nonconjugate distributions are used, a summary statistic for a posterior distribution is usually not a sufficient statistic. A sufficient statistic is a statistic that has the property of sufficiency with respect to a statistical model and the associated unknown parameter. The quantity $t(\textbf{y})$ is said to be a sufficient statistic for $\theta$, because the likelihood for $\theta$ depends on the data $\textbf{y}$ only through the value of $t(\textbf{y})$. Sufficient statistics are useful in algebraic manipulations of likelihoods and posterior distributions.
 
 \section{Likelihood}
 
-In order to complete the definition of a Bayesian model, both the prior distributions and the likelihood\footnote{Ronald A. Fisher, a prominent frequentist, introduced the term likelihood in 1921 \citep{fisher21}, though the concept of likelihood was used by Bayes and Laplace. Fisher's introduction preceded a series of the most influential papers in statistics (mostly in 1922 and 1925), in which Fisher introduced numerous terms that are now common: consistency, efficiency, estimation, information, maximum likelihood estimate, optimality, parameter, statistic, sufficiency, and variance. He was the first to use Greek letters for unknown parameters and Latin letters for the estimates. Later contributions include F statistics, design of experiments, ANOVA, and many more.} must be fully specified. The likelihood, likelihood function, or $p(y | \Theta)$, contains the available information provided by the sample. The likelihood is
+In order to complete the definition of a Bayesian model, both the prior distributions and the likelihood\footnote{Ronald A. Fisher, a prominent frequentist, introduced the term likelihood in 1921 \citep{fisher21}, though the concept of likelihood was used by Bayes and Laplace. Fisher's introduction preceded a series of the most influential papers in statistics (mostly in 1922 and 1925), in which Fisher introduced numerous terms that are now common: consistency, efficiency, estimation, information, maximum likelihood estimate, optimality, parameter, statistic, sufficiency, and variance. He was the first to use Greek letters for unknown parameters and Latin letters for the estimates. Later contributions include F statistics, design of experiments, ANOVA, and many more.} must be fully specified. The likelihood, likelihood function, or $p(\textbf{y} | \Theta)$, contains the available information provided by the sample. The likelihood is
 
-$$p(y | \Theta) = \prod^n_{i=1} p(y_i | \Theta)$$
+$$p(\textbf{y} | \Theta) = \prod^n_{i=1} p(\textbf{y}_i | \Theta)$$
 
-The data $y$ affects the posterior distribution $p(\Theta | y)$ only through the likelihood function $p(y | \Theta)$. In this way, Bayesian inference obeys the likelihood principle, which states that for a given sample of data, any two probability models $p(y | \Theta)$ that have the same likelihood function yield the same inference for $\Theta$. The likelihood principle is covered in more detail later in the section entitled ``The Likelihood Principle''.
+The data $\textbf{y}$ affects the posterior distribution $p(\Theta | \textbf{y})$ only through the likelihood function $p(\textbf{y} | \Theta)$. In this way, Bayesian inference obeys the likelihood principle, which states that for a given sample of data, any two probability models $p(\textbf{y} | \Theta)$ that have the same likelihood function yield the same inference for $\Theta$. The likelihood principle is covered in more detail later in the section entitled ``The Likelihood Principle''.
 
 \subsection{Terminology: From Inverse Probability to Bayesian Probability}
 
 A gambler's dispute in 1654 led to the creation of a mathematical theory of probability by two famous French mathematicians, Blaise Pascal and Pierre de Fermat. Reverend Thomas Bayes (1702-1761) discovered Bayes' theorem, published posthumously in 1763, in which he was the first to use inverse probability \citep{bayes63}. `Inverse probability' refers to assigning a probability distribution to an unobserved variable, and is in essence, probability in the opposite direction of the usual sense.
 
-For example, the probability of obtaining heads on the next coin flip in a Bayesian context would be the predicted probability, $p(y^{new} | y, \theta)$, but to estimate this predicted probability, the probability distribution of $\theta$ must first be estimated, using coin toss data $y$ to estimate the parameter $\theta$ by the likelihood function $p(y | \theta)$, which contains the likelihood $p(\theta | y)$, where $\theta$ is estimated from the data, $y$. Therefore, the data, $y$, is used to estimate the most probable $\theta$ that would lead to a data-generating process for $y$.
+For example, the probability of obtaining heads on the next coin flip in a Bayesian context would be the predicted probability, $p(\textbf{y}^{new} | \textbf{y}, \theta)$, but to estimate this predicted probability, the probability distribution of $\theta$ must first be estimated, using coin toss data $\textbf{y}$ to estimate the parameter $\theta$ by the likelihood function $p(\textbf{y} | \theta)$, which contains the likelihood $p(\theta | \textbf{y})$, where $\theta$ is estimated from the data, $\textbf{y}$. Therefore, the data, $\textbf{y}$, is used to estimate the most probable $\theta$ that would lead to a data-generating process for $\textbf{y}$.
 
 Unaware of Bayes, Pierre-Simon Laplace (1749-1827) independently developed Bayes' theorem and first published his version in 1774, eleven years after Bayes, in one of Laplace's first major works \citep[p. 366-367]{laplace74}. In 1812, Laplace (1749-1827) introduced a host of new ideas and mathematical techniques in his book, \emph{Theorie Analytique des Probabilites} \citep{laplace12}. Before Laplace, probability theory was solely concerned with developing a mathematical analysis of games of chance. Laplace applied probabilistic ideas to many scientific and 
 practical problems.
@@ -274,9 +274,9 @@ The term ``inverse probability'' appears in an 1837 paper of Augustus De Morgan 
 
 Terminology has changed, so that today, Bayesian probability (rather than inverse probability) refers to assigning a probability distribution to an unobservable variable. The ``distribution'' of an unobserved variable given data is the likelihood function (which is not a distribution), and the distribution of an unobserved variable, given both data and a prior distribution, is the posterior distribution. The term ``Bayesian'', which displaced ``inverse probability'', was in fact introduced by Ronald A. Fisher as a derogatory term.
 
-In modern terms, given a probability distribution $p(y | \theta)$ for an observable quantity $y$ conditional on an unobserved variable $\theta$, the ``inverse probability'' is the posterior distribution $p(\theta | y)$, which depends both on the likelihood function (the inversion of the probability distribution) and a prior distribution. The distribution $p(y | \theta)$ itself is called the direct probability.
+In modern terms, given a probability distribution $p(\textbf{y} | \theta)$ for an observable quantity $\textbf{y}$ conditional on an unobserved variable $\theta$, the ``inverse probability'' is the posterior distribution $p(\theta | \textbf{y})$, which depends both on the likelihood function (the inversion of the probability distribution) and a prior distribution. The distribution $p(\textbf{y} | \theta)$ itself is called the direct probability.
 
-However, $p(y | \theta)$ is also called the likelihood function, which can be confusing, seeming to pit the definitions of probability and likelihood against each other. A quick introduction to the likelihood principle follows, and finally all of the information on likelihood comes together in the section entitled ``Likelihood Function of a Parameterized Model''.
+However, $p(\textbf{y} | \theta)$ is also called the likelihood function, which can be confusing, seeming to pit the definitions of probability and likelihood against each other. A quick introduction to the likelihood principle follows, and finally all of the information on likelihood comes together in the section entitled ``Likelihood Function of a Parameterized Model''.
 
 \subsection{The Likelihood Principle}
 
@@ -291,61 +291,61 @@ There have been many frequentist attacks on the likelihood principle, and have b
 Following are some interesting qutoes from prominent statisticians:
 
 \begin{quote}
-``Using Bayes' rule with a chosen probability model means that the data $y$ affect posterior inference 'only' through the function $p(y | \theta)$, which, when regarded as a function of $\theta$, for fixed $y$, is called the `likelihood function'. In this way Bayesian inference obeys what is sometimes called the `likelihood principle', which states that for a given sample of data, any two probability models $p(y | \theta)$ that have the same likelihood function yield the same inference for $\theta$'' \citep[p. 9]{gelman04}.\\
+``Using Bayes' rule with a chosen probability model means that the data $\textbf{y}$ affect posterior inference 'only' through the function $p(\textbf{y} | \theta)$, which, when regarded as a function of $\theta$, for fixed $\textbf{y}$, is called the `likelihood function'. In this way Bayesian inference obeys what is sometimes called the `likelihood principle', which states that for a given sample of data, any two probability models $p(\textbf{y} | \theta)$ that have the same likelihood function yield the same inference for $\theta$'' \citep[p. 9]{gelman04}.\\
 
 ``The likelihood principle is reasonable, but only within the framework of the model or family of models adopted for a particular analysis'' \citep[p. 9]{gelman04}.\\
 
-Frequentist ``procedures typically violate the likelihood principle, since long-run behavior under hypothetical repetitions depends on the entire distribution ${p(y | \theta), y \in Y}$ and not only on the likelihood'' \citep[p. 454]{bernardo00}.\\
+Frequentist ``procedures typically violate the likelihood principle, since long-run behavior under hypothetical repetitions depends on the entire distribution $p(\textbf{y} | \theta)$, $\textbf{y} \in \textbf{Y}$ and not only on the likelihood'' \citep[p. 454]{bernardo00}.\\
 
-There is ``a general fact about the mechanism of parametric Bayesian inference which is trivially obvious; namely `for any specified $p(\theta)$, if the likelihood functions $p_1(y_1 | \theta), p_2(y_2 | \theta)$ are proportional as functions of $\theta$, the resulting posterior densities for $\theta$ are identical'. It turns out...that many non-Bayesian inference procedures do not lead to identical inferences when applied to such proportional likelihoods. The assertion that they `should', the so-called `Likelihood Principle', is therefore a controversial issue among statisticians. In contrast, in the Bayesian inference context...this is a straightforward consequence of Bayes' theorem, rather than an imposed `principle' '' \citep[p. 249]{bernardo00}.\\
+There is ``a general fact about the mechanism of parametric Bayesian inference which is trivially obvious; namely `for any specified $p(\theta)$, if the likelihood functions $p_1(\textbf{y}_1 | \theta), p_2(\textbf{y}_2 | \theta)$ are proportional as functions of $\theta$, the resulting posterior densities for $\theta$ are identical'. It turns out...that many non-Bayesian inference procedures do not lead to identical inferences when applied to such proportional likelihoods. The assertion that they `should', the so-called `Likelihood Principle', is therefore a controversial issue among statisticians. In contrast, in the Bayesian inference context...this is a straightforward consequence of Bayes' theorem, rather than an imposed `principle' '' \citep[p. 249]{bernardo00}.\\
 
 ``Although the likelihood principle is implicit in Bayesian statistics, it was developed as a separate principle by Barnard \citep{Barnard49}, and became a focus of interest when Birnbaum (1962) showed that it followed from the widely accepted sufficiency and conditionality principles'' \citep[p. 250]{bernardo00}.\\
 
 ``The likelihood principle, by itself, is not sufficient to build a method of inference but should be regarded as a minimum requirement of any viable form of inference. This is a controversial point of view for anyone familiar with modern econometrics literature. Much of this literature is devoted to methods that do not obey the likelihood principle...'' \citep[p. 15]{rossi05}.\\
 
-``Adherence to the likelihood principle means that inferences are `conditional' on the observed data as the likelihood function is parameterized by the data. This is worth contrasting to any sampling-based approach to inference. In the sampling literature, inference is conducted by examining the sampling distribution of some estimator of $\theta$, $\hat{\theta} = f(y)$. Some sort of sampling experiment results in a distribution of $y$ and therefore, the estimator is viewed as a random variable. The sampling distribution of the estimator summarizes the properties of the estimator `prior' to observing the data. As such, it is irrelevant to making inferences given the data we actually observe. For any finite sample, this dinstinction is extremely important. One must conclude that, given our goal for inference, sampling distributions are simply not useful'' \citep[p. 15]{rossi05}.
+``Adherence to the likelihood principle means that inferences are `conditional' on the observed data as the likelihood function is parameterized by the data. This is worth contrasting to any sampling-based approach to inference. In the sampling literature, inference is conducted by examining the sampling distribution of some estimator of $\theta$, $\hat{\theta} = f(\textbf{y})$. Some sort of sampling experiment results in a distribution of $\textbf{y}$ and therefore, the estimator is viewed as a random variable. The sampling distribution of the estimator summarizes the properties of the estimator `prior' to observing the data. As such, it is irrelevant to making inferences given the data we actually observe. For any finite sample, this dinstinction is extremely important. One must conclude that, given our goal for inference, sampling distributions are simply not useful'' \citep[p. 15]{rossi05}.
 \end{quote}
 
 \subsection{Likelihood Function of a Parameterized Model}
 
 In non-technical parlance, ``likelihood'' is usually a synonym for ``probability'', but in statistical usage there is a clear distinction: whereas ``probability'' allows us to predict unknown outcomes based on known parameters, ``likelihood'' allows us to estimate unknown parameters based on known outcomes.
 
-In a sense, likelihood can be thought a reversed version of conditional probability. Reasoning forward from a given parameter $\theta$, the conditional probability of $y$ is the density $p(y | \theta)$. With $\theta$ as a parameter, here are relationships in expressions of the likelihood function
+In a sense, likelihood can be thought a reversed version of conditional probability. Reasoning forward from a given parameter $\theta$, the conditional probability of $\textbf{y}$ is the density $p(\textbf{y} | \theta)$. With $\theta$ as a parameter, here are relationships in expressions of the likelihood function
 
-$$\mathscr{L}(\theta | y) = p(y | \theta) = f(y | \theta)$$
+$$\mathscr{L}(\theta | \textbf{y}) = p(\textbf{y} | \theta) = f(\textbf{y} | \theta)$$
 
-where $y$ is the observed outcome of an experiment, and the likelihood ($\mathscr{L}$) of $\theta$ given $y$ is equal to the density $p(y | \theta)$ or function $f(y | \theta)$. When viewed as a function of $y$ with $\theta$ fixed, it is not a likelihood function $\mathscr{L}(\theta | y)$, but merely a probability density function $p(y | \theta)$. When viewed as a function of $\theta$ with $y$ fixed, it is a likelihood function and may be denoted as $\mathscr{L}(\theta | y)$, $p(y | \theta)$, or $f(y | \theta)$\footnote{Note that $\mathscr{L}(\theta | y)$ is not the same as the probability that those parameters are the right ones, given the observed sample.}.
+where $\textbf{y}$ is the observed outcome of an experiment, and the likelihood ($\mathscr{L}$) of $\theta$ given $\textbf{y}$ is equal to the density $p(\textbf{y} | \theta)$ or function $f(\textbf{y} | \theta)$. When viewed as a function of $\textbf{y}$ with $\theta$ fixed, it is not a likelihood function $\mathscr{L}(\theta | \textbf{y})$, but merely a probability density function $p(\textbf{y} | \theta)$. When viewed as a function of $\theta$ with $\textbf{y}$ fixed, it is a likelihood function and may be denoted as $\mathscr{L}(\theta | \textbf{y})$, $p(\textbf{y} | \theta)$, or $f(\textbf{y} | \theta)$\footnote{Note that $\mathscr{L}(\theta | \textbf{y})$ is not the same as the probability that those parameters are the right ones, given the observed sample.}.
 
 For example, in a Bayesian linear regression with an intercept and two independent variables, the model may be specified as
 
-$$y_i \sim \mathcal{N}(\mu_i, \sigma^2)$$
+$$\textbf{y}_i \sim \mathcal{N}(\mu_i, \sigma^2)$$
 $$\mu_i = \beta_1 + \beta_2\textbf{X}_{i,1} + \beta_3\textbf{X}_{i,2}$$
 
-The dependent variable $y$, indexed by $i=1,...,n$, is stochastic, and normally-distributed according to the expectation vector $\mu$, and variance $\sigma^2$. Expectation vector $\mu$ is an additive, linear function of a vector of regression parameters, $\beta$, and the design matrix \textbf{X}.
+The dependent variable $\textbf{y}$, indexed by $i=1,...,n$, is stochastic, and normally-distributed according to the expectation vector $\mu$, and variance $\sigma^2$. Expectation vector $\mu$ is an additive, linear function of a vector of regression parameters, $\beta$, and the design matrix \textbf{X}.
 
-Since $y$ is normally-distributed, the probability density function (PDF) of a normal distribution will be used, and is usually denoted as
+Since $\textbf{y}$ is normally-distributed, the probability density function (PDF) of a normal distribution will be used, and is usually denoted as
 
-$$f(y) = \frac{1}{\sqrt{2\pi}\sigma}\exp[(-\frac{1}{2}\sigma^2)(y_i-\mu_i)^2]; \quad -\infty < y < \infty$$
+$$f(\textbf{y}) = \frac{1}{\sqrt{2\pi}\sigma}\exp[(-\frac{1}{2}\sigma^2)(\textbf{y}_i-\mu_i)^2]; \quad \textbf{y} \in (-\infty, \infty)$$
 
 By considering a conditional distribution, the record-level likelihood in Bayesian notation is
 
-$$p(y_i | \Theta) = \frac{1}{\sqrt{2\pi}\sigma}\exp[(-\frac{1}{2}\sigma^2)(y_i-\mu_i)^2]; \quad -\infty < y < \infty$$
+$$p(\textbf{y}_i | \Theta) = \frac{1}{\sqrt{2\pi}\sigma}\exp[(-\frac{1}{2}\sigma^2)(\textbf{y}_i-\mu_i)^2]; \quad \textbf{y} \in (-\infty, \infty)$$
 
 In both theory and practice, and in both frequentist and Bayesian inference, the log-likelihood is used instead of the likelihood, on both the record- and model-level. The model-level product of record-level likelihoods can exceed the range of a number that can be stored by a computer, which is usually affected by sample size. By estimating a record-level log-likelihood, rather than likelihood, the model-level log-likelihood is the sum of the record-level log-likelihoods, rather than a product of the record-level likelihoods.
 
-$$\log[p(y | \theta)] = \sum^n_{i=1} \log[p(y_i | \theta)]$$
+$$\log[p(\textbf{y} | \theta)] = \sum^n_{i=1} \log[p(\textbf{y}_i | \theta)]$$
 
 rather than
 
-$$p(y | \theta) = \prod^n_{i=1} p(y_i | \theta)$$
+$$p(\textbf{y} | \theta) = \prod^n_{i=1} p(\textbf{y}_i | \theta)$$
 
 As a function of $\theta$, the unnormalized joint posterior distribution is the product of the likelihood function and the prior distributions. To continue with the example of Bayesian linear regression, here is the unnormalized joint posterior distribution
 
-$$p(\beta, \sigma^2 | y) = p(y | \beta, \sigma^2)p(\beta_1)p(\beta_2)p(\beta_3)p(\sigma^2)$$
+$$p(\beta, \sigma^2 | \textbf{y}) = p(\textbf{y} | \beta, \sigma^2)p(\beta_1)p(\beta_2)p(\beta_3)p(\sigma^2)$$
 
 More usually, the logarithm of the unnormalized joint posterior distribution is used, which is the sum of the log-likelihood and prior distributions. Here is the logarithm of the unnormalized joint posterior distribution for this example
 
-$$\log[p(\beta, \sigma^2 | y)] = \log[p(y | \beta, \sigma^2)] + \log[p(\beta_1)] + \log[p(\beta_2)] + \log[p(\beta_3)] + \log[p(\sigma^2)]$$
+$$\log[p(\beta, \sigma^2 | \textbf{y})] = \log[p(\textbf{y} | \beta, \sigma^2)] + \log[p(\beta_1)] + \log[p(\beta_2)] + \log[p(\beta_3)] + \log[p(\sigma^2)]$$
 
 The logarithm of the unnormalized joint posterior distribution is maximized with numerical approximation.
 
@@ -363,35 +363,35 @@ A Monte Carlo method is an algorithm that relies on repeated pseudo-random sampl
 
 \section{Prediction}
 
-The ``posterior predictive distribution'' is either the replication of $y$ given the model (usually represented as $y^{rep}$), or the prediction of a new and unobserved $y$ (usually represented as $y^{new}$ or $y'$), given the model. This is the likelihood of the replicated or predicted data, averaged over the posterior distribution $p(\Theta | y)$
+The ``posterior predictive distribution'' is either the replication of $y$ given the model (usually represented as $\textbf{y}^{rep}$), or the prediction of a new and unobserved $\textbf{y}$ (usually represented as $\textbf{y}^{new}$ or $\textbf{y}'$), given the model. This is the likelihood of the replicated or predicted data, averaged over the posterior distribution $p(\Theta | \textbf{y})$
 
-$$p(y^{rep} | y) = \int p(y^{rep} | \Theta)p(\Theta | y) d\Theta$$
+$$p(\textbf{y}^{rep} | \textbf{y}) = \int p(\textbf{y}^{rep} | \Theta)p(\Theta | \textbf{y}) d\Theta$$
 
 or
 
-$$p(y^{new} | y) = \int p(y^{new} | \Theta)p(\Theta | y) d\Theta$$
+$$p(\textbf{y}^{new} | \textbf{y}) = \int p(\textbf{y}^{new} | \Theta)p(\Theta | \textbf{y}) d\Theta$$
 
-If $y$ has missing values, then the missing $y$'s can be estimated with the posterior predictive distribution as $y^{new}$ from within the model. For the linear regression example, the integral for prediction is
+If $\textbf{y}$ has missing values, then the missing $\textbf{y}$'s can be estimated with the posterior predictive distribution as $\textbf{y}^{new}$ from within the model. For the linear regression example, the integral for prediction is
 
-$$p(y^{new} | y) = \int p(y^{new} | \beta,\sigma^2)p(\beta,\sigma^2 | y) d\beta d\sigma^2$$
+$$p(\textbf{y}^{new} | \textbf{y}) = \int p(\textbf{y}^{new} | \beta,\sigma^2)p(\beta,\sigma^2 | \textbf{y}) d\beta d\sigma^2$$
 
 The posterior predictive distribution is easy to estimate, since it is the same thing as the expectation $\mu$ in
 
-$$y^{new} \sim \mathcal{N}(\mu, \sigma^2)$$
+$$\textbf{y}^{new} \sim \mathcal{N}(\mu, \sigma^2)$$
 
 where $\mu$ = \textbf{X}$\beta$, and $\mu$ is the conditional mean, while $\sigma^2$ is the residual variance.
 
 \section{Bayes Factors}
 
-Introduced by Harold Jeffreys, a `Bayes factor' is a Bayesian alternative to frequentist hypothesis testing that is most often used for the comparison of multiple models by hypothesis testing, usually to determine which model better fits the data \citep{jeffreys61}. Bayes factors are notoriously difficult to compute, and the Bayes factor is only defined when the marginal density of $y$ under each model is proper. However, Bayes factors are easy to approximate with the Laplace-Metropolis Estimator \citep{kass95, lewis97}\footnote{A Bayes factor may be estimated with the \code{BayesFactor} function in \pkg{LaplacesDemon} to compare multiple models that were fit with the \code{LaplaceApproximation} or \code{LaplacesDemon} functions.}.
+Introduced by Harold Jeffreys, a `Bayes factor' is a Bayesian alternative to frequentist hypothesis testing that is most often used for the comparison of multiple models by hypothesis testing, usually to determine which model better fits the data \citep{jeffreys61}. Bayes factors are notoriously difficult to compute, and the Bayes factor is only defined when the marginal density of $\textbf{y}$ under each model is proper. However, Bayes factors are easy to approximate with the Laplace-Metropolis Estimator \citep{kass95, lewis97}\footnote{A Bayes factor may be estimated with the \code{BayesFactor} function in \pkg{LaplacesDemon} to compare multiple models that were fit with the \code{LaplaceApproximation} or \code{LaplacesDemon} functions.}.
 
 Hypothesis testing with Bayes factors is more robust than frequentist hypothesis testing, since the Bayesian form avoids model selection bias, evaluates evidence in favor the null hypothesis, includes model uncertainty, and allows non-nested models to be compared (though of course the model must have the same dependent variable). Also, frequentist significance tests become biased in favor of rejecting the null hypothesis with sufficiently large sample size.
 
 The Bayes factor for comparing two models may be approximated as the ratio of the marginal likelihood of the data in model 1 and model 2. Formally, the Bayes factor in this case is
 
-$$B = \frac{p(y|\mathcal{M}_1)}{p(y|\mathcal{M}_2)} = \frac{\int p(y|\Theta_1,\mathcal{M}_1)p(\Theta_1|\mathcal{M}_1)d\Theta_1}{\int p(y|\Theta_2,\mathcal{M}_2)p(\Theta_2|\mathcal{M}_2)d\Theta_2}$$
+$$B = \frac{p(\textbf{y}|\mathcal{M}_1)}{p(\textbf{y}|\mathcal{M}_2)} = \frac{\int p(\textbf{y}|\Theta_1,\mathcal{M}_1)p(\Theta_1|\mathcal{M}_1)d\Theta_1}{\int p(\textbf{y}|\Theta_2,\mathcal{M}_2)p(\Theta_2|\mathcal{M}_2)d\Theta_2}$$
 
-where $p(y|\mathcal{M}_1)$ is the marginal likelihood of the data in model 1.
+where $p(\textbf{y}|\mathcal{M}_1)$ is the marginal likelihood of the data in model 1.
 
 The Bayes factor, $B$, is the posterior odds in favor of the hypothesis divided by the prior odds in favor of the hypothesis, where the hypothesis is usually $\mathcal{M}_1 > \mathcal{M}_2$. Put another way,
 
@@ -425,7 +425,7 @@ print(xtable(BF, caption="Bayes Factors and Strength of Evidence", label="bf"))
 
 In a non-hierarchical model, the marginal likelihood may easily be approximated with the Laplace-Metropolis Estimator for model $m$ as
 
-$$p(y|m) = (2\pi)^{d_m/2}|\Sigma_m|^{1/2}p(y|\Theta_m,m)p(\Theta_m|m)$$
+$$p(\textbf{y}|m) = (2\pi)^{d_m/2}|\Sigma_m|^{1/2}p(\textbf{y}|\Theta_m,m)p(\Theta_m|m)$$
 
 where $d$ is the number of parameters and $\Sigma$ is the inverse of the negative of the Hessian matrix of second derivatives. \citet{lewis97} introduce the Laplace-Metropolis method of approximating the marginal likelihood in MCMC, though it naturally works with Laplace Approximation as well. For a hierarchical model that involves both fixed and random effects, the Compound Laplace-Metropolis Estimator must be used.
 
@@ -446,9 +446,9 @@ In Bayesian inference, the most common method of assessing the goodness of fit o
 
 To begin with, model fit can be summarized with deviance, which is defined as -2 times the log-likelihood \citep[p. 180]{gelman04}, such as
 
-$$D(y,\Theta) = -2\log[p(y | \Theta)]$$
+$$D(\textbf{y},\Theta) = -2\log[p(\textbf{y} | \Theta)]$$
 
-Just as with the likelihood, $p(y | \Theta)$, or log-likelihood, the deviance exists at both the record- and model-level. Due to the development of \proglang{BUGS} software, deviance is defined differently in Bayesian inference than frequentist inference. In frequentist inference, deviance is -2 times the log-likelihood ratio of a reduced model compared to a full model, whereas in Bayesian inference, deviance is simply -2 times the log-likelihood. In Bayesian inference, the lowest expected deviance has the highest posterior probability \citep[p. 181]{gelman04}.
+Just as with the likelihood, $p(\textbf{y} | \Theta)$, or log-likelihood, the deviance exists at both the record- and model-level. Due to the development of \proglang{BUGS} software, deviance is defined differently in Bayesian inference than frequentist inference. In frequentist inference, deviance is -2 times the log-likelihood ratio of a reduced model compared to a full model, whereas in Bayesian inference, deviance is simply -2 times the log-likelihood. In Bayesian inference, the lowest expected deviance has the highest posterior probability \citep[p. 181]{gelman04}.
 
 It is possible to have a negative deviance. Deviance is derived from the likelihood, which is derived from probability density functions (PDF). Evaluated at a certain point in parameter space, a PDF can have a density larger than 1 due to a small standard deviation or lack of variation. Likelihoods greater than 1 lead to negative deviance, and are appropriate.
 
@@ -470,37 +470,37 @@ DIC may be compared across different models and even different methods, as long 
 
 It is difficult to say what would constitute an important difference in DIC. Very roughly, differences of more than 10 might rule out the model with the higher DIC, differences between 5 and 10 are substantial, but if the difference in DIC is, say, less than 5, and the models make very different inferences, then it could be misleading just to report the model with the lowest DIC.
 
-The expected predictive deviance has been suggested as a criterion of model fit when the goal is to pick a model with the best out-of-sample predictive power. It can be approximately estimated with a predictive DIC, estimated by comparing the deviance between $y^{new}$ and $y^{holdout}$.
+The expected predictive deviance has been suggested as a criterion of model fit when the goal is to pick a model with the best out-of-sample predictive power. It can be approximately estimated with a predictive DIC, estimated by comparing the deviance between $\textbf{y}^{new}$ and $\textbf{y}^{holdout}$.
 
 \section{Posterior Predictive Checks}
 
-Comparing the predictive distribution $y^{rep}$ to the observed data $y$ is generally termed a ``posterior predictive check''. This type of check includes the uncertainty associated with the estimated parameters of the model, unlike frequentist statistics.
+Comparing the predictive distribution $\textbf{y}^{rep}$ to the observed data $\textbf{y}$ is generally termed a ``posterior predictive check''. This type of check includes the uncertainty associated with the estimated parameters of the model, unlike frequentist statistics.
 
 Posterior predictive checks (via the predictive distribution) involve a double-use of the data, which violates the likelihood principle. However, arguments have been made in favor of posterior predictive checks, provided that usage is limited to measures of discrepancy to study model adequacy, not for model comparison and inference \citep{meng94}.
 
-Gelman recommends at the most basic level to compare $y^{rep}$ to $y$, looking for any systematic differences, which could indicate potential failings of the model \citep[p. 159]{gelman04}. It is often first recommended to compare graphical plots, such as the distribution of $y$ and $y^{rep}$. There are many posterior predictive checks that are not included in this article, but an introduction to a selection of them appears below.
+Gelman recommends at the most basic level to compare $\textbf{y}^{rep}$ to $\textbf{y}$, looking for any systematic differences, which could indicate potential failings of the model \citep[p. 159]{gelman04}. It is often first recommended to compare graphical plots, such as the distribution of $\textbf{y}$ and $\textbf{y}^{rep}$. There are many posterior predictive checks that are not included in this article, but an introduction to a selection of them appears below.
 
 \subsection{Bayesian p-values}
 
-A Bayesian form of p-value may be estimated with a variety of test statistics \citep{gelman96a}. Usually the minimum or maximum observed $y$ is compared to the minimum or maximum $y^{rep}$.
+A Bayesian form of p-value may be estimated with a variety of test statistics \citep{gelman96a}. Usually the minimum or maximum observed $\textbf{y}$ is compared to the minimum or maximum $\textbf{y}^{rep}$.
 
 Frequentist p-values have many problems, but here it will only be noted that the frequentist p-value estimates $p(\mathrm{data} | \mathrm{hypothesis})$, while in this case the Bayesian form estimates $p(\mathrm{hypothesis} | \mathrm{data})$. The frequentist estimates the wrong probability, because the frequentist is forced to consider the parameters to be fixed and the data random, projecting long-run frequencies of what should happen with future, repeated sampling of similar data, given a fixed parameter, or in this case hypothesis. Even the term hypothesis testing suggests you want to test the hypothesis given the data, not the data given the hypothesis\footnote{Numerous problems with frequentist p-values, confidence intervals, point estimates, and hypothesis testing are worth exploring, but not detailed in this article.}.
 
 \subsection{Conditional Predictive Ordinate}
 
-Although the full predictive distribution $p(y^{rep} | y)$ is useful for prediction, its use for model-checking is questionable because of the double-use of the data, and causes predictive performance to be overestimated. The leave-one-out cross-validation predictive density has been proposed \citep{geisser79}. This is also known as the Conditional Predictive Ordinate or CPO \citep{gelfand96}.
+Although the full predictive distribution $p(\textbf{y}^{rep} | \textbf{y})$ is useful for prediction, its use for model-checking is questionable because of the double-use of the data, and causes predictive performance to be overestimated. The leave-one-out cross-validation predictive density has been proposed \citep{geisser79}. This is also known as the Conditional Predictive Ordinate or CPO \citep{gelfand96}.
 
 The CPO is
 
-$$p(y_i | y_{[i]}) = \int p(y_i |\Theta)p(\Theta | y_{[i]})d\Theta$$
+$$p(\textbf{y}_i | \textbf{y}_{[i]}) = \int p(\textbf{y}_i |\Theta)p(\Theta | \textbf{y}_{[i]})d\Theta$$
 
-where $y_i$ is each instance of an observed $y$, and $y_{[i]}$ is $y$ without the current observation $i$. The CPO is easy to calculate with MCMC numerical approximation. By considering the inverse likelihood across $T$ iterations, the CPO for each individual $i$ is
+where $\textbf{y}_i$ is each instance of an observed $\textbf{y}$, and $\textbf{y}_{[i]}$ is $\textbf{y}$ without the current observation $i$. The CPO is easy to calculate with MCMC numerical approximation. By considering the inverse likelihood across $T$ iterations, the CPO for each individual $i$ is
 
-$$\mathrm{CPO}_i = \frac{1}{T^{-1} \displaystyle\sum^T_{t=1} p(y_i | \Theta_t)^{-1}}$$
+$$\mathrm{CPO}_i = \frac{1}{T^{-1} \displaystyle\sum^T_{t=1} p(\textbf{y}_i | \Theta_t)^{-1}}$$
 
 The CPO is a handy posterior predictive check because it may be used to identify outliers, influential observations, and for hypothesis testing across different non-nested models. However, it may be difficult to calculate with latent mixtures.
 
-The CPO expresses the posterior probability of observing the value (or set of values) of $y_i$ when the model is fitted to all data except $y_i$, with a larger value implying a better fit of the model to $y_i$, and very low CPO values suggest that $y_i$ is an outlier and an influential observation. A Monte Carlo estimate of the CPO is obtained without actually omitting $y_i$ from the estimation, and is provided by the harmonic mean of the likelihood for $y_i$. Specifically, the $CPO_i$ is the inverse of the posterior mean of the inverse likelihood of $y_i$.
+The CPO expresses the posterior probability of observing the value (or set of values) of $\textbf{y}_i$ when the model is fitted to all data except $\textbf{y}_i$, with a larger value implying a better fit of the model to $\textbf{y}_i$, and very low CPO values suggest that $\textbf{y}_i$ is an outlier and an influential observation. A Monte Carlo estimate of the CPO is obtained without actually omitting $\textbf{y}_i$ from the estimation, and is provided by the harmonic mean of the likelihood for $\textbf{y}_i$. Specifically, the $CPO_i$ is the inverse of the posterior mean of the inverse likelihood of $\textbf{y}_i$.
 
 The CPO is connected with the frequentist studentized residual test for outlier detection. Data with large studentized residuals have small CPO's and will be detected as outliers. An advantage of the CPO is that observations with high leverage will have small CPO's, independently of whether or not they are outliers. The Bayesian CPO is able to detect both outliers and influential points, whereas the frequentist studentized residual is unable to detect high-leverage outliers.
 
@@ -509,11 +509,11 @@ Inverse-CPO's (ICPO's) larger than 40 can be considered as possible outliers, an
 The sum of the logged CPO's can be an estimator for the log marginal likelihood, sometimes called the log pseudo marginal likelihood (LPsML). A ratio of PsML's is a surrogate for the Bayes factor, sometimes known as the pseudo Bayes factor (PsBF). In this way, non-nested models may be compared with a hypothesis test to determine the better model, if one exists, based on leave-one-out cross-validation.
 
 \subsection{Predictive Concordance}
-\citet{gelfand96} suggests that any $y_i$ that is in either 2.5\% tail area of $y^{rep}_i$ should be considered an outlier. For each $i$, I am calling this the predictive quantile (PQ), which is calculated as
+\citet{gelfand96} suggests that any $\textbf{y}_i$ that is in either 2.5\% tail area of $\textbf{y}^{rep}_i$ should be considered an outlier. For each $i$, I am calling this the predictive quantile (PQ), which is calculated as
 
-$$\mathrm{PQ}_i = p(y^{rep}_i > y_i)$$
+$$\mathrm{PQ}_i = p(\textbf{y}^{rep}_i > \textbf{y}_i)$$
 
-and is somewhat similar to the Bayesian p-value. The percentage of $y_i$'s that are not outliers is called the `Predictive Concordance'. \citet{gelfand96} suggests the goal is to attempt to achieve 95\% predictive concordance. In the case of, say 80\% predictive concordance, the discrepancy between the model and data is undesirable because the model does not fit the data well and many outliers have resulted. On the other hand, if the predictive concordance is too high, say 100\%, then overfitting may have occurred, and it may be worth considering a more parsimonious model. Kernel density plots of each $y^{rep}_i$ distribution are useful in this case with the actual $y_i$ included as a vertical bar to show its position.
+and is somewhat similar to the Bayesian p-value. The percentage of $\textbf{y}_i$'s that are not outliers is called the `Predictive Concordance'. \citet{gelfand96} suggests the goal is to attempt to achieve 95\% predictive concordance. In the case of, say 80\% predictive concordance, the discrepancy between the model and data is undesirable because the model does not fit the data well and many outliers have resulted. On the other hand, if the predictive concordance is too high, say 100\%, then overfitting may have occurred, and it may be worth considering a more parsimonious model. Kernel density plots of each $\textbf{y}^{rep}_i$ distribution are useful in this case with the actual $\textbf{y}_i$ included as a vertical bar to show its position.
 
 \section{Advantages Of Bayesian Inference Over Frequentist Inference}
 

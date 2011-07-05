@@ -17,7 +17,7 @@ Geweke.Diagnostic <- function(x)
      y.variance <- y.mean <- vector("list", 2)
      for (i in 1:2) {
           y <- x[xstart[i]:xend[i],]
-          y.mean[[i]] <- apply(as.matrix(y), 2, mean)
+          y.mean[[i]] <- colMeans(as.matrix(y))
           yy <- as.matrix(y)
           y <- as.matrix(y)
           max.freq <- 0.5; order <- 1; max.length <- 200

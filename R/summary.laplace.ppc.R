@@ -18,7 +18,7 @@ summary.laplace.ppc <- function(object=NULL, Rows=NULL, Discrep=NULL,
      Summ <- matrix(NA, length(y), 8, dimnames=list(1:length(y),
           c("y","Mean","SD","LB","Median","UB","PQ","Discrep")))
      Summ[,1] <- y
-     Summ[,2] <- apply(yhat, 1, mean)
+     Summ[,2] <- rowMeans(yhat)
      Summ[,3] <- apply(yhat, 1, sd)
      for(i in 1:length(y))
          {

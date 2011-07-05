@@ -1,3 +1,10 @@
+2011-07-03 Distributions: Added dcat for density of categorical distribution
+2011-07-02 Vignette Examples: Added Discrete Choice, Mixed Logit
+2011-07-02 Vignette Examples: Added Discrete Choice, Conditional Logit
+2011-07-01 Vignette Examples: Added paragraph about statistical notation
+2011-06-30 Vignette Examples: Added Cluster Analysis
+2011-06-29 Replaced many apply functions with rowSums, colMeans, etc.
+2011-06-28 Vignette Examples: Added Revision, Normal
 2011-06-27 Distributions: 'Vectorized' dmvn and dmvt
 2011-06-26 LaplaceApproximation and LaplacesDemon: Suggestion about loops
 2011-06-25 LaplaceApproximation and LaplacesDemon: Warning for multiple LPs

@@ -4,14 +4,35 @@
 # These functions are similar to those in the Rlab package.               #
 ###########################################################################
 
-dbern <- function(x, prob, log = FALSE)
+dbern <- function(x, prob, log=FALSE)
      {dbinom(x, 1, prob, log)}
-pbern <- function(q, prob, lower.tail=TRUE, log.p = FALSE)
+pbern <- function(q, prob, lower.tail=TRUE, log.p=FALSE)
      {pbinom(q, 1, prob, lower.tail, log.p)}
-qbern <- function(p, prob, lower.tail=TRUE, log.p = FALSE)
+qbern <- function(p, prob, lower.tail=TRUE, log.p=FALSE)
      {qbinom(p, 1, prob, lower.tail, log.p)}
 rbern <- function(n, prob)
      {rbinom(n, 1, prob)}
+
+###########################################################################
+# Categorical Distribution                                                #
+#                                                                         #
+###########################################################################
+
+dcat <- function(x, p, log=FALSE)
+     {
+     if(!is.matrix(p)) p <- rbind(p)
+     if(is.vector(x) & (length(x) == 1)) {
+          temp <- rep(0, ncol(p))
+          temp[x] <- 1
+          x <- t(temp)
+          }
+     if(is.vector(x) & (length(x) > 1)) x <- indmat(x)
+     if(!identical(dim(x),dim(p))) stop("Dimensions of x and p differ in dcat().")
+     dens <- x*p
+     if(log == TRUE) dens <- x*log(p)
+     dens <- as.vector(rowSums(dens))
+     return(dens)
+     }
 
 ###########################################################################
 # Dirichlet Distribution                                                  #
@@ -46,8 +67,8 @@ ddirichlet <- function(x, alpha, log=FALSE)
 rdirichlet <- function(n, alpha)
      {
      l <- length(alpha)
-     x <- matrix(rgamma(l*n,alpha),ncol=l,byrow=TRUE)
-     sm <- x%*%rep(1,l)
+     x <- matrix(rgamma(l*n,alpha), ncol=l, byrow=TRUE)
+     sm <- x %*% rep(1,l)
      return(x/as.vector(sm))
      }
 

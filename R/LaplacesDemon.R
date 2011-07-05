@@ -360,7 +360,7 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
      Num.Mon <- NCOL(Mon)
      Summ1 <- matrix(NA, LIV, 7, dimnames=list(Data$parm.names,
           c("Mean","SD","MCSE","ESS","LB","Median","UB")))
-     Summ1[,1] <- apply(thinned, 2, mean)
+     Summ1[,1] <- colMeans(thinned)
      Summ1[,2] <- apply(thinned, 2, sd)
      Summ1[,3] <- Summ1[,2] / sqrt(ESS1)
      Summ1[,4] <- ESS1
@@ -396,7 +396,7 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
           c("Mean","SD","MCSE","ESS","LB","Median","UB")))
      if(BurnIn < NROW(thinned))
           {
-          Summ2[,1] <- apply(thinned[BurnIn:NROW(thinned),], 2, mean)
+          Summ2[,1] <- colMeans(thinned[BurnIn:NROW(thinned),])
           Summ2[,2] <- apply(thinned[BurnIn:NROW(thinned),], 2, sd)
           Summ2[,3] <- Summ2[,2] / sqrt(ESS4)
           Summ2[,4] <- ESS4

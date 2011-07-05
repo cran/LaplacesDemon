@@ -23,10 +23,11 @@
   y, given the samples, model specification, and data. Stationary
   samples are used if detected, otherwise non-stationary samples will be
   used. To predict y[rep], simply supply the data set used to estimate
-  the model. To predict y[new], supply a new data set instead. If the
-  new data set does not have y, then create \code{y} in the list and
-  set it equal to something sensible, such as \code{mean(y)} from the
-  original data set.
+  the model. To predict y[new], supply a new data set instead (though
+  for some model specifications, this cannot be done, and y[new] must be
+  specified in the \code{model} function). If the new data set does not
+  have y, then create \code{y} in the list and set it equal to something
+  sensible, such as \code{mean(y)} from the original data set.
 
   The variable \code{y} must be a vector. If instead it is matrix
   \code{Y}, then it will be converted to vector \code{y}. The vectorized
@@ -39,7 +40,7 @@
      ppc stands for posterior predictive checks). The returned object is
      a list with the following components:
      \item{y}{
-          This stores y, the dependent variable.
+          This stores the vectorized form of y, the dependent variable.
           }
      \item{yhat}{
           This is a n x s matrix, where n is the number of records of
