@@ -10,17 +10,26 @@ caterpillar.plot <- function(x, Parms=NULL, Title=NULL)
      ### Initial Checks
      if(is.null(x)) stop("x is NULL in caterpillar.plot().")
      if(class(x) == "demonoid") {
-          if(sum(is.na(x$Summary2)) > 0) {
+          if(any(is.na(x$Summary2))) {
                x <- x$Summary1
                x.lab <- "All Samples"}
           else {
                x <- x$Summary2
                x.lab <- "Stationary Samples"}
-          if(is.null(Parms)) {Parms <- 1:nrow(x)}
-          x <- x[Parms,]
+          if(!is.null(Parms)) {
+               if(length(Parms) == 1) {
+                    stop("More than one parameter is required")}
+               else {
+                    keeprows <- grep(Parms[1], rownames(x))
+                    for (i in 2:length(Parms)) {
+                         keeprows <- c(keeprows, grep(Parms[i],
+                              rownames(x)))}
+                    }
+               x <- x[keeprows,]
+               }
           ### Setup
           x.rows <- nrow(x)
-          x.lim <- c(min(x[,5]),max(x[,7]))
+          x.lim <- c(min(x[,5]), max(x[,7]))
           y.lim <- c(0, x.rows+1)
           ### Basic Plot
           plot(0, 0, ylim=y.lim, xlim=x.lim, main=Title, sub="",
@@ -30,19 +39,30 @@ caterpillar.plot <- function(x, Parms=NULL, Title=NULL)
           points(x[,6], x.rows:1, pch=20)
           ### Add Horizontal Lines for 2.5%-97.5% Quantiles
           for (i in 1:x.rows) {
-               lines(x[i,c(5,7)], c(x.rows-i+1,x.rows-i+1))}
+               lines(x[i,c(5,7)], c(x.rows-i+1, x.rows-i+1))}
           ### Add y-axis labels
           yy <- x.rows:1
-          cex.labels <- 1/(log(x.rows)/5 + 1)
+          cex.labels <- 1 / {log(x.rows)/5 + 1}
           axis(2, labels=rownames(x), tick=FALSE, las=1, at=yy,
                cex.axis=cex.labels)
           }
-     if(class(x) == "laplace") {
-          if(is.null(Parms)) {Parms <- 1:length(x$Initial.Values)}
+     else if(class(x) == "laplace") {
           x.lab <- "Gaussian Samples"
-          Modes <- x$Summary[Parms,1]
-          LB <- x$Summary[Parms,3]
-          UB <- x$Summary[Parms,4]
+          if(is.null(Parms)) {Parms <- 1:length(x$Initial.Values)}
+          else {
+               if(length(Parms) == 1) {
+                    stop("More than one parameter is required")}
+               else {
+                    keeprows <- grep(Parms[1], rownames(x$Summary))
+                    for (i in 2:length(Parms)) {
+                         keeprows <- c(keeprows, grep(Parms[i],
+                              rownames(x$Summary)))}
+                    }
+               }
+          x$Summary <- x$Summary[keeprows,]
+          Modes <- x$Summary[,1]
+          LB <- x$Summary[,3]
+          UB <- x$Summary[,4]
           ### Setup
           x.rows <- length(Modes)
           x.lim <- c(min(LB), max(UB))
@@ -55,14 +75,15 @@ caterpillar.plot <- function(x, Parms=NULL, Title=NULL)
           points(Modes, x.rows:1, pch=20)
           ### Add Horizontal Lines for 2.5%-97.5% Quantiles
           for (i in 1:x.rows) {
-               lines(c(LB[i], UB[i]),
-                    c(x.rows-i+1,x.rows-i+1))}
+               lines(c(LB[i], UB[i]), c(x.rows-i+1, x.rows-i+1))}
           ### Add y-axis labels
           yy <- x.rows:1
-          cex.labels <- 1/(log(x.rows)/5 + 1)
-          axis(2, labels=rownames(x$Summary[Parms,]), tick=FALSE, las=1,
+          cex.labels <- 1/{log(x.rows)/5 + 1}
+          axis(2, labels=rownames(x$Summary), tick=FALSE, las=1,
                at=yy, cex.axis=cex.labels)
           }
+     else {
+          stop("x in caterpillar.plot must be of class demonoid or laplace.")}
      }
 
 #End

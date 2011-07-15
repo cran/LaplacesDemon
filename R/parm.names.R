@@ -17,15 +17,15 @@ parm.names <- function(x, uppertri=NULL) {
      ### Length of parm.names
      totlen <- 0
      for (i in 1:parm.length) {
-          if(is.array(x[[i]])) {if(length(dim(x[[i]])) > 2) {
-               stop("Arrays have yet to be included in parm.names().")}}
+          if(is.array(x[[i]]) & {length(dim(x[[i]])) > 2}) {
+               stop("Arrays have yet to be included in parm.names().")}
           ### Scalar, Vector, or Non-Upper-Triangular Matrix
           if(uppertri[i] == 0) {
                xlen <- length(as.vector(x[[i]]))
                totlen <- totlen + xlen
                }
           ### Upper Triangular Matrix
-          if(uppertri[i] == 1) {
+          else if(uppertri[i] == 1) {
                xlen <- length(x[[i]][upper.tri(x[[i]], diag=TRUE)])
                totlen <- totlen + xlen
                }
@@ -39,14 +39,14 @@ parm.names <- function(x, uppertri=NULL) {
          ### Scalar
          if(xlen == 1) {parm.names[cnt] <- paste(xname); cnt <- cnt + 1}
          ### Vector
-         if(is.vector(x[[i]]) & (xlen > 1)) {
+         else if(is.vector(x[[i]]) & {xlen > 1}) {
               for (j in 1:xlen) {
                    parm.names[cnt] <- paste(xname, "[", j, "]", sep="")
                    cnt <- cnt + 1
                    }
               }
          ### Matrix
-         if(is.matrix(x[[i]]) & (uppertri[i] == 0)) {
+         else if(is.matrix(x[[i]]) & (uppertri[i] == 0)) {
               for (k in 1:NCOL(x[[i]])) {for (j in 1:NROW(x[[i]])) {
                    parm.names[cnt] <- paste(xname, "[", j, ",", k, "]",
                         sep="")
@@ -54,7 +54,7 @@ parm.names <- function(x, uppertri=NULL) {
                    }}
               }
          ### Matrix, Upper Triangular
-         if(is.matrix(x[[i]]) & (uppertri[i] == 1)) {
+         else if(is.matrix(x[[i]]) & (uppertri[i] == 1)) {
               for (k in 1:NCOL(x[[i]])) {for (j in 1:NROW(x[[i]])) {
                    if(upper.tri(x[[i]], diag=TRUE)[j,k] == TRUE) {
                         parm.names[cnt] <- paste(xname, "[", j, ",", k,
@@ -66,3 +66,5 @@ parm.names <- function(x, uppertri=NULL) {
          }
      return(parm.names)
      }
+
+#End

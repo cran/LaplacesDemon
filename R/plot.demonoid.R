@@ -11,17 +11,14 @@ plot.demonoid <- function(x, BurnIn=1, Data=NULL, PDF=FALSE,
      if(is.null(x)) stop("x is NULL.\n")
      if(is.null(Data)) stop("The Data argument is NULL.\n")
      if(BurnIn >= NROW(x$Posterior1)) BurnIn <- 1
-     if(is.null(Parms)) Posterior <- x$Posterior1
-     if(!is.null(Parms)) {
-          for (i in 1:length(Parms)) {
-               if(i == 1) {keepcols <- grep(Parms[i], fixed=TRUE,
-                    colnames(x$Posterior1))}
-               if(i > 1) {
-                    newcols <- grep(Parms[i], fixed=TRUE,
-                         colnames(x$Posterior1))
-                    keepcols <- c(keepcols, newcols)
-                    }
-               }
+     ### Selecting Parms
+     if(is.null(Parms)) {Posterior <- x$Posterior1}
+     else {
+          keepcols <- grep(Parms[1], colnames(x$Posterior1))
+          if(length(Parms) > 1) {
+               for (i in 2:length(Parms)) {
+                    keepcols <- c(keepcols, grep(Parms[i],
+                         colnames(x$Posterior1)))}}
           Posterior <- as.matrix(x$Posterior1[,keepcols])
           colnames(Posterior) <- colnames(x$Posterior1)[keepcols]
           }
@@ -30,7 +27,7 @@ plot.demonoid <- function(x, BurnIn=1, Data=NULL, PDF=FALSE,
           pdf("LaplacesDemon.Plots.pdf")
           par(mfrow=c(3,3))
           }
-     if(PDF == FALSE) par(mfrow=c(3,3), ask=TRUE)
+     else {par(mfrow=c(3,3), ask=TRUE)}
      ### Plot Parameters
      for (j in 1:NCOL(Posterior))
           {
@@ -54,9 +51,7 @@ plot.demonoid <- function(x, BurnIn=1, Data=NULL, PDF=FALSE,
                abline(h=(2*se), col="red", lty=2)
                abline(h=(-2*se), col="red", lty=2)
                }
-          if(length(unique(Posterior[BurnIn:x$Thinned.Samples,j])) == 1) {
-               plot(0,0, main=paste(Data$parm.names[j], "is a constant."))
-               }
+          else {plot(0,0, main=paste(Data$parm.names[j], "is a constant."))}
           }
      ### Plot Deviance
      plot(BurnIn:length(x$Deviance),
@@ -76,10 +71,9 @@ plot.demonoid <- function(x, BurnIn=1, Data=NULL, PDF=FALSE,
      abline(h=(2*se), col="red", lty=2)
      abline(h=(-2*se), col="red", lty=2)
      ### Plot Monitored Variables
-     if (is.vector(x$Monitor))
-          {J <- 1; nn <- length(x$Monitor)}
-     if (is.matrix(x$Monitor))
-          {J <- NCOL(x$Monitor); nn <- NROW(x$Monitor)}
+     if(is.vector(x$Monitor)) {J <- 1; nn <- length(x$Monitor)}
+     else if(is.matrix(x$Monitor)) {
+          J <- NCOL(x$Monitor); nn <- NROW(x$Monitor)}
      for (j in 1:J)
           {
           plot(BurnIn:nn,
@@ -101,9 +95,7 @@ plot.demonoid <- function(x, BurnIn=1, Data=NULL, PDF=FALSE,
                abline(h=(2*se), col="red", lty=2)
                abline(h=(-2*se), col="red", lty=2)
                }
-          if(length(unique(x$Monitor[BurnIn:nn,j])) == 1) {
-               plot(0,0, main=paste(Data$mon.names[j], "is a constant."))
-               }
+          else {plot(0,0, main=paste(Data$mon.names[j], "is a constant."))}
           }
      ### Proposal Variance (Adaptive Algorithms only)
      if(nrow(x$CovarDHis) > 1) {

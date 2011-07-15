@@ -14,7 +14,7 @@ plot.laplace.ppc <- function(x, Rows=NULL, PDF=FALSE,  ...)
           pdf("Laplace.Approximation.PPC.Plots.pdf")
           par(mfrow=c(3,3))
           }
-     if(PDF == FALSE) par(mfrow=c(3,3), ask=TRUE)
+     else {par(mfrow=c(3,3), ask=TRUE)}
      ### Plot, Posterior Predictive of yhat
      for (j in 1:length(Rows))
           {

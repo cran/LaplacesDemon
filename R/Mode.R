@@ -8,8 +8,8 @@ Mode <- function(x)
      {
      x <- as.vector(x)
      ### Discrete
-     if((length(unique(x)) < length(x)) & (length(unique(x)) <= 20)) {
-     Mode <- as.vector(which.max(table(x)))}
+     if({length(unique(x)) < length(x)} & {length(unique(x)) <= 20}) {
+          Mode <- as.vector(which.max(table(x)))}
      ### Continuous (using kernel density)
      else {
           x <- as.vector(as.numeric(as.character(x)))

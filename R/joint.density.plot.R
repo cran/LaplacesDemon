@@ -47,7 +47,7 @@ joint.density.plot <- function(x, y, Title=NULL, contour=TRUE, color=FALSE)
      dd <- kde2d(x,y)
      if(color == FALSE) {
      plot(x, y, cex=0.1, main=Title, xlab=xname, ylab=yname, col="gray")}
-     if(color == TRUE) {
+     else if(color == TRUE) {
           #image(dd, main=Title, xlab=xname, ylab=yname, col=gray((50:200)/200))
           #image(dd, main=Title, xlab=xname, ylab=yname, col=heat.colors(200))
           image(dd, main=Title, xlab=xname, ylab=yname, col=topo.colors(200))

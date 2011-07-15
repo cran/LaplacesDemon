@@ -19,12 +19,17 @@
      summary, \code{Summary}, are plotted.
      }
      \item{Parms}{
-       This argument accepts a concatenation of rows of the posterior
-       summary tables to be plotted. For example, \code{Parms=c(1,3,5)}
-       will plot the first, third, and fifth parameters listed in the
-       posterior summary table. This argument defaults to \code{NULL},
-       which will plot all parameters, including the deviance and
-       monitored variables.
+     This argument accepts a vector of quoted strings to be matched for
+     selecting parameters for plotting. This argument defaults to
+     \code{NULL} and selects every parameter for plotting. Each quoted
+     string is matched to one or more parameter names with the
+     \code{grep} function. For example, if the user specifies
+     \code{Parms=c("eta","tau")}, and if the parameter names
+     are beta[1], beta[2], eta[1], eta[2], and tau, then all parameters
+     will be selected, because the string \code{eta} is within
+     \code{beta}. Since \code{grep} is used, string matching uses
+     regular expressions, so beware of meta-characters. For example, if
+     "beta[1]" is desired, then "beta\\[1\\]" must be entered instead.
      }
      \item{Title}{
        This argument accepts a title for the plot.

@@ -26,11 +26,11 @@ predict.demonoid <- function(object, Model, Data, ...)
      ### Warnings
      if(is.matrix(object$Posterior2) == FALSE) {
           cat("\nWARNING: Non-stationary samples were used.\n")}
-     if(sum(is.na(yhat)) > 0) cat("\nWARNING: Output matrix yhat has ",
+     if(any(is.na(yhat))) cat("\nWARNING: Output matrix yhat has ",
           sum(is.na(yhat)), " missing values.\n")
-     if(sum(is.nan(yhat)) > 0) cat("\nWARNING: Output matrix yhat has ",
+     if(any(is.nan(yhat))) cat("\nWARNING: Output matrix yhat has ",
           sum(is.nan(yhat)), " non-numeric (NaN) values.\n")
-     if(sum(is.infinite(yhat)) > 0) cat("\nWARNING: Output matrix yhat has ",
+     if(any(is.infinite(yhat))) cat("\nWARNING: Output matrix yhat has ",
           sum(is.infinite(yhat)), " infinite values.\n")
      ### Create Output
      predicted <- list(y=y, yhat=yhat)

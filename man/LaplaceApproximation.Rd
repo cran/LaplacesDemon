@@ -320,7 +320,7 @@ Model <- function(parm, Data)
      beta.prior <- sum(dnorm(beta, 0, sqrt(1000), log=TRUE))
      sigma.prior <- dhalfcauchy(sigma, 25, log=TRUE)
      ### Log-Posterior
-     mu <- beta \%*\% t(Data$X)
+     mu <- tcrossprod(beta, Data$X)
      LL <- sum(dnorm(Data$y, mu, sigma, log=TRUE))
      LP <- LL + beta.prior + sigma.prior
      Modelout <- list(LP=LP, Dev=-2*LL, Monitor=c(sigma,mu[1]), yhat=mu,

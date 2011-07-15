@@ -26,9 +26,9 @@ LML <- function(Model, Data, Modes)
                x4 <- Modes
                x4[i] <- x4[i] - eps[i]
                x4[j] <- x4[j] - eps[j]
-               Approx.Hessian[i, j] <- (Model(x1, Data)[[1]] -
+               Approx.Hessian[i, j] <- {Model(x1, Data)[[1]] -
                     Model(x2, Data)[[1]] - Model(x3, Data)[[1]] +
-                    Model(x4, Data)[[1]]) / (4 * eps[i] * eps[j])
+                    Model(x4, Data)[[1]]} / {4 * eps[i] * eps[j]}
                }
           }
      Inverse.test <- try(VarCov.t <- -solve(Approx.Hessian), silent=TRUE)
@@ -37,7 +37,7 @@ LML <- function(Model, Data, Modes)
           diag(VarCov) <- ifelse(diag(VarCov) < 0, diag(VarCov) * -1,
                diag(VarCov)) #Better method of preventing negative variance?
           diag(VarCov) <- ifelse(diag(VarCov) == 0, 1.0E-10, diag(VarCov))}
-     if(is.character(Inverse.test[1])) {
+     else {
           cat("\nWARNING: Failure to solve matrix inversion of Approx. Hessian.\n")
           cat("NOTE: Identity matrix is supplied instead.\n")
           VarCov <- matrix(0, length(Modes), length(Modes))

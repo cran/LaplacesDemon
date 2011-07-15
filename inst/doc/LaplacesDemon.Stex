@@ -123,7 +123,7 @@ Model <- function(parm, Data)
      beta.prior <- dnorm(beta, 0, sqrt(1000), log=TRUE)
      sigma.prior <- dhalfcauchy(sigma, 25, log=TRUE)
      ### Log-Likelihood
-     mu <- beta %*% t(Data$X)
+     mu <- tcrossprod(beta, Data$X)
      LL <- sum(dnorm(Data$y, mu, sigma, log=TRUE))
      ### Log-Posterior
      LP <- LL + sum(beta.prior) + sigma.prior
@@ -172,7 +172,7 @@ In this specification, \code{sigma} cannot be negative. By reparameterizing \cod
 
 Laplace's Demon will increase or decrease \code{parm[Data$J+1]}, which is effectively \code{log(sigma)}. Now it is possible for Laplace's Demon to decrease \code{log(sigma)} below zero without causing an error or violating its half-Cauchy distributed specification.
 
-Finally, everything is put together to calculate \code{LP}, the logarithm of the unnormalized joint posterior density. The expectation vector \code{mu} is the inner product (\code{\%*\%}) of the vector \code{beta} and the transposed design matrix, \code{t(Data$X)}. Expectation vector \code{mu}, vector \code{Data$y}, and scalar \code{sigma} are used to estimate the sum of the log-likelihoods, where:
+Finally, everything is put together to calculate \code{LP}, the logarithm of the unnormalized joint posterior density. The expectation vector \code{mu} is the inner product of the vector \code{beta} and the transpose of the design matrix, \code{Data$X}. Expectation vector \code{mu}, vector \code{Data$y}, and scalar \code{sigma} are used to estimate the sum of the log-likelihoods, where:
 
 $$\textbf{y} \sim \mathcal{N}(\mu, \sigma^2)$$
 
@@ -180,7 +180,7 @@ and as noted before, the logarithm of the unnormalized joint posterior density i
 
 $$\log[p(\Theta|\textbf{y})] \propto \log[p(\textbf{y}|\Theta)] + \log[p(\Theta)]$$
 
-\code{mu <- beta \%*\% t(Data$X)} \\
+\code{mu <- tcrossprod(beta, Data$X)} \\
 \code{LL <- sum(dnorm(Data$y, mu, sigma, log=TRUE)} \\
 \code{LP <- LL + sum(beta.prior) + sigma.prior}
 
@@ -523,7 +523,7 @@ Since \code{Pred\$yhat} is a large (39 x 1000) matrix, let's look at the summary
 summary(Pred)
 \end{Scode}
 
-The \code{summary.demonoid.ppc} function returns a list with 3 components:
+The \code{summary.demonoid.ppc} function returns a list with 3 components when \code{y} is continuous (different output occurs for categorical dependent variables when given the argument \code{Categorical=TRUE}):
 \begin{itemize}
 \item \code{Concordance} is the predictive concordance of \citet{gelfand96}, that indicates the percentage of times that \code{y} that was within the 95\% probability interval of \code{yhat}. A goal is to have 95\% predictive concordance. For more information, see the accompanying vignette entitled ``Bayesian Inference''. In this case, roughly \Sexpr{round(summary(Pred)$Concordance,0)}\% of the time, \code{y} is within the 95\% probability interval of \code{yhat}. These results suggest that the model should be attempted again under different conditions, such as using different predictors, or specifying a different form to the model.
 \item \code{Discrepancy.Statistic} is a summary of a specified discrepancy measure. There are many options for discrepancy measures that may be specified in the \code{Discrep} argument. In this example, a discrepancy measure was not specified.
@@ -695,9 +695,9 @@ At the time this article was written, the \pkg{UMACS} package \citep{r:umacs} ha
 In SAS 9.2 \citep{sas08}, an experimental procedure called \code{PROC MCMC} has been introduced. It is undeniably a rip-off of BUGS (including its syntax), though OpenBUGS is much more powerful, tested, and generalizable. Since SAS is proprietary, the user cannot see or manipulate the source code, and should expect much more from it than OpenBUGS or any open-source software, given the absurd price.
 
 \section{Large Data Sets and Speed} \label{largedata}
-An advantage of Laplace's Demon compared to other MCMC software is that the model is specified in a way that takes advantage of \proglang{R}'s vectorization. BUGS and JAGS, for example, require models to be specified so that each record of data is processed one by one inside a `\code{for} loop', which significantly slows updating with larger data sets. In contrast, Laplace's Demon avoids `\code{for} loops' and \code{apply} functions wherever possible\footnote{However, when `for loops' or \code{apply} functions must be used, Laplace's Demon is typically slower than BUGS.}. For example, a data set of 100,000 rows and 16 columns (the dependent variable, a column vector of 1's for the intercept, and 14 predictors) was updated 1,000 times with \code{Adaptive=2}, \code{DR=0}, and \code{Periodicity=10} in 1.55 minutes by Laplace's Demon, according to a simple, linear regression\footnote{These updates were performed on a 2010 System76 Pangolin Performance laptop with 64-bit Debian Linux and 8GB RAM.}. It was nowhere near convergence, but updating the same model with the same data for 1,000 iterations took 45.55 minutes in JAGS.
+An advantage of Laplace's Demon compared to other MCMC software is that the model is specified in a way that takes advantage of \proglang{R}'s vectorization. BUGS and JAGS, for example, require models to be specified so that each record of data is processed one by one inside a `\code{for} loop', which significantly slows updating with larger data sets. In contrast, Laplace's Demon avoids `\code{for} loops' and \code{apply} functions wherever possible\footnote{However, when `for loops' or \code{apply} functions must be used, Laplace's Demon is typically slower than BUGS.}. For example, a data set of 100,000 rows and 16 columns (the dependent variable, a column vector of 1's for the intercept, and 14 predictors) was updated 1,000 times with \code{Adaptive=2}, \code{DR=0}, \code{Periodicity=10}, and the initial value for each $\beta$ set to 0.1 to bypass Laplace Approximation. This took 0.98 minutes with Laplace's Demon, according to a simple, linear regression\footnote{These updates were performed on a 2010 System76 Pangolin Performance laptop with 64-bit Debian Linux and 8GB RAM.}. It was nowhere near convergence, but updating the same model with the same data for 1,000 iterations took 45.55 minutes in JAGS.
 
-However, the speed with which an iteration is estimated is not a good, overall criterion of performance. For example, a Gibbs sampling algorithm with uncorrelated target distributions should converge in fewer iterations than a random-walk algorithm, such as those used in Laplace's Demon. Depending on circumstances, Laplace's Demon may handle larger data sets better, and it may estimate each iteration faster, but it may also take more iterations to converge.
+However, the speed with which an iteration is estimated is not a good, overall criterion of performance. For example, a Gibbs sampling algorithm with uncorrelated target distributions should converge in fewer iterations than a random-walk algorithm, such as those used in Laplace's Demon. Depending on circumstances, Laplace's Demon may handle larger data sets better, and it may estimate each iteration faster, but it may also take more iterations to converge\footnote{To continue this example, JAGS may be \textit{guessed} to take 20,000 iterations or 15.18 hours, and \code{LaplacesDemon} may take 400,000 iterations or 6.53 hours, and also have less autocorrelation in the chains due to more thinning.}.
 
 However, with small data sets, other MCMC software (\pkg{AMCMC} is a good example) can be faster than Laplace's Demon, if it is programmed in a faster language such as \proglang{Component Pascal}, \proglang{C}, \proglang{C++}, or \proglang{FORTRAN}. I have not studied all MCMC algorithms in \proglang{R}, but most are probably programmed in \proglang{C} and called from \proglang{R}. And Laplace's Demon could be much faster if programmed in \proglang{C} as well.
 

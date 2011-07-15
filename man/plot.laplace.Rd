@@ -27,7 +27,10 @@
      \code{grep} function. For example, if the user specifies
      \code{Parms=c("eta","tau")}, and if the parameter names
      are beta[1], beta[2], eta[1], eta[2], and tau, then all parameters
-     will be selected, because the string \code{eta} is within \code{beta}.
+     will be selected, because the string \code{eta} is within
+     \code{beta}. Since \code{grep} is used, string matching uses
+     regular expressions, so beware of meta-characters. For example, if
+     "beta[1]" is desired, then "beta\\[1\\]" must be entered instead.
      }
      \item{\dots}{Additional arguments are unused.}
    }

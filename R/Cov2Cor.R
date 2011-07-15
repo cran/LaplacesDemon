@@ -19,7 +19,7 @@ Cov2Cor <- function(Sigma)
                stop("Sigma is not symmetric in Cov2Cor().")
           x <- 1 / sqrt(diag(Sigma))
           R <- x * t(x * Sigma)}
-     if(is.vector(Sigma)) {
+     else if(is.vector(Sigma)) {
           k <- as.integer(sqrt(length(Sigma)))
           Sigma <- matrix(Sigma, k, k)
           x <- 1 / sqrt(diag(Sigma))

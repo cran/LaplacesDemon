@@ -17,16 +17,16 @@
 invlogit <- function(x)
      {
      x <- as.vector(x)
-     InvLogit <- 1 / (1 + exp(-x))
+     InvLogit <- 1 / {1 + exp(-x)}
      return(InvLogit)
      }
 
 logit <- function(p)
      {
      p <- as.vector(p)
-     if((p < 0) | (p > 1)) {
+     if({p < 0} | {p > 1}) {
           stop("p is not in the interval [0,1] in logit().")}
-     Logit <- log(p / (1 - p))
+     Logit <- log(p / {1 - p})
      return(Logit)
      }
 

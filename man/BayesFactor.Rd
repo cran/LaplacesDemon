@@ -125,12 +125,12 @@ Model <- function(parm, Data)
      beta <- parm[1:Data$J]
      sigma <- exp(parm[Data$J+1])
      ### Log(Prior Densities)
-     beta.prior <- dnorm(beta, 0, sqrt(1000), log=TRUE)
+     beta.prior <- sum(dnorm(beta, 0, sqrt(1000), log=TRUE))
      sigma.prior <- dhalfcauchy(sigma, 25, log=TRUE)
      ### Log-Posterior
-     mu <- beta \%*\% t(Data$X)
+     mu <- tcrossprod(beta, Data$X)
      LL <- sum(dnorm(Data$y, mu, sigma, log=TRUE))
-     LP <- LL + sum(beta.prior) + sigma.prior
+     LP <- LL + beta.prior + sigma.prior
      Modelout <- list(LP=LP, Dev=-2*LL, Monitor=c(LP,sigma), yhat=mu,
           parm=parm)
      return(Modelout)

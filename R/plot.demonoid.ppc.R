@@ -7,14 +7,14 @@
 plot.demonoid.ppc <- function(x, Rows=NULL, PDF=FALSE,  ...)
      {
      ### Initial Checks
-     if(is.null(x)) {stop("x is NULL.\n")}
-     if(is.null(Rows)) {Rows <- 1:nrow(x$yhat)}
+     if(is.null(x)) stop("x is NULL.\n")
+     if(is.null(Rows)) Rows <- 1:nrow(x$yhat)
      if(PDF == TRUE)
           {
           pdf("Laplace.Demon.PPC.Plots.pdf")
           par(mfrow=c(3,3))
           }
-     if(PDF == FALSE) par(mfrow=c(3,3), ask=TRUE)
+     else {par(mfrow=c(3,3), ask=TRUE)}
      ### Plot
      for (j in 1:length(Rows))
           {

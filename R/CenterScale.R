@@ -24,10 +24,10 @@ CenterScale <- function(x, Binary=c("none", "center", "center0",
                x <- (x-min(x.obs)) / (max(x.obs)-min(x.obs))
                return (x-0.5)}
           else if(Binary == "centerscale") {
-               return ((x-mean(x.obs)) / (2*sd(x.obs)))}
+               return ({x-mean(x.obs)} / {2*sd(x.obs)})}
           }
      ### Continuous Variables
-     else {return ((x-mean(x.obs)) / (2*sd(x.obs)))}
+     else {return ({x-mean(x.obs)} / {2*sd(x.obs)})}
      }
 
 #End

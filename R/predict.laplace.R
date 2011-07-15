@@ -40,11 +40,11 @@ predict.laplace <- function(object, Model, Data, Samples=1000, ...)
           }
      rownames(monitor) <- Data$mon.names
      ### Warnings
-     if(sum(is.na(yhat)) > 0) cat("\nWARNING: Output matrix yhat has ",
+     if(any(is.na(yhat))) cat("\nWARNING: Output matrix yhat has ",
           sum(is.na(yhat)), " missing values.")
-     if(sum(is.nan(yhat)) > 0) cat("\nWARNING: Output matrix yhat has ",
+     if(any(is.nan(yhat))) cat("\nWARNING: Output matrix yhat has ",
           sum(is.nan(yhat)), " non-numeric (NaN) values.")
-     if(sum(is.infinite(yhat)) > 0) cat("\nWARNING: Output matrix yhat has ",
+     if(any(is.infinite(yhat))) cat("\nWARNING: Output matrix yhat has ",
           sum(is.infinite(yhat)), " infinite values.")
      ### Create Output
      predicted <- list(y=y, yhat=yhat, deviance=deviance,

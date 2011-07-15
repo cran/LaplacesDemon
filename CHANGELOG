@@ -1,5 +1,19 @@
-2011-07-03 Distributions: Added dcat for density of categorical distribution
-2011-07-02 Vignette Examples: Added Discrete Choice, Mixed Logit
+2011-07-13 Vignette Examples: Added Dicrete Choice, Multinomial Probit
+2011-07-12 Included more else and else ifs with if() for efficiency
+2011-07-10 Vignette Examples: Added Multinomial Probit
+2011-07-09 summary.laplace.ppc: Included Categorical argument
+2011-07-09 summary.demonoid.ppc: Included Categorical argument
+2011-07-09 LaplaceApproximation and LML: Replaced () and x^2 with {} and x*x
+2011-07-08 Distributions: Replace x^2 with x*x for speed where possible
+2011-07-08 Distributions: Replaced () with {} for speed where possible
+2011-07-08 Distributions: Laplace return() bug fixed
+2011-07-07 Distributions: dmvn is corrected and expanded
+2011-07-06 Vignette Examples: Added ANCOVA
+2011-07-06 Vignette Examples: Changed nonsensible min(grep...:max(grep code
+2011-07-05 Vignette Examples: Variable Selection error corrected
+2011-07-05 Changed %*% to crossprod() or tcrossprod() for small speed gains
+2011-07-04 Distributions: Added dcat for density of categorical distribution
+2011-07-03 Vignette Examples: Added Discrete Choice, Mixed Logit
 2011-07-02 Vignette Examples: Added Discrete Choice, Conditional Logit
 2011-07-01 Vignette Examples: Added paragraph about statistical notation
 2011-06-30 Vignette Examples: Added Cluster Analysis

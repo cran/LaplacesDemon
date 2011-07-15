@@ -20,7 +20,7 @@ HPD <- function(obj, prob = 0.95, ...)
      ans <- cbind(vals[cbind(inds, 1:npar)],
           vals[cbind(inds + gap, 1:npar)])
      dimnames(ans) <- list(colnames(obj), c("Lower", "Upper"))
-     attr(ans, "Probability") <- gap/nsamp
+     attr(ans, "Probability") <- gap / nsamp
      return(ans)
      }
 

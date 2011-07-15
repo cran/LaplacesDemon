@@ -25,33 +25,33 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
           cat("WARNING: The length of Initial Values differed from ",
                "Data$parm.names.\n")
           Initial.Values <- rep(0, length(Data$parm.names))}
-     if(sum(is.na(Initial.Values)) > 0) {
+     if(any(is.na(Initial.Values))) {
           cat("WARNING: Initial Values contain missing values.\n")
           Initial.Values <- rep(0, length(Data$parm.names))}
-     if(sum(is.nan(Initial.Values)) > 0) {
+     if(any(is.nan(Initial.Values))) {
           cat("WARNING: Initial Values contain NaN values.\n")
           Initial.Values <- rep(0, length(Data$parm.names))}
-     if(sum(is.infinite(Initial.Values)) > 0) {
+     if(any(is.infinite(Initial.Values))) {
           cat("WARNING: Initial Values contain infinite values.\n")
           Initial.Values <- rep(0, length(Data$parm.names))}
      if(Iterations < 11) {
           Iterations <- 11
           cat("'Iterations' has been changed to ", Iterations, ".\n",
                sep="")}
-     if((Adaptive <= 1) || (Adaptive > Iterations)) {
+     if({Adaptive <= 1} || {Adaptive > Iterations}) {
           Adaptive <- Iterations + 1
           cat("Adaptation will not occur due to the Adaptive argument.\n")}
-     if((DR != 0) & (DR != 1)) {
+     if({DR != 0} & {DR != 1}) {
           DR <- 0
           cat("Delayed Rejection will not occur due to the DR argument.\n")}
-     if((Periodicity <= 1) || (Periodicity > Iterations)) {
+     if({Periodicity <= 1} || {Periodicity > Iterations}) {
           Periodicity <- Iterations + 1
           cat("Adaptation will not occur due to the Periodicity argument.\n")}
-     if((Status < 1) || (Status > Iterations)) {
+     if({Status < 1} || {Status > Iterations}) {
           Status <- Iterations
           cat("'Status' has been changed to ", Status, ".\n",
                sep="")}
-     if((Thinning < 1) || (Thinning > Iterations)) {
+     if({Thinning < 1} || {Thinning > Iterations}) {
           Thinning <- 1
           cat("'Thinning' has been changed to ", Thinning, ".\n",
                sep="")}
@@ -59,11 +59,11 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
      if(length(Mo0[[1]]) > 1) stop("Multiple joint posteriors exist!\n")
      as.character.function <- function(x, ... )
           {
-          fname <- deparse( substitute( x ) )
-          f <- match.fun( x ) 
-          out <- c( sprintf( '"%s" <- ', fname), capture.output( f ) ) 
-          if(grepl( "^[<]", tail(out,1))) out <- head( out, -1)
-          out
+          fname <- deparse(substitute(x))
+          f <- match.fun(x) 
+          out <- c(sprintf('"%s" <- ', fname), capture.output(f)) 
+          if(grepl("^[<]", tail(out,1))) out <- head( out, -1)
+          return(out)
           }
      acount <- length(grep("apply", as.character.function(Model)))
      if(acount > 0) {
@@ -105,11 +105,11 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
      if(is.na(Mo0[[2]])) stop("The deviance is a missing value!\n")
      if(is.infinite(Mo0[[2]])) stop("The deviance is infinite!\n")
      if(is.nan(Mo0[[2]])) stop("The deviance is not a number!\n")
-     if(sum(is.na(Mo0[[3]])) > 0)
+     if(any(is.na(Mo0[[3]])))
           stop("Monitored variable(s) have a missing value!\n")
-     if(sum(is.infinite(Mo0[[3]])) > 0)
+     if(any(is.infinite(Mo0[[3]])))
           stop("Monitored variable(s) have an infinite value!\n")
-     if(sum(is.nan(Mo0[[3]])) > 0)
+     if(any(is.nan(Mo0[[3]])))
           stop("Monitored variable(s) include a value that is not a number!\n")
      ######################  Laplace Approximation  #######################
      ### Sample Size of Data
@@ -118,11 +118,11 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
      if(!is.null(Data$y)) N <- nrow(matrix(Data$y))
      if(!is.null(Data$Y)) N <- nrow(matrix(Data$Y))
      if(is.null(N)) stop("Sample size of Data not found in n, N, y, or Y.")
-     if((sum(abs(Initial.Values) == 0) == length(Initial.Values)) &
-          (N >= 5*length(Initial.Values))) {
+     if({sum(abs(Initial.Values) == 0) == length(Initial.Values)} &
+          {N >= 5*length(Initial.Values)}) {
           cat("\nLaplace Approximation will be used on initial values.\n")
           Fit.LA = LaplaceApproximation(Model, Initial.Values, Data)
-          Covar <- 2.381204^2 / length(Initial.Values) * Fit.LA$Covar
+          Covar <- 2.381204 * 2.381204 / length(Initial.Values) * Fit.LA$Covar
           Initial.Values <- Fit.LA$Summary[1:length(Initial.Values),1]
           cat("The covariance matrix from Laplace Approximation has been scaled\n")
           cat("for Laplace's Demon, and the posterior modes are now the initial\n")
@@ -136,7 +136,7 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
      post <- matrix(0, Iterations, LIV)
      thinned <- Initial.Values
      post[1,] <- prop <- Initial.Values
-     ScaleF <- 2.381204^2 / LIV
+     ScaleF <- 2.381204 * 2.381204 / LIV
      if(is.matrix(Covar)) {tuning <- diag(Covar); VarCov <- Covar}
      else {
           tuning <- rep(ScaleF, LIV)
@@ -145,21 +145,21 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
      Iden.Mat <- VarCov
      DiagCovar <- matrix(diag(VarCov), 1, LIV)
      ### Determine Algorithm
-     if((Adaptive < Iterations) & (DR == 0)) {
+     if({Adaptive < Iterations} & {DR == 0}) {
           Algorithm <- "Adaptive Metropolis"
           cat("Algorithm: Adaptive Metropolis\n")}
-     if((Adaptive < Iterations) & (DR == 1)) {
+     else if({Adaptive < Iterations} & {DR == 1}) {
           Algorithm <- "Delayed Rejection Adaptive Metropolis"
           cat("Algorithm: Delayed Rejection Adaptive Metropolis\n")}
-     if((Adaptive >= Iterations) & (DR == 1)) {
+     else if({Adaptive >= Iterations} & {DR == 1}) {
           Algorithm <- "Delayed Rejection Metropolis"
           cat("Algorithm: Delayed Rejection Metropolis\n")}
-     if((Adaptive >= Iterations) & (DR == 0)) {
+     else {#if({Adaptive >= Iterations} & {DR == 0}) {
           Algorithm <- "Random-Walk Metropolis"
           cat("Algorithm: Random-Walk Metropolis\n")}
      ############################  Begin MCMC  ############################
      cat("\nLaplace's Demon is beginning to update...\n")
-     for (iter in 1:(Iterations-1))
+     for (iter in 1:{Iterations-1})
           {
           ### Print Status
           if(iter %% Status == 0) {cat("Iteration: ", iter, sep="")}
@@ -180,26 +180,26 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
           if(is.na(Mo0[[2]])) stop("The deviance is a missing value!\n")
           if(is.infinite(Mo0[[2]])) stop("The deviance is infinite!\n")
           if(is.nan(Mo0[[2]])) stop("The deviance is not a number!\n")
-          if(sum(is.na(Mo0[[3]])) > 0)
+          if(any(is.na(Mo0[[3]])))
                stop("Monitored variable(s) have a missing value!\n")
-          if(sum(is.infinite(Mo0[[3]])) > 0)
+          if(any(is.infinite(Mo0[[3]])))
                stop("Monitored variable(s) have an infinite value!\n")
-          if(sum(is.nan(Mo0[[3]])) > 0)
+          if(any(is.nan(Mo0[[3]])))
                stop("Monitored variable(s) include a value that is not a number!\n")
           ### Propose new parameter values
           MVN.rand <- rnorm(LIV, 0, 1)
-          MVN.test <- try(MVNz <- matrix(MVN.rand,1,LIV) %*% chol(VarCov),
-               silent=TRUE)
-          if(is.numeric(MVN.test[1]) & ((Acceptance / Iterations) >= 0.05)) {
+          MVN.test <- try(MVNz <- crossprod(matrix(MVN.rand,1,LIV),
+               chol(VarCov)), silent=TRUE)
+          if(is.numeric(MVN.test[1]) & {{Acceptance / Iterations} >= 0.05}) {
                if(iter %% Status == 0) {
                    cat(",   Proposal: Multivariate\n")}
                MVNz <- as.vector(MVN.test)
                prop <- t(post[iter,] + t(MVNz))}
-          if(is.character(MVN.test[1]) || ((Acceptance / Iterations) < 0.05)) {
+          else {
                if(iter %% Status == 0) {
                     cat(",   Proposal: Single-Component\n")}
                prop <- post[iter,]
-               j <- round(runif(1,0.5,(LIV+0.49)))
+               j <- round(runif(1,0.5,{LIV+0.49}))
                prop[j] <- rnorm(1, post[iter,j], tuning[j])}
           ### Log-Posterior of the proposed state
           Mo1 <- Model(prop, Data)
@@ -209,9 +209,9 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
           if(is.na(Mo1[[2]])) {Mo1 <- Mo0; prop <- post[iter,]}
           if(is.infinite(Mo1[[2]])) {Mo1 <- Mo0; prop <- post[iter,]}
           if(is.nan(Mo1[[2]])) {Mo1 <- Mo0; prop <- post[iter,]}
-          if(sum(is.na(Mo1[[3]])) > 0) {Mo1 <- Mo0; prop <- post[iter,]}
-          if(sum(is.infinite(Mo1[[3]])) > 0) {Mo1 <- Mo0; prop <- post[iter,]}
-          if(sum(is.nan(Mo1[[3]])) > 0) {Mo1 <- Mo0; prop <- post[iter,]}
+          if(any(is.na(Mo1[[3]]))) {Mo1 <- Mo0; prop <- post[iter,]}
+          if(any(is.infinite(Mo1[[3]]))) {Mo1 <- Mo0; prop <- post[iter,]}
+          if(any(is.nan(Mo1[[3]]))) {Mo1 <- Mo0; prop <- post[iter,]}
           prop <- Mo1[[5]]
           ### Accept/Reject
           log.u <- log(runif(1))
@@ -229,17 +229,17 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
                     }
                }
           ### Delayed Rejection: Second Stage Proposals
-          if((DR == 1) & (log.u >= log.alpha))
+          else if({DR == 1} & {log.u >= log.alpha})
                {
                MVN.rand <- rnorm(LIV, 0, 1)
-               MVN.test <- try(MVNz <- matrix(MVN.rand,1,LIV) %*%
-                    chol(VarCov * 0.5), silent=TRUE)
-               if(is.numeric(MVN.test[1]) & ((Acceptance / Iterations) >= 0.05)) {
+               MVN.test <- try(MVNz <- crossprod(matrix(MVN.rand,1,LIV),
+                    chol(VarCov * 0.5)), silent=TRUE)
+               if(is.numeric(MVN.test[1]) & {{Acceptance / Iterations} >= 0.05}) {
                     MVNz <- as.vector(MVN.test)
                     prop <- t(post[iter,] + t(MVNz))}
-               if(is.character(MVN.test[1]) || ((Acceptance / Iterations) < 0.05)) {
+               else {
                     prop <- post[iter,]
-                    j <- round(runif(1,0.5,(LIV+0.49)))
+                    j <- round(runif(1,0.5,{LIV+0.49}))
                     prop[j] <- rnorm(1, post[iter,j], tuning[j])}
                ### Log-Posterior of the proposed state
                Mo12 <- Model(prop, Data)
@@ -249,9 +249,9 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
                if(is.na(Mo12[[2]])) {Mo12 <- Mo0; prop <- post[iter,]}
                if(is.infinite(Mo12[[2]])) {Mo12 <- Mo0; prop <- post[iter,]}
                if(is.nan(Mo12[[2]])) {Mo12 <- Mo0; prop <- post[iter,]}
-               if(sum(is.na(Mo12[[3]])) > 0) {Mo12 <- Mo0; prop <- post[iter,]}
-               if(sum(is.infinite(Mo12[[3]])) > 0) {Mo12 <- Mo0; prop <- post[iter,]}
-               if(sum(is.nan(Mo12[[3]])) > 0) {Mo12 <- Mo0; prop <- post[iter,]}
+               if(any(is.na(Mo12[[3]]))) {Mo12 <- Mo0; prop <- post[iter,]}
+               if(any(is.infinite(Mo12[[3]]))) {Mo12 <- Mo0; prop <- post[iter,]}
+               if(any(is.nan(Mo12[[3]]))) {Mo12 <- Mo0; prop <- post[iter,]}
                prop <- Mo12[[5]]
                ### Accept/Reject
                log.u <- log(runif(1))
@@ -261,7 +261,7 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
                if(is.nan(log.alpha.comp)) log.alpha.comp <- 0
                if(is.infinite(log.alpha.comp)) log.alpha.comp <- 0
                log.alpha <- Mo12[[1]] + log.alpha.comp  -
-                    (Mo0[[1]] + log(1 - exp(Mo1[[1]] - Mo0[[1]])))
+                    {Mo0[[1]] + log(1 - exp(Mo1[[1]] - Mo0[[1]]))}
                log.alpha <- ifelse(is.na(log.alpha), 0, log.alpha)
                if(log.u < log.alpha)
                     {
@@ -276,30 +276,30 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
                     }
                }
           ### Shrinkage of Adaptive Proposal Variance
-          if((Adaptive < Iterations) & (Acceptance > 5) &
-               (Acceptance / iter < 0.05))
+          if({Adaptive < Iterations} & {Acceptance > 5} &
+               {Acceptance / iter < 0.05})
                {
-               VarCov <- VarCov * (1 - (1 / Iterations))
-               tuning <- tuning * (1 - (1 / Iterations))
+               VarCov <- VarCov * {1 - {1 / Iterations}}
+               tuning <- tuning * {1 - {1 / Iterations}}
                }
           ### Adapt the Proposal Variance
-          if((iter >= Adaptive) & (iter %% Periodicity == 0))
+          if({iter >= Adaptive} & {iter %% Periodicity == 0})
                {
                ### Covariance Matrix (Preferred if it works)
-               VarCov <- (ScaleF * cov(post[1:iter,])) +
-                    (ScaleF * 1.0E-5 * Iden.Mat)
+               VarCov <- {ScaleF * cov(post[1:iter,])} +
+                    {ScaleF * 1.0E-5 * Iden.Mat}
                DiagCovar <- rbind(DiagCovar, diag(VarCov))
                ### Univariate Standard Deviations
                for (j in 1:LIV)
                     {
-                    tuning[j] <- sqrt(ScaleF * (var(post[1:iter,j])) +
+                    tuning[j] <- sqrt(ScaleF * {var(post[1:iter,j])} +
                          ScaleF * 1.0E-5)
                     }
                }
           }
      #########################  MCMC is Finished  #########################
      ### Warnings (After Updating)
-     if (Acceptance == 0) cat("\nWARNING: All proposals were rejected.\n")
+     if(Acceptance == 0) cat("\nWARNING: All proposals were rejected.\n")
      ### Real Values
      thinned <- ifelse(is.na(thinned), 0, thinned)
      thinned <- ifelse(is.infinite(thinned), 0, thinned)
@@ -320,14 +320,13 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
           {
           thinned2 <- thinned[burn.start[i]:NROW(thinned),]
           test <- try(as.vector(Geweke.Diagnostic(thinned2)), silent=TRUE)
-          if(is.numeric(test)) {
-               geweke[i,] <- as.vector(test)
-          }}
+          if(is.numeric(test)) geweke[i,] <- as.vector(test)
+          }
      options(warn=0)
      rm(thinned2)
      geweke <- ifelse(is.na(geweke), 9, geweke)
      geweke <- ifelse(is.nan(geweke), 9, geweke)
-     geweke <- ifelse((geweke > -2) & (geweke < 2), TRUE, FALSE)
+     geweke <- ifelse({geweke > -2} & {geweke < 2}, TRUE, FALSE)
      for (j in 1:LIV) {geweke.ct[j] <- which(geweke[,j] == TRUE)[1]}
      geweke.ct <- ifelse(is.na(geweke.ct), NROW(thinned), geweke.ct)
      BurnIn <- burn.start[max(geweke.ct)]
@@ -339,7 +338,7 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
      for (j in 1:LIV)
           {
           temp0 <- acf(thinned[,j], lag.max=NROW(acf.temp), plot=FALSE)
-          acf.temp[,j] <- abs(temp0$acf[2:(NROW(acf.temp)+1),,1])
+          acf.temp[,j] <- abs(temp0$acf[2:{NROW(acf.temp)+1},,1])
           ESS1[j] <- ESS(thinned[,j])
           Rec.Thin[j] <- which(acf.temp[,j] <= 0.1)[1]*Thinning
           }
@@ -441,7 +440,7 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
      ### Logarithm of the Marginal Likelihood
      if(BurnIn >= NROW(thinned)) {LML <- LML(Model, Data,
           thinned[nrow(thinned),])}
-     if(BurnIn < NROW(thinned)) LML <- LML(Model, Data, Summ2[1:LIV,6])
+     else {LML <- LML(Model, Data, Summ2[1:LIV,6])}
      time2 <- proc.time()
      ### Compile Output
      cat("Creating Output\n")

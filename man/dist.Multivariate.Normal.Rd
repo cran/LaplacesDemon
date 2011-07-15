@@ -11,9 +11,11 @@ dmvn(x, mu, Sigma, log=FALSE)
 rmvn(n=1, mu, Sigma)
 }
 \arguments{
-  \item{x}{This is a vector of quantiles.}
+  \item{x}{This is data or parameters in the form of a vector of length
+    \code{k} or a matrix with \code{k} columns.}
   \item{n}{This is the number of random draws.}
-  \item{mu}{This is the mean vector with length \code{k}.}
+  \item{mu}{This is the mean vector with length \code{k} or matrix with
+    \code{k} columns. The \code{rmvn} function requires a vector.}
   \item{Sigma}{This is the \code{k x k} covariance matrix.}
   \item{log}{Logical. If \code{log=TRUE} then the logarithm of the
     density is returned.}
@@ -43,7 +45,7 @@ This distribution has a mean parameter vector \code{mu} of length
 \code{k}, and a \code{k x k} covariance matrix \code{Sigma}, which
 must be positive-definite.
 
-These functions are similar to those in the \code{mnormt} and
+These functions are similar to those in the \code{bayesm}, \code{mnormt}, and
 \code{mvtnorm} packages.
 }
 \value{

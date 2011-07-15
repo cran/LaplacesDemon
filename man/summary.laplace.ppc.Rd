@@ -7,16 +7,21 @@
   deviance and monitored variables. These variables are summarized,
   depending on \code{predict.laplace}.
 }
-\usage{\method{summary}{laplace.ppc}(object, Rows, Discrep, d, \dots)}
+\usage{\method{summary}{laplace.ppc}(object, Categorical, Rows, Discrep, d, \dots)}
 \arguments{
      \item{object}{An object of class \code{laplace.ppc} is required.}
+     \item{Categorical}{Logical. If \code{TRUE}, then \code{y} and
+          \code{yhat} are considered to be categorical (such as y=0 or
+           y=1),  rather than continuous.}
      \item{Rows}{An optional vector of row numbers, for example
           \code{c(1:10)}. All rows will be estimated, but only these
           rows will appear in the summary.}
-     \item{Discrep}{A character string indicating a discrepancy measure.
+     \item{Discrep}{A character string indicating a discrepancy test.
           \code{Discrep} defaults to \code{NULL}. Valid character
-	  strings are: "max(yhat[i,]) > max(y)",
-	  "min(yhat[i,]) < min(y)", "round(yhat[i,]) = d".}
+          strings when \code{y} is continuous are: "max(yhat[i,]) > max(y)",
+	  "min(yhat[i,]) < min(y)", "round(yhat[i,]) = d". Valid
+	  character strings when \code{y} is categorical are:
+	  "p(yhat[i,] != y[i])".}
      \item{d}{This is an optional integer to be used with the
 	  \code{Discrep} argument above, and it defaults to \code{d=0}.}
      \item{\dots}{Additional arguments are unused.}
@@ -31,10 +36,17 @@
   
   The purpose of a posterior predictive check is to assess how well (or
   poorly) the model fits the data, or to assess discrepancies between
-  the model and the data. When y is known, this function estimates the
-  predictive concordance between y and y[rep] as per Gelfand (1996), and
-  the predictive quantile (PQ), which is the individual-level metric for
+  the model and the data.
+
+  When y is continuous and known, this function estimates the predictive
+  concordance between y and y[rep] as per Gelfand (1996), and the
+  predictive quantile (PQ), which is the individual-level metric for
   outlier detection used to calculate Gelfand's predictive concordance.
+
+  When y is categorical and known, this function estimates the
+  record-level lift, which is p(yhat[i,] = y[i]) / [p(y = j) / n], or
+  the number of correctly predicted samples over the rate of that
+  category of y in vector y.
 
   A discrepancy measure is an approach to studying discrepancies between
   the model and data (Gelman et al., 1996).
@@ -50,7 +62,11 @@
 	  is to achieve 95\% predictive concordance. Lower percentages
 	  indicate too many outliers and a poor fit of the model to the
 	  data, and higher percentages may suggest overfitting.
+	  Concordance occurs only when \code{y} is continuous.
           }
+     \item{Mean Lift}{
+	  This is the mean of the record-level lifts, and occurs only
+	  when \code{y} is categorical.}
      \item{DIC (Dbar)}{
           This is the mean deviance, and is a component of the Deviance
           Information Criterion.
@@ -81,11 +97,15 @@
 	  2.5\% quantile), Median, and UB (the 97.5\% quantile).
           }
      \item{Summary}{
-          This is a n x 8 matrix, where n is the number of records of
-          y and there are 8 columns, as follows: y, Mean, SD, LB (the
-	  2.5\% quantile), Median, UB (the 97.5\% quantile), PQ (the
-	  predictive quantile, which is Pr(y[rep] >= y)), and Test,
-	  which shows the record-level result of a test, if specified.
+	  When \code{y} is continuous, this is a n x 8 matrix, where n
+          is the number of records of \code{y} and there are 8 columns,
+	  as follows: y, Mean, SD, LB (the 2.5\% quantile), Median, UB
+	  (the 97.5\% quantile), PQ (the predictive quantile, which is
+	  Pr(y[rep] >= y)), and Test, which shows the record-level
+	  result of a test, if specified. When \code{y} is categorical,
+	  this matrix has a number of columns equal to the number of
+	  categories of \code{y} plus 3, also including \code{y},
+	  \code{Lift}, and \code{Discrep}.
           }
 }
 \references{

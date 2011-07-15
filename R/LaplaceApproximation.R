@@ -21,18 +21,18 @@ LaplaceApproximation <- function(Model=NULL, parm=NULL, Data=NULL,
           cat("Initial values were not supplied, and\n")
           cat("have been set to zero prior to LaplaceApproximation().\n")
           parm <- rep(0, length(Data$Parameters))}
-     if((Interval <= 0) | (Interval > 1)) Interval <- 1.0E-6
+     if({Interval <= 0} | {Interval > 1}) Interval <- 1.0E-6
      Iterations <- round(Iterations)
-     if(Iterations < 10) Iterations <- 10
-     if(Iterations > 1000000) Iterations <- 1000000
+     if(Iterations < 10) {Iterations <- 10}
+     else if(Iterations > 1000000) {Iterations <- 1000000}
      if(Stop.Tolerance <= 0) Stop.Tolerance <- 1.0E-5
      as.character.function <- function(x, ... )
           {
-          fname <- deparse( substitute( x ) )
-          f <- match.fun( x ) 
-          out <- c( sprintf( '"%s" <- ', fname), capture.output( f ) ) 
-          if(grepl( "^[<]", tail(out,1))) out <- head( out, -1)
-          out
+          fname <- deparse(substitute(x))
+          f <- match.fun(x) 
+          out <- c(sprintf('"%s" <- ', fname), capture.output(f)) 
+          if(grepl("^[<]", tail(out,1))) out <- head(out, -1)
+          return(out)
           }
      acount <- length(grep("apply", as.character.function(Model)))
      if(acount > 0) {
@@ -52,13 +52,13 @@ LaplaceApproximation <- function(Model=NULL, parm=NULL, Data=NULL,
      if(!is.null(Data$y)) N <- nrow(matrix(Data$y))
      if(!is.null(Data$Y)) N <- nrow(matrix(Data$Y))
      if(!is.null(N)) cat("Sample Size: ", N, "\n")
-     if(is.null(N)) stop("Sample size of Data not found in n, N, y, or Y.")
+     else stop("Sample size of Data not found in n, N, y, or Y.")
      ###########################  Preparation  ############################
      parm <- as.vector(parm)
      parm.len <- length(parm)
      ans.len <- length(Model(parm, Data)[[1]])
      if(ans.len > 1) stop("Multiple joint posteriors exist!\n")
-     parm.int <- (diag(parm.len) * Interval) / 2
+     parm.int <- {diag(parm.len) * Interval} / 2
      parm.int <- ifelse(is.na(parm.int), 0, parm.int)
      parm.int <- ifelse(is.nan(parm.int), 0, parm.int)
      parm.int <- ifelse(is.infinite(parm.int), 0, parm.int)
@@ -66,7 +66,7 @@ LaplaceApproximation <- function(Model=NULL, parm=NULL, Data=NULL,
      parm.old <- parm
      parm.new <- parm.old - 0.1 #First step
      names(parm.new) <- Data$parm.names
-     tol.new <- tol.old <- sqrt(sum((parm.new - parm.old)^2))
+     tol.new <- tol.old <- sqrt(sum({parm.new - parm.old}^2))
      Step.Size  <- 0.001
      post <- matrix(parm.new, 1, parm.len)
      iter <- 0
@@ -80,11 +80,11 @@ LaplaceApproximation <- function(Model=NULL, parm=NULL, Data=NULL,
      ### Parms could have been constrained...
      parm.old <- m.old[[5]]
      parm.new <- parm.old - 0.1
-     tol.new <- tol.old <- sqrt(sum((parm.new - parm.old)^2))
+     tol.new <- tol.old <- sqrt(sum({parm.new - parm.old}^2))
      post <- matrix(parm.new, 1, parm.len)
      ####################  Begin Laplace Approximation  ###################
      cat("Laplace Approximation begins...\n")
-     while((iter < Iterations) & (tol.new > Stop.Tolerance)) {
+     while({iter < Iterations} & {tol.new > Stop.Tolerance}) {
           iter <- iter + 1
           tol.old <- tol.new
           parm.old <- parm.new
@@ -97,18 +97,17 @@ LaplaceApproximation <- function(Model=NULL, parm=NULL, Data=NULL,
                parm.old <- Model(parm.old, Data)[[5]]
                high <- Model(parm.old + parm.int[,i], Data)[[1]] * -1
                low <- Model(parm.old - parm.int[,i], Data)[[1]] * -1
-               approx.grad[,i] <- (high - low) / Interval
+               approx.grad[,i] <- {high - low} / Interval
                approx.grad <- ifelse(approx.grad > 1000, 1000,
                     approx.grad)
                approx.grad <- ifelse(approx.grad < -1000, -1000,
                     approx.grad)
-               if(is.na(high) | is.nan(high) |
-                    is.infinite(high) | is.na(low) |
-                    is.nan(low) | is.infinite(low)) {
+               if(is.na(high) | is.nan(high) | is.infinite(high) |
+                    is.na(low) | is.nan(low) | is.infinite(low)) {
                     approx.grad[,i] <- 0}
                }
           ### In iteration 1 or at status, try 10 different step sizes
-          if((iter == 1) | (iter %% round(Iterations / 10) == 0)) {
+          if({iter == 1} | {iter %% round(Iterations / 10) == 0}) {
                step.size <- c(1.0E-1, 5.0E-2, 1.0E-2, 5.0E-3, 1.0E-3,
                     5.0E-4, 1.0E-4, 5.0E-5, 1.0E-5, 1.0E-6)
                lujpd <- rep(0,10)
@@ -128,7 +127,7 @@ LaplaceApproximation <- function(Model=NULL, parm=NULL, Data=NULL,
                if(max(lujpd) > m.old[[1]]) {
                     Step.Size <- step.size[which.max(lujpd)]
                     parm.new <- parm.temp[which.max(lujpd),]}
-               if(max(lujpd) <= m.old[[1]]) {parm.new <- parm.old}
+               else {parm.new <- parm.old}
                if(iter == 1) Step.Size.Initial <- Step.Size
                }
           ### Otherwise, work with the current and adaptive Step.Size
@@ -136,7 +135,7 @@ LaplaceApproximation <- function(Model=NULL, parm=NULL, Data=NULL,
           parm.new <- ifelse(is.na(parm.new), parm.old, parm.new)
           parm.new <- ifelse(is.nan(parm.new), parm.old, parm.new)
           parm.new <- ifelse(is.infinite(parm.new), parm.old, parm.new)
-          tol.new <- sqrt(sum((parm.new - parm.old)^2))
+          tol.new <- sqrt(sum({parm.new - parm.old}^2))
           m.old <- Model(parm.old, Data)
           m.new <- Model(parm.new, Data)
           Dev.new <- m.old[[2]]
@@ -159,7 +158,7 @@ LaplaceApproximation <- function(Model=NULL, parm=NULL, Data=NULL,
      ### Column names to samples
      if(NCOL(post) == length(Data$parm.names)) {
           colnames(post) <- Data$parm.names}
-     rownames(post) <- 1:(NROW(post))
+     rownames(post) <- 1:{NROW(post)}
      ### Summary
      cat("\nCreating Summary...\n")
      Summ <- matrix(NA, parm.len, 4, dimnames=list(Data$parm.names,
@@ -186,7 +185,7 @@ LaplaceApproximation <- function(Model=NULL, parm=NULL, Data=NULL,
           Step.Size.Initial = Step.Size.Initial,
           Stop.Tolerance = Stop.Tolerance,
           Summary = Summ,
-          Tolerance = sqrt(sum((parm.new - parm.old)^2)))
+          Tolerance = sqrt(sum({parm.new - parm.old}^2)))
      class(LA) <- "laplace"
      cat("Laplace Approximation is finished.\n\n")
      return(LA)
