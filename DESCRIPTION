@@ -1,6 +1,6 @@
 Package: LaplacesDemon
-Version: 11.07.15
-Date: 2011-07-15
+Version: 11.07.27
+Date: 2011-07-27
 Title: Software for Bayesian Inference
 Author: Byron Hall <laplacesdemon@statistcat.com>
 Maintainer: Byron Hall <laplacesdemon@statisticat.com>
@@ -10,5 +10,5 @@ License: GPL-2
 URL: http://www.r-project.org,
         http://www.statisticat.com/laplacesdemon.html
 Repository: CRAN
-Packaged: 2011-07-14 11:48:00 UTC; root
-Date/Publication: 2011-07-23 13:02:04
+Packaged: 2011-07-26 03:41:34 UTC; root
+Date/Publication: 2011-07-26 13:46:18

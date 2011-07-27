@@ -188,9 +188,9 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
                stop("Monitored variable(s) include a value that is not a number!\n")
           ### Propose new parameter values
           MVN.rand <- rnorm(LIV, 0, 1)
-          MVN.test <- try(MVNz <- crossprod(matrix(MVN.rand,1,LIV),
-               chol(VarCov)), silent=TRUE)
-          if(is.numeric(MVN.test[1]) & {{Acceptance / Iterations} >= 0.05}) {
+          MVN.test <- try(MVNz <- matrix(MVN.rand,1,LIV) %*% chol(VarCov),
+               silent=TRUE)
+          if(is.numeric(MVN.test[1]) & ((Acceptance / Iterations) >= 0.05)) {
                if(iter %% Status == 0) {
                    cat(",   Proposal: Multivariate\n")}
                MVNz <- as.vector(MVN.test)
@@ -232,9 +232,9 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
           else if({DR == 1} & {log.u >= log.alpha})
                {
                MVN.rand <- rnorm(LIV, 0, 1)
-               MVN.test <- try(MVNz <- crossprod(matrix(MVN.rand,1,LIV),
-                    chol(VarCov * 0.5)), silent=TRUE)
-               if(is.numeric(MVN.test[1]) & {{Acceptance / Iterations} >= 0.05}) {
+               MVN.test <- try(MVNz <- matrix(MVN.rand,1,LIV) %*%
+                    chol(VarCov * 0.5), silent=TRUE)
+               if(is.numeric(MVN.test[1]) & ((Acceptance / Iterations) >= 0.05)) {
                     MVNz <- as.vector(MVN.test)
                     prop <- t(post[iter,] + t(MVNz))}
                else {
@@ -436,11 +436,15 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
           }
      ### Column names to samples
      if(NCOL(Mon) == length(Data$mon.names)) colnames(Mon) <- Data$mon.names
-     if(NCOL(thinned) == length(Data$parm.names)) colnames(thinned) <- Data$parm.names
+     if(NCOL(thinned) == length(Data$parm.names)) {
+          colnames(thinned) <- Data$parm.names}
      ### Logarithm of the Marginal Likelihood
-     if(BurnIn >= NROW(thinned)) {LML <- LML(Model, Data,
-          thinned[nrow(thinned),])}
-     else {LML <- LML(Model, Data, Summ2[1:LIV,6])}
+     if(Algorithm == "Random-Walk Metropolis") {
+          cat("Estimating Log of the Marginal Likelihood\n")
+          if(BurnIn >= NROW(thinned)) {LML <- LML(Model, Data,
+               thinned[nrow(thinned),])}
+          else {LML <- LML(Model, Data, Summ2[1:LIV,6])}}
+     else {LML <- list(LML=NA, VarCov=NA)}
      time2 <- proc.time()
      ### Compile Output
      cat("Creating Output\n")

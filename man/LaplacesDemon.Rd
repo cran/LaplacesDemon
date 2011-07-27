@@ -203,17 +203,18 @@ LaplacesDemon(Model=NULL, Data=NULL, Adaptive=0, Covar=NULL, DR=1,
      \item{LML}{
           This is an approximation of the logarithm of the marginal
           likelihood of the data, and is the logarithmic form of
-	  equation 4 in Lewis and Raftery (1997). As a rough estimate of
-	  Kass and Raftery (1995), \code{LML} is worrisome when the
-	  sample size of the data is less than five times the number of
-	  parameters, and \code{LML} should be adequate in most problems
-	  when the sample size of the data exceeds twenty times the
-	  number of parameters (p. 778). \code{LML} is useful for
-	  comparing multiple models with the \code{BayesFactor}
-	  function. The Laplace-Metropolis estimator is inappropriate
-	  with hierarchical models, and the extension (the Compound
-	  Laplace-Metropolis estimator) will soon be attempted to be
-	  included.
+	  equation 4 in Lewis and Raftery (1997). \code{LML} is
+	  estimated only with the Random-Walk Metropolis algorithm.
+	  As a rough estimate of Kass and Raftery (1995), \code{LML}
+	  is worrisome when the sample size of the data is less than
+	  five times the number of parameters, and \code{LML} should
+	  be adequate in most problems when the sample size of the
+	  data exceeds twenty times the number of parameters (p. 778).
+	  \code{LML} is useful for comparing multiple models with the
+	  \code{BayesFactor} function. The Laplace-Metropolis
+	  estimator is inappropriate with hierarchical models, and
+	  the extension (the Compound Laplace-Metropolis estimator) may
+	  be attempted to be included in the future.
           }
      \item{Minutes}{
           This indicates the number of minutes that \code{LaplacesDemon}
