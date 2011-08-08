@@ -17,14 +17,18 @@ caterpillar.plot <- function(x, Parms=NULL, Title=NULL)
                x <- x$Summary2
                x.lab <- "Stationary Samples"}
           if(!is.null(Parms)) {
-               if(length(Parms) == 1) {
-                    stop("More than one parameter is required")}
-               else {
+               if(is.character(Parms)) {
+                    Parms <- sub("\\[","\\\\[",Parms)
+                    Parms <- sub("\\]","\\\\]",Parms)
+                    Parms <- sub("\\.","\\\\.",Parms)
                     keeprows <- grep(Parms[1], rownames(x))
-                    for (i in 2:length(Parms)) {
-                         keeprows <- c(keeprows, grep(Parms[i],
-                              rownames(x)))}
+                    if(length(Parms) > 1) {
+                         for (i in 2:length(Parms)) {
+                              keeprows <- c(keeprows, grep(Parms[i],
+                                   rownames(x)))}
+                         }
                     }
+               if(is.numeric(Parms)) keeprows <- Parms
                x <- x[keeprows,]
                }
           ### Setup

@@ -14,6 +14,9 @@ plot.demonoid <- function(x, BurnIn=1, Data=NULL, PDF=FALSE,
      ### Selecting Parms
      if(is.null(Parms)) {Posterior <- x$Posterior1}
      else {
+          Parms <- sub("\\[","\\\\[",Parms)
+          Parms <- sub("\\]","\\\\]",Parms)
+          Parms <- sub("\\.","\\\\.",Parms)
           keepcols <- grep(Parms[1], colnames(x$Posterior1))
           if(length(Parms) > 1) {
                for (i in 2:length(Parms)) {

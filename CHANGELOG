@@ -1,3 +1,6 @@
+2011-08-07 Vignette Examples: Corrected epsilon in ARCH(1,1)
+2011-08-03 Vignette Examples: Added Exponential Smoothing
+2011-07-27 plot.demonid, plot.laplace, caterpillar.plot: Improved grep
 2011-07-26 Vignette Examples: Added Beta Regression
 2011-07-25 LaplacesDemon: Corrected error preventing multivariate updating
 2011-07-25 Vignette Examples: Added ARMA(1,1)

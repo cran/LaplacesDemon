@@ -12,6 +12,9 @@ plot.laplace <- function(x, Data=NULL, PDF=FALSE, Parms=NULL, ...)
      ### Selecting Parms
      if(is.null(Parms)) History <- x$History
      else {
+          Parms <- sub("\\[","\\\\[",Parms)
+          Parms <- sub("\\]","\\\\]",Parms)
+          Parms <- sub("\\.","\\\\.",Parms)
           keepcols <- grep(Parms[1], colnames(x$History))
           if(length(Parms) > 1) {
                for (i in 2:length(Parms)) {
