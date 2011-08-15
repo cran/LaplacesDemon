@@ -1,3 +1,4 @@
+2011-08-12 LaplaceApproximation: Added wrapper to optim for CG
 2011-08-07 Vignette Examples: Corrected epsilon in ARCH(1,1)
 2011-08-03 Vignette Examples: Added Exponential Smoothing
 2011-07-27 plot.demonid, plot.laplace, caterpillar.plot: Improved grep

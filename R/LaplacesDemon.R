@@ -57,12 +57,14 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
                sep="")}
      Mo0 <- Model(Initial.Values, Data)
      if(length(Mo0[[1]]) > 1) stop("Multiple joint posteriors exist!\n")
+     if(length(Mo0[[3]]) != length(Data$mon.names)) {
+          stop("Length of mon.names differs from length of monitors.\n")}
      as.character.function <- function(x, ... )
           {
           fname <- deparse(substitute(x))
           f <- match.fun(x) 
           out <- c(sprintf('"%s" <- ', fname), capture.output(f)) 
-          if(grepl("^[<]", tail(out,1))) out <- head( out, -1)
+          if(grepl("^[<]", tail(out, 1))) out <- head(out, -1)
           return(out)
           }
      acount <- length(grep("apply", as.character.function(Model)))

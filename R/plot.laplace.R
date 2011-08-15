@@ -9,6 +9,7 @@ plot.laplace <- function(x, Data=NULL, PDF=FALSE, Parms=NULL, ...)
      ### Initial Checks
      if(is.null(x)) stop("x is NULL.\n")
      if(is.null(Data)) stop("The Data argument is NULL.\n")
+     if(is.na(x$History)) stop("There is no history to plot.\n")
      ### Selecting Parms
      if(is.null(Parms)) History <- x$History
      else {

@@ -3,16 +3,17 @@
 \title{Laplace Approximation}
 \description{
   The \code{LaplaceApproximation} function deterministically maximizes
-  the logarithm of the unnormalized joint posterior density with an
-  adaptive gradient ascent algorithm. The goal of Laplace Approximation
-  is to estimate the posterior mode and variance of each parameter.
-  This function is useful for optimizing initial values and estimating
-  a covariance matrix to be input into the \code{LaplacesDemon}
-  function, or sometimes for model estimation in its own right.
+  the logarithm of the unnormalized joint posterior density with a
+  conjugate gradient or adaptive gradient ascent algorithm. The goal of
+  Laplace Approximation is to estimate the posterior mode and variance
+  of each parameter. This function is useful for optimizing initial
+  values and estimating a covariance matrix to be input into the
+  \code{LaplacesDemon} function, or sometimes for model estimation in
+  its own right.
 }
 \usage{
 LaplaceApproximation(Model=NULL, parm=NULL, Data=NULL, Interval=1.0E-6,
-     Iterations=100, Stop.Tolerance=1.0E-5)
+     Iterations=100, Method="CG", Stop.Tolerance=1.0E-5)
 }
 \arguments{
      \item{Model}{
@@ -46,7 +47,8 @@ LaplaceApproximation(Model=NULL, parm=NULL, Data=NULL, Interval=1.0E-6,
           This argument receives an interval for estimating approximate
           gradients. The logarithm of the unnormalized joint posterior
 	  density of the Bayesian model is evaluated at +/- 1/2 of this
-	  interval. \code{Interval} defaults to 1.0E-6.
+	  interval. \code{Interval} defaults to 1.0E-6. This interval is
+	  applicable only when \code{Method="AGA"}.
           }
      \item{Iterations}{
           This argument accepts an integer that determines the number
@@ -54,13 +56,23 @@ LaplaceApproximation(Model=NULL, parm=NULL, Data=NULL, Interval=1.0E-6,
 	  maximize the logarithm of the unnormalized joint posterior density.
 	  \code{Iterations} defaults to 100. \code{LaplaceApproximation}
 	  will stop before this number of iterations if the tolerance is
-	  less than or equal to the \code{Stop.Tolerance} criterion
-	  (see below).
+	  less than or equal to the \code{Stop.Tolerance} criterion when
+	  \code{Method="AGA"} (see below). When \code{Method="CG"}, the
+	  algorithm stops as in \code{optim}.
           }
+     \item{Method}{
+	  This optional argument specifies the method used for Laplace
+	  Approximation. The default method is \code{CG} or conjugate
+	  gradient, in which case \code{LaplaceApproximation} becomes a
+	  wrapper for \code{optim}. Alternatively, \code{AGA} specifies
+	  the Adaptive Gradient Ascent, which is much slower, but can
+	  handle constrained parameters, where \code{CG} cannot.
+	  }
      \item{Stop.Tolerance}{
-	  This argument accepts any positive number, and defaults to 
-          1.0E-5. At each iteration, the square root of the sum of the
-	  squared differences of the logarithm of the unnormalized joint
+	  This argument accepts any positive number, defaults to 1.0E-5,
+	  and is applicable only with \code{Method="AGA"}. At each
+	  iteration, the square root of the sum of the squared
+	  differences of the logarithm of the unnormalized joint
 	  posterior density is calculated. If this result is less than
 	  or equal to the value of \code{Stop.Tolerance}, then
 	  \code{LaplaceApproximation} has converged to the user-specified 
@@ -116,11 +128,12 @@ LaplaceApproximation(Model=NULL, parm=NULL, Data=NULL, Interval=1.0E-6,
   \code{LaplaceApproximation} seeks a global maximum of the logarithm of
   the unnormalized joint posterior density by taking adaptive steps
   proportional to an approximate gradient. This portion of the
-  \code{LaplaceApproximation} function uses a gradient ascent algorithm,
-  and is called a gradient descent or steepest descent algorithm
-  elsewhere for minimization problems. Laplace's Demon uses the
-  \code{LaplaceApproximation} algorithm to optimize initial values,
-  estimate covariance, and save time for the user.
+  \code{LaplaceApproximation} function uses a conjugate gradient or
+  gradient ascent algorithm, where gradient ascent is called a gradient
+  descent or steepest descent algorithm elsewhere for minimization
+  problems. Laplace's Demon uses the \code{LaplaceApproximation}
+  algorithm to optimize initial values, estimate covariance, and save
+  time for the user.
 
   This algorithm assumes that the logarithm of the unnormalized joint
   posterior density is defined and differentiable. An approximate
@@ -128,11 +141,12 @@ LaplaceApproximation(Model=NULL, parm=NULL, Data=NULL, Interval=1.0E-6,
   logarithm of the unnormalized joint posterior density due to a slight
   increase versus decrease in the parameter.
 
-  At 10 evenly-space times, \code{LaplaceApproximation} attempts several
-  step sizes, which are also called rate parameters in other literature,
-  and selects the best step size from a set of 10 fixed options.
-  Thereafter, each iteration in which an improvement does not occur, the
-  step size shrinks, being multiplied by 0.999.
+  When \code{Method="AGA"}, at 10 evenly-space times,
+  \code{LaplaceApproximation} attempts several step sizes, which are
+  also called rate parameters in other literature, and selects the best
+  step size from a set of 10 fixed options. Thereafter, each iteration
+  in which an improvement does not occur, the step size shrinks, being
+  multiplied by 0.999.
 
   Gradient ascent is criticized for sometimes being relatively slow when
   close to the maximum, and its asymptotic rate of convergence is
@@ -143,7 +157,9 @@ LaplaceApproximation(Model=NULL, parm=NULL, Data=NULL, Interval=1.0E-6,
   fewer iterations, calculating the inverse of the negative Hessian
   matrix of second-derivatives is more computationally expensive and
   subject to singularities. Therefore, gradient ascent takes longer to
-  converge, but is more generalizable.
+  converge, but is more generalizable. The conjugate gradient method
+  should be superior to gradient ascent, though possibly not in very
+  large dimensions.
 
   After \code{LaplaceApproximation} finishes, due either to early
   convergence or completing the number of specified iterations, it
@@ -165,10 +181,10 @@ LaplaceApproximation(Model=NULL, parm=NULL, Data=NULL, Interval=1.0E-6,
           This is a logical indicator of whether or not
           \code{LaplaceApproximation} converged within the specified
 	  \code{Iterations} according to the supplied
-	  \code{Stop.Tolerance} criterion. Convergence does not indicate
-	  that the global maximum has been found, but only that the
-	  tolerance was less than or equal to the \code{Stop.Tolerance}
-	  criterion. 
+	  \code{Stop.Tolerance} criterion (when \code{Method="AGA"}.
+	  Convergence does not indicate that the global maximum has
+	  been found, but only that the tolerance was less than or
+	  equal to the \code{Stop.Tolerance} criterion. 
           }
      \item{Covar}{
           This covariance matrix is the negative inverse of an
@@ -192,7 +208,7 @@ LaplaceApproximation(Model=NULL, parm=NULL, Data=NULL, Interval=1.0E-6,
      \item{History}{
 	  This is a matrix of the iterative history of the parameters in
           the \code{LaplaceApproximation} function, as it sought
-	  convergence. 
+	  convergence. This is empty when \code{Method="CG"}.
 	  }
      \item{Initial.Values}{
 	  This is the vector of initial values that was originally 
@@ -229,13 +245,16 @@ LaplaceApproximation(Model=NULL, parm=NULL, Data=NULL, Interval=1.0E-6,
 	  }
      \item{Step.Size.Final}{
           This is the final, scalar \code{Step.Size} value at the end 
-          of the \code{LaplaceApproximation} algorithm.
+          of the \code{LaplaceApproximation} algorithm. This is empty
+	  when \code{Method="CG"}.
 	  }
      \item{Step.Size.Initial}{
-          This is the initial, scalar \code{Step.Size}.
+          This is the initial, scalar \code{Step.Size}. This is empty
+	  when \code{Method="CG"}.
           }
      \item{Stop.Tolerance}{
-          This is the \code{Stop.Tolerance} criterion.
+          This is the \code{Stop.Tolerance} criterion. This is empty
+	  when \code{Method="CG"}.
 	  }
      \item{Summary}{
           This is a summary matrix. Rows are parameters. The following
@@ -246,7 +265,7 @@ LaplaceApproximation(Model=NULL, parm=NULL, Data=NULL, Interval=1.0E-6,
 	  This is the last \code{Tolerance} of the \code{LaplaceApproxiation}
 	  algorithm. It is calculated as the square root of the sum of
 	  the squared differences between a new and current vector of
-	  parameters.
+	  parameters. This is empty when \code{Method="CG"}.
           }
 }
 \references{
@@ -328,11 +347,12 @@ Model <- function(parm, Data)
      return(Modelout)
      }
 
-Fit <- LaplaceApproximation(Model, Initial.Values, Data=MyData, Iterations=1000)
+Fit <- LaplaceApproximation(Model, Initial.Values, Data=MyData,
+     Iterations=1000)
 Fit
 print(Fit)
-caterpillar.plot(Fit, Parms=1:J)
-plot(Fit, MyData, PDF=FALSE)
+caterpillar.plot(Fit, Parms=c("beta","log.sigma"))
+#plot(Fit, MyData, PDF=FALSE)
 Pred <- predict(Fit, Model, MyData)
 summary(Pred)
 plot(Pred)
@@ -341,7 +361,7 @@ plot(Pred)
 #End
 }
 \keyword{
-Adaptive, Bayesian Inference, Gradient Ascent, Initial Values,
+Adaptive, Bayesian Inference, Conjugate Gradient, Gradient Ascent, Initial Values,
 Laplace Approximation, LaplaceApproximation, LaplacesDemon,
 Laplace's Demon, Optimization
 }

@@ -3,13 +3,13 @@
 #                                                                         #
 # The LaplaceApproximation function maximizes the logarithm of the        #
 # unnormalized joint posterior distribution of a Bayesian model with a    #
-# deterministic approximation gradient ascent algorithm to estimate the   #
-# posterior modes and variances. This gradient ascent algorithm uses an   #
-# adaptive step size.                                                     #
+# deterministic approximation conjugate gradient or adaptive gradient     #
+# ascent algorithm to estimate the posterior modes and variances. The     #
+# gradient ascent algorithm uses an adaptive step size.                   #
 ###########################################################################
 
 LaplaceApproximation <- function(Model=NULL, parm=NULL, Data=NULL,
-     Interval=1.0E-6, Iterations=100, Stop.Tolerance=1.0E-5)
+     Interval=1.0E-6, Iterations=100, Method="CG", Stop.Tolerance=1.0E-5)
      {
      ##########################  Initial Checks  ##########################
      time1 <- proc.time()
@@ -20,11 +20,13 @@ LaplaceApproximation <- function(Model=NULL, parm=NULL, Data=NULL,
      if(is.null(parm)) {
           cat("Initial values were not supplied, and\n")
           cat("have been set to zero prior to LaplaceApproximation().\n")
-          parm <- rep(0, length(Data$Parameters))}
+          parm <- rep(0, length(Data$parm.names))}
      if({Interval <= 0} | {Interval > 1}) Interval <- 1.0E-6
      Iterations <- round(Iterations)
      if(Iterations < 10) {Iterations <- 10}
      else if(Iterations > 1000000) {Iterations <- 1000000}
+     if((Method != "AGA") & (Method != "CG"))
+          stop("Method is unknown in LaplaceApproximation().")
      if(Stop.Tolerance <= 0) Stop.Tolerance <- 1.0E-5
      as.character.function <- function(x, ... )
           {
@@ -84,6 +86,7 @@ LaplaceApproximation <- function(Model=NULL, parm=NULL, Data=NULL,
      post <- matrix(parm.new, 1, parm.len)
      ####################  Begin Laplace Approximation  ###################
      cat("Laplace Approximation begins...\n")
+     if(Method == "AGA") {
      while({iter < Iterations} & {tol.new > Stop.Tolerance}) {
           iter <- iter + 1
           tol.old <- tol.new
@@ -176,16 +179,70 @@ LaplaceApproximation <- function(Model=NULL, parm=NULL, Data=NULL,
           Deviance = as.vector(Dev),
           History = post,
           Initial.Values = parm,
-          Iterations=iter,
-          LML=LML[[1]],
+          Iterations = iter,
+          LML = LML[[1]],
           LP.Final = as.vector(Model(parm.new, Data)[[1]]),
           LP.Initial = Model(parm, Data)[[1]],
-          Minutes=round(as.vector(time2[3] - time1[3]) / 60,2),
+          Minutes = round(as.vector(time2[3] - time1[3]) / 60, 2),
           Step.Size.Final = Step.Size,
           Step.Size.Initial = Step.Size.Initial,
           Stop.Tolerance = Stop.Tolerance,
           Summary = Summ,
           Tolerance = sqrt(sum({parm.new - parm.old}^2)))
+     }
+     if(Method == "CG") {
+     ModelWrapper <- function(parm) {
+          return(Model(parm, Data)[[1]])
+          }
+     est <- optim(par=parm, fn=ModelWrapper, gr=NULL,
+          method="CG",
+          control=list(maxit=Iterations, fnscale=-1), hessian=TRUE)
+     ### Hessian
+     Inverse.test <- try(VarCov <- -solve(est$hessian), silent=TRUE)
+     if(is.numeric(Inverse.test[1])) {
+          diag(VarCov) <- ifelse(diag(VarCov) < 0, diag(VarCov) * -1,
+               diag(VarCov)) #Better method of preventing negative variance?
+          diag(VarCov) <- ifelse(diag(VarCov) == 0, 1.0E-10, diag(VarCov))}
+     else {
+          cat("\nWARNING: Failure to solve matrix inversion of Approx. Hessian.\n")
+          cat("NOTE: Identity matrix is supplied instead.\n")
+          VarCov <- matrix(0, length(est$par), length(est$par))
+          diag(VarCov) <- 1
+          }
+     ### Logarithm of the Marginal Likelihood
+     LML <- NA
+     options(warn=-1)
+     LML.test <- try(LML <- parm.len/2 * log(2*pi) + 0.5*log(det(VarCov)) +
+          as.vector(Model(est$par, Data)[[1]]), silent=TRUE)
+     if(is.numeric(LML.test[1]) & !is.nan(LML.test[1]) &
+          !is.infinite(LML.test[1])) {LML <- LML.test[1]}
+     options(warn=0)
+     ### Summary
+     cat("\nCreating Summary...\n")
+     Summ <- matrix(NA, parm.len, 4, dimnames=list(Data$parm.names,
+          c("Mode","SD","LB","UB")))
+     Summ[,1] <- est$par
+     Summ[,2] <- sqrt(diag(VarCov))
+     Summ[,3] <- est$par - 2*Summ[,2]
+     Summ[,4] <- est$par + 2*Summ[,2]
+     time2 <- proc.time()
+     LA <- list(Call=match.call(),
+          Converged = (est$convergence == 0),
+          Covar = VarCov,
+          Deviance = as.vector(Model(est$par, Data)[[2]]),
+          History = NA,
+          Initial.Values = parm,
+          Iterations = as.vector(est$counts[1]),
+          LML = LML[[1]],
+          LP.Final = as.vector(Model(est$par, Data)[[1]]),
+          LP.Initial = Model(parm, Data)[[1]],
+          Minutes = round(as.vector(time2[3] - time1[3]) / 60, 2),
+          Step.Size.Final = NA,
+          Step.Size.Initial = NA,
+          Stop.Tolerance = NA,
+          Summary = Summ,
+          Tolerance = NA)
+     }
      class(LA) <- "laplace"
      cat("Laplace Approximation is finished.\n\n")
      return(LA)
