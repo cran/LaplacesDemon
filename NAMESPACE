@@ -1,6 +1,7 @@
 export(BayesFactor,
        caterpillar.plot,
        CenterScale,
+       Combine,
        Consort,
        Cov2Cor,
        dbern,

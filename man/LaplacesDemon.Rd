@@ -81,10 +81,11 @@ LaplacesDemon(Model=NULL, Data=NULL, Adaptive=0, Covar=NULL, DR=1,
           \code{Initial.Values=Fit$Posterior1[NROW(Fit$Posterior1),]}.
           }
      \item{Iterations}{
-          This required argument accepts integers greater than 10 and up 
-          to 1,000,000, and determines the number of iterations that
+          This required argument accepts integers in the interval [11,
+	  1,000,000], and determines the number of iterations that
 	  Laplace's Demon will update the parameters while searching for
-	  target distributions.
+	  target distributions. If more iterations are necessary, then
+	  the \code{Combine} function can be used.
           }
      \item{Periodicity}{
           This argument accepts positive integers and determines the
@@ -123,12 +124,13 @@ LaplacesDemon(Model=NULL, Data=NULL, Adaptive=0, Covar=NULL, DR=1,
      All algorithms attempt multivariate proposals, but are modified
      to use single-component proposals if multivariate estimation is
      problematic. Additionally, the \code{LaplaceApproximation} function
-     may be used to attempt to optimize initial values with a gradient
-     ascent algorithm, which the \code{LaplacesDemon} function attempts
-     automatically when all initial values are set to zero and sample
-     size is at least five times the number of parameters. For
-     more information, see the accompanying vignettes entitled 
-     "Bayesian Inference" and "LaplacesDemon Tutorial".
+     may be used to attempt to optimize initial values with a conjugate
+     gradient or adaptive gradient ascent algorithm, which the
+     \code{LaplacesDemon} function attempts automatically when all
+     initial values are set to zero and sample size is at least five
+     times the number of parameters. For more information, see the
+     accompanying vignettes entitled "Bayesian Inference" and
+     "LaplacesDemon Tutorial".
 }
 \value{
      \code{LaplacesDemon} returns an object of class \code{demonoid}
