@@ -1,6 +1,6 @@
 \name{Combine}
 \alias{Combine}
-\title{Combine}
+\title{Combine Demonoid Objects}
 \description{
 This function combines objects of class \code{demonoid}, and is useful when
 more than 1,000,000 iterations is required, prior to thinning, to

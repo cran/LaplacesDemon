@@ -1,6 +1,6 @@
 \name{Mode}
 \alias{Mode}
-\title{The Mode of a vector}
+\title{The Mode of a Vector}
 \description{
 The mode is a measure of central tendency. It is the value that occurs
 most frequently, or in a continuous probability distribution, it is the

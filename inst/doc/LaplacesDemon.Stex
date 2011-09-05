@@ -97,7 +97,7 @@ There are J=\Sexpr{J} independent variables (including the intercept), one for e
 Laplace's Demon will consider using Laplace Approximation, and part of this consideration includes determining the sample size. The user must specify the number of observations in the data as either a scalar \code{n} or \code{N}. If these are not found by the \code{LaplaceApproximation} or \code{LaplacesDemon} functions, then it will attempt to determine sample size as the number of rows in \code{y} or \code{Y}.
 
 \section{Specifying a Model} \label{specification}
-Laplace's Demon is capable with any Bayesian model for which the likelihood is specified\footnote{Examples of numerous Bayesian models may be found in the ``Examples'' vignette that comes with the \pkg{LaplacesDemon} package.}. To use Laplace's Demon, the user must specify a model. Let's consider a linear regression model, which is often denoted as:
+Laplace's Demon is capable with any Bayesian model for which the likelihood is specified\footnote{Examples of more than 50 Bayesian models may be found in the ``Examples'' vignette that comes with the \pkg{LaplacesDemon} package.}. To use Laplace's Demon, the user must specify a model. Let's consider a linear regression model, which is often denoted as:
 
 $$\textbf{y} \sim \mathcal{N}(\mu, \sigma^2)$$
 $$\mu = \textbf{X}\beta$$
@@ -645,7 +645,7 @@ There are too many adaptive MCMC algorithms to review here. All of them adapt th
 
 Given the number of dimensions (\textit{d}) or parameters, the optimal scale of the proposal variance, also called the jumping kernel, has been reported as $2.4^2/d$\footnote{The optimal proposal standard deviation in this case is approximately $2.4/\sqrt{d}$.} based on the asymptotic limit of infinite-dimensional Gaussian target distributions that are independent and identically-distributed \citep{gelman96b}. In applied settings, each problem is different, so the amount of correlation varies between variables, target distributions may be non-Gaussian, the target distributions may be non-IID, and the scale should be optimized. Laplace's Demon uses a scale that is accurate to more decimals: $2.381204^2/d$. There are algorithms in statistical literature that attempt to optimize this scale, and it is hoped that these algorithms will be included in Laplace's Demon in the future.
 
-\citet{haario01} tested their algorithm with up to 200 dimensions or parameters, so it is capable of large-scale Bayesian inference. The version in Laplace's Demon should be capable of more dimensions than the AM algorithm as it was presented, because when Laplace's Demon experiences an error in multivariate AM, or when the acceptance rate is less than 5\%, it defaults to single-component adaptive proposals \citep{haario05}. Although single-component adaptive proposals should take more iterations to converge, the algorithm is limited in dimension only by the RAM of the computer.
+\citet{haario01} tested their algorithm with up to 200 dimensions or parameters. It has been tested in Laplace's Demon with 2,600 parameters, so it is capable of large-scale Bayesian inference. The version in Laplace's Demon should be capable of more dimensions than the AM algorithm as it was presented, because when Laplace's Demon experiences an error in multivariate AM, or when the acceptance rate is less than 5\%, it defaults to single-component adaptive proposals \citep{haario05}. Although single-component adaptive proposals should take more iterations to converge, the algorithm is limited in dimension only by the RAM of the computer.
 
 For multivariate adaptive tuning, the formula across \code{K} parameters and \code{t} iterations is:
 
@@ -703,15 +703,7 @@ However, with small data sets, other MCMC software (\pkg{AMCMC} is a good exampl
 
 When the non-adaptive algorithm updates in Laplace's Demon, the expected speed of an iteration should not differ depending on how many iterations it has previously updated. However, the adaptive algorithm will slow as iterations are updated, because each time it adapts, it is adapting to the covariance of the entire history of the chains. As the history increases, the calculations take longer to complete, and the expected speed of an adaptive iteration decreases, compared to earlier adaptive iterations. If time is of the essence and the algorithm needs to be adaptive, then it may be best to make multiple, shorter updates in place of one, longer update.
 
-\section{Laplace's Demon Predicts Its Own Future} \label{predictownfuture}
-Following are some predictions of the future of Laplace's Demon:
-
-\begin{enumerate}
-\item Additional MCMC algorithms will be explored and considered for inclusion.
-\item The MCMC algorithms will be attempted to be coded in \proglang{C++} for faster sampling, but will remain available in \proglang{R} code. The user will have the option to run the algorithm in \proglang{R} or \proglang{C++}, probably with an additional command such as \code{C=TRUE} in the \code{LaplacesDemon} function.
-\item The ``Examples'' vignette will grow as numerous examples of methods are included.
-\item Everything else will be expanded. Posterior predictive checks will be attempted to be expanded to accommodate a wider variety of methods, and more checks and plotting options will be included. More methods will be included for calculating the logarithm of the marginal likelihood.
-\end{enumerate}
+\section{Conclusion} \label{conclusion}
 
 The \pkg{LaplacesDemon} package is a significant contribution toward Bayesian inference in \proglang{R}. In turn, contributions toward the development of Laplace's Demon are welcome. Please send an email to \email{laplacesdemon@statisticat.com} with constructive criticism, reports of software bugs, or offers to contribute to Laplace's Demon.
 

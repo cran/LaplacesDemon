@@ -106,8 +106,8 @@ LaplaceApproximation(Model=NULL, parm=NULL, Data=NULL, Interval=1.0E-6,
   run-time of Laplace Approximation is a little longer than Maximum
   Likelihood Estimation (MLE), and much shorter than MCMC (Azevedo and
   Shachter, 1994). In the \code{LaplacesDemon} package, Laplace
-  Approximation may iterate faster or slower than MCMC, so this is not
-  the fastest possible implementation of Laplace Approximation. Laplace
+  Approximation with the \code{CG} method is much faster than MCMC,
+  though the \code{AGA} method may be slower than MCMC. Laplace
   Approximation extends MLE, but shares similar limitations, such as
   its asymptotic nature with respect to sample size. Bernardo and Smith
   (2000) note that Laplace Approximation is an attractive numerical
@@ -203,7 +203,7 @@ LaplaceApproximation(Model=NULL, parm=NULL, Data=NULL, Interval=1.0E-6,
      \item{Deviance}{
 	  This is a vector of the iterative history of the deviance in
           the \code{LaplaceApproximation} function, as it sought
-	  convergence. 
+	  convergence. This is empty when \code{Method="CG"}.
 	  }
      \item{History}{
 	  This is a matrix of the iterative history of the parameters in

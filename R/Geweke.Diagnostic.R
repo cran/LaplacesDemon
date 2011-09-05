@@ -63,6 +63,6 @@ Geweke.Diagnostic <- function(x)
      z <- {y.mean[[1]] - y.mean[[2]]} /
           sqrt(y.variance[[1]] + y.variance[[2]])
      return(z)
-}
+     }
 
 #End
