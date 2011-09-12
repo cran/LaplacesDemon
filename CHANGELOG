@@ -1,5 +1,13 @@
+2011-09-11 Vignette Examples: Added Factor Regression
+2011-09-10 Vignette Examples: Added Penalized Spline Regression
+2011-09-10 Vignette Examples: Added Polynomial Regression
+2011-09-09 LaplaceApproximation: Added test of each matrix rank with QR in Data.
+2011-09-08 LaplacesDemon: Added test of each matrix rank with QR in Data.
+2011-09-07 plot.demonoid: fixed bug with Parms argument
+2011-09-06 Vignette Examples: Added Space-Time, Dynamic
+2011-09-05 Vignette Examples: Added Kriging, Predictive Process
 2011-09-02 logit function updated from scalars to vectors
-2011-09-01 Vignette Examples: Separable Space-Time updated to half-Cauchy
+2011-09-01 Vignette Examples: Updated Separable Space-Time to half-Cauchy
 2011-08-28 Vignette Examples: Added Geographically Weighted Regression
 2011-08-27 Vignette Examples: Added ARCH-M, GARCH-M, and Simultaneous Equations
 2011-08-26 Vignette Examples: Added GARCH(1,1)

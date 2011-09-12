@@ -5,7 +5,7 @@
 This function centers and scales a continuous variable and provides options for binary variables.
 }
 \usage{
-CenterScale(x, Binary=c("none","center","center0","centerscale"))
+CenterScale(x, Binary="none")
 }
 \arguments{
      \item{x}{This is a vector to be centered and scaled.}

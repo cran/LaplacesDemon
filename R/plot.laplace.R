@@ -35,7 +35,7 @@ plot.laplace <- function(x, Data=NULL, PDF=FALSE, Parms=NULL, ...)
           {
           plot(1:NROW(History), History[,j],
                type="l", xlab="Iterations", ylab="Value",
-               main=Data$parm.names[j])
+               main=colnames(History)[j])
           }
      ### Plot Deviance
      plot(1:length(x$Deviance), x$Deviance, type="l", xlab="Iterations",

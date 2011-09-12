@@ -20,8 +20,8 @@ plot.demonoid <- function(x, BurnIn=1, Data=NULL, PDF=FALSE,
           keepcols <- grep(Parms[1], colnames(x$Posterior1))
           if(length(Parms) > 1) {
                for (i in 2:length(Parms)) {
-                    keepcols <- c(keepcols, grep(Parms[i],
-                         colnames(x$Posterior1)))}}
+                    keepcols <- c(keepcols,
+                         grep(Parms[i], colnames(x$Posterior1)))}}
           Posterior <- as.matrix(x$Posterior1[,keepcols])
           colnames(Posterior) <- colnames(x$Posterior1)[keepcols]
           }
@@ -37,11 +37,11 @@ plot.demonoid <- function(x, BurnIn=1, Data=NULL, PDF=FALSE,
           plot(BurnIn:x$Thinned.Samples,
                Posterior[BurnIn:x$Thinned.Samples,j],
                type="l", xlab="Iterations", ylab="Value",
-               main=Data$parm.names[j])
+               main=colnames(Posterior)[j])
           panel.smooth(BurnIn:x$Thinned.Samples,
                Posterior[BurnIn:x$Thinned.Samples,j], pch="")
           plot(density(Posterior[BurnIn:x$Thinned.Samples,j]),
-               xlab="Value", main=Data$parm.names[j])
+               xlab="Value", main=colnames(Posterior)[j])
           polygon(density(Posterior[BurnIn:x$Thinned.Samples,j]),
                col="black", border="black")
           abline(v=0, col="red", lty=2)
@@ -50,11 +50,13 @@ plot.demonoid <- function(x, BurnIn=1, Data=NULL, PDF=FALSE,
                z <- acf(Posterior[BurnIn:x$Thinned.Samples,j], plot=FALSE)
                se <- 1/sqrt(length(Posterior[BurnIn:x$Thinned.Samples,j]))
                plot(z$lag, z$acf, ylim=c(min(z$acf,-2*se),1), type="h",
-                    main=Data$parm.names[j], xlab="Lag", ylab="Correlation")
+                    main=colnames(Posterior)[j], xlab="Lag",
+                    ylab="Correlation")
                abline(h=(2*se), col="red", lty=2)
                abline(h=(-2*se), col="red", lty=2)
                }
-          else {plot(0,0, main=paste(Data$parm.names[j], "is a constant."))}
+          else {plot(0,0, main=paste(colnames(Posterior)[j],
+               "is a constant."))}
           }
      ### Plot Deviance
      plot(BurnIn:length(x$Deviance),

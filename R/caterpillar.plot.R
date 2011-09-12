@@ -24,8 +24,8 @@ caterpillar.plot <- function(x, Parms=NULL, Title=NULL)
                     keeprows <- grep(Parms[1], rownames(x))
                     if(length(Parms) > 1) {
                          for (i in 2:length(Parms)) {
-                              keeprows <- c(keeprows, grep(Parms[i],
-                                   rownames(x)))}
+                              keeprows <- c(keeprows,
+                                   grep(Parms[i], rownames(x)))}
                          }
                     }
                if(is.numeric(Parms)) keeprows <- Parms
@@ -59,8 +59,8 @@ caterpillar.plot <- function(x, Parms=NULL, Title=NULL)
                else {
                     keeprows <- grep(Parms[1], rownames(x$Summary))
                     for (i in 2:length(Parms)) {
-                         keeprows <- c(keeprows, grep(Parms[i],
-                              rownames(x$Summary)))}
+                         keeprows <- c(keeprows,
+                              grep(Parms[i], rownames(x$Summary)))}
                     }
                }
           x$Summary <- x$Summary[keeprows,]

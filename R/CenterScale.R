@@ -6,8 +6,7 @@
 # rescale function in his arm package.                                    #
 ###########################################################################
 
-CenterScale <- function(x, Binary=c("none", "center", "center0",
-     "centerscale"))
+CenterScale <- function(x, Binary="none")
      {
      ### Initial Checks
      if(!is.numeric(x)){
