@@ -20,10 +20,12 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
      if(is.null(Data$parm.names)) stop("In Data, parm.names is NULL.\n")
      for (i in 1:length(Data)) {
           if(is.matrix(Data[[i]])) {
-               mat.rank <- qr(Data[[i]], tol=1e-10)$rank
-               if(mat.rank < ncol(Data[[i]])) {
-                    cat("WARNING: Matrix", names(Data)[[i]],
-                         "may be rank-deficient.\n")}}}
+               if(!any(is.na(Data[[i]])) & !any(is.nan(Data[[i]])) &
+                    !any(is.infinite(Data[[i]]))) {
+                    mat.rank <- qr(Data[[i]], tol=1e-10)$rank
+                    if(mat.rank < ncol(Data[[i]])) {
+                         cat("WARNING: Matrix", names(Data)[[i]],
+                              "may be rank-deficient.\n")}}}}
      if(is.null(Initial.Values)) {
           cat("WARNING: Initial Values were not supplied.\n")
           Initial.Values <- rep(0, length(Data$parm.names))}

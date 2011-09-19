@@ -2,7 +2,7 @@
 # caterpillar.plot                                                        #
 #                                                                         #
 # The purpose of this function is to provide a caterpillar plot of the    #
-# posterior summaries in an object of class demonoid.                     #
+# posterior summaries in an object of class demonoid or laplace.          #
 ###########################################################################
 
 caterpillar.plot <- function(x, Parms=NULL, Title=NULL)
@@ -29,7 +29,10 @@ caterpillar.plot <- function(x, Parms=NULL, Title=NULL)
                          }
                     }
                if(is.numeric(Parms)) keeprows <- Parms
-               x <- x[keeprows,]
+               temp <- x
+               x <- matrix(x[keeprows,], length(keeprows), ncol(temp))
+               rownames(x) <- rownames(temp)[keeprows]
+               colnames(x) <- colnames(temp)
                }
           ### Setup
           x.rows <- nrow(x)
@@ -52,18 +55,27 @@ caterpillar.plot <- function(x, Parms=NULL, Title=NULL)
           }
      else if(class(x) == "laplace") {
           x.lab <- "Gaussian Samples"
-          if(is.null(Parms)) {Parms <- 1:length(x$Initial.Values)}
+          if(is.null(Parms)) {
+               keeprows <- Parms <- 1:length(x$Initial.Values)}
           else {
-               if(length(Parms) == 1) {
-                    stop("More than one parameter is required")}
-               else {
+               if(is.numeric(Parms)) keeprows <- Parms
+               if(is.character(Parms)) {
+                    Parms <- sub("\\[","\\\\[",Parms)
+                    Parms <- sub("\\]","\\\\]",Parms)
+                    Parms <- sub("\\.","\\\\.",Parms)
                     keeprows <- grep(Parms[1], rownames(x$Summary))
-                    for (i in 2:length(Parms)) {
-                         keeprows <- c(keeprows,
-                              grep(Parms[i], rownames(x$Summary)))}
+                    if(length(Parms) > 1) {
+                         for (i in 2:length(Parms)) {
+                              keeprows <- c(keeprows,
+                                   grep(Parms[i], rownames(x$Summary)))}
+                         }
                     }
                }
-          x$Summary <- x$Summary[keeprows,]
+          temp <- x$Summary
+          x$Summary <- matrix(x$Summary[keeprows,], length(keeprows),
+               ncol(temp))
+          rownames(x$Summary) <- rownames(temp)[keeprows]
+          colnames(x$Summary) <- colnames(temp)
           Modes <- x$Summary[,1]
           LB <- x$Summary[,3]
           UB <- x$Summary[,4]

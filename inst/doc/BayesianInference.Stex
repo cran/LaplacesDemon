@@ -253,7 +253,7 @@ When conjugate distributions are used, a summary statistic for a posterior distr
 
 \section{Likelihood}
 
-In order to complete the definition of a Bayesian model, both the prior distributions and the likelihood\footnote{Ronald A. Fisher, a prominent frequentist, introduced the term likelihood in 1921 \citep{fisher21}, though the concept of likelihood was used by Bayes and Laplace. Fisher's introduction preceded a series of the most influential papers in statistics (mostly in 1922 and 1925), in which Fisher introduced numerous terms that are now common: consistency, efficiency, estimation, information, maximum likelihood estimate, optimality, parameter, statistic, sufficiency, and variance. He was the first to use Greek letters for unknown parameters and Latin letters for the estimates. Later contributions include F statistics, design of experiments, ANOVA, and many more.} must be fully specified. The likelihood, likelihood function, or $p(\textbf{y} | \Theta)$, contains the available information provided by the sample. The likelihood is
+In order to complete the definition of a Bayesian model, both the prior distributions and the likelihood\footnote{Ronald A. Fisher, a prominent frequentist, introduced the term likelihood in 1921 \citep{fisher21}, though the concept of likelihood was used by Bayes and Laplace. Fisher's introduction preceded a series of the most influential papers in statistics (mostly in 1922 and 1925), in which Fisher introduced numerous terms that are now common: consistency, efficiency, estimation, information, maximum likelihood estimate, optimality, parameter, statistic, sufficiency, and variance. He was the first to use Greek letters for unknown parameters and Latin letters for the estimates. Later contributions include F statistics, design of experiments, ANOVA, and many more.} must be approximated or fully specified. The likelihood, likelihood function, or $p(\textbf{y} | \Theta)$, contains the available information provided by the sample. The likelihood is
 
 $$p(\textbf{y} | \Theta) = \prod^n_{i=1} p(\textbf{y}_i | \Theta)$$
 
@@ -353,7 +353,9 @@ The logarithm of the unnormalized joint posterior distribution is maximized with
 
 The technical problem of evaluating quantities required for Bayesian inference typically reduces to the calculation of a ratio of two integrals \citep[p. 339]{bernardo00}. In all cases, the technical key to the implementation of the formal solution given by Bayes' theorem is the ability to perform a number of integrations \citep[p. 340]{bernardo00}. Except in certain rather stylized problems, the required integrations will not be feasible analytically and, thus, efficient approximation strategies are required.
 
-There are too many different types of numerical approximation algorithms in Bayesian inference to cover in any detail in this article. An incomplete list of broad categories of Bayesian numerical approximation may include Approximate Bayesian Computation (ABC), Iterative Quadrature, Laplace Approximation, Markov chain Monte Carlo (MCMC), and Variational Bayes (VB). Since MCMC is most common, and because the \proglang{R} package entitled \pkg{LaplacesDemon} offers Laplace Approximation and four MCMC algorithms, Laplace Approximation and MCMC are introduced below. For more information on MCMC algorithms in \pkg{LaplacesDemon}, see the accompanying vignette entitled ``\pkg{LaplacesDemon} Tutorial''.
+There are too many different types of numerical approximation algorithms in Bayesian inference to cover in any detail in this article. An incomplete list of broad categories of Bayesian numerical approximation may include Approximate Bayesian Computation (ABC), Iterative Quadrature, Laplace Approximation, Markov chain Monte Carlo (MCMC), and Variational Bayes (VB). Since MCMC is most common, and because the \proglang{R} package entitled \pkg{LaplacesDemon} offers Laplace Approximation and four MCMC algorithms (as well as ABC in these contexts), ABC, Laplace Approximation and MCMC are introduced below. For more information on MCMC algorithms in \pkg{LaplacesDemon}, see the accompanying vignette entitled ``\pkg{LaplacesDemon} Tutorial''.
+
+Approximate Bayesian Computation (ABC), also called likelihood-free estimation, is a family of numerical approximation techniques in Bayesian inference. ABC is especially useful when evaluation of the likelihood, $p(\textbf{y} | \Theta)$ is computationally prohibitive, or when suitable likelihoods are unavailable. As such, ABC algorithms estimate likelihood-free approximations. ABC is usually faster than a similar likelihood-based numerical approximation technique, because the likelihood is not evaluated directly, but replaced with an approximation that is usually easier to calculate. The approximation of a likelihood is usually estimated with a measure of distance between the observed sample, $\textbf{y}$, and its replicate given the model, $\textbf{y}^{rep}$, or with summary statistics of the observed and replicated samples.
 
 Laplace Approximation dates back to \citet{laplace74, laplace14}, and is used to approximate the posterior moments of integrals. Specifically, the posterior mode is estimated for each parameter, assumed to be unimodal and Gaussian. As a Gaussian distribution, the posterior mean is the same as the posterior mode, and the variance is estimated. Laplace Approximation is a family of deterministic algorithms that usually converge faster than MCMC, and just a little slower than Maximum Likelihood Estimation (MLE) \citep{azevedo94}. Laplace Approximation shares many limitations of MLE, including asymptotic estimation with respect to sample size.
 
@@ -363,7 +365,7 @@ A Monte Carlo method is an algorithm that relies on repeated pseudo-random sampl
 
 \section{Prediction}
 
-The ``posterior predictive distribution'' is either the replication of $y$ given the model (usually represented as $\textbf{y}^{rep}$), or the prediction of a new and unobserved $\textbf{y}$ (usually represented as $\textbf{y}^{new}$ or $\textbf{y}'$), given the model. This is the likelihood of the replicated or predicted data, averaged over the posterior distribution $p(\Theta | \textbf{y})$
+The ``posterior predictive distribution'' is either the replication of $\textbf{y}$ given the model (usually represented as $\textbf{y}^{rep}$), or the prediction of a new and unobserved $\textbf{y}$ (usually represented as $\textbf{y}^{new}$ or $\textbf{y}'$), given the model. This is the likelihood of the replicated or predicted data, averaged over the posterior distribution $p(\Theta | \textbf{y})$
 
 $$p(\textbf{y}^{rep} | \textbf{y}) = \int p(\textbf{y}^{rep} | \Theta)p(\Theta | \textbf{y}) d\Theta$$
 
@@ -371,7 +373,7 @@ or
 
 $$p(\textbf{y}^{new} | \textbf{y}) = \int p(\textbf{y}^{new} | \Theta)p(\Theta | \textbf{y}) d\Theta$$
 
-If $\textbf{y}$ has missing values, then the missing $\textbf{y}$'s can be estimated with the posterior predictive distribution as $\textbf{y}^{new}$ from within the model. For the linear regression example, the integral for prediction is
+If $\textbf{y}$ has missing values, then the missing $\textbf{y}$s can be estimated with the posterior predictive distribution as $\textbf{y}^{new}$ from within the model. For the linear regression example, the integral for prediction is
 
 $$p(\textbf{y}^{new} | \textbf{y}) = \int p(\textbf{y}^{new} | \beta,\sigma^2)p(\beta,\sigma^2 | \textbf{y}) d\beta d\sigma^2$$
 
@@ -434,11 +436,11 @@ Gelman finds Bayes factors generally to be irrelevant, because they compute the 
 Two of many possible alternatives are to use
 
 \begin{enumerate}
-\item pseudo Bayes factors (PsBF) based on a ratio of pseudo marginal likelihoods (PsML's)
-\item Deviance Information Criterion ($DIC$)
+\item pseudo Bayes factors (PsBF) based on a ratio of pseudo marginal likelihoods (PsMLs)
+\item Deviance Information Criterion (DIC)
 \end{enumerate}
 
-$DIC$ is the most popular method of assessing model fit and comparing models, though Bayes Factor are better, when appropriate, because they take more into account.
+DIC is the most popular method of assessing model fit and comparing models, though Bayes Factor are better, when appropriate, because they take more into account.
 
 \section{Model Fit}
 
@@ -502,18 +504,18 @@ The CPO is a handy posterior predictive check because it may be used to identify
 
 The CPO expresses the posterior probability of observing the value (or set of values) of $\textbf{y}_i$ when the model is fitted to all data except $\textbf{y}_i$, with a larger value implying a better fit of the model to $\textbf{y}_i$, and very low CPO values suggest that $\textbf{y}_i$ is an outlier and an influential observation. A Monte Carlo estimate of the CPO is obtained without actually omitting $\textbf{y}_i$ from the estimation, and is provided by the harmonic mean of the likelihood for $\textbf{y}_i$. Specifically, the $CPO_i$ is the inverse of the posterior mean of the inverse likelihood of $\textbf{y}_i$.
 
-The CPO is connected with the frequentist studentized residual test for outlier detection. Data with large studentized residuals have small CPO's and will be detected as outliers. An advantage of the CPO is that observations with high leverage will have small CPO's, independently of whether or not they are outliers. The Bayesian CPO is able to detect both outliers and influential points, whereas the frequentist studentized residual is unable to detect high-leverage outliers.
+The CPO is connected with the frequentist studentized residual test for outlier detection. Data with large studentized residuals have small CPOs and will be detected as outliers. An advantage of the CPO is that observations with high leverage will have small CPOs, independently of whether or not they are outliers. The Bayesian CPO is able to detect both outliers and influential points, whereas the frequentist studentized residual is unable to detect high-leverage outliers.
 
-Inverse-CPO's (ICPO's) larger than 40 can be considered as possible outliers, and higher than 70 as extreme values \citep[p. 376]{ntzoufras09}. Congdon recommends scaling CPO's by dividing each by its individual maximum (after the posterior mean) and considering observations with scaled CPO's under 0.01 to be outliers \citep{congdon05}. The range in scaled CPO's is useful as an indicator of a good-fitting model.
+Inverse-CPOs (ICPOs) larger than 40 can be considered as possible outliers, and higher than 70 as extreme values \citep[p. 376]{ntzoufras09}. Congdon recommends scaling CPOs by dividing each by its individual maximum (after the posterior mean) and considering observations with scaled CPOs under 0.01 to be outliers \citep{congdon05}. The range in scaled CPOs is useful as an indicator of a good-fitting model.
 
-The sum of the logged CPO's can be an estimator for the log marginal likelihood, sometimes called the log pseudo marginal likelihood (LPsML). A ratio of PsML's is a surrogate for the Bayes factor, sometimes known as the pseudo Bayes factor (PsBF). In this way, non-nested models may be compared with a hypothesis test to determine the better model, if one exists, based on leave-one-out cross-validation.
+The sum of the logged CPOs can be an estimator for the log marginal likelihood, sometimes called the log pseudo marginal likelihood (LPsML). A ratio of PsMLs is a surrogate for the Bayes factor, sometimes known as the pseudo Bayes factor (PsBF). In this way, non-nested models may be compared with a hypothesis test to determine the better model, if one exists, based on leave-one-out cross-validation.
 
 \subsection{Predictive Concordance}
 \citet{gelfand96} suggests that any $\textbf{y}_i$ that is in either 2.5\% tail area of $\textbf{y}^{rep}_i$ should be considered an outlier. For each $i$, I am calling this the predictive quantile (PQ), which is calculated as
 
 $$\mathrm{PQ}_i = p(\textbf{y}^{rep}_i > \textbf{y}_i)$$
 
-and is somewhat similar to the Bayesian p-value. The percentage of $\textbf{y}_i$'s that are not outliers is called the `Predictive Concordance'. \citet{gelfand96} suggests the goal is to attempt to achieve 95\% predictive concordance. In the case of, say 80\% predictive concordance, the discrepancy between the model and data is undesirable because the model does not fit the data well and many outliers have resulted. On the other hand, if the predictive concordance is too high, say 100\%, then overfitting may have occurred, and it may be worth considering a more parsimonious model. Kernel density plots of each $\textbf{y}^{rep}_i$ distribution are useful in this case with the actual $\textbf{y}_i$ included as a vertical bar to show its position.
+and is somewhat similar to the Bayesian p-value. The percentage of $\textbf{y}_i$s that are not outliers is called the `Predictive Concordance'. \citet{gelfand96} suggests the goal is to attempt to achieve 95\% predictive concordance. In the case of, say 80\% predictive concordance, the discrepancy between the model and data is undesirable because the model does not fit the data well and many outliers have resulted. On the other hand, if the predictive concordance is too high, say 100\%, then overfitting may have occurred, and it may be worth considering a more parsimonious model. Kernel density plots of each $\textbf{y}^{rep}_i$ distribution are useful in this case with the actual $\textbf{y}_i$ included as a vertical bar to show its position.
 
 \section{Advantages Of Bayesian Inference Over Frequentist Inference}
 
@@ -525,7 +527,7 @@ frequentist inference.
 \item Bayesian inference can avoid problems with model identification by manipulating prior distributions (usually in complex models). Frequentist inference with any numerical approximation algorithm does not have prior distributions, and can become stuck in regions of flat density, causing problems with model identification.
 \item Bayesian inference considers the data to be fixed (which it is), and parameters to be random because they are unknowns. Frequentist inference considers the unknown parameters to be fixed, and the data to be random, estimating not based on the data at hand, but the data at hand plus hypothetical repeated sampling in the future with similar data. ``The Bayesian approach delivers the answer to the right question in the sense that Bayesian inference provides answers conditional on the observed data and not based on the distribution of estimators or test statistics over imaginary samples not observed'' \citep[p. 4]{rossi05}.
 \item Bayesian inference estimates a full probability model. Frequentist inference does not. There is no frequentist probability distribution associated with parameters or hypotheses.
-\item Bayesian inference estimates $p(hypothesis | data)$. In contrast, frequentist inference estimates $p(data | hypothesis)$. Even the term 'hypothesis testing' suggests it should be the hypothesis that is tested, given the data, not the other way around.
+\item Bayesian inference estimates $p(\mathrm{hypothesis} | \mathrm{data})$. In contrast, frequentist inference estimates $p(\mathrm{data} | \mathrm{hypothesis})$. Even the term 'hypothesis testing' suggests it should be the hypothesis that is tested, given the data, not the other way around.
 \item Bayesian inference has an axiomatic foundation \citep{cox46} that is uncontested by frequentists. Therefore, Bayesian inference is coherent to a frequentist, but frequentist inference is incoherent to a Bayesian.
 \item Bayesian inference includes uncertainty in the probability model, yielding more realistic predictions. Frequentist inference does not include uncertainty of the parameter estimates, yielding less realistic predictions.
 \item Bayesian inference may use DIC to compare models with different methods including hierarchical models, where frequentist model fit statistics cannot compare different methods or hierarchical models.

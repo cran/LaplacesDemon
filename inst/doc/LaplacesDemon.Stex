@@ -15,7 +15,7 @@
 \Shorttitle{LaplacesDemon} %% a short title (if necessary)
 
 \Abstract{
-\pkg{LaplacesDemon}, usually referred to as Laplace's Demon, is a contributed \proglang{R} package for Bayesian inference, and is freely available on the Comprehensive \proglang{R} Archive Network (CRAN). Laplace's Demon allows Laplace Approximation and the choice of four MCMC algorithms to update a Bayesian model according to a user-specified model function. The user-specified model function enables Bayesian inference for any model form, provided the user specifies the likelihood. Laplace's Demon also attempts to assist the user by creating and offering \proglang{R} code, based on a previous model update, that can be copy/pasted and executed. Posterior predictive checks and many other features are included as well. Laplace's Demon seeks to be generalizable and user-friendly to Bayesians, especially Laplacians.
+\pkg{LaplacesDemon}, usually referred to as Laplace's Demon, is a contributed \proglang{R} package for Bayesian inference, and is freely available on the Comprehensive \proglang{R} Archive Network (CRAN). Laplace's Demon allows Laplace Approximation and the choice of four MCMC algorithms to update a Bayesian model according to a user-specified model function. The user-specified model function enables Bayesian inference for any model form, provided the user specifies, or approximates, the likelihood. Laplace's Demon also attempts to assist the user by creating and offering \proglang{R} code, based on a previous model update, that can be copy/pasted and executed. Posterior predictive checks and many other features are included as well. Laplace's Demon seeks to be generalizable and user-friendly to Bayesians, especially Laplacians.
 }
 \Keywords{Adaptive, AM, Bayesian, Conjugate Gradient, Delayed Rejection, 
 DR, DRAM, DRM, Gradient Ascent, Laplace Approximation, LaplacesDemon, 
@@ -97,7 +97,7 @@ There are J=\Sexpr{J} independent variables (including the intercept), one for e
 Laplace's Demon will consider using Laplace Approximation, and part of this consideration includes determining the sample size. The user must specify the number of observations in the data as either a scalar \code{n} or \code{N}. If these are not found by the \code{LaplaceApproximation} or \code{LaplacesDemon} functions, then it will attempt to determine sample size as the number of rows in \code{y} or \code{Y}.
 
 \section{Specifying a Model} \label{specification}
-Laplace's Demon is capable with any Bayesian model for which the likelihood is specified\footnote{Examples of more than 50 Bayesian models may be found in the ``Examples'' vignette that comes with the \pkg{LaplacesDemon} package.}. To use Laplace's Demon, the user must specify a model. Let's consider a linear regression model, which is often denoted as:
+Laplace's Demon is capable with any Bayesian model for which the likelihood is specified\footnote{Examples of more than 50 Bayesian models may be found in the ``Examples'' vignette that comes with the \pkg{LaplacesDemon} package. Likelihood-free estimation is also possible by approximating the likelihood, such as in Approximate Bayesian Computation (ABC).}. To use Laplace's Demon, the user must specify a model. Let's consider a linear regression model, which is often denoted as:
 
 $$\textbf{y} \sim \mathcal{N}(\mu, \sigma^2)$$
 $$\mu = \textbf{X}\beta$$
@@ -109,7 +109,7 @@ For a Bayesian model, the notation for the residual variance, $\sigma^2$, has of
 $$\beta_j \sim \mathcal{N}(0, 1000), \quad j=1,\dots,J$$
 $$\sigma \sim \mathcal{HC}(25)$$
 
-Each of the $J$ $\beta$ parameters is assigned an uninformative prior probability distribution that is normally-distributed according to $\mu=0$ and $\sigma^2=1000$. The large variance or small precision indicates a lot of uncertainty about each $\beta$, and is hence an uninformative distribution. The residual standard deviation $\sigma$ is half-Cauchy-distributed according to its hyperparameter, scale=25.
+Each of the $J$ $\beta$ parameters is assigned an uninformative\footnote{`Non-informative' may be more widely used than 'uninformative', but here that is considered poor English, such as saying something is `non-correct' when there's a word for that \dots `incorrect'.} prior probability distribution that is normally-distributed according to $\mu=0$ and $\sigma^2=1000$. The large variance or small precision indicates a lot of uncertainty about each $\beta$, and is hence an uninformative distribution. The residual standard deviation $\sigma$ is half-Cauchy-distributed according to its hyperparameter, scale=25.
 
 To specify a model, the user must create a function called \code{Model}. Here is an example for a linear regression model:
 
@@ -530,10 +530,10 @@ The \code{summary.demonoid.ppc} function returns a list with 3 components when \
 \item The last part of the summarized output reports \code{y}, information about the distribution of \code{yhat}, and the predictive quantile (\code{PQ}). The mean prediction of \code{y[1]}, or $\textbf{y}^{rep}_1$, given the model and data, is \Sexpr{round(summary(Pred)$Summary[1,2],3)}. Most importantly, \code{PQ[1]} is \Sexpr{round(summary(Pred)$Summary[1,7],3)}, indicating that \Sexpr{round(summary(Pred)$Summary[1,7]*100,1)}\% of the time, \code{yhat[1,]} was greater than \code{y[1]}, or that \code{y[1]} is close to the mean of \code{yhat[1,]}. Contrast this with the 6th record, where \code{y[6]}=\Sexpr{round(summary(Pred)$Summary[6,1],3)} and \code{PQ[6]}=\Sexpr{round(summary(Pred)$Summary[6,7],3)}. Therefore, \code{yhat[6,]} was not a good replication of \code{y[6]}, because the distribution of \code{yhat[6,]} is always greater than \code{y[6]}. While \code{y[1]} is within the 95\% probability interval of \code{yhat[1,]}, the 95\% probability interval of \code{yhat[6,]} is above \code{y[6]} 100\% of the time, indicating a strong discrepancy between the model and data, in this case.
 \end{itemize}
 
-The last component of this summary may be viewed graphically as well. Rather than observing plots for each of \Sexpr{NROW(Pred$yhat)} records or rows, only the first 9 will be shown here:
+There are also a variety of plots for posterior predictive checks, and the type of plot is controlled with the \code{Style} argument. Many styles exist, such as producing plots of covariates and residuals. The last component of this summary may be viewed graphically as posterior densities. Rather than observing plots for each of \Sexpr{NROW(Pred$yhat)} records or rows, only the first 9 densities will be shown here:
 
 \begin{Scode}{eval=false}
-plot(Pred, Rows=c(1:9))
+plot(Pred, Style="Density", Rows=1:9)
 \end{Scode}
 
 \begin{figure}
@@ -584,7 +584,10 @@ LaplacesDemon
 \end{Scode}
 
 \section{Details} \label{details}
-The \pkg{LaplacesDemon} package uses two broad types of numerical approximation algorithms: Laplace Approximation and Markov chain Monte Carlo (MCMC). Each are described below, but MCMC is emphasized.
+The \pkg{LaplacesDemon} package uses two broad types of numerical approximation algorithms: Laplace Approximation and Markov chain Monte Carlo (MCMC), and Approximate Bayesian Computation (ABC) may be estimated within each. Each are described below, but MCMC is emphasized.
+
+\subsection{Approximate Bayesian Computation}
+Approximate Bayesian Computation (ABC), also called likelihood-free estimation, is a family of numerical approximation techniques in Bayesian inference. ABC is especially useful when evaluation of the likelihood, $p(\textbf{y} | \Theta)$ is computationally prohibitive, or when suitable likelihoods are unavailable. As such, ABC algorithms estimate likelihood-free approximations. ABC is usually faster than a similar likelihood-based numerical approximation technique, because the likelihood is not evaluated directly, but replaced with an approximation that is usually easier to calculate. The approximation of a likelihood is usually estimated with a measure of distance between the observed sample, $\textbf{y}$, and its replicate given the model, $\textbf{y}^{rep}$, or with summary statistics of the observed and replicated samples. See the accompanying vignette entitled ``Examples'' for an example.
 
 \subsection{Laplace Approximation}
 The Laplace Approximation or Laplace Method is a family of asymptotic techniques used to approximate integrals. Laplace's method seems to accurately approximate uni-modal posterior moments and marginal posterior distributions in many cases. Since it is not applicable in all cases, it is recommended here that Laplace Approximation is used cautiously in its own right, or preferably, it is used before MCMC.

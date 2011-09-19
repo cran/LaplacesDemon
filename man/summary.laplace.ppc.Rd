@@ -7,7 +7,8 @@
   deviance and monitored variables. These variables are summarized,
   depending on \code{predict.laplace}.
 }
-\usage{\method{summary}{laplace.ppc}(object, Categorical, Rows, Discrep, d, \dots)}
+\usage{\method{summary}{laplace.ppc}(object, Categorical, Rows, Discrep,
+     d, Quiet, \dots)}
 \arguments{
      \item{object}{An object of class \code{laplace.ppc} is required.}
      \item{Categorical}{Logical. If \code{TRUE}, then \code{y} and
@@ -24,6 +25,9 @@
 	  "p(yhat[i,] != y[i])".}
      \item{d}{This is an optional integer to be used with the
 	  \code{Discrep} argument above, and it defaults to \code{d=0}.}
+     \item{Quiet}{This logical argument defaults to \code{FALSE} and
+          will print results to the console. When \code{TRUE},
+          results are not printed.}
      \item{\dots}{Additional arguments are unused.}
 }
 \details{

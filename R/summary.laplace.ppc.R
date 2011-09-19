@@ -6,7 +6,7 @@
 ###########################################################################
 
 summary.laplace.ppc <- function(object=NULL, Categorical=FALSE, Rows=NULL,
-     Discrep=NULL, d=0, ...)
+     Discrep=NULL, d=0, Quiet=FALSE, ...)
      {
      if(is.null(object)) stop("The object argument is NULL.\n")
      y <- object$y
@@ -60,15 +60,17 @@ summary.laplace.ppc <- function(object=NULL, Categorical=FALSE, Rows=NULL,
           Summ.out <- list(Concordance=Concordance,
                Discrepancy.Statistic=round(Discrepancy.Statistic,5),
                Summary=Summ[Rows,])
-          cat("Concordance: ", Concordance, "\n")
-          cat("DIC (Dbar): ", round(dev,3), "\n")
-          cat("DIC (pD): ", round(pD,3), "\n")
-          cat("DIC (DIC): ", round(DIC,3), "\n")
-          cat("Discrepancy Statistic: ", round(Discrepancy.Statistic,5), "\n")
-          cat("Monitors:\n")
-          print(Mon)
-          cat("\n\nRecords:\n")
-          print(Summ[Rows,])
+          if(Quiet == FALSE) {
+               cat("Concordance: ", Concordance, "\n")
+               cat("DIC (Dbar): ", round(dev,3), "\n")
+               cat("DIC (pD): ", round(pD,3), "\n")
+               cat("DIC (DIC): ", round(DIC,3), "\n")
+               cat("Discrepancy Statistic: ",
+                    round(Discrepancy.Statistic,5), "\n")
+               cat("Monitors:\n")
+               print(Mon)
+               cat("\n\nRecords:\n")
+               print(Summ[Rows,])}
           }
      ### Create Categorical Summary Table
      else {
@@ -117,15 +119,16 @@ summary.laplace.ppc <- function(object=NULL, Categorical=FALSE, Rows=NULL,
           Summ.out <- list(Mean.Lift=Mean.Lift,
                Discrepancy.Statistic=round(Discrepancy.Statistic,5),
                Summary=Summ[Rows,])
-          cat("Mean Lift: ", Mean.Lift, "\n")
-          cat("DIC (Dbar): ", round(dev,3), "\n")
-          cat("DIC (pD): ", round(pD,3), "\n")
-          cat("DIC (DIC): ", round(DIC,3), "\n")
-          cat("Discrepancy Statistic: ", round(Discrepancy.Statistic,5), "\n")
-          cat("Monitors:\n")
-          print(Mon)
-          cat("\n\nRecords: \n")
-          print(Summ[Rows,])
+          if(Quiet == FALSE) {
+               cat("Mean Lift: ", Mean.Lift, "\n")
+               cat("DIC (Dbar): ", round(dev,3), "\n")
+               cat("DIC (pD): ", round(pD,3), "\n")
+               cat("DIC (DIC): ", round(DIC,3), "\n")
+               cat("Discrepancy Statistic: ", round(Discrepancy.Statistic,5), "\n")
+               cat("Monitors:\n")
+               print(Mon)
+               cat("\n\nRecords: \n")
+               print(Summ[Rows,])}
           }
      return(invisible(Summ.out))
      }

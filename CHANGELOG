@@ -1,3 +1,11 @@
+2011-09-18 Vignette Examples: Survival Analysis renamed to Proportional Hazards
+2011-09-17 Vignette Examples: Added Weighted Regression
+2011-09-16 Vignette Examples: Added Conditional Predictive Ordinate (CPO)
+2011-09-15 Vignette Examples: Added Approximate Bayesian Computation (ABC)
+2011-09-14 caterpillar.plot: Now allows plotting of only 1 parameter
+2011-09-14 plot.laplace.ppc: Added 14 plot styles
+2011-09-13 plot.demonoid.ppc: Added 14 plot styles
+2011-09-11 Vignette Examples: Added Koyck Distributed Lag
 2011-09-11 Vignette Examples: Added Factor Regression
 2011-09-10 Vignette Examples: Added Penalized Spline Regression
 2011-09-10 Vignette Examples: Added Polynomial Regression

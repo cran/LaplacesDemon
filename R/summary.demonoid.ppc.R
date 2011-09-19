@@ -6,7 +6,7 @@
 ###########################################################################
 
 summary.demonoid.ppc <- function(object=NULL, Categorical=FALSE, Rows=NULL,
-     Discrep=NULL, d=0, ...)
+     Discrep=NULL, d=0, Quiet=FALSE, ...)
      {
      if(is.null(object)) stop("The object argument is NULL.\n")
      y <- object$y
@@ -44,10 +44,12 @@ summary.demonoid.ppc <- function(object=NULL, Categorical=FALSE, Rows=NULL,
           Summ.out <- list(Concordance=Concordance,
                Discrepancy.Statistic=round(Discrepancy.Statistic,5),
                Summary=Summ[Rows,])
-          cat("Concordance: ", Concordance, "\n")
-          cat("Discrepancy Statistic: ", round(Discrepancy.Statistic,5), "\n")
-          cat("Records: \n")
-          print(Summ[Rows,])
+          if(Quiet == FALSE) {
+               cat("Concordance: ", Concordance, "\n")
+               cat("Discrepancy Statistic: ",
+                    round(Discrepancy.Statistic,5), "\n")
+               cat("Records: \n")
+               print(Summ[Rows,])}
           }
      ### Create Categorical Summary Table
      else {
@@ -81,10 +83,12 @@ summary.demonoid.ppc <- function(object=NULL, Categorical=FALSE, Rows=NULL,
           Summ.out <- list(Mean.Lift=Mean.Lift,
                Discrepancy.Statistic=round(Discrepancy.Statistic,5),
                Summary=Summ[Rows,])
-          cat("Mean Lift: ", Mean.Lift, "\n")
-          cat("Discrepancy Statistic: ", round(Discrepancy.Statistic,5), "\n")
-          cat("Records: \n")
-          print(Summ[Rows,])
+          if(Quiet == FALSE) {
+               cat("Mean Lift: ", Mean.Lift, "\n")
+               cat("Discrepancy Statistic: ",
+                    round(Discrepancy.Statistic,5), "\n")
+               cat("Records: \n")
+               print(Summ[Rows,])}
           }
      return(invisible(Summ.out))
      }
