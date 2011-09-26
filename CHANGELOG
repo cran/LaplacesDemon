@@ -1,3 +1,13 @@
+2011-09-25 cloglog, invcloglog, invloglog, and loglog added
+2011-09-24 PosteriorChecks added
+2011-09-24 summary.laplace.ppc: Added Chi-Square, Kurtosis, and Skewness
+2011-09-24 summary.demonoid.ppc: Added Chi-Square, Kurtosis, and Skewness
+2011-09-23 summary.laplace.ppc: Added L-criterion and S.L
+2011-09-23 summary.demonoid.ppc: Added L-criterion and S.L
+2011-09-22 Vignette Examples: Added Threshold Autoregression (TAR)
+2011-09-21 Vignette Examples: Added Beta-Binomial
+2011-09-20 Vignette Examples: Added Mixture Model, Poisson-Gamma
+2011-09-19 Vignette Examples: Added Gamma Regression
 2011-09-18 Vignette Examples: Survival Analysis renamed to Proportional Hazards
 2011-09-17 Vignette Examples: Added Weighted Regression
 2011-09-16 Vignette Examples: Added Conditional Predictive Ordinate (CPO)

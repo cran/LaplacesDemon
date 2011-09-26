@@ -60,8 +60,10 @@ This vignette will grow over time as examples of more methods become included. C
 \item Autoregression, AR(1) \ref{ar1}
 \item Autoregressive Conditional Heteroskedasticity, ARCH(1,1) \ref{arch11}
 \item Autoregressive Moving Average, ARMA(1,1) \ref{arma11}
-\item Beta Regression \ref{betareg}
+\item Beta Regression \ref{beta.reg}
+\item Beta-Binomial \ref{beta.binomial}
 \item Binary Logit \ref{binary.logit}
+\item Binary Log-Log Link Mixture \ref{binary.loglog.mixture}
 \item Binary Probit \ref{binary.probit}
 \item Binomial Logit \ref{binomial.logit}
 \item Binomial Probit \ref{binomial.probit}
@@ -78,6 +80,7 @@ This vignette will grow over time as examples of more methods become included. C
 \item Factor Analysis, Confirmatory (CFA) \ref{cfa}
 \item Factor Analysis, Exploratory (EFA) \ref{efa}
 \item Factor Regression \ref{factor.reg}
+\item Gamma Regression \ref{gamma.reg}
 \item GARCH(1,1) \ref{garch}
 \item GARCH-M(1,1) \ref{garchm}
 \item Geographically Weighted Regression \ref{gwr}
@@ -92,6 +95,7 @@ This vignette will grow over time as examples of more methods become included. C
 \item MANCOVA \ref{mancova}
 \item MANOVA \ref{manova}
 \item Mixture Model, Finite \ref{fmm}
+\item Mixture Model, Poisson-Gamma \ref{poisson.gamma}
 \item Model Averaging \ref{variable.selection}
 \item Multinomial Logit \ref{mnl}
 \item Multinomial Logit, Nested \ref{nmnl}
@@ -110,6 +114,7 @@ This vignette will grow over time as examples of more methods become included. C
 \item Space-Time, Nonseparable \ref{spacetime.nonsep}
 \item Space-Time, Separable \ref{spacetime.sep}
 \item T-test \ref{anova.one.way}
+\item Threshold Autoregression (TAR) \ref{tar}
 \item Variable Selection \ref{variable.selection}
 \item Vector Autoregression, VAR(1) \ref{var1}
 \item Weighted Regression \ref{weighted.reg}
@@ -632,7 +637,7 @@ MyData <- list(T=T, mon.names=mon.names, parm.names=parm.names, y=y) \\
 \hspace*{0.27 in} \} \\
 }
 
-\section{Beta Regression} \label{betareg}
+\section{Beta Regression} \label{beta.reg}
 \subsection{Form}
 $$\textbf{y} \sim \mathcal{BETA}(a,b)$$
 $$a = \mu \phi$$
@@ -671,6 +676,38 @@ MyData <- list(x=x, y=y, mon.names=mon.names, parm.names=parm.names) \\
 \hspace*{0.27 in} \} \\
 }
 
+\section{Beta-Binomial} \label{beta.binomial}
+\subsection{Form}
+$$\textbf{y}_i \sim \mathcal{BIN}(\textbf{n}_i, \pi_i), \quad i=1,\dots,N$$
+$$\pi_i \sim \mathcal{BETA}(\alpha, \beta) \in [0.001,0.999]$$
+\subsection{Data}
+\code{N <- 20 \\
+n <- round(runif(N, 50, 100)) \\
+y <- round(runif(N, 1, 10)) \\
+mon.names <- "LP" \\
+parm.names <- parm.names(list(pi=rep(0,N))) \\
+MyData <- list(N=N, mon.names=mon.names, n=n, parm.names=parm.names, y=y) \\
+}
+\subsection{Initial Values}
+\code{Initial.Values <- c(rep(0.5,N))}
+\subsection{Model}
+\code{Model <- function(parm, Data) \\
+\hspace*{0.27 in} \{ \\
+\hspace*{0.27 in} \#\#\# Parameters \\
+\hspace*{0.27 in} pi <- interval(parm[1:Data$N], 0.001, 0.999) \\
+\hspace*{0.27 in} parm[1:Data$N] <- pi \\
+\hspace*{0.27 in} \#\#\# Log(Prior Densities) \\
+\hspace*{0.27 in} pi.prior <- sum(dbeta(pi, 1, 1, log=TRUE)) \\
+\hspace*{0.27 in} \#\#\# Log-Likelihood \\
+\hspace*{0.27 in} LL <- sum(dbinom(Data$y, Data$n, pi, log=TRUE)) \\
+\hspace*{0.27 in} yrep <- pi * Data$n \\
+\hspace*{0.27 in} \#\#\# Log-Posterior \\
+\hspace*{0.27 in} LP <- LL + pi.prior \\
+\hspace*{0.27 in} Modelout <- list(LP=LP, Dev=-2*LL, Monitor=LP, yhat=yrep, parm=parm) \\
+\hspace*{0.27 in} return(Modelout) \\
+\hspace*{0.27 in} \} \\
+}
+
 \section{Binary Logit} \label{binary.logit}
 \subsection{Form}
 $$\textbf{y} \sim \mathcal{BERN}(\eta)$$
@@ -705,6 +742,49 @@ MyData <- list(J=J, X=X, mon.names=mon.names, parm.names=parm.names, y=y) \\
 \hspace*{0.27 in} \#\#\# Log-Posterior \\
 \hspace*{0.27 in} LP <- LL + beta.prior \\
 \hspace*{0.27 in} Modelout <- list(LP=LP, Dev=-2*LL, Monitor=LP, \\
+\hspace*{0.62 in} yhat=yrep, parm=parm) \\
+\hspace*{0.27 in} return(Modelout) \\
+\hspace*{0.27 in} \} \\
+}
+
+\section{Binary Log-Log Link Mixture} \label{binary.loglog.mixture}
+A weighted mixture of the log-log and complementary log-log link functions is used, where $\alpha$ is the weight. Since the log-log and complementary log-log link functions are asymmetric (as opposed to the symmetric logit and probit link functions), it may be unknown \textit{a priori} whether the log-log or complementary log-log will perform better. 
+\subsection{Form}
+$$\textbf{y} \sim \mathcal{BERN}(\eta)$$
+$$\eta = \alpha \exp(-\exp(\mu)) + (1 - \alpha) (1 - \exp(-\exp(\mu)))$$
+$$\mu = \textbf{X} \beta$$
+$$\alpha \sim \mathcal{U}(0, 1)$$
+$$\beta_j \sim \mathcal{N}(0, 1000), \quad j=1,\dots,J$$
+\subsection{Data}
+\code{data(demonsnacks) \\
+N <- NROW(demonsnacks) \\
+J <- 3 \\
+y <- ifelse(demonsnacks$Calories <= 30, 0, 1) \\
+X <- cbind(1, as.matrix(demonsnacks[,c(7,8)])) \\
+for (j in 2:J) \{X[,j] <- CenterScale(X[,j])\} \\
+mon.names <- c("LP","alpha") \\
+parm.names <- parm.names(list(beta=rep(0,J), logit.alpha=0)) \\
+MyData <- list(J=J, X=X, mon.names=mon.names, parm.names=parm.names, y=y) \\
+}
+\subsection{Initial Values}
+\code{Initial.Values <- c(rep(0,J), 0)}
+\subsection{Model}
+\code{Model <- function(parm, Data) \\
+\hspace*{0.27 in} \{ \\
+\hspace*{0.27 in} \#\#\# Parameters \\
+\hspace*{0.27 in} alpha <- invlogit(parm[Data$J+1]) \\
+\hspace*{0.27 in} beta <- parm[1:Data$J] \\
+\hspace*{0.27 in} \#\#\# Log(Prior Densities) \\
+\hspace*{0.27 in} alpha.prior <- dunif(alpha, 0, 1, log=TRUE) \\
+\hspace*{0.27 in} beta.prior <- sum(dnorm(beta, 0, sqrt(1000), log=TRUE)) \\
+\hspace*{0.27 in} mu <- tcrossprod(beta, Data$X) \\
+\hspace*{0.27 in} eta <- alpha*invloglog(mu) + (1-alpha)*invcloglog(mu) \\
+\hspace*{0.27 in} \#\#\# Log-Likelihood \\
+\hspace*{0.27 in} LL <- sum(dbern(Data$y, eta, log=TRUE)) \\
+\hspace*{0.27 in} yrep <- ifelse(eta >= (sum(Data$y)/length(Data$y)),1,0) \\
+\hspace*{0.27 in} \#\#\# Log-Posterior \\
+\hspace*{0.27 in} LP <- LL + alpha.prior + beta.prior \\
+\hspace*{0.27 in} Modelout <- list(LP=LP, Dev=-2*LL, Monitor=c(LP,alpha), \\
 \hspace*{0.62 in} yhat=yrep, parm=parm) \\
 \hspace*{0.27 in} return(Modelout) \\
 \hspace*{0.27 in} \} \\
@@ -1751,6 +1831,46 @@ MyData <- list(J=J, N=N, S=S, X=X, mon.names=mon.names, \\
 \hspace*{0.27 in} \} \\
 }
 
+\section{Gamma Regression} \label{gamma.reg}
+\subsection{Form}
+$$\textbf{y} \sim \mathcal{G}(\lambda \tau, \tau)$$
+$$\lambda = \exp(\textbf{X} \beta)$$
+$$\beta_j \sim \mathcal{N}(0, 1000), \quad j=1,\dots,J$$
+$$\tau \sim \mathcal{HC}(25)$$
+\subsection{Data}
+\code{N <- 20 \\
+J <- 3 \\
+X <- matrix(runif(N*J,-2,2),N,J); X[,1] <- 1 \\
+beta <- runif(J,-2,2) \\
+y <- as.vector(round(exp(tcrossprod(beta, X)))) + 0.1 \#Must be > 0 \\
+mon.names <- c("LP","sigma2") \\
+parm.names <- parm.names(list(beta=rep(0,J), log.tau=0)) \\
+MyData <- list(J=J, N=N, X=X, mon.names=mon.names, parm.names=parm.names, \\
+\hspace*{0.27 in} y=y) \\
+}
+\subsection{Initial Values}
+\code{Initial.Values <- c(rep(0,J), 1)}
+\subsection{Model}
+\code{Model <- function(parm, Data) \\
+\hspace*{0.27 in} \{ \\
+\hspace*{0.27 in} \#\#\# Parameters \\
+\hspace*{0.27 in} beta <- parm[grep("beta", Data$parm.names)] \\
+\hspace*{0.27 in} tau <- exp(parm[grep("log.tau", Data$parm.names)]) \\
+\hspace*{0.27 in} sigma2 <- 1/tau \\
+\hspace*{0.27 in} \#\#\# Log(Prior Densities) \\
+\hspace*{0.27 in} beta.prior <- sum(dnorm(beta, 0, sqrt(1000), log=TRUE)) \\
+\hspace*{0.27 in} tau.prior <- dhalfcauchy(tau, 25, log=TRUE) \\
+\hspace*{0.27 in} \#\#\# Log-Likelihood \\
+\hspace*{0.27 in} lambda <- exp(tcrossprod(beta, Data$X)) \\
+\hspace*{0.27 in} LL <- sum(dgamma(Data$y, tau*lambda, tau, log=TRUE)) \\
+\hspace*{0.27 in} \#\#\# Log-Posterior \\
+\hspace*{0.27 in} LP <- LL + beta.prior + tau.prior \\
+\hspace*{0.27 in} Modelout <- list(LP=LP, Dev=-2*LL, Monitor=c(LP,sigma2), yhat=lambda, \\
+\hspace*{0.62 in} parm=parm) \\
+\hspace*{0.27 in} return(Modelout) \\
+\hspace*{0.27 in} \} \\
+}
+
 \section{GARCH(1,1)} \label{garch}
 \subsection{Form}
 $$\textbf{y}_t \sim \mathcal{N}(\mu_t, \sigma^2_t), \quad t=1,\dots,T$$
@@ -2677,6 +2797,49 @@ MyData <- list(J=J, M=M, N=N, X=X, alpha=alpha, mon.names=mon.names, \\
 \hspace*{0.62 in} sigma.prior \\
 \hspace*{0.27 in} Modelout <- list(LP=LP, Dev=-2*LL, Monitor=c(LP,pi,sigma), \\
 \hspace*{0.62 in} yhat=mu, parm=parm) \\
+\hspace*{0.27 in} return(Modelout) \\
+\hspace*{0.27 in} \} \\
+}
+
+\section{Mixture Model, Poisson-Gamma} \label{poisson.gamma}
+\subsection{Form}
+$$\textbf{y} \sim \mathcal{P}(\lambda)$$
+$$\lambda \sim \mathcal{G}(\alpha \mu, \alpha)$$
+$$\mu = \exp(\textbf{X}\beta)$$
+$$\alpha \sim \mathcal{HC}(25)$$
+$$\beta_j \sim \mathcal{N}(0, 1000), \quad j=1,\dots,J$$
+\subsection{Data}
+\code{N <- 20 \\
+J <- 3 \\
+X <- matrix(runif(N*J,-2,2),N,J); X[,1] <- 1 \\
+beta <- runif(J,-2,2) \\
+y <- as.vector(round(exp(tcrossprod(beta, X)))) \\
+mon.names <- "LP" \\
+parm.names <- parm.names(list(log.alpha=0, beta=rep(0,J), \\
+\hspace*{0.27 in} log.lambda=rep(0,N))) \\
+MyData <- list(J=J, X=X, mon.names=mon.names, parm.names=parm.names, y=y) \\
+}
+\subsection{Initial Values}
+\code{Initial.Values <- c(0, rep(0,J), rep(0,N))}
+\subsection{Model}
+\code{Model <- function(parm, Data) \\
+\hspace*{0.27 in} \{ \\
+\hspace*{0.27 in} \#\#\# Hyperparameters \\
+\hspace*{0.27 in} alpha <- exp(parm[grep("log.alpha", Data$parm.names)]) \\
+\hspace*{0.27 in} \#\#\# Parameters \\
+\hspace*{0.27 in} beta <- parm[grep("beta", Data$parm.names)] \\
+\hspace*{0.27 in} lambda <- exp(parm[grep("log.lambda", Data$parm.names)]) \\
+\hspace*{0.27 in} mu <- exp(tcrossprod(beta, Data$X)) \\
+\hspace*{0.27 in} \#\#\# Log(Hyperprior Densities) \\
+\hspace*{0.27 in} alpha.prior <- dhalfcauchy(alpha, 25, log=TRUE) \\
+\hspace*{0.27 in} \#\#\# Log(Prior Densities) \\
+\hspace*{0.27 in} beta.prior <- sum(dnorm(beta, 0, sqrt(1000), log=TRUE)) \\
+\hspace*{0.27 in} lambda.prior <- sum(dgamma(lambda, alpha*mu, alpha, log=TRUE)) \\
+\hspace*{0.27 in} \#\#\# Log-Likelihood \\
+\hspace*{0.27 in} LL <- sum(dpois(Data$y, lambda, log=TRUE)) \\
+\hspace*{0.27 in} \#\#\# Log-Posterior \\
+\hspace*{0.27 in} LP <- LL + alpha.prior + beta.prior + lambda.prior \\
+\hspace*{0.27 in} Modelout <- list(LP=LP, Dev=-2*LL, Monitor=LP, yhat=lambda, parm=parm) \\
 \hspace*{0.27 in} return(Modelout) \\
 \hspace*{0.27 in} \} \\
 }
@@ -3692,6 +3855,87 @@ MyData <- list(D.S=D.S, D.T=D.T, S=S, T=T, X=X, Y=Y, latitude=latitude, \\
 \hspace*{0.62 in} yhat=mu, parm=parm) \\
 \hspace*{0.27 in} return(Modelout) \\
 \hspace*{0.27 in} \}
+}
+
+\section{Threshold Autoregression (TAR)} \label{tar}
+\subsection{Form}
+$$\textbf{y}_t \sim \mathcal{N}(\nu_t, \sigma^2), \quad t=1,\dots,T$$
+$$\textbf{y}^{new} = \alpha_2 + \phi_2 \textbf{y}_T$$
+\[\nu_t = \left\{
+\begin{array}{l l}
+  \alpha_1 + \phi_1 \textbf{y}_{t-1}, \quad t=1,\dots,T & \quad \mbox{if $t \ge \theta$}\\
+  \alpha_2 + \phi_2 \textbf{y}_{t-1}, \quad t=1,\dots,T & \quad \mbox{if $t < \theta$} \\ \end{array} \right. \]
+$$\alpha_j \sim \mathcal{N}(0, 1000) \in [-1,1], \quad j=1,\dots,2$$
+$$\phi_j \sim \mathcal{N}(0, 1000), \in [-1,1], \quad j=1,\dots,2$$
+$$\theta \sim \mathcal{U}(2, T-1)$$
+$$\sigma \sim \mathcal{HC}(25)$$
+\subsection{Data}
+\code{y <- c(0.02, -0.51, -0.30,  1.46, -1.26, -2.15, -0.91, -0.53, -1.91, \\
+\hspace*{0.27 in}  2.64,  1.64,  0.15,  1.46,  1.61,  1.96, -2.67, -0.19, -3.28, \\ 
+\hspace*{0.27 in}  1.89,  0.91, -0.71,  0.74, -0.10,  3.20, -0.80, -5.25,  1.03, \\ 
+\hspace*{0.27 in} -0.40, -1.62, -0.80,  0.77,  0.17, -1.39, -1.28,  0.48, -1.02, \\ 
+\hspace*{0.27 in}  0.09, -1.09,  0.86,  0.36,  1.51, -0.02,  0.47,  0.62, -1.36, \\ 
+\hspace*{0.27 in}  1.12,  0.42, -4.39, -0.87,  0.05, -5.41, -7.38, -1.01, -1.70, \\ 
+\hspace*{0.27 in}  0.64,  1.16,  0.87,  0.28, -1.69, -0.29,  0.13, -0.65,  0.83, \\ 
+\hspace*{0.27 in}  0.62,  0.05, -0.14,  0.01, -0.36, -0.32, -0.80, -0.06,  0.24, \\ 
+\hspace*{0.27 in}  0.23, -0.37,  0.00, -0.33,  0.21, -0.10, -0.10, -0.01, -0.40, \\ 
+\hspace*{0.27 in} -0.35,  0.48, -0.28,  0.08,  0.28,  0.23,  0.27, -0.35, -0.19, \\ 
+\hspace*{0.27 in}  0.24,  0.17, -0.02, -0.23,  0.03,  0.02, -0.17,  0.04, -0.39, \\ 
+\hspace*{0.27 in} -0.12,  0.16,  0.17,  0.00,  0.18,  0.06, -0.36,  0.22,  0.14, \\ 
+\hspace*{0.27 in} -0.17,  0.10, -0.01,  0.00, -0.18, -0.02,  0.07, -0.06,  0.06, \\ 
+\hspace*{0.27 in} -0.05, -0.08, -0.07,  0.01, -0.06,  0.01,  0.01, -0.02,  0.01, \\ 
+\hspace*{0.27 in}  0.01,  0.12, -0.03,  0.08, -0.10,  0.01, -0.03, -0.08,  0.04, \\ 
+\hspace*{0.27 in} -0.09, -0.08,  0.01, -0.05,  0.08, -0.14,  0.06, -0.11,  0.09, \\ 
+\hspace*{0.27 in}  0.06, -0.12, -0.01, -0.05, -0.15, -0.05, -0.03,  0.04,  0.00, \\ 
+\hspace*{0.27 in} -0.12,  0.04, -0.06, -0.05, -0.07, -0.05, -0.14, -0.05, -0.01, \\ 
+\hspace*{0.27 in} -0.12,  0.05,  0.06, -0.10,  0.00,  0.01,  0.00, -0.08,  0.00, \\ 
+\hspace*{0.27 in}  0.00,  0.07, -0.01,  0.00,  0.09,  0.33,  0.13,  0.42,  0.24, \\ 
+\hspace*{0.27 in} -0.36,  0.22, -0.09, -0.19, -0.10, -0.08, -0.07,  0.05,  0.07, \\ 
+\hspace*{0.27 in}  0.07,  0.00, -0.04, -0.05,  0.03,  0.08,  0.26,  0.10,  0.08, \\ 
+\hspace*{0.27 in}  0.09, -0.07, -0.33,  0.17, -0.03,  0.07, -0.04, -0.06, -0.06, \\ 
+\hspace*{0.27 in}  0.07, -0.03,  0.00,  0.08,  0.27,  0.11,  0.11,  0.06, -0.11, \\ 
+\hspace*{0.27 in} -0.09, -0.21,  0.24, -0.12,  0.11, -0.02, -0.03,  0.02, -0.10, \\ 
+\hspace*{0.27 in}  0.00, -0.04,  0.01,  0.02, -0.03, -0.10, -0.09,  0.17,  0.07, \\
+\hspace*{0.27 in} -0.05, -0.01, -0.05,  0.01,  0.00, -0.08, -0.05, -0.08,  0.07, \\
+\hspace*{0.27 in}  0.06, -0.14,  0.02,  0.01,  0.04,  0.00, -0.13, -0.17) \\
+T <- length(y) \\
+mon.names <- c("LP", "sigma", "ynew") \\
+parm.names <- parm.names(list(alpha=rep(0,2), phi=rep(0,2), theta=0, \\
+\hspace*{0.27 in} log.sigma=0)) \\
+MyData <- list(T=T, mon.names=mon.names, parm.names=parm.names, y=y) \\
+}
+\subsection{Initial Values}
+\code{Initial.Values <- c(rep(0,4), T/2, log(1))}
+\subsection{Model}
+\code{Model <- function(parm, Data) \\
+\hspace*{0.27 in} \{ \\
+\hspace*{0.27 in} \#\#\# Parameters \\
+\hspace*{0.27 in} alpha <- interval(parm[1:2], -1, 1); parm[1:2] <- alpha \\
+\hspace*{0.27 in} phi <- interval(parm[3:4], -1, 1); parm[3:4] <- phi \\
+\hspace*{0.27 in} theta <- interval(parm[5], 2, Data$T-1); parm[5] <- theta \\
+\hspace*{0.27 in} sigma <- exp(parm[6]) \\
+\hspace*{0.27 in} \#\#\# Log(Prior Densities) \\
+\hspace*{0.27 in} alpha.prior <- sum(dtrunc(alpha, "norm", a=-1, b=1, mean=0, \\
+\hspace*{0.62 in} sd=sqrt(1000), log=TRUE)) \\
+\hspace*{0.27 in} phi.prior <- sum(dtrunc(phi, "norm", a=-1, b=1, mean=0, \\
+\hspace*{0.62 in} sd=sqrt(1000), log=TRUE)) \\
+\hspace*{0.27 in} alpha.prior <- sum(dnorm(alpha, 0, sqrt(1000), log=TRUE)) \\
+\hspace*{0.27 in} phi.prior <- sum(dnorm(phi, 0, sqrt(1000), log=TRUE)) \\
+\hspace*{0.27 in} theta.prior <- dunif(theta, 2, Data$T-1, log=TRUE) \\
+\hspace*{0.27 in} sigma.prior <- dhalfcauchy(sigma, 25, log=TRUE) \\
+\hspace*{0.27 in} \#\#\# Log-Likelihood \\
+\hspace*{0.27 in} mu <- matrix(0, Data$T, 2) \\
+\hspace*{0.27 in} mu[,1] <- c(alpha[1], alpha[1] + phi[1]*Data$y[-Data$T]) \\
+\hspace*{0.27 in} mu[,2] <- c(alpha[2], alpha[2] + phi[2]*Data$y[-Data$T]) \\
+\hspace*{0.27 in} nu <- ifelse(1:Data$T < theta, mu[,1], mu[,2]) \\
+\hspace*{0.27 in} ynew <- alpha[2] + phi[2]*Data$y[Data$T] \\
+\hspace*{0.27 in} LL <- sum(dnorm(Data$y, nu, sigma, log=TRUE)) \\
+\hspace*{0.27 in} \#\#\# Log-Posterior \\
+\hspace*{0.27 in} LP <- LL + alpha.prior + phi.prior + theta.prior + sigma.prior \\
+\hspace*{0.27 in} Modelout <- list(LP=LP, Dev=-2*LL, Monitor=c(LP,sigma,ynew), \\
+\hspace*{0.62 in} yhat=nu, parm=parm) \\
+\hspace*{0.27 in} return(Modelout) \\
+\hspace*{0.27 in} \} \\
 }
 
 \section{Variable Selection} \label{variable.selection}

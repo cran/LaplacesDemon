@@ -18,10 +18,12 @@
           rows will appear in the summary.}
      \item{Discrep}{A character string indicating a discrepancy test.
           \code{Discrep} defaults to \code{NULL}. Valid character
-          strings when \code{y} is continuous are: "max(yhat[i,]) > max(y)",
+          strings when \code{y} is continuous are: "Chi-Square",
+	  "Kurtosis", "Skewness", "max(yhat[i,]) > max(y)",
 	  "min(yhat[i,]) < min(y)", "round(yhat[i,]) = d". Valid
 	  character strings when \code{y} is categorical are:
-	  "p(yhat[i,] != y[i])".}
+	  "p(yhat[i,] != y[i])". Kurtosis and skewness are not
+	  discrepancies, but are included here for convenience.}
      \item{d}{This is an optional integer to be used with the
           \code{Discrep} argument above, and it defaults to \code{d=0}.}
      \item{Quiet}{This logical argument defaults to \code{FALSE} and
@@ -79,6 +81,21 @@
 	  sample of yhat was less than the overall minimum y. This is
 	  Pr(min(yhat[i,]) < min(y) | y, Theta), where Theta is the
 	  parameter set.}
+     \item{L-criterion}{
+	  The L-criterion (Laud and Ibrahim, 1995) was developed for
+	  model and variable selection. It is a sum of two components:
+	  one involves the predictive variance and the other includes
+	  the accuracy of the means of the predictive distribution. The
+	  L-criterion measures model performance with a combination of
+	  how close its predictions are to the observed data and
+	  variability of the predictions. Better models have smaller
+	  values of \code{L}. \code{L} is measured in the same units as
+	  the response variable, and measures how close the data vector
+	  \code{y} is to the predictive distribution. In addition to the
+	  value of \code{L}, there is a value for \code{S.L}, which is
+	  the calibration number of \code{L}, and is useful in
+	  determining how much of a decrease is necessary between models
+	  to be noteworthy.}
      \item{Summary}{
           When \code{y} is continuous, this is a n x 8 matrix, where n
           is the number of records of \code{y} and there are 8 columns,
@@ -103,6 +120,9 @@ Sinica, 6, p. 733--807.
 
 Hall, B. (2011), "Laplace's Demon", STATISTICAT, LLC.
 URL=\url{http://www.statisticat.com/laplacesdemon.html}
+
+Laud, P.W. and Ibrahim, J.G. (1995). "Posterior Model Selection".
+Journal of the Royal Statistical Society, B 57, p. 247--262.
 }
 \author{Byron Hall \email{laplacesdemon@statisticat.com}}
 \seealso{\code{\link{predict.demonoid}}}

@@ -122,7 +122,7 @@ The basis for Bayesian inference is derived from Bayes' theorem. Here is Bayes' 
 
 $$\Pr(A | B) = \frac{\Pr(B | A)\Pr(A)}{\Pr(B)}$$
 
-Replacing $B$ with observations $\textbf{y}$, $A$ with parameter set $\Theta$, and probabilities $\Pr$ with densities $p$ (or sometimes function $f$), results in the following
+Replacing $B$ with observations $\textbf{y}$, $A$ with parameter set $\Theta$, and probabilities $\Pr$ with densities $p$ (or sometimes $\pi$ or function $f$), results in the following
 
 $$
 p(\Theta | \textbf{y}) = \frac{p(\textbf{y} | \Theta)p(\Theta)}{p(\textbf{y})}$$
@@ -484,9 +484,17 @@ Gelman recommends at the most basic level to compare $\textbf{y}^{rep}$ to $\tex
 
 \subsection{Bayesian p-values}
 
-A Bayesian form of p-value may be estimated with a variety of test statistics \citep{gelman96a}. Usually the minimum or maximum observed $\textbf{y}$ is compared to the minimum or maximum $\textbf{y}^{rep}$.
+A Bayesian form of p-value may be estimated with a variety of test statistics \citep{gelman96a}. Usually the minimum or maximum observed $\textbf{y}$ is compared to the minimum or maximum $\textbf{y}^{rep}$. A Bayesian p-value is one of several ways to report discrepancies between $\textbf{y}$ and $\textbf{y}^{rep}$.
 
 Frequentist p-values have many problems, but here it will only be noted that the frequentist p-value estimates $p(\mathrm{data} | \mathrm{hypothesis})$, while in this case the Bayesian form estimates $p(\mathrm{hypothesis} | \mathrm{data})$. The frequentist estimates the wrong probability, because the frequentist is forced to consider the parameters to be fixed and the data random, projecting long-run frequencies of what should happen with future, repeated sampling of similar data, given a fixed parameter, or in this case hypothesis. Even the term hypothesis testing suggests you want to test the hypothesis given the data, not the data given the hypothesis\footnote{Numerous problems with frequentist p-values, confidence intervals, point estimates, and hypothesis testing are worth exploring, but not detailed in this article.}.
+
+\subsection{Chi-Square}
+
+\citep[p. 175]{gelman04} suggest an omnibus test such as the following $\chi^2$
+
+$$\chi^2_i = \frac{(\textbf{y}_i - \frac{\sum^T_{t=1} \textbf{y}^{rep}_{i,t}}{T})^2}{\mathrm{var}(\textbf{y}^{rep}_{i,1:T})},$$
+
+over records $i=1,\dots,N$ and posterior samples $t=1,\dots,T$. The sum of $\chi^2_i$ over records $i=1,\dots,N$ is an overall goodness of fit measure on the data set. Larger values of $\chi^2_i$ indicate worse fit for each record. Newer forms of $\chi^2$ tests have been proposed in the literature, and are best explored elsewhere.
 
 \subsection{Conditional Predictive Ordinate}
 
@@ -516,6 +524,15 @@ The sum of the logged CPOs can be an estimator for the log marginal likelihood, 
 $$\mathrm{PQ}_i = p(\textbf{y}^{rep}_i > \textbf{y}_i)$$
 
 and is somewhat similar to the Bayesian p-value. The percentage of $\textbf{y}_i$s that are not outliers is called the `Predictive Concordance'. \citet{gelfand96} suggests the goal is to attempt to achieve 95\% predictive concordance. In the case of, say 80\% predictive concordance, the discrepancy between the model and data is undesirable because the model does not fit the data well and many outliers have resulted. On the other hand, if the predictive concordance is too high, say 100\%, then overfitting may have occurred, and it may be worth considering a more parsimonious model. Kernel density plots of each $\textbf{y}^{rep}_i$ distribution are useful in this case with the actual $\textbf{y}_i$ included as a vertical bar to show its position.
+
+\subsection{L-criterion}
+\citet{laud95} introduced the L-criterion as one of three posterior predictive checks for model and variable selection. The L-criterion is a posterior predictive check that is widely applicable and easy to apply. It is a sum of two components: one involves the predictive variance and the other includes the accuracy of the means of the predictive distribution. The L-criterion measures model performance with a combination of how close its predictions are to the observed data and variability of the predictions. Better models have smaller values of L. L is measured in the same units as the response variable, and measures how close the data vector $\textbf{y}$ is to the predictive distribution. In addition to the value of L, there is a value for $S_L$, which is the calibration number of L, and is useful in determining how much of a decrease is necessary between models to be noteworthy. The L-criterion is
+
+$$\mathrm{L} = \sum^N_{i=1} \sqrt{\mathrm{var}(\textbf{y}^{rep}_{i,1:T}) + (\textbf{y}_i - \frac{\sum^T_{t=1} \textbf{y}^{rep}_{i,t}}{T})^2},$$
+
+over $t=1,\dots,T$ posterior samples. The calibration number, $S_L$, is the standard deviation of L over records $i=1,\dots,N$.
+
+The L-criterion has been extended, such as including weights, and is best explored elsewhere.
 
 \section{Advantages Of Bayesian Inference Over Frequentist Inference}
 

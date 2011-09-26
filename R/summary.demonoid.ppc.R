@@ -17,29 +17,49 @@ summary.demonoid.ppc <- function(object=NULL, Categorical=FALSE, Rows=NULL,
           Summ <- matrix(NA, length(y), 8, dimnames=list(1:length(y),
                c("y","Mean","SD","LB","Median","UB","PQ","Discrep")))
           Summ[,1] <- y
-          Summ[,2] <- rowMeans(yhat)
-          Summ[,3] <- apply(yhat, 1, sd)
+          Summ[,2] <- round(rowMeans(yhat),3)
+          Summ[,3] <- round(apply(yhat, 1, sd),3)
           for (i in 1:length(y))
                {
-               Summ[i,4] <- quantile(yhat[i,], probs=0.025)
-               Summ[i,5] <- quantile(yhat[i,], probs=0.500)
-               Summ[i,6] <- quantile(yhat[i,], probs=0.975)
-               Summ[i,7] <- mean(yhat[i,] >= y[i])
+               Summ[i,4] <- round(quantile(yhat[i,], probs=0.025),3)
+               Summ[i,5] <- round(quantile(yhat[i,], probs=0.500),3)
+               Summ[i,6] <- round(quantile(yhat[i,], probs=0.975),3)
+               Summ[i,7] <- round(mean(yhat[i,] >= y[i]),3)
                }
           ### Discrepancy Statistics
           Concordance <- 1 - mean({{Summ[,7] < 0.025} | {Summ[,7] > 0.975}},
                na.rm=TRUE)
           if(identical(yhat,y)) Concordance <- 1
           Discrepancy.Statistic <- 0
+          if(!is.null(Discrep) && {Discrep == "Chi-Square"}) {
+               Summ[,8] <- round((y - apply(yhat,1,mean))^2 /
+                    apply(yhat,1,var),3)
+               Discrepancy.Statistic <- round(sum(Summ[,8]),3)}
+          if(!is.null(Discrep) && {Discrep == "Kurtosis"}) {
+               kurtosis <- function(x) {  
+                    m4 <- mean((x-mean(x))^4) 
+                    kurt <- m4/(sd(x)^4)-3  
+                    return(kurt)}
+               for (i in 1:length(y)) {Summ[i,8] <- round(kurtosis(yhat[i,]),3)}
+               Discrepancy.Statistic <- mean(Summ[,8])}
+          if(!is.null(Discrep) && {Discrep == "Skewness"}) {
+               skewness <-  function(x) {
+                    m3 <- mean((x-mean(x))^3)
+                    skew <- m3/(sd(x)^3)
+                    return(skew)}
+               for (i in 1:length(y)) {Summ[i,8] <- round(skewness(yhat[i,]),3)}
+               Discrepancy.Statistic <- mean(Summ[,8])}
           if(!is.null(Discrep) && {Discrep == "max(yhat[i,]) > max(y)"}) {
                for (i in 1:length(y)) {Summ[i,8] <- max(yhat[i,]) > max(y)}
-               Discrepancy.Statistic <- mean(Summ[,8])}
+               Discrepancy.Statistic <- round(mean(Summ[,8]),3)}
           if(!is.null(Discrep) && {Discrep == "min(yhat[i,]) < min(y)"}) {
                for (i in 1:length(y)) {Summ[i,8] <- min(yhat[i,]) < min(y)}
-               Discrepancy.Statistic <- mean(Summ[,8])}
+               Discrepancy.Statistic <- round(mean(Summ[,8]),3)}
           if(!is.null(Discrep) && {Discrep == "round(yhat[i,]) = d"}) {
                for (i in 1:length(y)) {Summ[i,8] <- round(yhat[i,]) == d}
-               Discrepancy.Statistic <- mean(Summ[,8])}
+               Discrepancy.Statistic <- round(mean(Summ[,8]),3)}
+          L <- sqrt(apply(yhat,1,var) + (y - apply(yhat,1,mean))^2)
+          S.L <- round(sd(L),3); L <- round(sum(L),3)
           ### Create Output
           Summ.out <- list(Concordance=Concordance,
                Discrepancy.Statistic=round(Discrepancy.Statistic,5),
@@ -48,6 +68,7 @@ summary.demonoid.ppc <- function(object=NULL, Categorical=FALSE, Rows=NULL,
                cat("Concordance: ", Concordance, "\n")
                cat("Discrepancy Statistic: ",
                     round(Discrepancy.Statistic,5), "\n")
+               cat("L-criterion: ", L, ", S.L: ", S.L, sep="", "\n")
                cat("Records: \n")
                print(Summ[Rows,])}
           }

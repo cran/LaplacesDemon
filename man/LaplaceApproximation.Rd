@@ -351,11 +351,16 @@ Fit <- LaplaceApproximation(Model, Initial.Values, Data=MyData,
      Iterations=1000)
 Fit
 print(Fit)
-caterpillar.plot(Fit, Parms=c("beta","log.sigma"))
+PosteriorChecks(Fit)
+caterpillar.plot(Fit, Parms="beta")
 #plot(Fit, MyData, PDF=FALSE)
 Pred <- predict(Fit, Model, MyData)
-summary(Pred)
-plot(Pred)
+summary(Pred, Discrep="Chi-Square")
+plot(Pred, Style="Covariates", Data=MyData)
+plot(Pred, Style="Density", Rows=1:9)
+plot(Pred, Style="Fitted")
+plot(Pred, Style="Predictive Quantiles")
+plot(Pred, Style="Residuals")
 #Fit$Covar is scaled (2.38^2/d) and submitted to LaplacesDemon as Covar.
 #Fit$Summary[,1] is submitted to LaplacesDemon as Initial.Values.
 #End

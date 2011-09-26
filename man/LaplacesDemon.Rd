@@ -387,12 +387,17 @@ Fit <- LaplacesDemon(Model, Data=MyData, Adaptive=500,
 Fit
 print(Fit)
 Consort(Fit)
-caterpillar.plot(Fit, Parms=1:J)
+PosteriorChecks(Fit)
+caterpillar.plot(Fit, Parms="beta")
 BurnIn <- Fit$Rec.BurnIn.Thinned
 plot(Fit, BurnIn, MyData, PDF=FALSE)
 Pred <- predict(Fit, Model, MyData)
-summary(Pred)
-plot(Pred)
+summary(Pred, Discrep="Chi-Square")
+plot(Pred, Style="Covariates", Data=MyData)
+plot(Pred, Style="Density", Rows=1:9)
+plot(Pred, Style="Fitted")
+plot(Pred, Style="Predictive Quantiles")
+plot(Pred, Style="Residuals")
 
 #####################  Delayed Rejection Metropolis  ######################
 Fit <- LaplacesDemon(Model, Data=MyData, Adaptive=0,

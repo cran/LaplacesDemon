@@ -27,7 +27,8 @@ dcat <- function(x, p, log=FALSE)
           x <- t(temp)
           }
      else if(is.vector(x) & (length(x) > 1)) {x <- indmat(x)}
-     if(!identical(dim(x),dim(p))) stop("Dimensions of x and p differ in dcat().")
+     if(!identical(dim(x),dim(p)))
+          stop("Dimensions of x and p differ in dcat().")
      dens <- x*p
      if(log == TRUE) dens <- x*log(p)
      dens <- as.vector(rowSums(dens))
@@ -63,7 +64,6 @@ ddirichlet <- function(x, alpha, log=FALSE)
     if(log == TRUE) dens <- log(dens)
     return(dens)
     }
-
 rdirichlet <- function(n, alpha)
      {
      l <- length(alpha)
@@ -164,7 +164,6 @@ dinvgamma <- function(x, shape, scale=1, log=FALSE)
      if(log == TRUE) dens <- log.density
      return(dens)
      }
-
 rinvgamma <- function(n, shape, scale=1)
      {return(1 / rgamma(n=n, shape=shape, rate=scale))}
 
@@ -177,11 +176,15 @@ rinvgamma <- function(n, shape, scale=1)
 dinvwishart <- function(Sigma, nu, R, log=FALSE)
      {
      if(!is.matrix(R)) R <- matrix(R)
-     if(nrow(R) != ncol(R)) stop("Matrix R is not symmetric in dinvwishart().\n")
+     if(nrow(R) != ncol(R))
+          stop("Matrix R is not symmetric in dinvwishart().\n")
      if(!is.matrix(Sigma)) Sigma <- matrix(Sigma)
-     if(nrow(Sigma) != ncol(Sigma)) stop("Matrix Sigma is not symmetric in dinvwishart().\n")
-     if(nrow(R) != ncol(Sigma)) stop("Dimensions of Sigma and R differ in dinvwishart().\n")
-     if(nu < nrow(R)) stop("nu is less than the dimension of R in dinvwishart().\n")
+     if(nrow(Sigma) != ncol(Sigma))
+          stop("Matrix Sigma is not symmetric in dinvwishart().\n")
+     if(nrow(R) != ncol(Sigma))
+          stop("Dimensions of Sigma and R differ in dinvwishart().\n")
+     if(nu < nrow(R))
+          stop("nu is less than the dimension of R in dinvwishart().\n")
      p <- nrow(R)
      # denominator
      gammapart <- 1
@@ -197,7 +200,6 @@ dinvwishart <- function(Sigma, nu, R, log=FALSE)
      if(log == TRUE) dens <- log(num / denom)
      return(dens)
      }
-
 rinvwishart <- function(nu, R) {return(solve(rwishart(nu,solve(R))))}
 
 ###########################################################################
@@ -358,7 +360,6 @@ dmvt <- function(x, mu, S, df=Inf, log=FALSE)
      if(log == FALSE) dens <- exp(fact) * {{1 + quad}^{-{df + p}/2}}
      return(dens)
      }
-
 rmvt <- function(n=1, mu=rep(0,k), S, df=Inf)
      {
      if(!is.matrix(S)) S <- matrix(S)
@@ -441,14 +442,12 @@ dtrunc <- function(x, spec, a=-Inf, b=Inf, ...)
      tt[x>=a & x<=b] <- g(x[x>=a & x<=b], ...) / (G(b, ...) - G(a, ...))
      return(tt)
      }
-
 extrunc <- function(spec, a=-Inf, b=Inf, ...)
      {
      if(a >= b) stop("Lower bound a is not less than upper bound b in extrunc().")
      f <- function(x) x * dtrunc(x, spec, a=a, b=b, ...)
      return(integrate(f, lower=a, upper=b)$value)
      }
-
 ptrunc <- function(x, spec, a=-Inf, b=Inf, ...)
      {
      if(a >= b) stop("Lower bound a is not less than upper bound b in ptrunc().")
@@ -461,7 +460,6 @@ ptrunc <- function(x, spec, a=-Inf, b=Inf, ...)
      tt <- tt/{G(bb, ...) - G(aa, ...)}
      return(tt)
      }
-
 qtrunc <- function(p, spec, a=-Inf, b=Inf, ...)
      {
      if(a >= b) stop("Lower bound a is not less than upper bound b in qtrunc().")
@@ -471,7 +469,6 @@ qtrunc <- function(p, spec, a=-Inf, b=Inf, ...)
      tt <- Gin(G(a, ...) + p*{G(b, ...) - G(a, ...)}, ...)
      return(tt)
      }
-
 rtrunc <- function(n, spec, a=-Inf, b=Inf, ...)
      {
      if(a >= b) stop("Lower bound a is not less than upper bound b in rtrunc().")
@@ -479,7 +476,6 @@ rtrunc <- function(n, spec, a=-Inf, b=Inf, ...)
      x <- qtrunc(u, spec, a = a, b = b,...)
      return(x)
      }
-
 vartrunc <- function(spec, a=-Inf, b=Inf, ...)
      {
      if(a >= b) stop("Lower bound a is not less than upper bound b in vartrunc().")
@@ -498,11 +494,15 @@ vartrunc <- function(spec, a=-Inf, b=Inf, ...)
 dwishart <- function(Omega, nu, S, log=FALSE)
      {
      if(!is.matrix(S)) S <- matrix(S)
-     if(nrow(S) != ncol(S)) stop("Matrix Omega is not symmetric in dwishart()\n\n")
+     if(nrow(S) != ncol(S))
+          stop("Matrix Omega is not symmetric in dwishart()\n\n")
      if(!is.matrix(Omega)) Omega <- matrix(Omega)
-     if(nrow(Omega) != ncol(Omega)) stop("Matrix Omega is not symmetric in dwishart()\n\n")
-     if(nrow(S) != ncol(Omega)) stop("Dimensions of Omega and S differ in dwishart()\n\n")
-     if(nu < nrow(S)) stop("nu is less than the dimension of S in dwishart()\n\n")
+     if(nrow(Omega) != ncol(Omega))
+          stop("Matrix Omega is not symmetric in dwishart()\n\n")
+     if(nrow(S) != ncol(Omega))
+          stop("Dimensions of Omega and S differ in dwishart()\n\n")
+     if(nu < nrow(S))
+          stop("nu is less than the dimension of S in dwishart()\n\n")
      p <- nrow(S)
      # denominator
      gammapart <- 1
@@ -518,11 +518,11 @@ dwishart <- function(Omega, nu, S, log=FALSE)
      if(log == TRUE) dens <- log(num / denom)
      return(dens)
      }
-
 rwishart <- function(nu, S)
      {
      if(!is.matrix(S)) S <- matrix(S)
-     if(nrow(S) != ncol(S)) stop("Matrix S is not symmetric in rwishart().\n")
+     if(nrow(S) != ncol(S))
+          stop("Matrix S is not symmetric in rwishart().\n")
      if(nu < nrow(S)) {
           stop("nu is less than the dimension of S in rwishart().\n")}
      p <- nrow(S)

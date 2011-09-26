@@ -520,13 +520,14 @@ The \code{predict} function calls the \code{Model} function once for each set of
 Since \code{Pred\$yhat} is a large (39 x 1000) matrix, let's look at the summary of the posterior predictive distribution:
 
 \begin{Scode}
-summary(Pred)
+summary(Pred, Discrep="Chi-Square")
 \end{Scode}
 
-The \code{summary.demonoid.ppc} function returns a list with 3 components when \code{y} is continuous (different output occurs for categorical dependent variables when given the argument \code{Categorical=TRUE}):
+The \code{summary.demonoid.ppc} function returns a list with 4 components when \code{y} is continuous (different output occurs for categorical dependent variables when given the argument \code{Categorical=TRUE}):
 \begin{itemize}
 \item \code{Concordance} is the predictive concordance of \citet{gelfand96}, that indicates the percentage of times that \code{y} that was within the 95\% probability interval of \code{yhat}. A goal is to have 95\% predictive concordance. For more information, see the accompanying vignette entitled ``Bayesian Inference''. In this case, roughly \Sexpr{round(summary(Pred)$Concordance,0)}\% of the time, \code{y} is within the 95\% probability interval of \code{yhat}. These results suggest that the model should be attempted again under different conditions, such as using different predictors, or specifying a different form to the model.
-\item \code{Discrepancy.Statistic} is a summary of a specified discrepancy measure. There are many options for discrepancy measures that may be specified in the \code{Discrep} argument. In this example, a discrepancy measure was not specified.
+\item \code{Discrepancy.Statistic} is a summary of a specified discrepancy measure. There are many options for discrepancy measures that may be specified in the \code{Discrep} argument. In this example, the specified discrepancy measure was the $\chi^2$ test in \citet[p. 175]{gelman04}, and higher values indicate a worse fit.
+\item \code{L-criterion} is a posterior predictive check for model and variable selection that measures the distance between $\textbf{y}$ and $\textbf{y}^{rep}$, providing a criterion to be minimized \citep{laud95}.
 \item The last part of the summarized output reports \code{y}, information about the distribution of \code{yhat}, and the predictive quantile (\code{PQ}). The mean prediction of \code{y[1]}, or $\textbf{y}^{rep}_1$, given the model and data, is \Sexpr{round(summary(Pred)$Summary[1,2],3)}. Most importantly, \code{PQ[1]} is \Sexpr{round(summary(Pred)$Summary[1,7],3)}, indicating that \Sexpr{round(summary(Pred)$Summary[1,7]*100,1)}\% of the time, \code{yhat[1,]} was greater than \code{y[1]}, or that \code{y[1]} is close to the mean of \code{yhat[1,]}. Contrast this with the 6th record, where \code{y[6]}=\Sexpr{round(summary(Pred)$Summary[6,1],3)} and \code{PQ[6]}=\Sexpr{round(summary(Pred)$Summary[6,7],3)}. Therefore, \code{yhat[6,]} was not a good replication of \code{y[6]}, because the distribution of \code{yhat[6,]} is always greater than \code{y[6]}. While \code{y[1]} is within the 95\% probability interval of \code{yhat[1,]}, the 95\% probability interval of \code{yhat[6,]} is above \code{y[6]} 100\% of the time, indicating a strong discrepancy between the model and data, in this case.
 \end{itemize}
 
