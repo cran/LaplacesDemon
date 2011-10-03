@@ -8,7 +8,8 @@ This function creates an indicator matrix from a vector.
 indmat(x)
 }
 \arguments{
-    \item{x}{This is a vector.}
+    \item{x}{This is a vector, and each unique value will become a
+      column in the returned indicator matrix.}
 }
 \value{
      \code{indmat} returns an indicator matrix in which each element of

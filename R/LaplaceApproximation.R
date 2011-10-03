@@ -167,9 +167,9 @@ LaplaceApproximation <- function(Model=NULL, parm=NULL, Data=NULL,
      ### Logarithm of the Marginal Likelihood
      LML <- LML(Model, Data, parm.new)
      ### Column names to samples
-     if(NCOL(post) == length(Data$parm.names)) {
+     if(ncol(post) == length(Data$parm.names)) {
           colnames(post) <- Data$parm.names}
-     rownames(post) <- 1:{NROW(post)}
+     rownames(post) <- 1:{nrow(post)}
      ### Summary
      cat("\nCreating Summary...\n")
      Summ <- matrix(NA, parm.len, 4, dimnames=list(Data$parm.names,

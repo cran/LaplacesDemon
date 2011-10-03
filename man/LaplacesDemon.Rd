@@ -44,12 +44,13 @@ LaplacesDemon(Model=NULL, Data=NULL, Adaptive=0, Covar=NULL, DR=1,
 	  argument (see below).
           }
      \item{Covar}{
-          This argument defaults to \code{NULL}, but may otherwise accept a K x K
-          proposal covariance matrix for the first adaptation of the proposal 
-          covariances, where K is the number of dimensions (or parameters). 
-          The proposal covariance matrix will be re-estimated with each
-          adaptation according to the entire history of all chains. When
-          the model is updated for the first time, \code{NULL} should be used,
+          This argument defaults to \code{NULL}, but may otherwise accept a 
+	  \eqn{K \times K}{K x K} proposal covariance matrix for the
+	  first adaptation of the proposal covariances, where \eqn{K} is
+	  the number of dimensions (or parameters). The proposal
+	  covariance matrix will be re-estimated with each adaptation
+	  according to the entire history of all chains. When the model
+	  is updated for the first time, \code{Covar=NULL} should be used,
           unless there is a better estimate at the variance of each
           target distribution as well as the associated covariances. Once
           Laplace's Demon has finished updating, it may be desired to
@@ -82,7 +83,7 @@ LaplacesDemon(Model=NULL, Data=NULL, Adaptive=0, Covar=NULL, DR=1,
           }
      \item{Iterations}{
           This required argument accepts integers in the interval [11,
-	  1,000,000], and determines the number of iterations that
+	  1000000], and determines the number of iterations that
 	  Laplace's Demon will update the parameters while searching for
 	  target distributions. If more iterations are necessary, then
 	  the \code{Combine} function can be used.
@@ -365,9 +366,10 @@ Model <- function(parm, Data)
      ### Log of Prior Densities
      beta.prior <- sum(dnorm(beta, 0, sqrt(1000), log=TRUE))
      sigma.prior <- dhalfcauchy(sigma, 25, log=TRUE)
-     ### Log-Posterior
+     ### Log-Likelihood
      mu <- tcrossprod(beta, Data$X)
      LL <- sum(dnorm(Data$y, mu, sigma, log=TRUE))
+     ### Log-Posterior
      LP <- LL + beta.prior + sigma.prior
      Modelout <- list(LP=LP, Dev=-2*LL, Monitor=c(LP,sigma), yhat=mu,
           parm=parm)

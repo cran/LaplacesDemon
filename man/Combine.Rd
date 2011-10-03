@@ -18,7 +18,7 @@ Combine(x, Data)
 The \code{LaplacesDemon} algorithm limits the number of iterations to
 1,000,000. Nonetheless, some complicated models may require millions of
 iterations, prior to thinning, to achieve stationarity. Without using
-the \code{Combine} function, Laplace's Demon (via \code{Cosort}), may
+the \code{Combine} function, Laplace's Demon (via \code{Consort}), may
 suggest another million iterations to a user. After such updating,
 another million may be suggested again. These suggestions may continue
 to infinity, and the unnormalized logarithm of the joint posterior

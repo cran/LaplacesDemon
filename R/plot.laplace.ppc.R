@@ -10,8 +10,8 @@ plot.laplace.ppc <- function(x, Style=NULL, Data=NULL, Rows=NULL,
      ### Initial Checks
      if(is.null(x)) stop("x is NULL.\n")
      if(is.null(Style)) Style <- "Density"
-     if(is.null(Rows)) {Rows <- 1:nrow(x$yhat)}
-     ### Plot, Posterior Predictive of yhat
+     if(is.null(Rows)) Rows <- 1:nrow(x$yhat)
+     ### Plots
      if(Style == "Covariates") {
           if(PDF == TRUE) {pdf("PPC.Plots.Covariates.pdf")
                par(mfrow=c(3,3))}
@@ -25,7 +25,7 @@ plot.laplace.ppc <- function(x, Style=NULL, Data=NULL, Rows=NULL,
           temp <- summary(x, Quiet=TRUE)$Summary
           for (i in 1:ncol(co)) {
                plot(co[Rows,i], temp[Rows,5], pch=16, cex=0.75,
-                    ylim=c(min(temp[Rows,4:6]),max(temp[Rows,4:6])),
+                    ylim=c(min(temp[Rows,c(1,4:6)]),max(temp[Rows,c(1,4:6)])),
                     xlab=paste("X[,",i,"]", sep=""),
                     ylab="yhat",
                     sub="Gray dots and lines are yhat at 2.5% and 95%.")
@@ -59,33 +59,21 @@ plot.laplace.ppc <- function(x, Style=NULL, Data=NULL, Rows=NULL,
           if(PDF == TRUE) {pdf("PPC.Plots.Density.pdf")
                par(mfrow=c(3,3))}
           else {par(mfrow=c(3,3), ask=TRUE)}
-          for (j in 1:length(Rows))
-               {
+          for (j in 1:length(Rows)) {
                plot(density(x$yhat[Rows[j],]),
                     main=paste("Post. Pred. Plot of yhat[", Rows[j],
                          ",]", sep=""), xlab="Value",
                     sub="Black=Density, Red=y")
                polygon(density(x$yhat[Rows[j],]), col="black",
                     border="black")
-               abline(v=x$y[Rows[j]], col="red")
-               }
-          ### Plot Deviance
-          plot(density(x$deviance), main="Deviance", xlab="Value")
-          polygon(density(x$deviance), col="black", border="black")
-          abline(v=0, col="red")
-          ### Plot Monitors
-          for (j in 1:nrow(x$monitor)) {
-               plot(density(x$monitor[j,]), main=rownames(x$monitor)[j],
-                    xlab="Value")
-               polygon(density(x$monitor[j,]), col="black", border="black")
-               abline(v=0, col="red")}
+               abline(v=x$y[Rows[j]], col="red")}
           }
      if(Style == "Fitted") {
           if(PDF == TRUE) pdf("PPC.Plots.Fitted.pdf")
           par(mfrow=c(1,1))
           temp <- summary(x, Quiet=TRUE)$Summary
           plot(temp[Rows,1], temp[Rows,5], pch=16, cex=0.75,
-               ylim=c(min(temp[Rows,4:6]),max(temp[Rows,4:6])),
+               ylim=c(min(temp[Rows,c(1,4:6)]),max(temp[Rows,c(1,4:6)])),
                xlab="y", ylab="yhat", main="Fitted",
                sub="Gray dots and lines are yhat at 2.5% and 95%.")
           panel.smooth(temp[Rows,1], temp[Rows,4], pch=16, cex=0.75,
@@ -95,8 +83,9 @@ plot.laplace.ppc <- function(x, Style=NULL, Data=NULL, Rows=NULL,
           panel.smooth(temp[Rows,1], temp[Rows,5], pch=16, cex=0.75)
           }
      if(Style == "Fitted, Multivariate, C") {
-          if(PDF == TRUE) pdf("PPC.Plots.Fitted.M.pdf")
-          par(mfrow=c(1,1))
+          if(PDF == TRUE) {pdf("PPC.Plots.Fitted.M.pdf")
+               par(mfrow=c(1,1))}
+          else {par(mfrow=c(1,1), ask=TRUE)}
           if(is.null(Data))
                stop("Data is required for Style=Fitted, Multivariate.")
           if(is.null(Data$Y)) stop("Y is required in Data.")
@@ -105,10 +94,12 @@ plot.laplace.ppc <- function(x, Style=NULL, Data=NULL, Rows=NULL,
                plot(matrix(temp[,1], nrow(Data$Y), ncol(Data$Y))[,i],
                     matrix(temp[,5], nrow(Data$Y), ncol(Data$Y))[,i],
                     pch=16, cex=0.75,
-                    ylim=c(min(matrix(temp[,1], nrow(Data$Y), ncol(Data$Y))[,i],
-                         matrix(temp[,4], nrow(Data$Y), ncol(Data$Y))[,i], na.rm=TRUE),
-                         max(matrix(temp[,1], nrow(Data$Y), ncol(Data$Y))[,i],
-                         matrix(temp[,6], nrow(Data$Y), ncol(Data$Y))[,i]), na.rm=TRUE),
+                    ylim=c(min(Data$Y[,i],
+                         matrix(temp[,4], nrow(Data$Y),
+                              ncol(Data$Y))[,i], na.rm=TRUE),
+                         max(Data$Y[,i],
+                         matrix(temp[,6], nrow(Data$Y),
+                              ncol(Data$Y))[,i], na.rm=TRUE)),
                     xlab=paste("Y[,", i, "]", sep=""), ylab="yhat",
                     main="Fitted",
                     sub="Gray dots and lines are yhat at 2.5% and 95%.")
@@ -123,8 +114,9 @@ plot.laplace.ppc <- function(x, Style=NULL, Data=NULL, Rows=NULL,
                     pch=16, cex=0.75)}
           }
      if(Style == "Fitted, Multivariate, R") {
-          if(PDF == TRUE) pdf("PPC.Plots.Fitted.M.pdf")
-          par(mfrow=c(1,1))
+          if(PDF == TRUE) {pdf("PPC.Plots.Fitted.M.pdf")
+               par(mfrow=c(1,1))}
+          else {par(mfrow=c(1,1), ask=TRUE)}
           if(is.null(Data))
                stop("Data is required for Style=Fitted, Multivariate.")
           if(is.null(Data$Y)) stop("Y is required in Data.")
@@ -133,10 +125,12 @@ plot.laplace.ppc <- function(x, Style=NULL, Data=NULL, Rows=NULL,
                plot(matrix(temp[,1], nrow(Data$Y), ncol(Data$Y))[i,],
                     matrix(temp[,5], nrow(Data$Y), ncol(Data$Y))[i,],
                     pch=16, cex=0.75,
-                    ylim=c(min(matrix(temp[,1], nrow(Data$Y), ncol(Data$Y))[i,],
-                         matrix(temp[,4], nrow(Data$Y), ncol(Data$Y))[i,], na.rm=TRUE),
-                         max(matrix(temp[,1], nrow(Data$Y), ncol(Data$Y))[i,],
-                         matrix(temp[,6], nrow(Data$Y), ncol(Data$Y))[i,], na.rm=TRUE)),
+                    ylim=c(min(Data$Y[i,],
+                         matrix(temp[,4], nrow(Data$Y),
+                              ncol(Data$Y))[i,], na.rm=TRUE),
+                         max(Data$Y[i,],
+                         matrix(temp[,6], nrow(Data$Y),
+                              ncol(Data$Y))[i,], na.rm=TRUE)),
                     xlab=paste("Y[,", i, "]", sep=""), ylab="yhat",
                     main="Fitted",
                     sub="Gray dots and lines are yhat at 2.5% and 95%.")
@@ -174,9 +168,58 @@ plot.laplace.ppc <- function(x, Style=NULL, Data=NULL, Rows=NULL,
           lines(epsilon.summary[1,Rows], pch=16, cex=0.75, col="gray")
           lines(epsilon.summary[3,Rows], pch=16, cex=0.75, col="gray")
           }
+     if(Style == "Residuals, Multivariate, C") {
+          if(PDF == TRUE) {pdf("PPC.Plots.Residuals.pdf")
+               par(mfrow=c(1,1))}
+          else {par(mfrow=c(1,1), ask=TRUE)}
+          if(is.null(Data))
+               stop("Data is required for Style=Residuals, Multivariate, C.")
+          if(is.null(Data$Y))
+               stop("Variable Y is required for Style=Residuals, Multivariate, C.")
+          epsilon <- x$y - x$yhat
+          epsilon.summary <- apply(epsilon, 1, quantile,
+               probs=c(0.025,0.500,0.975), na.rm=TRUE)
+          epsilon.025 <- matrix(epsilon.summary[1,], nrow(Data$Y), ncol(Data$Y))
+          epsilon.500 <- matrix(epsilon.summary[2,], nrow(Data$Y), ncol(Data$Y))
+          epsilon.975 <- matrix(epsilon.summary[3,], nrow(Data$Y), ncol(Data$Y))
+          for (i in 1:ncol(Data$Y)) {
+               plot(epsilon.500[,i], pch=16, cex=0.75,
+                    ylim=c(min(epsilon.025[,i], na.rm=TRUE),
+                         max(epsilon.975[,i], na.rm=TRUE)),
+                    xlab=paste("Y[,", i, "]", sep=""), ylab=expression(epsilon))
+               lines(rep(0, nrow(epsilon.500)), col="red")
+               lines(epsilon.025[,i], pch=16, cex=0.75, col="gray")
+               lines(epsilon.975[,i], pch=16, cex=0.75, col="gray")
+               }
+          }
+     if(Style == "Residuals, Multivariate, R") {
+          if(PDF == TRUE) {pdf("PPC.Plots.Residuals.pdf")
+               par(mfrow=c(1,1))}
+          else {par(mfrow=c(1,1), ask=TRUE)}
+          if(is.null(Data))
+               stop("Data is required for Style=Residuals, Multivariate, C.")
+          if(is.null(Data$Y))
+               stop("Variable Y is required for Style=Residuals, Multivariate, C.")
+          epsilon <- x$y - x$yhat
+          epsilon.summary <- apply(epsilon, 1, quantile,
+               probs=c(0.025,0.500,0.975), na.rm=TRUE)
+          epsilon.025 <- matrix(epsilon.summary[1,], nrow(Data$Y), ncol(Data$Y))
+          epsilon.500 <- matrix(epsilon.summary[2,], nrow(Data$Y), ncol(Data$Y))
+          epsilon.975 <- matrix(epsilon.summary[3,], nrow(Data$Y), ncol(Data$Y))
+          for (i in 1:nrow(Data$Y)) {
+               plot(epsilon.500[i,], pch=16, cex=0.75,
+                    ylim=c(min(epsilon.025[i,], na.rm=TRUE),
+                         max(epsilon.975[i,], na.rm=TRUE)),
+                    xlab=paste("Y[", i, ",]", sep=""), ylab=expression(epsilon))
+               lines(rep(0, ncol(epsilon.500)), col="red")
+               lines(epsilon.025[i,], pch=16, cex=0.75, col="gray")
+               lines(epsilon.975[i,], pch=16, cex=0.75, col="gray")
+               }
+          }
      if(Style == "Space-Time by Space") {
-          if(PDF == TRUE) pdf("PPC.Plots.SpaceTime.pdf")
-          par(mfrow=c(1,1))
+          if(PDF == TRUE) {pdf("PPC.Plots.SpaceTime.pdf")
+               par(mfrow=c(1,1))}
+          else {par(mfrow=c(1,1), ask=TRUE)}
           if(is.null(Data))
                stop("Data is required for Style=Space-Time by Space.")
           if(is.null(Data$longitude))
@@ -200,8 +243,9 @@ plot.laplace.ppc <- function(x, Style=NULL, Data=NULL, Rows=NULL,
                }
           }
      if(Style == "Space-Time by Time") {
-          if(PDF == TRUE) pdf("PPC.Plots.SpaceTime.pdf")
-          par(mfrow=c(1,1))
+          if(PDF == TRUE) {pdf("PPC.Plots.SpaceTime.pdf")
+               par(mfrow=c(1,1))}
+          else {par(mfrow=c(1,1), ask=TRUE)}
           if(is.null(Data))
                stop("Data is required for Style=Space-Time by Time.")
           if(is.null(Data$longitude))
@@ -269,8 +313,9 @@ plot.laplace.ppc <- function(x, Style=NULL, Data=NULL, Rows=NULL,
           lines(temp[Rows,5], col="red")
           }
      if(Style == "Time-Series, Multivariate, C") {
-          if(PDF == TRUE) pdf("PPC.Plots.TimeSeries.M.pdf")
-          par(mfrow=c(1,1))
+          if(PDF == TRUE) {pdf("PPC.Plots.TimeSeries.pdf")
+               par(mfrow=c(1,1))}
+          else {par(mfrow=c(1,1), ask=TRUE)}
           if(is.null(Data))
                stop("Data is required for Style=Time-Series, Multivariate.")
           if(is.null(Data$Y))
@@ -278,10 +323,12 @@ plot.laplace.ppc <- function(x, Style=NULL, Data=NULL, Rows=NULL,
           temp <- summary(x, Quiet=TRUE)$Summary
           for (i in 1:ncol(Data$Y)) {
           plot(matrix(temp[Rows,1], nrow(Data$Y), ncol(Data$Y))[,i],
-               ylim=c(min(matrix(temp[Rows,1], nrow(Data$Y), ncol(Data$Y))[,i],
-                    matrix(temp[Rows,4], nrow(Data$Y), ncol(Data$Y))[,i], na.rm=TRUE),
-                    max(matrix(temp[Rows,1], nrow(Data$Y), ncol(Data$Y))[,i],
-                    matrix(temp[Rows,6], nrow(Data$Y), ncol(Data$Y))[,i], na.rm=TRUE)),
+               ylim=c(min(Data$Y[,i],
+                    matrix(temp[Rows,4], nrow(Data$Y),
+                         ncol(Data$Y))[,i], na.rm=TRUE),
+                    max(Data$Y[,i],
+                    matrix(temp[Rows,6], nrow(Data$Y),
+                         ncol(Data$Y))[,i], na.rm=TRUE)),
                type="l", xlab="Time", ylab="y",
                main=paste("Time-Series ", i, " of ", ncol(Data$Y), sep=""),
                sub="Actual=Black, Fit=Red, Interval=Gray")
@@ -293,8 +340,9 @@ plot.laplace.ppc <- function(x, Style=NULL, Data=NULL, Rows=NULL,
                col="red")}
           }
      if(Style == "Time-Series, Multivariate, R") {
-          if(PDF == TRUE) pdf("PPC.Plots.TimeSeries.M.pdf")
-          par(mfrow=c(1,1))
+          if(PDF == TRUE) {pdf("PPC.Plots.TimeSeries.pdf")
+               par(mfrow=c(1,1))}
+          else {par(mfrow=c(1,1), ask=TRUE)}
           if(is.null(Data))
                stop("Data is required for Style=Time-Series, Multivariate.")
           if(is.null(Data$Y))
@@ -302,10 +350,12 @@ plot.laplace.ppc <- function(x, Style=NULL, Data=NULL, Rows=NULL,
           temp <- summary(x, Quiet=TRUE)$Summary
           for (i in 1:nrow(Data$Y)) {
           plot(matrix(temp[Rows,1], nrow(Data$Y), ncol(Data$Y))[i,],
-               ylim=c(min(matrix(temp[Rows,1], nrow(Data$Y), ncol(Data$Y))[i,],
-                    matrix(temp[Rows,4], nrow(Data$Y), ncol(Data$Y))[i,], na.rm=TRUE),
-                    max(matrix(temp[Rows,1], nrow(Data$Y), ncol(Data$Y))[i,],
-                    matrix(temp[Rows,6], nrow(Data$Y), ncol(Data$Y))[i,], na.rm=TRUE)),
+               ylim=c(min(Data$Y[i,],
+                    matrix(temp[Rows,4], nrow(Data$Y),
+                         ncol(Data$Y))[i,], na.rm=TRUE),
+                    max(Data$Y[i,],
+                    matrix(temp[Rows,6], nrow(Data$Y),
+                         ncol(Data$Y))[i,], na.rm=TRUE)),
                type="l", xlab="Time", ylab="y",
                main=paste("Time-Series ", i, " of ", nrow(Data$Y), sep=""),
                sub="Actual=Black, Fit=Red, Interval=Gray")

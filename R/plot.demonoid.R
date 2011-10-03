@@ -10,7 +10,7 @@ plot.demonoid <- function(x, BurnIn=1, Data=NULL, PDF=FALSE,
      ### Initial Checks
      if(is.null(x)) stop("x is NULL.\n")
      if(is.null(Data)) stop("The Data argument is NULL.\n")
-     if(BurnIn >= NROW(x$Posterior1)) BurnIn <- 1
+     if(BurnIn >= nrow(x$Posterior1)) BurnIn <- 1
      ### Selecting Parms
      if(is.null(Parms)) {Posterior <- x$Posterior1}
      else {
@@ -32,7 +32,7 @@ plot.demonoid <- function(x, BurnIn=1, Data=NULL, PDF=FALSE,
           }
      else {par(mfrow=c(3,3), ask=TRUE)}
      ### Plot Parameters
-     for (j in 1:NCOL(Posterior))
+     for (j in 1:ncol(Posterior))
           {
           plot(BurnIn:x$Thinned.Samples,
                Posterior[BurnIn:x$Thinned.Samples,j],
@@ -78,7 +78,7 @@ plot.demonoid <- function(x, BurnIn=1, Data=NULL, PDF=FALSE,
      ### Plot Monitored Variables
      if(is.vector(x$Monitor)) {J <- 1; nn <- length(x$Monitor)}
      else if(is.matrix(x$Monitor)) {
-          J <- NCOL(x$Monitor); nn <- NROW(x$Monitor)}
+          J <- ncol(x$Monitor); nn <- nrow(x$Monitor)}
      for (j in 1:J)
           {
           plot(BurnIn:nn,

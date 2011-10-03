@@ -11,7 +11,7 @@ Geweke.Diagnostic <- function(x)
      {
      x <- as.matrix(x)
      frac1 <- 0.1; frac2 <- 0.5
-     startx <- 1; endx <- NROW(x)
+     startx <- 1; endx <- nrow(x)
      xstart <- c(startx, endx - frac2 * {endx - startx})
      xend <- c(startx + frac1 * {endx - startx}, endx)
      y.variance <- y.mean <- vector("list", 2)

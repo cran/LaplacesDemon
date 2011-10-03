@@ -19,23 +19,26 @@ logit(p)
 \details{
 The \code{logit} function is the inverse of the sigmoid or logistic
 function, and transforms a continuous value (usually probability
-\code{p}) in the interval [0,1] to the real line (where it usually is
+\eqn{p}) in the interval [0,1] to the real line (where it usually is
 the logarithm of the odds). The \code{logit} function is
-\code{log(p / (1 - p))}.
+\eqn{\log(p / (1-p))}{log(p / (1 - p))}.
 
 The \code{invlogit} function (called either the inverse logit or the
 logistic function) transforms a real number (usually the logarithm of
-the odds) to a value (usually probability \code{p}) in the interval
-[0,1]. The \code{invlogit} function is \code{1 / (1 + exp(-x))}.
+the odds) to a value (usually probability \eqn{p}) in the interval
+[0,1]. The \code{invlogit} function is
+\eqn{\frac{1}{1 + \exp(-x)}}{1 / (1 + exp(-x))}.
 
-If \code{p} is a probability, then \code{p/(1-p)} is the corresponding
-odds, while the \code{logit} of \code{p} is the logarithm of the odds.
-The difference between the logits of two probabilities is the logarithm
-of the odds ratio. The derivative of probability \code{p} in a logistic
-function (such as \code{invlogit}) is: \code{(d / dx) = p * (1 - p)}. 
+If \eqn{p} is a probability, then \eqn{\frac{p}{1-p}}{p/(1-p)} is the
+corresponding odds, while the \code{logit} of \eqn{p} is the logarithm
+of the odds. The difference between the logits of two probabilities is
+the logarithm of the odds ratio. The derivative of probability \eqn{p}
+in a logistic function (such as \code{invlogit}) is:
+\eqn{\frac{d}{dx} = p(1-p)}{(d / dx) = p * (1 - p)}. 
 }
 \value{
- \code{invlogit} returns probability \code{p}, and \code{logit} returns \code{x}.
+  \code{invlogit} returns probability \code{p}, and
+  \code{logit} returns \code{x}.
 }
 \seealso{\code{\link{LaplacesDemon}}}
 \examples{

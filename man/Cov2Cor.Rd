@@ -12,8 +12,8 @@ correlation matrix.
 Cov2Cor(Sigma)
 }
 \arguments{
-    \item{Sigma}{This is a covariance matrix, and may be entered as
-      either a matrix or vector.}
+     \item{Sigma}{This is a covariance matrix, \eqn{\Sigma}{Sigma}, and
+          may be entered as either a matrix or vector.}
 }
 \details{\code{Cov2Cor} is an expanded form of the \code{cov2cor} function in the \code{stats} package, where \code{Cov2Cor} is also able to accept and return a vectorized matrix.}
 \value{
@@ -22,10 +22,6 @@ Cov2Cor(Sigma)
      as a matrix or vector.
 }
 \examples{
-# The following example fits a model as Fit1, then adds a predictor, and
-# fits another model, Fit2. The two models are compared with Bayes
-# factors.
-
 library(LaplacesDemon)
 Sigma <- matrix(c(2,0.1,0.1,3),2,2)
 Cov2Cor(Sigma)

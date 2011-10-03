@@ -25,7 +25,7 @@
      \code{NULL} and selects every parameter for plotting. Each quoted
      string is matched to one or more parameter names with the
      \code{grep} function. For example, if the user specifies
-     \code{Parms=c("eta","tau")}, and if the parameter names
+     \code{Parms=c("eta", "tau")}, and if the parameter names
      are beta[1], beta[2], eta[1], eta[2], and tau, then all parameters
      will be selected, because the string \code{eta} is within
      \code{beta}. Since \code{grep} is used, string matching uses

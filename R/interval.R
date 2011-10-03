@@ -19,8 +19,8 @@ interval <- function(x, a=-Inf, b=Inf)
           x <- ifelse(x > b, b, x)}
      ### Matrix
      else if(is.matrix(x) && {length(dim(x)) == 2}) {
-          r <- NROW(x)
-          c <- NCOL(x)
+          r <- nrow(x)
+          c <- ncol(x)
           x <- as.vector(x)
           x <- ifelse(x < a, a, x)
           x <- ifelse(x > b, b, x)

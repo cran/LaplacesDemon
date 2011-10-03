@@ -12,44 +12,46 @@ rmvn(n=1, mu, Sigma)
 }
 \arguments{
   \item{x}{This is data or parameters in the form of a vector of length
-    \code{k} or a matrix with \code{k} columns.}
+       \eqn{k} or a matrix with \eqn{k} columns.}
   \item{n}{This is the number of random draws.}
-  \item{mu}{This is the mean vector with length \code{k} or matrix with
-    \code{k} columns. The \code{rmvn} function requires a vector.}
-  \item{Sigma}{This is the \code{k x k} covariance matrix.}
-  \item{log}{Logical. If \code{log=TRUE} then the logarithm of the
-    density is returned.}
+  \item{mu}{This is mean vector \eqn{\mu}{mu} with length \eqn{k} or
+       matrix (\code{dmvn} only) with \eqn{k} columns.}
+  \item{Sigma}{This is the \eqn{k \times k}{k x k} covariance matrix
+       \eqn{\Sigma}{Sigma}.}
+  \item{log}{Logical. If \code{log=TRUE}, then the logarithm of the
+       density is returned.}
 }
 \details{
   \itemize{
   \item Application: Continuous Multivariate
-  \item Density: p(theta) = (1/((2*pi)^(k/2)*|Sigma|^(1/2)))*exp(-.5*(theta-mu)'*Sigma^(-1)*(theta-mu))
+  \item Density: \eqn{p(\theta) = \frac{1}{(2\pi)^{k/2}|\Sigma|^{1/2}}
+    \exp(-.5(\theta - \mu)'\Sigma^{-1}(\theta - \mu))}{p(theta) = (1/((2*pi)^(k/2)*|Sigma|^(1/2)))*exp(-.5*(theta-mu)'*Sigma^(-1)*(theta-mu))}
   \item Inventor: Unknown (to me, anyway)
-  \item Notation 1: theta ~ MVN(mu, Sigma)
-  \item Notation 2: theta ~ N[k](mu, Sigma)
-  \item Notation 3: p(theta) = MVN(theta | mu, Sigma)
-  \item Notation 4: p(theta) = N[k](theta | mu, Sigma)
-  \item Parameter 1: location vector mu
-  \item Parameter 2: positive-definite covariance matrix Sigma
-  \item Mean: E(theta) = mu
-  \item Variance: var(theta) = Sigma
-  \item Mode: mu
+  \item Notation 1: \eqn{\theta \sim \mathcal{MVN}(\mu, \Sigma)}{theta ~ MVN(mu, Sigma)}
+  \item Notation 2: \eqn{\theta \sim \mathcal{N}_k(\mu, \Sigma)}{theta ~ N[k](mu, Sigma)}
+  \item Notation 3: \eqn{p(\theta) = \mathcal{MVN}(\theta | \mu, \Sigma)}{p(theta) = MVN(theta | mu, Sigma)}
+  \item Notation 4: \eqn{p(\theta) = \mathcal{N}_k(\theta | \mu, \Sigma)}{p(theta) = N[k](theta | mu, Sigma)}
+  \item Parameter 1: location vector \eqn{\mu}{mu}
+  \item Parameter 2: positive-definite \eqn{k \times k}{k x k} covariance matrix \eqn{\Sigma}{Sigma}
+  \item Mean: \eqn{E(\theta) = \mu}{E(theta) = mu}
+  \item Variance: \eqn{var(\theta) = \Sigma}{var(theta) = Sigma}
+  \item Mode: \eqn{mode(\theta) = \mu}{mode(theta) = mu}
 }
 
 The multivariate normal distribution, or multivariate Gaussian
 distribution, is a multidimensional extension of the one-dimensional
-or univariate normal or Gaussian distribution. A random vector is
+or univariate normal (or Gaussian) distribution. A random vector is
 considered to be multivariate normally distributed if every linear
 combination of its components has a univariate normal distribution.
-This distribution has a mean parameter vector \code{mu} of length
-\code{k}, and a \code{k x k} covariance matrix \code{Sigma}, which
-must be positive-definite.
+This distribution has a mean parameter vector \eqn{\mu}{mu} of length
+\eqn{k} and a \eqn{k \times k}{k x k} covariance matrix
+\eqn{\Sigma}{Sigma}, which must be positive-definite.
 
-These functions are similar to those in the \code{bayesm}, \code{mnormt}, and
-\code{mvtnorm} packages.
+These functions are similar to those in the \code{bayesm},
+\code{mnormt}, and \code{mvtnorm} packages.
 }
 \value{
-  \code{dmvn} gives the density, and 
+  \code{dmvn} gives the density and 
   \code{rmvn} generates random deviates.
 }
 \examples{

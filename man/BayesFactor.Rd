@@ -6,14 +6,17 @@ This function calculates Bayes factors for two or more fitted objects
 of class \code{demonoid} or  \code{laplace} that were estimated
 respectively with the \code{LaplacesDemon} or \code{LaplaceApproximation}
 functions, and indicates the strength of evidence in favor of the
-hypothesis (that each model is better than another model).
+hypothesis (that each model, \eqn{\mathcal{M}_i}{M[i]}, is better than
+another model, \eqn{\mathcal{M}_j}{M[j]}).
 }
 \usage{
 BayesFactor(x)
 }
 \arguments{
     \item{x}{This is a list of two or more fitted objects of class
-    \code{demonoid} or \code{laplace}.}
+    \code{demonoid} or \code{laplace}. The components are named in order
+    beginning with model 1, \code{M1}, and \eqn{k} models are usually
+    represented as \eqn{\mathcal{M}_1,\dots,\mathcal{M}_k}{M[1],...,M[k]}.}
 }
 \details{
 Introduced by Harold Jeffreys, a 'Bayes factor' is a Bayesian
@@ -41,8 +44,9 @@ likelihood of the data, in each fitted object of class \code{laplace}
 and \code{demonoid}. The \code{BayesFactor} function calculates matrix
 \code{B}, a matrix of Bayes factors, where each element of matrix
 \code{B} is a comparison of two models. Each Bayes factor is calculated
-as the exponentiated difference of \code{LML} of model 1 (M[1]) and
-\code{LML} of model 2 (M[2]), and the hypothesis for each element of
+as the exponentiated difference of \code{LML} of model 1
+(\eqn{\mathcal{M}_1}{M[1]}) and \code{LML} of model 2
+(\eqn{\mathcal{M}_2}{M[2]}), and the hypothesis for each element of
 matrix \code{B} is that the model associated with the row is greater
 than the model associated with the column. For example, element
 \code{B[3,2]} is the Bayes factor that model 3 is greater than model 2.
@@ -50,8 +54,10 @@ The 'Strength of Evidence' aids in the interpretation (Jeffreys, 1961).
 
 Each Bayes factor, \code{B}, is the posterior odds in favor of the
 hypothesis divided by the prior odds in favor of the hypothesis, where
-the hypothesis is usually M[1] > M[2]. For example, when
-\code{B[3,2]=2}, the data favor M[3] over M[2] with 2:1 odds.
+the hypothesis is usually
+\eqn{\mathcal{M}_1 > \mathcal{M}_2}{M[1] > M[2]}. For example, when
+\code{B[3,2]=2}, the data favor \eqn{\mathcal{M}_3}{M[3]} over
+\eqn{\mathcal{M}_2}{M[2]} with 2:1 odds.
 
 Gelman finds Bayes factors generally to be irrelevant, because they
 compute the relative probabilities of the models conditional on one
@@ -127,9 +133,10 @@ Model <- function(parm, Data)
      ### Log(Prior Densities)
      beta.prior <- sum(dnorm(beta, 0, sqrt(1000), log=TRUE))
      sigma.prior <- dhalfcauchy(sigma, 25, log=TRUE)
-     ### Log-Posterior
+     ### Log-Likelihood
      mu <- tcrossprod(beta, Data$X)
      LL <- sum(dnorm(Data$y, mu, sigma, log=TRUE))
+     ### Log-Posterior
      LP <- LL + beta.prior + sigma.prior
      Modelout <- list(LP=LP, Dev=-2*LL, Monitor=c(LP,sigma), yhat=mu,
           parm=parm)

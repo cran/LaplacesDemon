@@ -11,7 +11,7 @@ Cov2Cor <- function(Sigma)
      {
      if(any(is.na(Sigma))) stop("Sigma has missing values in Cov2Cor().")
      if(any(is.nan(Sigma)))
-          stop("Sigma has non-numeric values (NaN's) in Cov2Cor().")
+          stop("Sigma has non-numeric values (NaNs) in Cov2Cor().")
      if(any(is.infinite(Sigma)))
           stop("Sigma has infinite values in Cov2Cor().")
      if(is.matrix(Sigma)) {

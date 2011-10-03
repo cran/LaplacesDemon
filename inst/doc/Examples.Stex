@@ -84,6 +84,7 @@ This vignette will grow over time as examples of more methods become included. C
 \item GARCH(1,1) \ref{garch}
 \item GARCH-M(1,1) \ref{garchm}
 \item Geographically Weighted Regression \ref{gwr}
+\item Inverse Gaussian Regression \ref{ig.reg}
 \item Kriging \ref{kriging}
 \item Kriging, Predictive Process \ref{kriging.pp}
 \item Laplace Regression \ref{laplace.reg}
@@ -100,6 +101,8 @@ This vignette will grow over time as examples of more methods become included. C
 \item Multinomial Logit \ref{mnl}
 \item Multinomial Logit, Nested \ref{nmnl}
 \item Multinomial Probit \ref{mnp}
+\item Multivariate Binary Probit \ref{multiv.bin.probit}
+\item Multivariate Regression \ref{multivariate.reg}
 \item Normal, Multilevel \ref{norm.ml}
 \item Panel, Autoregressive Poisson \ref{panel.ap}
 \item Penalized Spline Regression \ref{penalized.spline}
@@ -2124,6 +2127,47 @@ MyData <- list(J=J, N=N, X=X, Z=Z, latitude=northing, longitude=easting, \\
 \hspace*{0.27 in} \} \\
 }
 
+\section{Inverse Gaussian Regression} \label{ig.reg}
+\subsection{Form}
+$$\textbf{y} \sim \mathcal{N}^{-1}(\mu, \lambda)$$
+$$\mu = \exp(\textbf{X}\beta) + C$$
+$$\beta_j \sim \mathcal{N}(0, 1000), \quad j=1,\dots,J$$
+$$\lambda \sim \mathcal{HC}(25)$$
+where $C$ is a small constant, such as 1.0E-10. 
+\subsection{Data}
+\code{N <- 100 \\
+J <- 3 \#Number of predictors, including the intercept \\
+X <- matrix(1,N,J) \\
+for (j in 2:J) \{X[,j] <- rnorm(N,runif(1,-3,3),runif(1,0.1,1))\} \\
+beta.orig <- runif(J,-3,3) \\
+e <- rnorm(N,0,0.1) \\
+y <- exp(as.vector(tcrossprod(beta.orig, X)) + e) \\
+mon.names <- c("LP","lambda") \\
+parm.names <- parm.names(list(beta=rep(0,J), log.lambda=0)) \\
+MyData <- list(J=J, X=X, mon.names=mon.names, parm.names=parm.names, y=y) \\
+}
+\subsection{Initial Values}
+\code{Initial.Values <- c(rep(0,J), log(1))}
+\subsection{Model}
+\code{Model <- function(parm, Data) \\
+\hspace*{0.27 in} \{ \\
+\hspace*{0.27 in} \#\#\# Parameters \\
+\hspace*{0.27 in} beta <- parm[1:Data$J] \\
+\hspace*{0.27 in} lambda <- exp(parm[Data$J+1]) \\
+\hspace*{0.27 in} \#\#\# Log(Prior Densities) \\
+\hspace*{0.27 in} beta.prior <- sum(dnorm(beta, 0, sqrt(1000), log=TRUE)) \\
+\hspace*{0.27 in} lambda.prior <- dhalfcauchy(lambda, 25, log=TRUE) \\
+\hspace*{0.27 in} \#\#\# Log-Likelihood \\
+\hspace*{0.27 in} mu <- exp(tcrossprod(beta, Data$X)) + 1.0E-10 \\
+\hspace*{0.27 in} LL <- sum(dinvgaussian(Data$y, mu, lambda, log=TRUE)) \\
+\hspace*{0.27 in} \#\#\# Log-Posterior \\
+\hspace*{0.27 in} LP <- LL + beta.prior + lambda.prior \\
+\hspace*{0.27 in} Modelout <- list(LP=LP, Dev=-2*LL, Monitor=c(LP,lambda), yhat=mu, \\
+\hspace*{0.62 in} parm=parm) \\
+\hspace*{0.27 in} return(Modelout) \\
+\hspace*{0.27 in} \} \\
+}
+
 \section{Kriging} \label{kriging}
 This is an example of universal kriging of $\textbf{y}$ given $\textbf{X}$, regression effects $\beta$, and spatial effects $\zeta$. Euclidean distance between spatial coordinates (longitude and latitude) is used for each of $i=1,\dots,N$ records of $\textbf{y}$. An additional record is created from the same data-generating process to compare the accuracy of interpolation. For the spatial component, $\phi$ is the rate of spatial decay and $\kappa$ is the scale. $\kappa$ is often difficult to identify, so it is set to 1 (Gaussian), but may be allowed to vary up to 2 (Exponential). In practice, $\phi$ is also often difficult to identify. While $\Sigma$ is spatial covariance, spatial correlation is $\rho = \exp(-\phi \textbf{D})$. To extend this to a large data set, consider the predictive process kriging example in section \ref{kriging.pp}.
 \subsection{Form}
@@ -3047,6 +3091,129 @@ MyData <- list(J=J, K=K, N=N, R=R, X=X, mon.names=mon.names, \\
 \hspace*{0.27 in} \} \\
 }
 
+\section{Multivariate Binary Probit} \label{multiv.bin.probit}
+\subsection{Form}
+$$\textbf{Z}_{i,1:J} \sim \mathcal{N}_J(\mu_{i,1:J}, \Sigma), \quad i=1,\dots,N$$
+\[\textbf{Z}_{i,j} \in \left\{ 
+\begin{array}{l l}
+ $[0,10]$ & \quad \mbox{if $\textbf{y}_i = j$}\\ 
+ $[-10,0]$ \\ \end{array} \right. \]
+$$\mu_{1:N,j} = \textbf{X} \beta_{j,1:K}$$
+$$\Sigma \sim \mathcal{IW}(J, \textbf{R}), \quad \textbf{R} = \textbf{I}_J, \quad \Sigma[1,1] = 1$$
+$$\beta_{j,k} \sim \mathcal{N}(0, 1000), \quad j=1,\dots,(J-1), \quad k=1,\dots,K$$
+$$\beta_{J,k} = - \sum^{J-1}_{j=1} \beta_{j,k}$$
+$$\textbf{Z}_{i,j} \sim \mathcal{N}(0, 1000) \in [-10,10]$$
+\subsection{Data}
+\code{N <- 30 \\
+J <- 3 \#Number of binary dependent variables \\
+K <- 3 \#Number of columns to be in design matrix X \\
+Y <- matrix(round(runif(N*J)),N,J) \\
+X <- matrix(1,N, K) \\
+for (k in 2:K) \{X[,k] <- rnorm(N, runif(1,-3,3), runif(1,0.1,3))\} \\
+R <- diag(J) \\
+mon.names <- "LP" \\
+sigma.temp <- parm.names(list(Sigma=diag(J)), uppertri=1) \\
+parm.names <- c(sigma.temp[2:length(sigma.temp)], \\
+\hspace*{0.27 in} parm.names(list(beta=matrix(0,(J-1),K), Z=matrix(0,N,J)))) \\
+MyData <- list(J=J, K=K, N=N, R=R, X=X, Y=Y, mon.names=mon.names, \\
+\hspace*{0.27 in} parm.names=parm.names) \\
+}
+\subsection{Initial Values}
+\code{Initial.Values <- c(rep(0,length(R[upper.tri(R, diag=TRUE)])-1),
+\hspace*{0.27 in} rep(0,(J-1)*K), rep(0,N,J))}
+\subsection{Model}
+\code{Model <- function(parm, Data) \\
+\hspace*{0.27 in} \{ \\
+\hspace*{0.27 in} \#\#\# Parameters \\
+\hspace*{0.27 in} beta <- matrix(parm[grep("beta", Data$parm.names)], Data$J-1, Data$K) \\
+\hspace*{0.27 in} beta <- rbind(beta, colSums(beta)*-1) \#Sum to zero constraint \\
+\hspace*{0.27 in} Sigma <- matrix(NA, Data$J, Data$J) \\
+\hspace*{0.27 in} Sigma[upper.tri(Sigma, diag=TRUE)] <- c(0, parm[grep("Sigma", \\
+\hspace*{0.62 in} Data$parm.names)]) \\
+\hspace*{0.27 in} Sigma[lower.tri(Sigma)] <- Sigma[upper.tri(Sigma)] \\
+\hspace*{0.27 in} diag(Sigma) <- exp(diag(Sigma)) \\
+\hspace*{0.27 in} Z <- matrix(parm[grep("Z", Data$parm.names)], Data$N, Data$J) \\
+\hspace*{0.27 in} \#\#\# Log(Prior Densities) \\
+\hspace*{0.27 in} beta.prior <- sum(dnorm(beta, 0, sqrt(1000), log=TRUE)) \\
+\hspace*{0.27 in} Sigma.prior <- dinvwishart(Sigma, Data$J, Data$R, log=TRUE) \\
+\hspace*{0.27 in} Z.prior <- sum(dnorm(Z, 0, sqrt(1000), log=TRUE)) \\
+\hspace*{0.27 in} \#\#\# Log-Likelihood \\
+\hspace*{0.27 in} mu <- matrix(0,Data$N,Data$J) \\
+\hspace*{0.27 in} for (j in 1:Data$J) {mu[,j] <- tcrossprod(beta[j,], Data$X)} \\
+\hspace*{0.27 in} Z <- ifelse(Z > 10, 10, Z) \\
+\hspace*{0.27 in} Z <- ifelse(\{Data$Y == 0\} \& \{Z > 0\}, 0, Z) \\
+\hspace*{0.27 in} Z <- ifelse(Z < -10, -10, Z) \\
+\hspace*{0.27 in} Z <- ifelse(\{Data$Y == 1\} \& \{Z < 0\}, 0, Z) \\
+\hspace*{0.27 in} parm[grep("Z", Data$parm.names)] <- as.vector(Z) \\
+\hspace*{0.27 in} LL <- sum(dmvn(Z, mu, Sigma, log=TRUE)) \\
+\hspace*{0.27 in} yrep <- ifelse(Z >= 0, 1, 0) \\
+\hspace*{0.27 in} \#\#\# Log-Posterior \\
+\hspace*{0.27 in} LP <- LL + beta.prior + Sigma.prior + Z.prior \\
+\hspace*{0.27 in} Modelout <- list(LP=LP, Dev=-2*LL, Monitor=LP, yhat=yrep, parm=parm) \\
+\hspace*{0.27 in} return(Modelout) \\
+\hspace*{0.27 in} \} \\
+}
+
+\section{Multivariate Regression} \label{multivariate.reg}
+\subsection{Form}
+$$\textbf{Y}_{i,k} \sim \mathcal{N}_K(\mu_{i,k}, \Sigma), \quad i=1,\dots,N; \quad k=1,\dots,K$$
+$$\mu_{i,k} = \textbf{X}_{1:N,k} \beta_{k,1:J}$$
+$$\Sigma = \Omega^{-1}$$
+$$\Omega \sim \mathcal{W}(K, \textbf{S}), \quad \textbf{S} = \textbf{I}_K$$
+$$\beta_{k,j} \sim \mathcal{N}(0, 1000), \quad j=1,\dots,J$$
+\subsection{Data}
+\code{N <- 20 \\
+year <- c(1935,1936,1937,1938,1939,1940,1941,1942,1943,1944,1945,1946, \\
+\hspace*{0.27 in} 1947,1948,1949,1950,1951,1952,1953,1954) \\
+IG <- c(33.1,45.0,77.2,44.6,48.1,74.4,113.0,91.9,61.3,56.8,93.6,159.9, \\
+\hspace*{0.27 in} 147.2,146.3,98.3,93.5,135.2,157.3,179.5,189.6) \\
+VG <- c(1170.6,2015.8,2803.3,2039.7,2256.2,2132.2,1834.1,1588.0,1749.4, \\
+\hspace*{0.27 in} 1687.2,2007.7,2208.3,1656.7,1604.4,1431.8,1610.5,1819.4,2079.7, \\
+\hspace*{0.27 in} 2371.6,2759.9) \\
+CG <- c(97.8,104.4,118.0,156.2,172.6,186.6,220.9,287.8,319.9,321.3,319.6, \\
+\hspace*{0.27 in} 346.0,456.4,543.4,618.3,647.4,671.3,726.1,800.3,888.9) \\
+IW <- c(12.93,25.90,35.05,22.89,18.84,28.57,48.51,43.34,37.02,37.81, \\
+\hspace*{0.27 in} 39.27,53.46,55.56,49.56,32.04,32.24,54.38,71.78,90.08,68.60) \\
+VW <- c(191.5,516.0,729.0,560.4,519.9,628.5,537.1,561.2,617.2,626.7, \\
+\hspace*{0.27 in} 737.2,760.5,581.4,662.3,583.8,635.2,723.8,864.1,1193.5,1188.9) \\
+CW <- c(1.8,0.8,7.4,18.1,23.5,26.5,36.2,60.8,84.4,91.2,92.4,86.0,111.1, \\
+\hspace*{0.27 in} 130.6,141.8,136.7,129.7,145.5,174.8,213.5) \\
+J <- 4 \#Number of columns in design matrix \\
+K <- 2 \#Number of DVs \\
+Y <- matrix(c(IG,IW),N,K) \\
+X <- matrix(c(VG,CG,VW,CW),N,J) \\
+S <- diag(ncol(Y)) \\
+mon.names <- "LP" \\
+parm.names <- parm.names(list(beta=matrix(0,K,J), Omega=diag(K)), \\
+\hspace*{0.27 in} uppertri=c(0,1)) \\
+MyData <- list(J=J, K=K, N=N, S=S, X=X, Y=Y, mon.names=mon.names, \\
+\hspace*{0.27 in} parm.names=parm.names) \\
+}
+\subsection{Initial Values}
+\subsection{Data}
+\code{Model <- function(parm, Data) \\
+\hspace*{0.27 in} \{ \\
+\hspace*{0.27 in} \#\#\# Parameters \\
+\hspace*{0.27 in} beta <- matrix(parm[grep("beta", Data$parm.names)], Data$K, Data$J) \\
+\hspace*{0.27 in} Omega <- matrix(NA, Data$K, Data$K) \\
+\hspace*{0.27 in} Omega[upper.tri(Omega, diag=TRUE)] <- parm[grep("Omega", \\
+\hspace*{0.62 in} Data$parm.names)] \\
+\hspace*{0.27 in} Omega[lower.tri(Omega)] <- Omega[upper.tri(Omega)] \\
+\hspace*{0.27 in} Sigma <- solve(Omega) \\
+\hspace*{0.27 in} \#\#\# Log(Prior Densities) \\
+\hspace*{0.27 in} beta.prior <- sum(dnorm(beta, 0, sqrt(1000), log=TRUE)) \\
+\hspace*{0.27 in} Omega.prior <- dwishart(Omega, Data$K, Data$S, log=TRUE) \\
+\hspace*{0.27 in} \#\#\# Log-Likelihood \\
+\hspace*{0.27 in} mu <- matrix(0,Data$N,Data$K) \\
+\hspace*{0.27 in} for (k in 1:Data$K) \{mu[,k] <- tcrossprod(beta[k,], Data$X)\} \\
+\hspace*{0.27 in} LL <- sum(dmvn(Data$Y, mu, Sigma, log=TRUE)) \\
+\hspace*{0.27 in} \#\#\# Log-Posterior \\
+\hspace*{0.27 in} LP <- LL + beta.prior + Omega.prior \\
+\hspace*{0.27 in} Modelout <- list(LP=LP, Dev=-2*LL,Monitor=LP, yhat=mu, parm=parm) \\
+\hspace*{0.27 in} return(Modelout) \\
+\hspace*{0.27 in} \} \\
+}
+
 \section{Normal, Multilevel} \label{norm.ml}
 This is Gelman's school example \citep{gelman04}.  Note that \pkg{LaplacesDemon} is much slower to converge compared to this example that uses the \pkg{R2WinBUGS} package \citep{r:r2winbugs}, an \proglang{R} package on CRAN. However, also note that Laplace's Demon (eventually) provides a better answer (higher ESS, lower DIC, etc.).
 \subsection{Form}
@@ -3619,11 +3786,11 @@ $$\sigma_1 \sim \mathcal{HC}(25)$$
 $$\beta_{j,1} \sim \mathcal{N}(0, 1000), \quad j=1,\dots,2$$
 $$\beta_{1,t} \sim \mathcal{N}(\beta_{1,t-1}, \sigma^2_2), \quad t=2,\dots,T$$
 $$\beta_{2,t} \sim \mathcal{N}(\beta_{2,t-1}, \sigma^2_3), \quad t=2,\dots,T$$
-$$\phi_1 \sim \mathcal{N}(0, 1000) \in [0,\infty]$$
+$$\phi_1 \sim \mathcal{HN}(1000)$$
 $$\phi_t \sim \mathcal{N}(\phi_{t-1}, \sigma^2_4) \in [0,\infty], \quad t=2,\dots,T$$
-$$\kappa_1 \sim \mathcal{N}(0, 1000) \in [0,\infty]$$
+$$\kappa_1 \sim \mathcal{HN}(1000)$$
 $$\kappa_t \sim \mathcal{N}(\kappa_{t-1}, \sigma^2_5) \in [0,\infty], \quad t=2,\dots,T$$
-$$\lambda_1 \sim \mathcal{N}(0, 1000) \in [0,\infty]$$
+$$\lambda_1 \sim \mathcal{HN}(1000)$$
 $$\lambda_t \sim \mathcal{N}(\lambda_{t-1}, \sigma^2_6) \in [0,\infty], \quad t=2,\dots,T$$
 \subsection{Data}
 \code{S <- 20 \\
@@ -3674,24 +3841,19 @@ MyData <- list(D=D, S=S, T=T, X=X, Y=Y, latitude=latitude, longitude=longitude, 
 \hspace*{0.27 in} for (t in 1:Data$T) \{ \\
 \hspace*{0.62 in} Sigma[ , ,t] <- lambda[t]\textasciicircum 2 * exp(-phi[t] * Data$D)\textasciicircum kappa[t]\} \\
 \hspace*{0.27 in} \#\#\# Log(Prior Densities) \\
-\hspace*{0.27 in} beta.prior <- phi.prior <- kappa.prior <- lambda.prior <- rep(0, \\
-\hspace*{0.62 in} Data$T) \\
-\hspace*{0.27 in} beta.prior <- sum(dnorm(beta[,1], 0, sqrt(1000), log=TRUE)) \\
-\hspace*{0.27 in} beta.prior <- beta.prior + sum(dnorm(beta[,-1], beta[,-Data$T], \\
-\hspace*{0.62 in} matrix(sigma[2:3], 2, Data$T-1), log=TRUE)) \\
-\hspace*{0.27 in} zeta.prior <- dmvn(zeta, rep(0,Data$S), Sigma[ , ,1], log=TRUE) \\
-\hspace*{0.27 in} phi.prior[1] <- dtrunc(phi[1], "norm", a=0, b=Inf, mean=0, \\
-\hspace*{0.62 in} sd=sqrt(1000), log=TRUE) \\
-\hspace*{0.27 in} phi.prior[-1] <- dtrunc(phi[-1], "norm", a=0, b=Inf, \\
-\hspace*{0.62 in} mean=phi[-Data$T], sd=sigma[4], log=TRUE) \\
-\hspace*{0.27 in} kappa.prior[1] <- dtrunc(kappa[1], "norm", a=0, b=Inf, mean=0, \\
-\hspace*{0.62 in} sd=sqrt(1000), log=TRUE) \\
-\hspace*{0.27 in} kappa.prior[-1] <- dtrunc(kappa[-1], "norm", a=0, b=Inf, \\
-\hspace*{0.62 in} mean=kappa[-Data$T], sd=sigma[5], log=TRUE) \\
-\hspace*{0.27 in} lambda.prior[1] <- dtrunc(lambda[1], "norm", a=0, b=Inf, mean=0, \\
-\hspace*{0.62 in} sd=sqrt(1000), log=TRUE) \\
-\hspace*{0.27 in} lambda.prior[-1] <- dtrunc(lambda[-1], "norm", a=0, b=Inf, \\
-\hspace*{0.62 in} mean=lambda[-Data$T], sd=sigma[6], log=TRUE) \\
+\hspace*{0.27 in} beta.prior <- sum(dnorm(beta[,1], 0, sqrt(1000), log=TRUE), \\
+\hspace*{0.62 in} dnorm(beta[,-1], beta[,-Data$T], matrix(sigma[2:3], 2, \\
+\hspace*{0.62 in} Data$T-1), log=TRUE)) \\
+\hspace*{0.27 in} zeta.prior <- dmvn(zeta, rep(0,Data$S), Sigma[ , , 1], log=TRUE) \\
+\hspace*{0.27 in} phi.prior <- sum(dhalfnorm(phi[1], sqrt(1000), log=TRUE), \\
+\hspace*{0.62 in} dtrunc(phi[-1], "norm", a=0, b=Inf, mean=phi[-Data$T], \\
+\hspace*{0.62 in} sd=sigma[4], log=TRUE)) \\
+\hspace*{0.27 in} kappa.prior <- sum(dhalfnorm(kappa[1], sqrt(1000), log=TRUE), \\
+\hspace*{0.62 in} dtrunc(kappa[-1], "norm", a=0, b=Inf, mean=kappa[-Data$T], \\
+\hspace*{0.62 in} sd=sigma[5], log=TRUE)) \\
+\hspace*{0.27 in} lambda.prior <- sum(dhalfnorm(lambda[1], sqrt(1000), log=TRUE), \\
+\hspace*{0.62 in} dtrunc(lambda[-1], "norm", a=0, b=Inf, mean=lambda[-Data$T], \\
+\hspace*{0.62 in} sd=sigma[6], log=TRUE)) \\
 \hspace*{0.27 in} sigma.prior <- sum(dhalfcauchy(sigma, 25, log=TRUE)) \\
 \hspace*{0.27 in} \#\#\# Log-Likelihood \\
 \hspace*{0.27 in} mu <- Theta <- matrix(zeta, Data$S, Data$T) \\

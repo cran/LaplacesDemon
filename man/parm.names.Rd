@@ -32,7 +32,7 @@ complicated models. The \code{parm.names} function is a utility function
 designed to minimize programming by the user.
 
 For example, a simple model may only require \code{parm.names <-
-  c("alpha","beta[1]","beta[2]","log.sigma")}. A more complicated model
+  c("alpha", "beta[1]", "beta[2]", "log.sigma")}. A more complicated model
   may contain hundreds of parameters that are combinations of scalars,
   vectors, matrices, and upper-triangular matrices, and is the reason
   for the \code{parm.names} function.
@@ -40,6 +40,8 @@ For example, a simple model may only require \code{parm.names <-
 In the case of an upper-triangular matrix, simply pass the full matrix
 to \code{parm.names} and indicate that only the upper-triangular will be
 used via the \code{uppertri} argument.
+
+Numerous examples may be found in the accompanying ``Examples'' vignette.
 }
 \value{
  This function returns a vector of parameter names.

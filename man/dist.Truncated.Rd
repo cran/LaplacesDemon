@@ -32,12 +32,6 @@ vartrunc(spec, a = -Inf, b = Inf, ...)
   \item{\dots}{Additional arguments pertain to the probability
     distribution specified in the \code{spec} argument.}
 }
-\value{
-  \code{dtrunc} gives the density, \code{extrunc} gives the expectation,
-  \code{ptrunc} gives the distribution function, \code{qtrunc} gives the
-  quantile function, \code{rtrunc} takes random draws, and
-  \code{vartrunc} gives the variance of the truncated distribution.
-}
 \details{
   A truncated distribution is a conditional distribution that results
   from a priori restricting the domain of some other probability
@@ -46,6 +40,14 @@ vartrunc(spec, a = -Inf, b = Inf, ...)
   truncated bounds. In contrast to a truncated distribution, a censored
   distribution occurs when the probability distribution is still allowed
   outside of a pre-specified range.
+}
+\value{
+  \code{dtrunc} gives the density,
+  \code{extrunc} gives the expectation,
+  \code{ptrunc} gives the distribution function,
+  \code{qtrunc} gives the quantile function,
+  \code{rtrunc} generates random deviates, and
+  \code{vartrunc} gives the variance of the truncated distribution.
 }
 \references{
 Nadarajah, S. and Kotz, S. (2006). R Programs for Computing Truncated

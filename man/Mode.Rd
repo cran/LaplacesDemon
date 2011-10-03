@@ -21,10 +21,10 @@ multiple modes exist, this function will return only the first one
 found.
 
 When vector \code{x} has a number of unique values that is greater than
-20 or equal to its length, the \code{Mode} function treats vector{x} as
-a continuous variable, and returns the value of \code{x} associated with
-the most kernel density. If multiple modes exist, this function will
-return only the first one found.
+20 or equal to its length, the \code{Mode} function treats vector
+\code{x} as a continuous variable, and returns the value of \code{x}
+associated with the most kernel density. If multiple modes exist, then
+this function will return only the first mode found.
 }
 \value{
  \code{Mode} returns the value that occurs most frequently, or in a

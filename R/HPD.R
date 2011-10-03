@@ -6,7 +6,7 @@
 # different, it is essentially the same as in the coda package.           #
 ###########################################################################
 
-HPD <- function(obj, prob = 0.95, ...)
+HPD <- function(obj, prob=0.95, ...)
      {
      obj <- as.matrix(obj)
      vals <- apply(obj, 2, sort)

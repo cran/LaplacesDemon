@@ -181,7 +181,7 @@ LaplaceApproximation(Model=NULL, parm=NULL, Data=NULL, Interval=1.0E-6,
           This is a logical indicator of whether or not
           \code{LaplaceApproximation} converged within the specified
 	  \code{Iterations} according to the supplied
-	  \code{Stop.Tolerance} criterion (when \code{Method="AGA"}.
+	  \code{Stop.Tolerance} criterion (when \code{Method="AGA"}).
 	  Convergence does not indicate that the global maximum has
 	  been found, but only that the tolerance was less than or
 	  equal to the \code{Stop.Tolerance} criterion. 
@@ -338,9 +338,10 @@ Model <- function(parm, Data)
      ### Log of Prior Densities
      beta.prior <- sum(dnorm(beta, 0, sqrt(1000), log=TRUE))
      sigma.prior <- dhalfcauchy(sigma, 25, log=TRUE)
-     ### Log-Posterior
+     ### Log-Likelihood
      mu <- tcrossprod(beta, Data$X)
      LL <- sum(dnorm(Data$y, mu, sigma, log=TRUE))
+     ### Log-Posterior
      LP <- LL + beta.prior + sigma.prior
      Modelout <- list(LP=LP, Dev=-2*LL, Monitor=c(sigma,mu[1]), yhat=mu,
           parm=parm)

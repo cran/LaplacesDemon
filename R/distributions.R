@@ -34,6 +34,17 @@ dcat <- function(x, p, log=FALSE)
      dens <- as.vector(rowSums(dens))
      return(dens)
      }
+rcat <- function(n, p)
+     {
+     p <- as.vector(p)
+     p <- p / sum(p)
+     pmax <- cumsum(p)
+     pmin <- c(0,cumsum(p[-length(p)]))
+     x <- z <- runif(n)
+     for (i in 1:n) {for (j in 1:length(p)) {
+          if({z[i] >= pmin[j]} & {z[i] < pmax[j]}) x[i] <- j}}
+     return(x)
+     }
 
 ###########################################################################
 # Dirichlet Distribution                                                  #
@@ -109,6 +120,52 @@ rhalfcauchy <- function(n, scale=25)
      }
 
 ###########################################################################
+# Half-Normal Distribution                                                #
+#                                                                         #
+# This half-normal distribution has mean=0 and is similar to the halfnorm #
+# functions in package fdrtool.                                           #
+###########################################################################
+
+dhalfnorm <- function(x, scale=sqrt(pi/2), log=FALSE)
+     {
+     x <- as.vector(x)
+     if(x < 0) stop("x must be non-negative in dhalfnorm().")
+     if(scale <= 0) stop("scale parameter negative in dhalfnormal().\n")
+     if(log == TRUE)
+          dens <- log(2) + dnorm(x, mean=0, sd=sqrt(pi/2) / scale,
+               log=TRUE)
+     else
+          dens <- 2*dnorm(x, mean=0, sd=sqrt(pi/2) / scale)
+     return(dens)
+     }
+phalfnorm <- function(q, scale=sqrt(pi/2), lower.tail=TRUE, log.p=FALSE)
+     {
+     q <- as.vector(q)
+     if(scale <= 0) stop("scale parameter negative in phalfnormal().\n")
+     p <- 2*pnorm(q, mean=0, sd=sqrt(pi/2) / scale) - 1
+     if(lower.tail == FALSE) p <- 1-p
+     if(log.p == TRUE) p <- log.p(p)
+     return(p)
+     }
+qhalfnorm <- function(p, scale=sqrt(pi/2), lower.tail=TRUE, log.p=FALSE)
+     {
+     p <- as.vector(p)
+     if(scale <= 0) stop("scale parameter negative in qhalfnormal().\n")
+     if(log.p == TRUE) p <- exp(p)
+     if(lower.tail == FALSE) p <- 1-p
+     x <- qnorm((p+1)/2, mean=0, sd=sqrt(pi/2) / scale)
+     return(x)
+     }
+rhalfnorm <- function(n, scale=sqrt(pi/2))
+     {
+     n <- as.vector(n)
+     if(scale <= 0) stop("scale parameter negative in rhalfnormal().\n")
+     x <- abs(rnorm(n, mean=0, sd=sqrt(pi/2) / scale))
+     return(x)
+     }
+
+
+###########################################################################
 # Half-t Distribution                                                     #
 #                                                                         #
 ###########################################################################
@@ -168,6 +225,37 @@ rinvgamma <- function(n, shape, scale=1)
      {return(1 / rgamma(n=n, shape=shape, rate=scale))}
 
 ###########################################################################
+# Inverse Gaussian Distribution                                           #
+#                                                                         #
+###########################################################################
+
+dinvgaussian <- function(x, mu, lambda, log=FALSE)
+     {
+     x <- as.vector(x)
+     mu <- as.vector(mu)
+     lambda <- as.vector(lambda)
+     if(any(x <= 0)) stop("x must be positive in dinvgaussian().")
+     if(any(mu <= 0)) stop("mu must be positive in dinvgaussian().")
+     if(lambda <= 0) stop("lambda must be positive in dinvgaussian().")
+     dens <- (lambda / (2*pi*x^3))^(1/2) *
+          exp(-((lambda*(x - mu)^2) / (2*mu^2*x)))
+     if(log == TRUE) dens <- log(dens)
+     return(dens)
+     }
+rinvgaussian <- function(n, mu, lambda)
+     {
+     if(any(mu <= 0)) stop("mu must be positive in rinvgaussian().")
+     if(lambda <= 0) stop("lambda must be positive in rinvgaussian().")
+     nu <- rnorm(n)
+     y <- nu^2
+     x <- mu + ((mu^2*y)/(2*lambda)) - (mu/(2*lambda)) *
+          sqrt(4*mu*lambda*y + mu^2*y^2)
+     z <- runif(n)
+     x <- ifelse(z > (mu/(mu+x)), mu^2/x, x)
+     return(x)
+     }
+
+###########################################################################
 # Inverse Wishart Distribution                                            #
 #                                                                         #
 # These functions are similar to those in the MCMCpack package.           #
@@ -212,7 +300,7 @@ dlaplace <- function(x, location=0, scale=1, log=FALSE)
      {
      x <- as.vector(x); location <- as.vector(location)
      if(scale <= 0) stop("scale parameter negative in dlaplace().\n")
-     logdens = (-abs(x - location) / scale) - log(2 * scale)
+     logdens <- (-abs(x - location) / scale) - log(2 * scale)
      if(log == FALSE) logdens <- exp(logdens)
      return(logdens)
      }
@@ -220,11 +308,11 @@ plaplace <- function(q, location=0, scale=1)
      {
      q <- as.vector(q); location <- as.vector(location)
      if(scale <= 0) stop("scale parameter negative in plaplace().\n")
-     z = {q - location} / scale
-     L = max(length(q), length(location), length(scale))
-     q = rep(q, len=L)
-     location = rep(location, len=L)
-     scale = rep(scale, len=L)
+     z <- {q - location} / scale
+     L <- max(length(q), length(location), length(scale))
+     q <- rep(q, len=L)
+     location <- rep(location, len=L)
+     scale <- rep(scale, len=L)
      z <- ifelse(q < location, 0.5 * exp(z), 1 - 0.5 * exp(-z))
      return(z)
      }
@@ -232,19 +320,19 @@ qlaplace <- function(p, location=0, scale=1)
      {
      p <- as.vector(p); location <- as.vector(location)
      if(scale <= 0) stop("scale parameter negative in qlaplace().\n")
-     L = max(length(p), length(location), length(scale))
-     p = rep(p, len=L)
-     location = rep(location, len=L)
-     scale = rep(scale, len=L)
+     L <- max(length(p), length(location), length(scale))
+     p <- rep(p, len=L)
+     location <- rep(location, len=L)
+     scale <- rep(scale, len=L)
      return(location - sign(p - 0.5) * scale * log(2 * ifelse(p < 0.5,
           p, 1 - p)))
      }
 rlaplace <- function(n, location=0, scale=1)
      {
      if(scale <= 0) stop("scale parameter negative in rlaplace().\n")
-     location = rep(location, len=n)
-     scale = rep(scale, len=n)
-     r = runif(n)
+     location <- rep(location, len=n)
+     scale <- rep(scale, len=n)
+     r <- runif(n)
      return(location - sign(r - 0.5) * scale * log(2 * ifelse(r < 0.5,
           r, 1 - r)))
      }
@@ -303,7 +391,7 @@ dmvn2 <- function(x, mu, Sigma, log=FALSE)
      if(missing(mu)) mu <- rep(0,k)
      if(!is.vector(mu)) stop("mu must be a vector in dmvn().")
      mu <- matrix(mu, ncol=length(mu))
-     if(NCOL(mu) != NCOL(Sigma)) stop("Dimensions of mu and Sigma differ in dmvn().")
+     if(NCOL(mu) != ncol(Sigma)) stop("Dimensions of mu and Sigma differ in dmvn().")
      options(warn=-1)
      distval <- mahalanobis(x, center=mu, cov=Sigma)
      logdet <- sum(log(eigen(Sigma, symmetric=TRUE,

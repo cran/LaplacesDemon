@@ -47,7 +47,7 @@ parm.names <- function(x, uppertri=NULL) {
               }
          ### Matrix
          else if(is.matrix(x[[i]]) & (uppertri[i] == 0)) {
-              for (k in 1:NCOL(x[[i]])) {for (j in 1:NROW(x[[i]])) {
+              for (k in 1:ncol(x[[i]])) {for (j in 1:nrow(x[[i]])) {
                    parm.names[cnt] <- paste(xname, "[", j, ",", k, "]",
                         sep="")
                    cnt <- cnt + 1
@@ -55,7 +55,7 @@ parm.names <- function(x, uppertri=NULL) {
               }
          ### Matrix, Upper Triangular
          else if(is.matrix(x[[i]]) & (uppertri[i] == 1)) {
-              for (k in 1:NCOL(x[[i]])) {for (j in 1:NROW(x[[i]])) {
+              for (k in 1:ncol(x[[i]])) {for (j in 1:nrow(x[[i]])) {
                    if(upper.tri(x[[i]], diag=TRUE)[j,k] == TRUE) {
                         parm.names[cnt] <- paste(xname, "[", j, ",", k,
                              "]", sep="")

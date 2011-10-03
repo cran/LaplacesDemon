@@ -1,0 +1,56 @@
+\name{dist.Inverse.Gaussian}
+\alias{dinvgaussian}
+\alias{rinvgaussian}
+\title{The Inverse Gaussian Distribution}
+\description{
+  This is the density function and random generation from the inverse
+  gaussian distribution.
+}
+\usage{
+dinvgaussian(x, mu, lambda, log=FALSE)
+rinvgaussian(n, mu, lambda)
+}
+\arguments{
+  \item{n}{This is the number of draws from the distribution.}
+  \item{x}{This is the scalar location to evaluate density.}
+  \item{mu}{This is the mean parameter.}
+  \item{lambda}{This is the inverse-variance parameter.}
+  \item{log}{Logical. If \code{log=TRUE} then the logarithm of the
+    density is returned.}
+}
+\details{
+  \itemize{
+    \item Application: Continuous Univariate
+    \item Density: \eqn{p(\theta) = \frac{\lambda}{(2 \pi
+	\theta^3)^{1/2}} \exp(-\frac{\lambda (\theta - \mu)^2}{2 \mu^2
+	\theta}), \theta > 0}{p(theta) = (lambda / (2*pi*theta^3))^(1/2) *
+    exp(-((lambda*(theta-mu)^2) / (2*mu^2*theta))), theta > 0}
+    \item Inventor: Unknown (to me, anyway)
+    \item Notation 1: \eqn{\theta \sim \mathcal{N}^{-1}(\mu, \lambda)}{theta ~ N^-1(mu, lambda)}
+    \item Notation 2: \eqn{p(\theta) = \mathcal{N}^{-1}(\theta | \mu, \lambda)}{p(theta) = N^-1(theta | mu, lambda)}
+    \item Parameter 1: shape \eqn{\mu > 0}{mu > 0}
+    \item Parameter 2: scale \eqn{\lambda > 0}{lambda > 0}
+    \item Mean: \eqn{E(\theta) = \mu}{E(theta) = mu}
+    \item Variance: \eqn{var(\theta) = \frac{\mu^3}{\lambda}}{var(theta) = mu^3/lambda}
+    \item Mode: \eqn{mode(\theta) = \mu ((1 + ((9 \mu^2) / (4
+      \lambda^2)))^{1/2} - ((3 \mu)/(2 \lambda)))}{mode(theta) = mu*((1 + ((9*mu^2)/(4*lambda^2)))^(1/2) - \frac{3*mu}{2*lambda})}
+}
+
+The inverse-Gaussian distribution, also called the Wald distribution, is
+used for dependent variables that are positive and continuous. When
+lambda tends to infinity (or variance to zero), the inverse-Gaussian
+distribution becomes similar to a normal (Gaussian) distribution. The
+name, inverse-Gaussian, is misleading, because it is not the inverse of
+a Gaussian distribution, which is obvious from the fact that
+\eqn{\theta}{\theta} must be positive.
+}
+\value{
+  \code{dinvgaussian} gives the density and
+  \code{rinvgaussian} generates random deviates.
+}
+\examples{
+x <- dinvgaussian(2, 1, 1)
+x <- rinvgaussian(10, 1, 1)
+}
+\keyword{distribution}
+

@@ -18,10 +18,10 @@ predict.demonoid <- function(object, Model, Data, ...)
      post <- as.matrix(object$Posterior1)
      if(is.matrix(object$Posterior2) == TRUE) {
           post <- as.matrix(object$Posterior2)}
-     yhat <- matrix(NA, length(y), NROW(post))
+     yhat <- matrix(NA, length(y), nrow(post))
      lengthcomp <- as.vector(Model(post[1,], Data)[[4]])
      if(length(lengthcomp) != length(y)) stop("y and yhat differ in length.\n")
-     for (i in 1:NROW(post)) {
+     for (i in 1:nrow(post)) {
           yhat[,i] <- as.vector(Model(post[i,], Data)[[4]])}
      ### Warnings
      if(is.matrix(object$Posterior2) == FALSE) {

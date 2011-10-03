@@ -19,27 +19,27 @@ rhalfcauchy(n, scale=25)
   \item{p}{This is a vector of probabilities.}
   \item{n}{This is the number of observations, which must be a positive
     integer that has length 1.}
-  \item{scale}{This is the scale parameter alpha, which must be positive.}
-  \item{log}{Logical. If \code{log=TRUE} then the logarithm of the
+  \item{scale}{This is the scale parameter \eqn{\alpha}{alpha}, which
+    must be positive.}
+  \item{log}{Logical. If \code{log=TRUE}, then the logarithm of the
     density is returned.}
 }
 \details{
   \itemize{
   \item Application: Continuous Univariate
-  \item Density: p(theta) = 2alpha / pi(theta^2 + alpha^2), theta >= 0
+  \item Density: \eqn{p(\theta) = \frac{2 \alpha}{\pi(\theta^2 +
+      \alpha^2)}, \quad \theta > 0}{p(theta) = 2alpha / pi(theta^2 + alpha^2), theta >= 0}
   \item Inventor: Derived from Cauchy
-  \item Notation 1: theta ~ Half-Cauchy(alpha)
-  \item Notation 2: theta ~ HC(alpha)
-  \item Notation 3: p(theta) = Half-Cauchy(theta | alpha)
-  \item Notation 4: p(theta) = HC(theta | alpha)
-  \item Parameter 1: scale parameter alpha > 0
-  \item Mean: E(theta) = does not exist
-  \item Variance: var(theta) = does not exist
-  \item Mode: 0
+  \item Notation 1: \eqn{\theta \sim \mathcal{HC}(\alpha)}{theta ~ HC(alpha)}
+  \item Notation 2: \eqn{p(\theta) = \mathcal{HC}(\theta | \alpha)}{p(theta) = HC(theta | alpha)}
+  \item Parameter 1: scale parameter \eqn{\alpha > 0}{alpha > 0}
+  \item Mean: \eqn{E(\theta)}{E(theta)} = does not exist
+  \item Variance: \eqn{var(\theta)}{var(theta)} = does not exist
+  \item Mode: \eqn{mode(\theta) = 0}{mode(theta) = 0}
 }
 
-The half-Cauchy distribution with scale alpha=25 is a recommended
-default uninformative prior distribution for a scale parameter.
+The half-Cauchy distribution with scale \eqn{\alpha=25}{alpha=25} is a
+recommended, default, uninformative prior distribution for a scale parameter.
 }
 \value{
   \code{dhalfcauchy} gives the density,
