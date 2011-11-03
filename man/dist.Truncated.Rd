@@ -11,12 +11,12 @@
   generation for truncated distributions.
 }
 \usage{
-dtrunc(x, spec, a = -Inf, b = Inf, ...)
-extrunc(spec, a = -Inf, b = Inf, ...)
-ptrunc(x, spec, a = -Inf, b = Inf, ...)
-qtrunc(p, spec, a = -Inf, b = Inf, ...)
-rtrunc(n, spec, a = -Inf, b = Inf, ...)
-vartrunc(spec, a = -Inf, b = Inf, ...)
+dtrunc(x, spec, a=-Inf, b=Inf, ...)
+extrunc(spec, a=-Inf, b=Inf, ...)
+ptrunc(x, spec, a=-Inf, b=Inf, ...)
+qtrunc(p, spec, a=-Inf, b=Inf, ...)
+rtrunc(n, spec, a=-Inf, b=Inf, ...)
+vartrunc(spec, a=-Inf, b=Inf, ...)
 }
 \arguments{
   \item{n}{This is a the number of random draws for \code{rtrunc}.}
@@ -39,7 +39,13 @@ vartrunc(spec, a = -Inf, b = Inf, ...)
   bounds, a proper truncated distribution integrates to one within the
   truncated bounds. In contrast to a truncated distribution, a censored
   distribution occurs when the probability distribution is still allowed
-  outside of a pre-specified range.
+  outside of a pre-specified range. Here, distributions are truncated to
+  the interval \eqn{[a,b]}, such as \eqn{p(\theta) \in [a,b]}{p(theta)
+    in [a,b]}.
+
+  In \code{LaplaceApproximation} or \code{LaplacesDemon}, \code{dtrunc}
+  is often used in conjunction with the \code{interval} function to
+  truncate prior probability distributions.
 }
 \value{
   \code{dtrunc} gives the density,
@@ -49,11 +55,17 @@ vartrunc(spec, a = -Inf, b = Inf, ...)
   \code{rtrunc} generates random deviates, and
   \code{vartrunc} gives the variance of the truncated distribution.
 }
+\seealso{
+  \code{\link{interval}},
+  \code{\link{LaplaceApproximation}},
+  \code{\link{LaplacesDemon}}.
+}
 \references{
 Nadarajah, S. and Kotz, S. (2006). R Programs for Computing Truncated
 Distributions. Journal of Statistical Software, 16, Code Snippet 2, p. 1--8.
 }
 \examples{
+library(LaplacesDemon)
 x <- seq(-3, 3, by = 0.1)
 y <- dtrunc(x, "norm", a=-0.5, b=0.5, mean=0, sd=2)
 }

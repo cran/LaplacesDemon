@@ -1,6 +1,6 @@
 \name{plot.laplace}
 \alias{plot.laplace}
-\title{Plot the output of \code{LaplaceApproximation}}
+\title{Plot the output of \code{\link{LaplaceApproximation}}}
 \description{
   This may be used to plot, or save plots of, the iterated history of
   the parameters in an object of class \code{laplace}.
@@ -12,8 +12,8 @@
      }
      \item{Data}{
      This required argument must receive the list of data that
-     was supplied to \code{LaplaceApproximation} to create the object
-     of class \code{laplace}.
+     was supplied to \code{\link{LaplaceApproximation}} to create the
+     object of class \code{laplace}.
      }
      \item{PDF}{
      This logical argument indicates whether or not the user wants
@@ -41,7 +41,10 @@
   \code{LaplaceApproximation} attempted to maximize the logarithm of the
   unnormalized joint posterior density.
 }
-\references{\url{http://www.statisticat.com/laplacesdemon.html}}
+\references{
+  Hall, B. (2011). "Laplace's Demon", STATISTICAT, LLC.
+  URL=\url{http://www.statisticat.com/laplacesdemon.html}
+}
 \author{Byron Hall \email{laplacesdemon@statisticat.com}}
 \seealso{\code{\link{LaplaceApproximation}}}
 \examples{### See the LaplaceApproximation function for an example.}

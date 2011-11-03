@@ -44,7 +44,13 @@
   0.975. The median appears as a black dot. A vertical, gray line
   is included at zero.
 }
-\references{\url{http://www.statisticat.com/laplacesdemon.html}}
+\references{
+  Hall, B. (2011). "Laplace's Demon", STATISTICAT, LLC.
+  URL=\url{http://www.statisticat.com/laplacesdemon.html}
+}
 \author{Byron Hall \email{laplacesdemon@statisticat.com}}
-\seealso{\code{\link{LaplacesDemon}}}
+\seealso{
+  \code{\link{LaplaceApproximation}},
+  \code{\link{LaplacesDemon}}.
+}
 \examples{#An example is provided in the LaplacesDemon function.}

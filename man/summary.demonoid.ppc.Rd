@@ -7,7 +7,7 @@
   replicates of \eqn{\textbf{y}}{y} (called
   \eqn{\textbf{y}^{rep}}{y[rep]}). Either \eqn{\textbf{y}^{new}}{y[new]} or
   \eqn{\textbf{y}^{rep}}{y[rep]} is summarized, depending on
-  \code{predict.demonoid}.
+  \code{\link{predict.demonoid}}.
 }
 \usage{\method{summary}{demonoid.ppc}(object, Categorical, Rows,
      Discrep, d, Quiet, \dots)}
@@ -22,7 +22,8 @@
      \item{Discrep}{A character string indicating a discrepancy test.
           \code{Discrep} defaults to \code{NULL}. Valid character
           strings when \code{y} is continuous are: \code{"Chi-Square"},
-	  \code{"Kurtosis"}, \code{"L-criterion"}, \code{"Skewness"},
+	  \code{"Chi-Square2 "}, \code{"Kurtosis"},
+	  \code{"L-criterion"}, \code{"Skewness"},
 	  \code{"max(yhat[i,]) > max(y)"}, \code{"mean(yhat[i,]) > mean(y)"},
 	  \code{"mean(yhat[i,] > d)"}, \code{"mean(yhat[i,] > mean(y))"},
 	  \code{"min(yhat[i,]) < min(y)"}, \code{"round(yhat[i,]) = d"},
@@ -43,7 +44,7 @@
   \eqn{\textbf{y}^{new}}{y[new]} or \eqn{\textbf{y}^{rep}}{y[rep]},
   depending respectively on whether unobserved instances of
   \eqn{\textbf{y}}{y} or the model sample of \eqn{\textbf{y}}{y} was
-  used in the \code{predict.demonoid} function.
+  used in the \code{\link{predict.demonoid}} function.
   
   The purpose of a posterior predictive check is to assess how well (or
   poorly) the model fits the data, or to assess discrepancies between
@@ -63,6 +64,15 @@
   
   A discrepancy measure is an approach to studying discrepancies between
   the model and data (Gelman et al., 1996).
+
+  When \code{Discrep="Chi-Square"}, the chi-square goodness-of-fit test
+  is implemented that is recommended by Gelman. For each record i=1:N,
+  this returns (y[i] - E(y[i]))^2 / var(yhat[i,]). When
+  \code{Discrep="Chi-Square2"}, the following is returned for each
+  record: Pr(chisq.rep[i,] > chisq.obs[i,]), where chisq.obs[i,] <-
+  (y[i] - E(y[i]))^2 / E(y[i]), and chisq.rep[i,] <- (yhat[i,] -
+  E(yhat[i,]))^2 / E(yhat[i,]), and the overall discrepancy is the
+  percent of records that were outside of the 95\% probability interval.
 }
 \value{
      This function returns a list with the following components:
@@ -119,22 +129,25 @@
 	  \code{y}, \code{Lift}, and \code{Discrep}.}
 }
 \references{
-Gelfand, A. (1996). "Model Determination Using Sampling Based Methods". 
-In Gilks, W., Richardson, S., Spiegehalter, D., Chapter 9 in 
-Markov Chain Monte Carlo in Practice. Chapman \& Hall: Boca 
-Raton, FL.
+  Gelfand, A. (1996). "Model Determination Using Sampling Based
+  Methods". In Gilks, W., Richardson, S., Spiegehalter, D., Chapter 9 in
+  Markov Chain Monte Carlo in Practice. Chapman \& Hall: Boca Raton, FL.
 
-Gelman, A., Meng, X.L., and Stern H. (1996). "Posterior Predictive
-Assessment of Model Fitness via Realized Discrepancies". Statistica
-Sinica, 6, p. 733--807.
+  Gelman, A., Meng, X.L., and Stern H. (1996). "Posterior Predictive
+  Assessment of Model Fitness via Realized Discrepancies". Statistica
+  Sinica, 6, p. 733--807.
 
-Hall, B. (2011), "Laplace's Demon", STATISTICAT, LLC.
-URL=\url{http://www.statisticat.com/laplacesdemon.html}
+  Hall, B. (2011). "Laplace's Demon", STATISTICAT,
+  LLC. URL=\url{http://www.statisticat.com/laplacesdemon.html}
 
-Laud, P.W. and Ibrahim, J.G. (1995). "Posterior Model Selection".
-Journal of the Royal Statistical Society, B 57, p. 247--262.
+  Laud, P.W. and Ibrahim, J.G. (1995). "Posterior Model
+  Selection". Journal of the Royal Statistical Society, B 57,
+  p. 247--262.
 }
 \author{Byron Hall \email{laplacesdemon@statisticat.com}}
-\seealso{\code{\link{predict.demonoid}}}
+\seealso{
+  \code{\link{LaplacesDemon}},
+  \code{\link{predict.demonoid}}.
+}
 \examples{### See the LaplacesDemon function for an example.}
-\keyword{summary}
+\keyword{posterior predictive check, summary}

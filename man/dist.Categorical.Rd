@@ -14,7 +14,7 @@ rcat(n, p)
   \item{x}{This is a vector of discrete data with \eqn{k} discrete
     categories, and is of length \eqn{n}. This function also accepts
     \eqn{x} after it has been converted to an \eqn{n \times k}{n x k}
-    indicator matrix, such as with the \code{indmat} function.}
+    indicator matrix, such as with the \code{as.indicator.matrix} function.}
   \item{n}{This is the number of observations, which must be a positive
     integer that has length 1.}
   \item{p}{This is a vector of length \eqn{k} or \eqn{n \times k}{n x k}
@@ -46,7 +46,15 @@ Dirichlet distribution.
   \code{dcat} gives the density and
   \code{rcat} generates random deviates.
 }
+\references{\url{http://www.statisticat.com/laplacesdemon.html}}
+\author{Byron Hall \email{laplacesdemon@statisticat.com}}
+\seealso{
+  \code{\link{as.indicator.matrix}},
+  \code{\link{ddirichlet}},
+  \code{\link{dmultinom}}.
+}
 \examples{
+library(LaplacesDemon)
 dcat(x=1, p=c(0.3,0.3,0.4))
 rcat(n=10, p=c(0.1,0.3,0.6))
 }

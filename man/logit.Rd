@@ -19,7 +19,7 @@ logit(p)
 \details{
 The \code{logit} function is the inverse of the sigmoid or logistic
 function, and transforms a continuous value (usually probability
-\eqn{p}) in the interval [0,1] to the real line (where it usually is
+\eqn{p}) in the interval [0,1] to the real line (where it is usually
 the logarithm of the odds). The \code{logit} function is
 \eqn{\log(p / (1-p))}{log(p / (1 - p))}.
 
@@ -34,16 +34,36 @@ corresponding odds, while the \code{logit} of \eqn{p} is the logarithm
 of the odds. The difference between the logits of two probabilities is
 the logarithm of the odds ratio. The derivative of probability \eqn{p}
 in a logistic function (such as \code{invlogit}) is:
-\eqn{\frac{d}{dx} = p(1-p)}{(d / dx) = p * (1 - p)}. 
+\eqn{\frac{d}{dx} = p(1-p)}{(d / dx) = p * (1 - p)}.
+
+In the LaplacesDemon package, it is common to re-parameterize a model so
+that a parameter that should be in an interval can be updated from the
+real line by using the \code{logit} and \code{invlogit} functions,
+though the \code{\link{interval}} function provides an alternative. For
+example, consider a parameter \eqn{\theta}{theta} that must be in the
+interval [0,1]. The algorithms in \code{\link{LaplaceApproximation}} and
+\code{\link{LaplacesDemon}} are unaware of the desired interval, and may
+attempt \eqn{\theta}{theta} outside of this interval. One solution is to
+have the algorithms update \code{logit(theta)} rather than
+\code{theta}. After \code{logit(theta)} is manipulated by the algorithm,
+it is transformed via \code{invlogit(theta)} in the model specification
+function, where \eqn{\theta \in [0,1]}{theta in [0,1]}.
 }
 \value{
   \code{invlogit} returns probability \code{p}, and
   \code{logit} returns \code{x}.
 }
-\seealso{\code{\link{LaplacesDemon}}}
+\seealso{
+  \code{\link{interval}},
+  \code{\link{LaplaceApproximation}},
+  \code{\link{LaplacesDemon}},
+  \code{\link{plogis}},
+  \code{\link{qlogis}}.
+}
 \examples{
+library(LaplacesDemon)
 x <- -5:5
 p <- invlogit(x)
 x <- logit(p)
 }
-\keyword{inverse logit, logistic function, logit}
+\keyword{inverse logit, link function, logistic function, logit}

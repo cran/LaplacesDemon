@@ -1,0 +1,153 @@
+\name{Gelman.Diagnostic}
+\alias{Gelman.Diagnostic}
+\title{Gelman and Rubin's MCMC Convergence Diagnostic}
+\usage{Gelman.Diagnostic(x, confidence=0.95, transform=FALSE)}
+\description{
+  Gelman and Rubin (1992) proposed a general approach to monitoring
+  convergence of MCMC output in which \eqn{m > 1} parallel chains are
+  run with starting values that are overdispersed relative to the
+  posterior distribution. Convergence is diagnosed when the chains have
+  `forgotten' their initial values, and the output from all chains is
+  indistinguishable.  The \code{Gelman.Diagnostic} function makes a
+  comparison of within-chain and between-chain variances, and is similar
+  to a classical analysis of variance. A large deviation between these
+  two variances indicates non-convergence.
+}
+\arguments{
+  \item{x}{This required argument is a list of multiple objects of
+    class \code{demonoid}, and the number of components in the list
+    is the number of chains.}
+  \item{confidence}{This is the coverage probability of the confidence
+    interval for the potential scale reduction factor.}
+  \item{transform}{Logical. If \code{TRUE}, then marginal posterior
+    distributions in \code{x} may be transformed to improve the
+    normality of the distribution, which is assumed. A log-transform is
+    applied to marginal posterior distributions in the interval \eqn{(0,
+      \infty]}{(0, Inf]}, or a logit-transform is applied to marginal
+    posterior distributions in the interval \eqn{(0,1)}.}
+}
+\value{
+  A list is returned with the following components:
+  
+  \item{PSRF}{This is a list containing the point-estimates of the
+    potential scale reduction factor (labelled \code{Point Est.}) and
+    the associated upper confidence limits (labelled \code{Upper
+      C.I.}).}
+  \item{MPSRF}{This is the point-estimate of the multivariate potential
+    scale reduction factor.}
+}
+\details{
+  To use the \code{Gelman.Diagnostic} function, the user must first have
+    multiple MCMC chains for the same model, and three chains is usually
+    sufficient. Although the \code{\link{LaplacesDemon}} function does not
+    simultaneously update multiple  MCMC chains, it is easy enough to
+    obtain multiple chains, and if the computer has multiple processors
+    (which is common), then multiple chains may be obtained
+    simultaneously as follows. The model file may be opened in separate,
+    concurrent R sessions, and it is recommended that a maximum number
+    of sessions is equal to the number of processors, minus one. Each
+    session constitutes its own chain, and the code is identical, except
+    the initial values should be randomized so the chains begin in
+    different places. The resulting object of class \code{demonoid} for
+    each chain is saved, all objects are read into one session, put into
+    a list, and passed to the \code{Gelman.Diagnostic} function.
+
+    The `potential scale reduction factor' (PSRF) is an estimated factor
+    by which the scale of the current distribution for the target
+    distribution might be reduced if the simulations were continued for
+    an infinite number of iterations. Each PSRF declines to 1 as the
+    number of iterations approaches infinity. PSRF is also often
+    represented as R-hat. PSRF is calculated for each marginal posterior
+    distribution in \code{x}, together with upper and lower confidence
+    limits. Approximate convergence is diagnosed when the upper limit is
+    close to 1. The recommended proximity of each PSRF to 1 varies with
+    each problem, but a general goal is to achieve PSRF < 1.1. The
+    multivariate form bounds above the potential scale reduction factor
+    for any linear combination of the (possibly transformed) variables.
+
+    The confidence limits are based on the assumption that the
+  stationary distribution of the variable under examination is
+  normal. Hence the \code{transform} argument may be used to improve the
+  normal approximation.
+
+  A large PSRF indicates that the between-chain variance is
+  substantially greater than the within-chain variance, so that longer
+  simulation is needed. If a PSRF is close to 1, then the associated
+  chains are likely to have converged to one target distribution. A
+  large PSRF (perhaps generally when a PSRF > 1.2) indicates convergence
+  failure, and can indicate the presence of a multi-modal marginal
+  posterior distribution (in which different chains may have converged
+  to different local modes), or the need to update the associated chains
+  longer, because burn-in has yet to be completed.
+  
+  The \code{Gelman.Diagnostic} is essentially the same as the
+  \code{gelman.diag} function in the \code{coda} package, but here it is 
+  programmed to work with objects of class \code{demonoid}.
+
+  There are two ways to estimate the variance of the stationary
+  distribution: the mean of the empirical variance within each chain,
+  \eqn{W}, and the empirical variance from all chains combined, which
+  can be expressed as
+
+  \deqn{ \widehat{\sigma}^2 = \frac{(n-1) W}{n} +
+    \frac{B}{n}}{sigma.hat^2 = (n-1)W/n + B/n} 
+
+  where \eqn{n} is the number of iterations and \eqn{B/n} is the
+  empirical between-chain variance.
+
+  If the chains have converged, then both estimates are
+  unbiased. Otherwise the first method will \emph{underestimate} the
+  variance, since the individual chains have not had time to range all
+  over the stationary distribution, and the second method will
+  \emph{overestimate} the variance, since the starting points were
+  chosen to be overdispersed.
+
+  This convergence diagnostic is based on the assumption that each
+  target distribution is normal. A Bayesian probability interval can be
+  constructed using a t-distribution with mean
+  
+  \deqn{\widehat{\mu}=\mbox{Sample mean of all chains combined,}}{mu.hat
+    = Sample mean of all chains combined,}
+
+  variance
+
+  \deqn{\widehat{V} = \widehat{\sigma}^2 + \frac{B}{mn},}{V.hat =
+    sigma.hat2 + B/(mn),}
+
+  and degrees of freedom estimated by the method of moments
+
+  \deqn{d = \frac{2\widehat{V}^2}{\mbox{Var}(\widehat{V})}}{d = 2*V.hat^2 /
+    Var(V.hat)}
+
+  Use of the t-distribution accounts for the fact that the mean and
+  variance of the posterior distribution are estimated. The convergence
+  diagnostic itself is
+
+  \deqn{R=\sqrt{\frac{(d+3) \widehat{V}}{(d+1)W}}}{R=sqrt((d+3) V.hat /((d+1)W)}
+
+  Values substantially above 1 indicate lack of convergence. If the
+  chains have not converged, then Bayesian probability intervals based
+  on the t-distribution are too wide, and have the potential to shrink
+  by this factor if the MCMC run is continued.
+
+  The multivariate version of Gelman and Rubin's diagnostic was proposed
+  by Brooks and Gelman (1998). Unlike the univariate proportional scale
+  reduction factor, the multivariate version does not include an
+  adjustment for the estimated number of degrees of freedom.
+}
+\references{
+  Brooks, S.P. and Gelman, A. (1998). General Methods for Monitoring
+  Convergence of Iterative Simulations. Journal of Computational and
+  Graphical Statistics, 7, p. 434--455.
+
+  Gelman, A. and Rubin, D.B. (1992). Inference from Iterative Simulation
+  using Multiple Sequences, Statistical Science, 7, p. 457--511.
+}
+\seealso{\code{\link{LaplacesDemon}}}
+\examples{
+#Examples
+###After updating multiple chains (say, as Fit1 and Fit2), do:
+#Fit <- list(Fit1, Fit2)
+#Gelman.Diagnostic(Fit)
+}
+\keyword{MCMC, diagnostic}

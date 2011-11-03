@@ -2,7 +2,7 @@
 %% need no \usepackage{Sweave.sty}
 \usepackage{amsmath}
 
-%\VignetteIndexEntry{LaplacesDemon Tutorial}
+%\VignetteIndexEntry{LaplacesDemonTutorial}
 %\VignettePackage{LaplacesDemon}
 %\VignetteDepends{LaplacesDemon}
 
@@ -88,16 +88,16 @@ y <- log(demonsnacks$Calories)
 X <- cbind(1, as.matrix(demonsnacks[,c(1,3:10)]))
 for (j in 2:J) {X[,j] <- CenterScale(X[,j])}
 mon.names <- c("LP","sigma")
-parm.names <- parm.names(list(beta=rep(0,J), log.sigma=0))
+parm.names <- as.parm.names(list(beta=rep(0,J), log.sigma=0))
 MyData <- list(J=J, X=X, mon.names=mon.names, parm.names=parm.names, y=y)
 \end{Scode}
 
-There are J=\Sexpr{J} independent variables (including the intercept), one for each column in design matrix \textbf{X}. However, there are \Sexpr{J+1} parameters, since the residual variance, $\sigma^2$, must be included as well. The reason why it is called \code{log.sigma} will be explained later. Each parameter must have a name specified in the vector \code{parm.names}, and parameter names must be included with the data. This is using a function called \code{parm.names}. Also, note that each predictor has been centered and scaled, as per \citet{gelman08}. Laplace's Demon provides a \code{CenterScale} function to center and scale predictors\footnote{Centering and scaling a predictor is \code{x.cs <- (x - mean(x)) / (2*sd(x))}.}.
+There are J=\Sexpr{J} independent variables (including the intercept), one for each column in design matrix \textbf{X}. However, there are \Sexpr{J+1} parameters, since the residual variance, $\sigma^2$, must be included as well. The reason why it is called \code{log.sigma} will be explained later. Each parameter must have a name specified in the vector \code{parm.names}, and parameter names must be included with the data. This is using a function called \code{as.parm.names}. Also, note that each predictor has been centered and scaled, as per \citet{gelman08}. Laplace's Demon provides a \code{CenterScale} function to center and scale predictors\footnote{Centering and scaling a predictor is \code{x.cs <- (x - mean(x)) / (2*sd(x))}.}.
 
 Laplace's Demon will consider using Laplace Approximation, and part of this consideration includes determining the sample size. The user must specify the number of observations in the data as either a scalar \code{n} or \code{N}. If these are not found by the \code{LaplaceApproximation} or \code{LaplacesDemon} functions, then it will attempt to determine sample size as the number of rows in \code{y} or \code{Y}.
 
 \section{Specifying a Model} \label{specification}
-Laplace's Demon is capable with any Bayesian model for which the likelihood is specified\footnote{Examples of more than 50 Bayesian models may be found in the ``Examples'' vignette that comes with the \pkg{LaplacesDemon} package. Likelihood-free estimation is also possible by approximating the likelihood, such as in Approximate Bayesian Computation (ABC).}. To use Laplace's Demon, the user must specify a model. Let's consider a linear regression model, which is often denoted as:
+Laplace's Demon is capable of estimating any Bayesian model for which the likelihood is specified\footnote{Examples of more than 70 Bayesian models may be found in the ``Examples'' vignette that comes with the \pkg{LaplacesDemon} package. Likelihood-free estimation is also possible by approximating the likelihood, such as in Approximate Bayesian Computation (ABC).}. To use Laplace's Demon, the user must specify a model. Let's consider a linear regression model, which is often denoted as:
 
 $$\textbf{y} \sim \mathcal{N}(\mu, \sigma^2)$$
 $$\mu = \textbf{X}\beta$$
@@ -120,7 +120,7 @@ Model <- function(parm, Data)
      beta <- parm[1:Data$J]
      sigma <- exp(parm[Data$J+1])
      ### Log(Prior Densities)
-     beta.prior <- dnorm(beta, 0, sqrt(1000), log=TRUE)
+     beta.prior <- dnormv(beta, 0, 1000, log=TRUE)
      sigma.prior <- dhalfcauchy(sigma, 25, log=TRUE)
      ### Log-Likelihood
      mu <- tcrossprod(beta, Data$X)
@@ -159,7 +159,7 @@ Since Laplace's Demon passes a vector of parameters called \code{parm} to \code{
 
 To work with the log of the prior densities and according to the assigned names of the parameters and hyperparameters, they are specified as follows:
 
-\code{beta.prior <- dnorm(beta, 0, sqrt(1000), log=TRUE)} \\
+\code{beta.prior <- dnormv(beta, 0, 1000, log=TRUE)} \\
 \code{sigma.prior <- dhalfcauchy(sigma, 25, log=TRUE)}
 
 It is important to reparameterize all parameters to be real-valued. For example, a positive-only parameter such as variance should be allowed to range from $-\infty$ to $\infty$, and be transformed in the \code{Model} function with the \code{exp} function, which will force it to positive values. A parameter $\theta$ that needs to be bounded in the model, such as in the interval [1,5], can be transformed to that range with a logistic function, such as $1 + 4[\exp(\theta) / (\exp(\theta) + 1)]$. Alternatively, each parameter may be constrained in the \code{Model} function, such as with the \code{interval} function. Laplace's Demon will attempt to increase or decrease the value of each parameter to maximize \code{LP}, without consideration for the distributional form of the parameter. In the above example, the residual standard deviation \code{sigma} receives a half-Cauchy distributed prior of the form:
@@ -300,7 +300,7 @@ if(Status.temp < Rec.Iterations) Rec.Status <- Status.temp
 Notice that since stationarity has been estimated beginning with the \Sexpr{Fit$Rec.BurnIn.Thinned}st iteration, the suggested \proglang{R} code changes from \code{Adaptive=900} to \code{Adaptive=0}. The suggestion is to abandon the adaptive MCMC algorithm in favor of a non-adaptive algorithm, specifically a Random-Walk Metropolis (RWM). It is also replacing the initial values with the latest values of the parameter chains, and is suggesting to begin with the latest covariance matrix. Some of the arguments in the suggested \proglang{R} code seem excessive, such as \code{Iterations=\Sexpr{Rec.Iterations}} and \code{Thinning=\Sexpr{Rec.Iterations/1000}}. For the sake of the example and saving the reader from a few pages of output, the suggested \proglang{R} code will not be run and the following will be run instead:
 
 \begin{Scode}
-Initial.Values <- Fit$Posterior1[Fit$Thinned.Samples,]
+Initial.Values <- as.initial.values(Fit)
 Fit <- LaplacesDemon(Model, Data=MyData, Adaptive=0,
      Covar=Fit$Covar, DR=0, Initial.Values, Iterations=290000,
      Periodicity=0, Status=10000, Thinning=290)
@@ -312,7 +312,7 @@ Next, the user consorts with Laplace's Demon:
 Consort(Fit)
 \end{Scode}
 
-In \Sexpr{round(Fit$Minutes,2)} minutes, Laplace's Demon updated \Sexpr{Fit$Iterations} iterations, retaining every \Sexpr{Fit$Thinning}th iteration due to thinning, and reported an acceptance rate of \Sexpr{round(Fit$Acceptance.Rate,3)}. Notice that all criteria have been met: MCSE's are sufficiently small, ESS's are sufficiently large, and stationarity was estimated beginning with the first iteration. Since the algorithm was RWM, the Markov property holds, so let's look at some plots.
+In \Sexpr{round(Fit$Minutes,2)} minutes, Laplace's Demon updated \Sexpr{Fit$Iterations} iterations, retaining every \Sexpr{Fit$Thinning}th iteration due to thinning, and reported an acceptance rate of \Sexpr{round(Fit$Acceptance.Rate,3)}. Notice that all criteria have been met: MCSEs are sufficiently small, ESSs are sufficiently large, and stationarity was estimated beginning with the first iteration. Since the algorithm was RWM, the Markov property holds, so let's look at some plots.
 
 \section{Plotting Output} \label{plottingoutput}
 Laplace's Demon has a \code{plot.demonoid} function to enable its own customized plots with \code{demonoid} objects. The variable \code{BurnIn} (below) may be left as it is so it will show only the stationary samples (samples that are no longer trending), or set equal to one so that all samples can be plotted. In this case, it will already be one, so I will leave it alone. The function also enables the user to specify whether or not the plots should be saved as a .pdf file, and allows the user to limit the number of parameters plotted, in case the number is very large and only a quick glance is desired.
@@ -504,7 +504,7 @@ caterpillar.plot(Fit, Parms=1:10)
 
 When predicting the logarithm of \code{y} (Calories) with the \code{demonsnacks} data, the caterpillar plot shows that the best fitting variables are \code{beta[6]} (Sodium), \code{beta[7]} (Total.Carbohydrate), and \code{beta[10]} (Protein). Overall, Laplace's Demon seems to have done well, eating \code{demonsnacks} for breakfast.
 
-If all is well, then the Markov chains should be studied with MCMC diagnostics, and finally, further assessments of model fit should be estimated with posterior predictive checks, showing how well (or poorly) the model fits the data. When the user is satisfied, the \code{BayesFactor} function may be useful in selecting the best model, and the marginal posterior samples may be used for inference.
+If all is well, then the Markov chains should be studied with MCMC diagnostics (such as visual inspections with the \code{CSF} or Cumulative Sample Function, introduced in the \pkg{LaplacesDemon} package), and finally, further assessments of model fit should be estimated with posterior predictive checks, showing how well (or poorly) the model fits the data. When the user is satisfied, the \code{BayesFactor} function may be useful in selecting the best model, and the marginal posterior samples may be used for inference.
 
 \section{Posterior Predictive Checks} \label{ppc}
 A posterior predictive check is a method to assess discrepancies between the model and the data \citep{gelman96a}. To perform posterior predictive checks with Laplace's Demon, simply use the \code{predict} function:
@@ -553,6 +553,8 @@ for (j in 1:9){
 \caption{Posterior Predictive Plots}
 \end{figure}
 
+The \code{Importance} function is not presented here in detail, but is a useful way to assess variable importance, which is defined here as the impact of each variable on $\textbf{y}^{rep}$, when the variable is removed (or set to zero). Variable importance consists of differences in discrepancy statistics, showing how well the model fits the data with each variable removed. This information may be used for model revision, or presenting the relative importance of variables.
+
 These posterior predictive checks indicate that there is plenty of room to improve this model.
 
 \section{General Suggestions} \label{generalsuggestions}
@@ -571,14 +573,14 @@ Following are general suggestions on how best to use Laplace's Demon:
 \item If Laplace's Demon is exploring areas of the state space that the user knows \textit{a priori} should not be explored, then the parameters may be constrained in the \code{Model} function before being passed back to the \code{LaplacesDemon} function. Simply change the parameter of interest as appropriate and place the constrained value back in the \code{parm} vector.
 \item \code{Demonic Suggestion} is intended as an aid, not an infallible replacement for critical thinking. As with anything else, its suggestions are based on assumptions, and it is the responsibility of the user to check those assumptions. For example, the \code{Geweke.Diagnostic} may indicate stationarity (lack of a trend) when it does not exist, and this most likely occurs when too few thinned samples remain. Or, the \code{Demonic Suggestion} may indicate that the next update may need to run for a million iterations in a complex model, requiring weeks to complete. Is this really best for the user?
 \item Use a two-phase approach with Laplace's Demon, where the first phase consists of using the AM or DRAM algorithm to achieve stationary samples that seem to have converged to the target distributions (convergence can never be determined with MCMC, but some instances of non-convergence can be observed). Once it is believed that convergence has occurred, continue Laplace's Demon with \code{Adaptive=0} so that adaptation will not occur. The final samples should again be checked for signs of non-convergence and, if satisfactory, used for inference.
-\item The desirable number of final, thinned samples for inference depends on the required precision of the inferential goal. A good, general goal is to end up with 1,000 thinned samples \citep[p. 295]{gelman04}, where the ESS is at least 100 (and more is desirable).
-\item Disagreement exists in MCMC literature as to whether to update one, long chain \citep{geyer92}, or multiple, long chains with different, randomized initial values \citep*{gelman92}. Laplace's Demon is not designed to simultaneously update multiple chains. Nonetheless, if multiple chains are desired, then Laplace's Demon can be updated a series of times, each beginning with different initial values, until multiple output objects of class \code{demonoid} exist with stationary samples, if time allows.
+\item The desirable number of final, thinned samples for inference depends on the required precision of the inferential goal. A good, general goal is to end up with 1,000 thinned samples \citep[p. 295]{gelman04}, where the ESS is at least 100 (and more is desirable) See the \code{ESS} function for more information.
+\item Disagreement exists in MCMC literature as to whether to update one, long chain \citep{geyer92}, or multiple, long chains with different, randomized initial values \citep*{gelman92}. Laplace's Demon is not designed to simultaneously update multiple chains. Nonetheless, if multiple chains are desired, then Laplace's Demon can be updated a series of times, each beginning with different initial values, until multiple output objects of class \code{demonoid} exist with stationary samples, if time allows, and the \code{Gelman.Diagnostic} function may be used to compare multiple chains.
 \end{itemize}
 
 \section{Independence and Observability} \label{independence}
 For the user, one set of advantages of Laplace's Demon compared to many other available methods is that it was designed with independence and observability in mind. By independence, it is meant that a goal was to minimize dependence on other software. Laplace's Demon is performed completely within base \proglang{R} (though of course the \pkg{LaplacesDemon} package is required). A goal is to provide a complete, Bayesian environment. From personal experience, I've used multiple packages to achieve goals before, and have been trapped when one of those packages failed to keep pace with other changes.
 
-Common Bayesian probability distributions (such as Dirichlet, multivariate normal, Wishart, and others, as well as truncated forms of distributions) have been included in \pkg{LaplacesDemon} so the user does not have to load numerous \proglang{R} packages. All functions in Laplace's Demon are written entirely in \proglang{R}, so the user can easily observe or manipulate the algorithm or functions. For example, to print the code for \pkg{LaplacesDemon} to the \proglang{R} console, simply enter:
+Common Bayesian probability distributions (such as Dirichlet, multivariate normal, Wishart, and many others, as well as truncated forms of distributions) have been included in \pkg{LaplacesDemon} so the user does not have to load numerous \proglang{R} packages. All functions in Laplace's Demon are written entirely in \proglang{R}, so the user can easily observe or manipulate the algorithm or functions. For example, to print the code for \pkg{LaplacesDemon} to the \proglang{R} console, simply enter:
 
 \begin{Scode}{eval=false}
 LaplacesDemon
@@ -673,7 +675,7 @@ The Delayed Rejection Adaptive Metropolis (DRAM) algorithm is merely the combina
 \subsection{Afterward}
 Once the model is updated with the \code{LaplacesDemon} function, the \code{Geweke.Diagnostic} function of \citet{geweke92} is iteratively applied to successively smaller tail-sections of the thinned samples to assess stationarity (or lack of trend). When all parameters are estimated as stationary beyond a given iteration, the previous iterations are suggested to be considered as burn-in and discarded. The number of thinned samples is divided into cumulative 10\% groups, and the \code{Geweke.Diagnostic} function is applied by beginning with each cumulative group.
 
-The importance of Monte Carlo Standard Error (MCSE) is debated. Here, it is considered important enough to be one of five main criteria to appease Laplace's Demon. It is often recommended that one of several competing batch methods should be used to estimate MCSE, arguing that the simple method \code{(MCSE = }$\sigma/\sqrt{m}$) is biased and reports less error (where $m$ is the ESS). I have calculated both the simple method and non-overlapping batch MCSE's on a wide range of applied models, and noted just as many cases of the simple method producing higher MCSE's as lower MCSE's. As far as Laplace's Demon is concerned, the simple method is used to estimate MCSE, but it is open to debate.
+The importance of Monte Carlo Standard Error (MCSE) is debated. Here, it is considered important enough to be one of five main criteria to appease Laplace's Demon. Laplace's Demon provides a \code{MCSE} function that allows three methods of estimation: sample variance, batch means \citep{jones06}, and Geyer's method \citep{geyer92}.
 
 \section{Software Comparisons} \label{software}
 There is now a wide variety of software to perform MCMC for Bayesian inference. Perhaps the most common is BUGS, which is an acronym for Bayesian Using Gibbs Sampling \citep{lunn09}. BUGS has several versions. A popular variant is JAGS, which is an acronym for Just Another Gibbs Sampler \citep{plummer03}. The only other comparisons made here are with some \proglang{R} packages (\pkg{AMCMC}, \pkg{mcmc}, \pkg{MCMCpack}, and \pkg{UMACS}) and SAS. Many other \proglang{R} packages use MCMC, but are not intended as general-purpose MCMC software. Hopefully I have not overlooked any general-purpose MCMC packages in \proglang{R}.
@@ -699,9 +701,9 @@ At the time this article was written, the \pkg{UMACS} package \citep{r:umacs} ha
 In SAS 9.2 \citep{sas08}, an experimental procedure called \code{PROC MCMC} has been introduced. It is undeniably a rip-off of BUGS (including its syntax), though OpenBUGS is much more powerful, tested, and generalizable. Since SAS is proprietary, the user cannot see or manipulate the source code, and should expect much more from it than OpenBUGS or any open-source software, given the absurd price.
 
 \section{Large Data Sets and Speed} \label{largedata}
-An advantage of Laplace's Demon compared to other MCMC software is that the model is specified in a way that takes advantage of \proglang{R}'s vectorization. BUGS and JAGS, for example, require models to be specified so that each record of data is processed one by one inside a `\code{for} loop', which significantly slows updating with larger data sets. In contrast, Laplace's Demon avoids `\code{for} loops' and \code{apply} functions wherever possible\footnote{However, when `for loops' or \code{apply} functions must be used, Laplace's Demon is typically slower than BUGS.}. For example, a data set of 100,000 rows and 16 columns (the dependent variable, a column vector of 1's for the intercept, and 14 predictors) was updated 1,000 times with \code{Adaptive=2}, \code{DR=0}, \code{Periodicity=10}, and the initial value for each $\beta$ set to 0.1 to bypass Laplace Approximation. This took 0.98 minutes with Laplace's Demon, according to a simple, linear regression\footnote{These updates were performed on a 2010 System76 Pangolin Performance laptop with 64-bit Debian Linux and 8GB RAM.}. It was nowhere near convergence, but updating the same model with the same data for 1,000 iterations took 45.55 minutes in JAGS.
+An advantage of Laplace's Demon compared to other MCMC software is that the model is specified in a way that takes advantage of \proglang{R}'s vectorization. BUGS and JAGS, for example, require models to be specified so that each record of data is processed one by one inside a `\code{for} loop', which significantly slows updating with larger data sets. In contrast, Laplace's Demon avoids `\code{for} loops' and \code{apply} functions wherever possible\footnote{However, when `for loops' or \code{apply} functions must be used, Laplace's Demon is typically slower than BUGS.}. For example, a data set of 100,000 rows and 16 columns (the dependent variable, a column vector of 1's for the intercept, and 14 predictors) was updated 1,000 times with \code{Adaptive=2}, \code{DR=0}, \code{Periodicity=10}, and the initial value for each $\beta$ set to 0.1 to bypass Laplace Approximation. This took 0.71 minutes with Laplace's Demon, according to a simple, linear regression\footnote{These updates were performed on a 2010 System76 Pangolin Performance laptop with 64-bit Debian Linux and 8GB RAM.}. It was nowhere near convergence, but updating the same model with the same data for 1,000 iterations took 15.02 minutes in JAGS 3.1.0.
 
-However, the speed with which an iteration is estimated is not a good, overall criterion of performance. For example, a Gibbs sampling algorithm with uncorrelated target distributions should converge in fewer iterations than a random-walk algorithm, such as those used in Laplace's Demon. Depending on circumstances, Laplace's Demon may handle larger data sets better, and it may estimate each iteration faster, but it may also take more iterations to converge\footnote{To continue this example, JAGS may be \textit{guessed} to take 20,000 iterations or 15.18 hours, and \code{LaplacesDemon} may take 400,000 iterations or 6.53 hours, and also have less autocorrelation in the chains due to more thinning.}.
+However, the speed with which an iteration is estimated is not a good, overall criterion of performance. For example, a Gibbs sampling algorithm with uncorrelated target distributions should converge in fewer iterations than a random-walk algorithm, such as those used in Laplace's Demon. Depending on circumstances, Laplace's Demon may handle larger data sets better, and it may estimate each iteration faster, but it may also take more iterations to converge\footnote{To continue this example, JAGS may be \textit{guessed} to take 20,000 iterations or 5.01 hours, and \code{LaplacesDemon} may take 400,000 iterations or 4.73 hours, and also have less autocorrelation in the chains due to more thinning.}.
 
 However, with small data sets, other MCMC software (\pkg{AMCMC} is a good example) can be faster than Laplace's Demon, if it is programmed in a faster language such as \proglang{Component Pascal}, \proglang{C}, \proglang{C++}, or \proglang{FORTRAN}. I have not studied all MCMC algorithms in \proglang{R}, but most are probably programmed in \proglang{C} and called from \proglang{R}. And Laplace's Demon could be much faster if programmed in \proglang{C} as well.
 

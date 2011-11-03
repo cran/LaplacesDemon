@@ -12,14 +12,23 @@ correlation matrix.
 Cov2Cor(Sigma)
 }
 \arguments{
-     \item{Sigma}{This is a covariance matrix, \eqn{\Sigma}{Sigma}, and
-          may be entered as either a matrix or vector.}
+  \item{Sigma}{This is a covariance matrix, \eqn{\Sigma}{Sigma}, and may
+    be entered as either a matrix or vector.}
 }
-\details{\code{Cov2Cor} is an expanded form of the \code{cov2cor} function in the \code{stats} package, where \code{Cov2Cor} is also able to accept and return a vectorized matrix.}
+\details{
+  \code{Cov2Cor} is an expanded form of the \code{cov2cor} function in
+  the \code{stats} package, where \code{Cov2Cor} is also able to accept
+  and return a vectorized matrix.}
 \value{
-     \code{Cov2Cor} returns a correlation matrix, either as a matrix or
-     vector according to whether the covariance matrix was passed to it
-     as a matrix or vector.
+  \code{Cov2Cor} returns a correlation matrix, either as a matrix or
+  vector according to whether the covariance matrix was passed to it
+  as a matrix or vector.
+}
+\references{\url{http://www.statisticat.com/laplacesdemon.html}}
+\author{Byron Hall \email{laplacesdemon@statisticat.com}}
+\seealso{
+  \code{\link{Cov2Prec}},
+  \code{\link{Prec2Cov}}.
 }
 \examples{
 library(LaplacesDemon)

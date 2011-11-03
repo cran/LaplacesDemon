@@ -61,7 +61,7 @@ Bayes' theorem shows the relation between two conditional probabilities that are
 Bayes' theorem provides an expression for the conditional probability of $A$ given $B$, which is equal to
 
 \begin{equation} \label{bayestheorem}
-\Pr(A | B) = \frac{\Pr(B | A)Pr(A)}{\Pr(B)}
+\Pr(A | B) = \frac{\Pr(B | A)\Pr(A)}{\Pr(B)}
 \end{equation}
 
 For example, suppose one asks the question: what is the probability of going to Hell, conditional on consorting (or given that a person consorts) with Laplace's Demon\footnote{This example is, of course, intended with humor.}. By replacing $A$ with $Hell$ and $B$ with $Consort$, the question becomes
@@ -74,7 +74,7 @@ Note that a common fallacy is to assume that $\Pr(A | B) = \Pr(B | A)$, which is
 
 Another way to state Bayes' theorem is
 
-$$\frac{\Pr(A_i | B) = \Pr(B | A_i)\Pr(A_i)}{\Pr(B | A_i)\Pr(A_i) +...+ \Pr(B | A_n)\Pr(A_n)}$$
+$$\Pr(A_i | B) = \frac{\Pr(B | A_i)\Pr(A_i)}{\Pr(B | A_i)\Pr(A_i) +...+ \Pr(B | A_n)\Pr(A_n)}$$
 
 Let's examine our \textit{burning} question, by replacing $A_i$ with Hell or Heaven, and replacing $B$ with Consort
 
@@ -179,6 +179,8 @@ When prior information is available about $\theta$, it should be included in the
 
 In this way, each version of a model is not starting from scratch, based only on the present data, but the cumulative effects of all data, past and present, can be taken into account. If the present data is very similar to the previous data, then the precision of the posterior distribution increases when including more and more information from previous models. If the present data differs considerably, then the posterior distribution of $\theta$ may be in the tails of the prior distribution for $\theta$, so the prior distribution contributes less density in its tails. Moreover, the prior distribution affects the posterior distribution.
 
+Sometimes informative prior information is not simply ready to be used, such as when it resides in another person, such as an expert. In this case, their personal beliefs about the probability of the event must be elicited into the form of a proper probability density function. This process is called prior elicitation.
+
 \subsection{Uninformative Priors}
 
 When prior information is unavailable about $\theta$, which is more common, an uninformative prior distribution could be used, or the prior distribution could in turn be estimated from hyperprior distributions in a hierarchical context.
@@ -223,7 +225,7 @@ The simplest hierarchical Bayes model takes the form
 
 $$p(\Theta, \Phi | \textbf{y}) \propto p(\textbf{y} | \Theta)p(\Theta | \Phi)p(\Phi)$$
 
-where $\Phi$ is a set of hyperprior distributions. By reading the equation from right to left, it begins with hyperpriors $\Phi$, which are used conditionally to estimate $p(\Theta | \Phi)$, which in turn is used, as per usual, to estimate the likelihood $p(\textbf{y} | \Theta)$, and finally the posterior is $p(\Theta, \Phi | \textbf{y})$.
+where $\Phi$ is a set of hyperprior distributions. By reading the equation from right to left, it begins with hyperpriors $\Phi$, which are used conditionally to estimate priors $p(\Theta | \Phi)$, which in turn is used, as per usual, to estimate the likelihood $p(\textbf{y} | \Theta)$, and finally the posterior is $p(\Theta, \Phi | \textbf{y})$.
 
 \section{Conjugacy}
 
@@ -240,7 +242,7 @@ $$\tau = \sigma^{-2}$$
 
 When the half-Cauchy is unavailable, a uniform distribution is often placed on $\sigma$ in hierarchical Bayes when the number of groups is, say, at least five, 
 
-$$\sigma \sim \mathrm{U}(0, 100)$$
+$$\sigma \sim \mathcal{U}(0, 100)$$
 $$\tau = \sigma^{-2}$$
 
 Conjugacy is mathematically convenient in that the posterior distribution follows a known parametric form \citep[p. 40]{gelman04}. It is obviously easier to summarize a normal distribution than a complex, multi-modal distribution with no known form. If information is available that contradicts a conjugate parametric family, then it may be necessary to use a more realistic, inconvenient, prior distribution.
@@ -494,7 +496,21 @@ Frequentist p-values have many problems, but here it will only be noted that the
 
 $$\chi^2_i = \frac{(\textbf{y}_i - \frac{\sum^T_{t=1} \textbf{y}^{rep}_{i,t}}{T})^2}{\mathrm{var}(\textbf{y}^{rep}_{i,1:T})},$$
 
-over records $i=1,\dots,N$ and posterior samples $t=1,\dots,T$. The sum of $\chi^2_i$ over records $i=1,\dots,N$ is an overall goodness of fit measure on the data set. Larger values of $\chi^2_i$ indicate worse fit for each record. Newer forms of $\chi^2$ tests have been proposed in the literature, and are best explored elsewhere.
+over records $i=1,\dots,N$ and posterior samples $t=1,\dots,T$. The sum of $\chi^2_i$ over records $i=1,\dots,N$ is an overall goodness of fit measure on the data set. Larger values of $\chi^2_i$ indicate a worse fit for each record.
+
+An alternative $\chi^2$ test is
+
+$$p(\chi^{2rep}_{i,1:T} > \chi^{2obs}_{i,1:T})$$
+
+where a worse fit is indicated as $p$ approaches zero or one, and it is common to consider records with a poor fit to be outside the 95\% probability interval. To continue
+
+$$\chi^{2obs}_{i,1:T} = \frac{[\textbf{y}_i - E(\textbf{y}_i)]^2}{E(\textbf{y}_i)}$$
+
+and
+
+$$\chi^{2rep}_{i,1:T} = \frac{[\textbf{y}^{rep}_{i,1:T} - E(\textbf{y}^{rep}_i)]^2}{E(\textbf{y}^{rep}_i)}$$
+
+Newer forms of $\chi^2$ tests have been proposed in the literature, and are best explored elsewhere.
 
 \subsection{Conditional Predictive Ordinate}
 
@@ -516,7 +532,7 @@ The CPO is connected with the frequentist studentized residual test for outlier 
 
 Inverse-CPOs (ICPOs) larger than 40 can be considered as possible outliers, and higher than 70 as extreme values \citep[p. 376]{ntzoufras09}. Congdon recommends scaling CPOs by dividing each by its individual maximum (after the posterior mean) and considering observations with scaled CPOs under 0.01 to be outliers \citep{congdon05}. The range in scaled CPOs is useful as an indicator of a good-fitting model.
 
-The sum of the logged CPOs can be an estimator for the log marginal likelihood, sometimes called the log pseudo marginal likelihood (LPsML). A ratio of PsMLs is a surrogate for the Bayes factor, sometimes known as the pseudo Bayes factor (PsBF). In this way, non-nested models may be compared with a hypothesis test to determine the better model, if one exists, based on leave-one-out cross-validation.
+The sum of the logged CPOs can be an estimator for the logarithm of the marginal likelihood\footnote{Exercise extreme caution when approximating the marginal likelihood from CPOs, or use a method with better repute, such as the Laplace-Metropolis Estimator or importance sampling.}, sometimes called the log pseudo marginal likelihood (LPsML). A ratio of PsMLs is a surrogate for the Bayes factor, sometimes known as the pseudo Bayes factor (PsBF). In this way, non-nested models may be compared with a hypothesis test to determine the better model, if one exists, based on leave-one-out cross-validation.
 
 \subsection{Predictive Concordance}
 \citet{gelfand96} suggests that any $\textbf{y}_i$ that is in either 2.5\% tail area of $\textbf{y}^{rep}_i$ should be considered an outlier. For each $i$, I am calling this the predictive quantile (PQ), which is calculated as

@@ -1,14 +1,15 @@
 ###########################################################################
 # caterpillar.plot                                                        #
 #                                                                         #
-# The purpose of this function is to provide a caterpillar plot of the    #
-# posterior summaries in an object of class demonoid or laplace.          #
+# The purpose of the caterpillar.plot function is to provide a            #
+# caterpillar plot of the posterior summaries in an object of class       #
+# demonoid or laplace.                                                    #
 ###########################################################################
 
 caterpillar.plot <- function(x, Parms=NULL, Title=NULL)
      {
      ### Initial Checks
-     if(is.null(x)) stop("x is NULL in caterpillar.plot().")
+     if(missing(x)) stop("The x argument is required.")
      if(class(x) == "demonoid") {
           if(any(is.na(x$Summary2))) {
                x <- x$Summary1
@@ -21,9 +22,13 @@ caterpillar.plot <- function(x, Parms=NULL, Title=NULL)
                     Parms <- sub("\\[","\\\\[",Parms)
                     Parms <- sub("\\]","\\\\]",Parms)
                     Parms <- sub("\\.","\\\\.",Parms)
+                    if(length(grep(Parms[1], rownames(x))) == 0)
+                         stop("Parameter in Parms does not exist.")
                     keeprows <- grep(Parms[1], rownames(x))
                     if(length(Parms) > 1) {
                          for (i in 2:length(Parms)) {
+                              if(length(grep(Parms[i], rownames(x))) == 0)
+                                   stop("Parameter in Parms does not exist.")
                               keeprows <- c(keeprows,
                                    grep(Parms[i], rownames(x)))}
                          }
@@ -63,9 +68,14 @@ caterpillar.plot <- function(x, Parms=NULL, Title=NULL)
                     Parms <- sub("\\[","\\\\[",Parms)
                     Parms <- sub("\\]","\\\\]",Parms)
                     Parms <- sub("\\.","\\\\.",Parms)
+                    if(length(grep(Parms[1], rownames(x$Summary))) == 0)
+                         stop("Parameter in Parms does not exist.")
                     keeprows <- grep(Parms[1], rownames(x$Summary))
                     if(length(Parms) > 1) {
                          for (i in 2:length(Parms)) {
+                              if(length(grep(Parms[i],
+                                   rownames(x$Summary))) == 0)
+                                   stop("Parameter in Parms does not exist.")
                               keeprows <- c(keeprows,
                                    grep(Parms[i], rownames(x$Summary)))}
                          }
@@ -99,7 +109,7 @@ caterpillar.plot <- function(x, Parms=NULL, Title=NULL)
                at=yy, cex.axis=cex.labels)
           }
      else {
-          stop("x in caterpillar.plot must be of class demonoid or laplace.")}
+          stop("x must be of class demonoid or laplace.")}
      }
 
 #End

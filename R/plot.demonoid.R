@@ -1,15 +1,16 @@
 ###########################################################################
 # plot.demonoid                                                           #
 #                                                                         #
-# The purpose of this function is to plot an object of class demonoid.    #
+# The purpose of the plot.demonoid function is to plot an object of class #
+# demonoid.                                                               #
 ###########################################################################
 
 plot.demonoid <- function(x, BurnIn=1, Data=NULL, PDF=FALSE,
      Parms=NULL, ...)
      {
      ### Initial Checks
-     if(is.null(x)) stop("x is NULL.\n")
-     if(is.null(Data)) stop("The Data argument is NULL.\n")
+     if(missing(x)) stop("The x argument is required.")
+     if(is.null(Data)) stop("The Data argument is NULL.")
      if(BurnIn >= nrow(x$Posterior1)) BurnIn <- 1
      ### Selecting Parms
      if(is.null(Parms)) {Posterior <- x$Posterior1}
@@ -17,9 +18,14 @@ plot.demonoid <- function(x, BurnIn=1, Data=NULL, PDF=FALSE,
           Parms <- sub("\\[","\\\\[",Parms)
           Parms <- sub("\\]","\\\\]",Parms)
           Parms <- sub("\\.","\\\\.",Parms)
+          if(length(grep(Parms[1], colnames(x$Posterior1))) == 0)
+               stop("Parameter in Parms does not exist.")
           keepcols <- grep(Parms[1], colnames(x$Posterior1))
           if(length(Parms) > 1) {
                for (i in 2:length(Parms)) {
+                    if(length(grep(Parms[i],
+                         colnames(x$Posterior1))) == 0)
+                         stop("Parameter in Parms does not exist.")
                     keepcols <- c(keepcols,
                          grep(Parms[i], colnames(x$Posterior1)))}}
           Posterior <- as.matrix(x$Posterior1[,keepcols])
@@ -69,12 +75,16 @@ plot.demonoid <- function(x, BurnIn=1, Data=NULL, PDF=FALSE,
      polygon(density(x$Deviance[BurnIn:length(x$Deviance)]), col="black",
                border="black")
      abline(v=0, col="red", lty=2)
-     z <- acf(x$Deviance[BurnIn:length(x$Deviance)], plot=FALSE)
-     se <- 1/sqrt(length(x$Deviance[BurnIn:length(x$Deviance)]))
-     plot(z$lag, z$acf, ylim=c(min(z$acf,-2*se),1), type="h",
-          main="Deviance", xlab="Lag", ylab="Correlation")
-     abline(h=(2*se), col="red", lty=2)
-     abline(h=(-2*se), col="red", lty=2)
+     ### Only plot an ACF if there's > 1 unique values
+     if(length(unique(x$Deviance[BurnIn:length(x$Deviance)])) > 1) {
+          z <- acf(x$Deviance[BurnIn:length(x$Deviance)], plot=FALSE)
+          se <- 1/sqrt(length(x$Deviance[BurnIn:length(x$Deviance)]))
+          plot(z$lag, z$acf, ylim=c(min(z$acf,-2*se),1), type="h",
+               main="Deviance", xlab="Lag", ylab="Correlation")
+          abline(h=(2*se), col="red", lty=2)
+          abline(h=(-2*se), col="red", lty=2)
+          }
+     else {plot(0,0, main="Deviance is a constant.")}
      ### Plot Monitored Variables
      if(is.vector(x$Monitor)) {J <- 1; nn <- length(x$Monitor)}
      else if(is.matrix(x$Monitor)) {

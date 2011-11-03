@@ -19,12 +19,16 @@
 }
 \usage{Geweke.Diagnostic(x)}
 \arguments{
-     \item{x}{
-          This required argument is a vector or matrix of posterior
-          samples.
-          }
+  \item{x}{
+    This required argument is a vector or matrix of posterior samples.}
 }
 \details{
+  The \code{Geweke.Diagnostic} is one of the criteria in the
+  \code{\link{Consort}} function regarding the recommendation of when
+  to stop updating the Markov chain Monte Carlo (MCMC) sampler in
+  \code{\link{LaplacesDemon}}. For more information on stationarity, see
+  the \code{\link{is.stationary}} function, and the accompanying vignettes.
+  
   The \code{Geweke.Diagnostic} is essentially the same as the
   \code{geweke.diag} function in the \code{coda} package, but
   programmed to accept a simple vector or matrix, so it does not require
@@ -40,5 +44,17 @@
   Approaches to Calculating Posterior Moments". In
   \emph{Bayesian Statistics 4} (ed JM Bernardo, JO Berger, AP Dawid,
   and AFM Smith). Clarendon Press, Oxford, UK.
+
+  Hall, B. (2011). "Laplace's Demon", STATISTICAT, LLC.
+  URL=\url{http://www.statisticat.com/laplacesdemon.html}
 }
-\seealso{\code{\link{LaplacesDemon}}}
+\seealso{
+  \code{\link{Consort}}
+  \code{\link{LaplacesDemon}}.
+}
+\examples{
+library(LaplacesDemon)
+Geweke.Diagnostic(rnorm(100))
+Geweke.Diagnostic(matrix(rnorm(100),10,10))
+}
+\keyword{diagnostic, stationarity, utility}

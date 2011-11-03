@@ -19,10 +19,11 @@ rhalfnorm(n, scale=sqrt(pi/2))
   \item{p}{This is a vector of probabilities.}
   \item{n}{This is the number of observations, which must be a positive
     integer that has length 1.}
-  \item{scale}{This is the scale parameter sigma, which must be positive.}
-  \item{log,log.p}{Logical. If \code{log=TRUE} then the logarithm of the
+  \item{scale}{This is the scale parameter \eqn{\sigma}{sigma}, which
+    must be positive.}
+  \item{log,log.p}{Logical. If \code{log=TRUE}, then the logarithm of the
     density or result is returned.}
-  \item{lower.tail}{Logical. if \code{lower.tail=TRUE} (default),
+  \item{lower.tail}{Logical. If \code{lower.tail=TRUE} (default),
     probabilities are \eqn{Pr[X \le x]}{Pr[X <= x]}, otherwise,
     \eqn{Pr[X > x]}{Pr[X > x]}.}
 }
@@ -51,12 +52,24 @@ to the half-Cauchy, half-t, and gamma.
   \code{rhalfnorm} generates random deviates.
 }
 \seealso{
-  \code{\link{dnorm}} for the normal distribution.
+  \code{\link{dnorm}},
+  \code{\link{dnormp}},
+  \code{\link{dnormv}}.
 }
 \examples{
+library(LaplacesDemon)
 x <- dhalfnorm(1)
 x <- phalfnorm(1)
 x <- qhalfnorm(0.5)
 x <- rhalfnorm(10)
+
+#Plot Probability Functions
+x <- seq(from=0.1, to=20, by=0.1)
+plot(x, dhalfnorm(x,0.1), ylim=c(0,1), type="l", main="Probability Function",
+     ylab="density", col="red")
+lines(x, dhalfnorm(x,0.5), type="l", col="green")
+lines(x, dhalfnorm(x,1), type="l", col="blue")
+legend(2, 0.9, expression(sigma==0.1, sigma==0.5, sigma==1),
+     lty=c(1,1,1), col=c("red","green","blue"))
 }
 \keyword{distribution}

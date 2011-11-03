@@ -1,10 +1,10 @@
 ###########################################################################
 # Geweke.Diagnostic                                                       #
 #                                                                         #
-# The purpose of this function is to estimate stationarity in samples     #
-# according to Geweke's diagnostic.  Although the code is slightly        #
-# different, it is essentially the same as the geweke.diag function in    #
-# the coda package.                                                       #
+# The purpose of the Geweke.Diagnostic function is to estimate            #
+# stationarity in samples according to Geweke's diagnostic.  Although the #
+# code is slightly different, it is essentially the same as the           #
+# geweke.diag function in the coda package.                               #
 ###########################################################################
 
 Geweke.Diagnostic <- function(x) 
@@ -31,7 +31,7 @@ Geweke.Diagnostic <- function(x)
                spec ~ one,
                spec ~ f1,
                spec ~ f1 + f2)
-          if(is.null(fmla)) stop("invalid order")
+          if(is.null(fmla)) stop("Invalid order.")
           N <- nrow(yy)
           Nfreq <- floor(N/2)
           freq <- seq(from = 1/N, by = 1/N, length = Nfreq)

@@ -8,11 +8,11 @@
   Laplace Approximation is to estimate the posterior mode and variance
   of each parameter. This function is useful for optimizing initial
   values and estimating a covariance matrix to be input into the
-  \code{LaplacesDemon} function, or sometimes for model estimation in
-  its own right.
+  \code{\link{LaplacesDemon}} function, or sometimes for model
+  estimation in its own right.
 }
 \usage{
-LaplaceApproximation(Model=NULL, parm=NULL, Data=NULL, Interval=1.0E-6,
+LaplaceApproximation(Model, parm, Data, Interval=1.0E-6,
      Iterations=100, Method="CG", Stop.Tolerance=1.0E-5)
 }
 \arguments{
@@ -21,15 +21,16 @@ LaplaceApproximation(Model=NULL, parm=NULL, Data=NULL, Interval=1.0E-6,
           function. The user-defined function is where the model is
 	  specified. \code{LaplaceApproximation} passes two arguments to
 	  the model function, \code{parms} and \code{Data}. For more
-	  information, see the \code{LaplacesDemon} function and
-	  vignette.
+	  information, see the \code{\link{LaplacesDemon}} function and
+	  ``LaplacesDemon Tutorial'' vignette.
           }
      \item{parm}{
           This argument requires a vector of initial values equal in
           length to the number of parameters. \code{LaplaceApproximation} 
 	  will attempt to optimize these initial values for the
 	  parameters, where the optimized values are the posterior
-	  modes, for later use with the \code{LaplacesDemon} function.
+	  modes, for later use with the \code{\link{LaplacesDemon}}
+	  function.
           }
      \item{Data}{
           This required argument accepts a list of data. The list of
@@ -115,15 +116,17 @@ LaplaceApproximation(Model=NULL, parm=NULL, Data=NULL, Interval=1.0E-6,
   currently works best with few parameters.
 
   The \code{LaplaceApproximation} function may be called by the user
-  before using \code{LaplacesDemon}, or \code{LaplacesDemon} may call
-  this function if all initial values are zero and the sample size is at
-  least five times the number of parameters. Chasing convergence with
-  \code{LaplaceApproximation} may be time-consuming and unimportant. The
-  goal, instead, is to improve the logarithm of the unnormalized joint
-  posterior density so that it is easier for the \code{LaplacesDemon}
-  function to begin updating the parameters in search of the target
+  before using \code{\link{LaplacesDemon}}, or
+  \code{\link{LaplacesDemon}} may call this function if all initial
+  values are zero and the sample size is at least five times the number
+  of parameters. Chasing convergence with \code{LaplaceApproximation}
+  may be time-consuming and unimportant. The goal, instead, is to
+  improve the logarithm of the unnormalized joint posterior density so
+  that it is easier for the \code{\link{LaplacesDemon}} function to
+  begin updating the parameters in search of the target
   distributions. This can be difficult when the initial values are in
-  low-probability regions, and can cause unreasonably low acceptance rates.
+  low-probability regions, and can cause unreasonably low acceptance
+  rates.
 
   \code{LaplaceApproximation} seeks a global maximum of the logarithm of
   the unnormalized joint posterior density by taking adaptive steps
@@ -166,9 +169,9 @@ LaplaceApproximation(Model=NULL, parm=NULL, Data=NULL, Interval=1.0E-6,
   approximates the Hessian matrix of second derivatives, and attempts to
   calculate the covariance matrix by taking the inverse of the negative
   of this matrix. If successful, then this covariance matrix may be
-  passed to \code{LaplacesDemon}, and the diagonal of this matrix is the
-  variance of the parameters. If unsuccessful, a scaled identity matrix
-  is returned, and each parameter's variance will be 1.
+  passed to \code{\link{LaplacesDemon}}, and the diagonal of this matrix
+  is the variance of the parameters. If unsuccessful, a scaled identity
+  matrix is returned, and each parameter's variance will be 1.
 
 }
 \value{
@@ -192,13 +195,13 @@ LaplaceApproximation(Model=NULL, parm=NULL, Data=NULL, Interval=1.0E-6,
 	  attempting to solve the matrix inversion, then an
 	  identity matrix is returned. The \code{Covar} matrix may be
 	  scaled and input into the \code{Covar} argument of the
-	  \code{LaplacesDemon} function for further MCMC estimation, or
-	  the diagonal of this matrix may be used to represent the
-	  posterior variance of the parameters, provided the algorithm
-	  converged and matrix inversion was successful. To scale this
-	  matrix for use with Laplace's Demon, multiply it by
-	  \code{2.38^2/d}, where \code{d} is the number of initial
-	  values.
+	  \code{\link{LaplacesDemon}} function for further MCMC
+	  estimation, or the diagonal of this matrix may be used to
+	  represent the posterior variance of the parameters, provided
+	  the algorithm converged and matrix inversion was
+	  successful. To scale this matrix for use with Laplace's Demon,
+	  multiply it by \eqn{2.38^2/d}, where \eqn{d} is the number of
+	  initial values.
           }
      \item{Deviance}{
 	  This is a vector of the iterative history of the deviance in
@@ -217,17 +220,18 @@ LaplaceApproximation(Model=NULL, parm=NULL, Data=NULL, Interval=1.0E-6,
 	  }
      \item{LML}{
           This is an approximation of the logarithm of the marginal
-          likelihood of the data, and is the logarithmic form of
-	  equation 4 in Lewis and Raftery (1997). As a rough estimate of
-	  Kass and Raftery (1995), \code{LML} is worrisome when the
-	  sample size of the data is less than five times the number of
-	  parameters, and \code{LML} should be adequate in most problems
-	  when the sample size of the data exceeds twenty times the
-	  number of parameters (p. 778). \code{LML} is useful for
-	  comparing multiple models with the \code{BayesFactor}
-	  function. The Laplace-Metropolis estimator is inappropriate
-	  with hierarchical models, and the extension (the Compound
-	  Laplace-Metropolis estimator) will soon be attempted to be
+          likelihood of the data (see the \code{\link{LML}} function for
+	  more information), and is the logarithmic form of equation 4
+	  in Lewis and Raftery (1997). As a rough estimate of Kass and
+	  Raftery (1995), \code{LML} is worrisome when the sample size
+	  of the data is less than five times the number of parameters,
+	  and \code{LML} should be adequate in most problems when the
+	  sample size of the data exceeds twenty times the number of
+	  parameters (p. 778). \code{LML} is useful for comparing
+	  multiple models with the \code{BayesFactor} function. The
+	  Laplace-Metropolis Estimator (LME) is inappropriate with
+	  hierarchical models, and the extension (the Compound 
+	  Laplace-Metropolis Estimator) may soon be attempted to be
 	  included.
           }
      \item{LP.Final}{
@@ -278,7 +282,7 @@ LaplaceApproximation(Model=NULL, parm=NULL, Data=NULL, Interval=1.0E-6,
      Bernardo, J.M. and Smith, A.F.M. (2000). "Bayesian Theory". John
      Wiley \& Sons: West Sussex, England.
 
-     Hall, B. (2011), "Laplace's Demon", STATISTICAT, LLC.
+     Hall, B. (2011). "Laplace's Demon", STATISTICAT, LLC.
      URL=\url{http://www.statisticat.com/laplacesdemon.html}
 
      Kass, R.E. and Raftery, A.E. (1995). "Bayes Factors". Journal of the
@@ -309,7 +313,12 @@ LaplaceApproximation(Model=NULL, parm=NULL, Data=NULL, Interval=1.0E-6,
      84(407), p. 710--716.
 }
 \author{Byron Hall \email{laplacesdemon@statisticat.com}}
-\seealso{\code{\link{LaplacesDemon}}}
+\seealso{
+  \code{\link{BayesFactor}},
+  \code{\link{LaplacesDemon}},
+  \code{\link{LML}},
+  \code{\link{optim}}.
+}
 \examples{
 # The accompanying Examples vignette is a compendium of examples.
 ####################  Load the LaplacesDemon Library  #####################
@@ -317,13 +326,13 @@ library(LaplacesDemon)
 
 ##############################  Demon Data  ###############################
 data(demonsnacks)
-N <- NROW(demonsnacks)
+N <- nrow(demonsnacks)
 J <- 6
 y <- log(demonsnacks$Calories)
 X <- cbind(1, as.matrix(demonsnacks[,c(1,3:6)]))
 for (j in 2:J) {X[,j] <- CenterScale(X[,j])}
 mon.names <- c("sigma","mu[1]")
-parm.names <- parm.names(list(beta=rep(0,J), log.sigma=0))
+parm.names <- as.parm.names(list(beta=rep(0,J), log.sigma=0))
 MyData <- list(J=J, X=X, mon.names=mon.names, parm.names=parm.names, y=y)
 
 ############################  Initial Values  #############################
@@ -336,7 +345,7 @@ Model <- function(parm, Data)
      beta <- parm[1:Data$J]
      sigma <- exp(parm[Data$J+1])
      ### Log of Prior Densities
-     beta.prior <- sum(dnorm(beta, 0, sqrt(1000), log=TRUE))
+     beta.prior <- sum(dnormv(beta, 0, 1000, log=TRUE))
      sigma.prior <- dhalfcauchy(sigma, 25, log=TRUE)
      ### Log-Likelihood
      mu <- tcrossprod(beta, Data$X)

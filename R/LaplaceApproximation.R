@@ -1,30 +1,30 @@
 ###########################################################################
 # LaplaceApproximation                                                    #
 #                                                                         #
-# The LaplaceApproximation function maximizes the logarithm of the        #
-# unnormalized joint posterior distribution of a Bayesian model with a    #
-# deterministic approximation conjugate gradient or adaptive gradient     #
-# ascent algorithm to estimate the posterior modes and variances. The     #
-# gradient ascent algorithm uses an adaptive step size.                   #
+# The purpose of the LaplaceApproximation function is to maximize the     #
+# logarithm of the unnormalized joint posterior distribution of a         #
+# Bayesian model with a deterministic approximation that is a conjugate   #
+# gradient or adaptive gradient ascent algorithm to estimate the          #
+# posterior modes and variances. The gradient ascent algorithm uses an    #
+# adaptive step size.                                                     #
 ###########################################################################
 
-LaplaceApproximation <- function(Model=NULL, parm=NULL, Data=NULL,
-     Interval=1.0E-6, Iterations=100, Method="CG", Stop.Tolerance=1.0E-5)
+LaplaceApproximation <- function(Model, parm, Data, Interval=1.0E-6,
+     Iterations=100, Method="CG", Stop.Tolerance=1.0E-5)
      {
      ##########################  Initial Checks  ##########################
      time1 <- proc.time()
-     if(is.null(Model))
-          stop("Model is a required argument in LaplaceApproximation().\n")
-     if(is.null(Data))
-          stop("Data is a required argument in LaplaceApproximation().\n")
-     if(is.null(parm)) {
+     if(missing(Model))
+          stop("Model is a required argument.")
+     if(missing(Data))
+          stop("Data is a required argument.")
+     if(missing(parm)) {
           cat("Initial values were not supplied, and\n")
           cat("have been set to zero prior to LaplaceApproximation().\n")
           parm <- rep(0, length(Data$parm.names))}
      for (i in 1:length(Data)) {
           if(is.matrix(Data[[i]])) {
-               if(!any(is.na(Data[[i]])) & !any(is.nan(Data[[i]])) &
-                    !any(is.infinite(Data[[i]]))) {
+               if(all(is.finite(Data[[i]]))) {
                     mat.rank <- qr(Data[[i]], tol=1e-10)$rank
                     if(mat.rank < ncol(Data[[i]])) {
                          cat("WARNING: Matrix", names(Data)[[i]],
@@ -34,7 +34,7 @@ LaplaceApproximation <- function(Model=NULL, parm=NULL, Data=NULL,
      if(Iterations < 10) {Iterations <- 10}
      else if(Iterations > 1000000) {Iterations <- 1000000}
      if((Method != "AGA") & (Method != "CG"))
-          stop("Method is unknown in LaplaceApproximation().")
+          stop("Method is unknown.")
      if(Stop.Tolerance <= 0) Stop.Tolerance <- 1.0E-5
      as.character.function <- function(x, ... )
           {
@@ -67,11 +67,9 @@ LaplaceApproximation <- function(Model=NULL, parm=NULL, Data=NULL,
      parm <- as.vector(parm)
      parm.len <- length(parm)
      ans.len <- length(Model(parm, Data)[[1]])
-     if(ans.len > 1) stop("Multiple joint posteriors exist!\n")
+     if(ans.len > 1) stop("Multiple joint posteriors exist!")
      parm.int <- {diag(parm.len) * Interval} / 2
-     parm.int <- ifelse(is.na(parm.int), 0, parm.int)
-     parm.int <- ifelse(is.nan(parm.int), 0, parm.int)
-     parm.int <- ifelse(is.infinite(parm.int), 0, parm.int)
+     parm.int <- ifelse(!is.finite(parm.int), 0, parm.int)
      approx.grad <- array(0, dim=c(ans.len, parm.len))
      parm.old <- parm
      parm.new <- parm.old - 0.1 #First step
@@ -82,9 +80,9 @@ LaplaceApproximation <- function(Model=NULL, parm=NULL, Data=NULL,
      iter <- 0
      ### Attempt prior to starting...
      m.old <- Model(parm, Data)
-     if(is.na(m.old[[1]]) | is.nan(m.old[[1]]) | is.infinite(m.old[[1]])) {
+     if(!is.finite(m.old[[1]])) {
           stop("The posterior is not real or numeric.")}
-     if(is.na(m.old[[2]]) | is.nan(m.old[[2]]) | is.infinite(m.old[[2]])) {
+     if(!is.finite(m.old[[2]])) {
           stop("The deviance is not real or numeric.")}
      Dev <- matrix(m.old[[2]],1,1)
      ### Parms could have been constrained...
@@ -113,8 +111,7 @@ LaplaceApproximation <- function(Model=NULL, parm=NULL, Data=NULL,
                     approx.grad)
                approx.grad <- ifelse(approx.grad < -1000, -1000,
                     approx.grad)
-               if(is.na(high) | is.nan(high) | is.infinite(high) |
-                    is.na(low) | is.nan(low) | is.infinite(low)) {
+               if(!is.finite(high) | !is.finite(low)) {
                     approx.grad[,i] <- 0}
                }
           ### In iteration 1 or at status, try 10 different step sizes
@@ -125,16 +122,11 @@ LaplaceApproximation <- function(Model=NULL, parm=NULL, Data=NULL,
                parm.temp <- matrix(0, 10, parm.len)
                for (j in 1:10) {
                     parm.temp[j,] <- parm.old - step.size[j] * c(approx.grad)
-                    parm.temp[j,] <- ifelse(is.na(parm.temp[j,]), parm.old,
-                         parm.temp[j,])
-                    parm.temp[j,] <- ifelse(is.nan(parm.temp[j,]), parm.old,
-                         parm.temp[j,])
-                    parm.temp[j,] <- ifelse(is.infinite(parm.temp[j,]),
+                    parm.temp[j,] <- ifelse(!is.finite(parm.temp[j,]),
                          parm.old, parm.temp[j,])
                     lujpd[j] <- Model(parm.temp[j,], Data)[[1]]
                     }
-               lujpd <- ifelse(is.na(lujpd) | is.nan(lujpd) |
-                    is.infinite(lujpd), -1.0E+200, lujpd)
+               lujpd <- ifelse(!is.finite(lujpd), -1.0E+200, lujpd)
                if(max(lujpd) > m.old[[1]]) {
                     Step.Size <- step.size[which.max(lujpd)]
                     parm.new <- parm.temp[which.max(lujpd),]}
@@ -143,15 +135,12 @@ LaplaceApproximation <- function(Model=NULL, parm=NULL, Data=NULL,
                }
           ### Otherwise, work with the current and adaptive Step.Size
           parm.new <- parm.old - Step.Size * c(approx.grad)
-          parm.new <- ifelse(is.na(parm.new), parm.old, parm.new)
-          parm.new <- ifelse(is.nan(parm.new), parm.old, parm.new)
-          parm.new <- ifelse(is.infinite(parm.new), parm.old, parm.new)
+          parm.new <- ifelse(!is.finite(parm.new), parm.old, parm.new)
           tol.new <- sqrt(sum({parm.new - parm.old}^2))
           m.old <- Model(parm.old, Data)
           m.new <- Model(parm.new, Data)
           Dev.new <- m.old[[2]]
-          if(is.na(m.new[[1]]) | is.nan(m.new[[1]]) |
-               is.infinite(m.new[[1]])) {
+          if(!is.finite(m.new[[1]])) {
                parm.new <- parm.old
                Dev.new <- m.new[[2]]
                tol.new <- 0}
@@ -165,7 +154,7 @@ LaplaceApproximation <- function(Model=NULL, parm=NULL, Data=NULL,
                parm.new <- parm.old}
           }
      ### Logarithm of the Marginal Likelihood
-     LML <- LML(Model, Data, parm.new)
+     LML <- LML(Model, Data, parm.new, method="LME2")
      ### Column names to samples
      if(ncol(post) == length(Data$parm.names)) {
           colnames(post) <- Data$parm.names}
@@ -206,24 +195,22 @@ LaplaceApproximation <- function(Model=NULL, parm=NULL, Data=NULL,
           method="CG",
           control=list(maxit=Iterations, fnscale=-1), hessian=TRUE)
      ### Hessian
-     Inverse.test <- try(VarCov <- -solve(est$hessian), silent=TRUE)
-     if(is.numeric(Inverse.test[1])) {
-          diag(VarCov) <- ifelse(diag(VarCov) < 0, diag(VarCov) * -1,
-               diag(VarCov)) #Better method of preventing negative variance?
-          diag(VarCov) <- ifelse(diag(VarCov) == 0, 1.0E-10, diag(VarCov))}
+     Inverse.test <- try(VarCov <- -as.inverse(est$hessian), silent=TRUE)
+     if(class(Inverse.test) != "try-error") {
+          diag(VarCov) <- ifelse(diag(VarCov) <= 0, .Machine$double.eps,
+               diag(VarCov))}
      else {
           cat("\nWARNING: Failure to solve matrix inversion of Approx. Hessian.\n")
           cat("NOTE: Identity matrix is supplied instead.\n")
-          VarCov <- matrix(0, length(est$par), length(est$par))
-          diag(VarCov) <- 1
+          VarCov <- diag(parm.len)
           }
      ### Logarithm of the Marginal Likelihood
      LML <- NA
      options(warn=-1)
      LML.test <- try(LML <- parm.len/2 * log(2*pi) + 0.5*log(det(VarCov)) +
           as.vector(Model(est$par, Data)[[1]]), silent=TRUE)
-     if(is.numeric(LML.test[1]) & !is.nan(LML.test[1]) &
-          !is.infinite(LML.test[1])) {LML <- LML.test[1]}
+     if((class(LML.test) != "try-error") & is.finite(LML.test[1]))
+          LML <- LML.test[1]
      options(warn=0)
      ### Summary
      cat("\nCreating Summary...\n")
@@ -235,21 +222,21 @@ LaplaceApproximation <- function(Model=NULL, parm=NULL, Data=NULL,
      Summ[,4] <- est$par + 2*Summ[,2]
      time2 <- proc.time()
      LA <- list(Call=match.call(),
-          Converged = (est$convergence == 0),
-          Covar = VarCov,
-          Deviance = as.vector(Model(est$par, Data)[[2]]),
-          History = NA,
-          Initial.Values = parm,
-          Iterations = as.vector(est$counts[1]),
-          LML = LML[[1]],
-          LP.Final = as.vector(Model(est$par, Data)[[1]]),
-          LP.Initial = Model(parm, Data)[[1]],
-          Minutes = round(as.vector(time2[3] - time1[3]) / 60, 2),
-          Step.Size.Final = NA,
-          Step.Size.Initial = NA,
-          Stop.Tolerance = NA,
-          Summary = Summ,
-          Tolerance = NA)
+          Converged=(est$convergence == 0),
+          Covar=VarCov,
+          Deviance=as.vector(Model(est$par, Data)[[2]]),
+          History=NA,
+          Initial.Values=parm,
+          Iterations=as.vector(est$counts[1]),
+          LML=LML[[1]],
+          LP.Final=as.vector(Model(est$par, Data)[[1]]),
+          LP.Initial=Model(parm, Data)[[1]],
+          Minutes=round(as.vector(time2[3] - time1[3]) / 60, 2),
+          Step.Size.Final=NA,
+          Step.Size.Initial=NA,
+          Stop.Tolerance=NA,
+          Summary=Summ,
+          Tolerance=NA)
      }
      class(LA) <- "laplace"
      cat("Laplace Approximation is finished.\n\n")

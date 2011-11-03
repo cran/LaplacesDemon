@@ -12,7 +12,7 @@
 PosteriorChecks <- function(x, Parms=NULL)
      {
      ### Initial Checks
-     if(is.null(x)) stop("The x argument is NULL.\n")
+     if(missing(x)) stop("The x argument is required.")
      if((class(x) != "demonoid") & (class(x) != "laplace"))
           stop("An object of class demonoid or laplace is required.")
      #Kurtosis and Skewness Functions
@@ -40,9 +40,13 @@ PosteriorChecks <- function(x, Parms=NULL)
                Parms <- sub("\\[","\\\\[",Parms)
                Parms <- sub("\\]","\\\\]",Parms)
                Parms <- sub("\\.","\\\\.",Parms)
+               if(length(grep(Parms[1], colnames(post))) == 0)
+                    stop("Parameter in Parms does not exist.")
                keepcols <- grep(Parms[1], colnames(post))
                if(length(Parms) > 1) {
                     for (i in 2:length(Parms)) {
+                         if(length(grep(Parms[i], colnames(post))) == 0)
+                              stop("Parameter in Parms does not exist.")
                          keepcols <- c(keepcols,
                               grep(Parms[i], colnames(post)))}}}
           temp <- colnames(post)[keepcols]
@@ -51,13 +55,14 @@ PosteriorChecks <- function(x, Parms=NULL)
           #Correlation Table
           postcor <- cor(post)
           #Summary Table
-          Summ <- matrix(NA, ncol(post), 3)
+          Summ <- matrix(NA, ncol(post), 4)
           rownames(Summ) <- colnames(post)
-          colnames(Summ) <- c("p(theta > 0)","Kurtosis","Skewness")
+          colnames(Summ) <- c("p(theta > 0)","N.Modes","Kurtosis","Skewness")
           for (i in 1:ncol(post)) {
                Summ[i,1] <- mean(post[,i] > 0)
-               Summ[i,2] <- round(kurtosis(post[,i]),3)
-               Summ[i,3] <- round(skewness(post[,i]),3)}
+               Summ[i,2] <- length(Modes(post[,i])[[1]])
+               Summ[i,3] <- round(kurtosis(post[,i]),3)
+               Summ[i,4] <- round(skewness(post[,i]),3)}
           }
      ### class laplace
      if(class(x) == "laplace") {
@@ -69,9 +74,13 @@ PosteriorChecks <- function(x, Parms=NULL)
                Parms <- sub("\\[","\\\\[",Parms)
                Parms <- sub("\\]","\\\\]",Parms)
                Parms <- sub("\\.","\\\\.",Parms)
+               if(length(grep(Parms[1], rownames(post))) == 0)
+                    stop("Parameter in Parms does not exist.")
                keeprows <- grep(Parms[1], rownames(post))
                if(length(Parms) > 1) {
                     for (i in 2:length(Parms)) {
+                         if(length(grep(Parms[i], rownames(post))) == 0)
+                              stop("Parameter in Parms does not exist.")
                          keeprows <- c(keeprows,
                               grep(Parms[i], rownames(post)))}}}
           temp <- rownames(post)[keeprows]
@@ -80,14 +89,16 @@ PosteriorChecks <- function(x, Parms=NULL)
           ### Correlation Table
           postcor <- NA
           ### Summary Table
-          Summ <- matrix(NA, nrow(post), 3)
+          Summ <- matrix(NA, nrow(post), 4)
           rownames(Summ) <- rownames(post)
-          colnames(Summ) <- c("p(theta > 0)","Kurtosis","Skewness")
+          colnames(Summ) <- c("p(theta > 0)","N.Modes","Kurtosis","Skewness")
           Summ[,1] <- round(pnorm(0, mean=post[,1], sd=post[,2],
                lower.tail=FALSE),3)
+          Summ[,2] <- 1
           }
      #Output
      out <- list(Posterior.Correlation=postcor, Posterior.Summary=Summ)
+     class(out) <- "posteriorchecks"
      return(out)
      }
 

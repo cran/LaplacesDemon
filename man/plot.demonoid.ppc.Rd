@@ -173,6 +173,9 @@
 }
 \references{\url{http://www.statisticat.com/laplacesdemon.html}}
 \author{Byron Hall \email{laplacesdemon@statisticat.com}}
-\seealso{\code{\link{predict.demonoid}}}
+\seealso{
+  \code{\link{LaplacesDemon}},
+  \code{\link{predict.demonoid}}.
+}
 \examples{### See the LaplacesDemon function for an example.}
 \keyword{plot}

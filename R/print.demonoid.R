@@ -1,13 +1,13 @@
 ###########################################################################
 # print.demonoid                                                          #
 #                                                                         #
-# The purpose of this function is to print the contents of an object of   #
-# class demonoid to the screen.                                           #
+# The purpose of the print.demonoid function is to print the contents of  #
+# an object of class demonoid to the screen.                              #
 ###########################################################################
 
 print.demonoid <- function(x, ...)
      {
-     if(is.null(x)) stop("x is NULL.\n")
+     if(missing(x)) stop("The x argument is required.")
      cat("Call:\n")
      print(x$Call)
      cat("\nAcceptance Rate: ", round(x$Acceptance.Rate,5),

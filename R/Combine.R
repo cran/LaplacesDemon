@@ -8,7 +8,7 @@
 Combine <- function(x, Data)
      {
      ### Initial Checks
-     if(is.null(x)) stop("x is a required argument of Combine().")
+     if(missing(x)) stop("x is a required argument.")
      len.x <- Thinning <- length(x)
      if(!all(sapply(x, class) == "demonoid")) {
           stop("At least one item in list x is not of class demonoid.")}
@@ -53,12 +53,11 @@ Combine <- function(x, Data)
           {
           thinned2 <- thinned[burn.start[i]:nrow(thinned),]
           test <- try(as.vector(Geweke.Diagnostic(thinned2)), silent=TRUE)
-          if(is.numeric(test)) geweke[i,] <- as.vector(test)
+          if(class(test) != "try-error") geweke[i,] <- as.vector(test)
           }
      options(warn=0)
      rm(thinned2)
-     geweke <- ifelse(is.na(geweke), 9, geweke)
-     geweke <- ifelse(is.nan(geweke), 9, geweke)
+     geweke <- ifelse(!is.finite(geweke), 9, geweke)
      geweke <- ifelse({geweke > -2} & {geweke < 2}, TRUE, FALSE)
      for (j in 1:LIV) {geweke.ct[j] <- which(geweke[,j] == TRUE)[1]}
      geweke.ct <- ifelse(is.na(geweke.ct), nrow(thinned), geweke.ct)

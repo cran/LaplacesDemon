@@ -25,7 +25,9 @@ rmvn(n=1, mu, Sigma)
   \itemize{
   \item Application: Continuous Multivariate
   \item Density: \eqn{p(\theta) = \frac{1}{(2\pi)^{k/2}|\Sigma|^{1/2}}
-    \exp(-.5(\theta - \mu)'\Sigma^{-1}(\theta - \mu))}{p(theta) = (1/((2*pi)^(k/2)*|Sigma|^(1/2)))*exp(-.5*(theta-mu)'*Sigma^(-1)*(theta-mu))}
+    \exp(-\frac{1}{2}(\theta - \mu)'\Sigma^{-1}(\theta - \mu))}{p(theta)
+    = (1/((2*pi)^(k/2)*|Sigma|^(1/2))) *
+    exp(-(1/2)*(theta-mu)'*Sigma^(-1)*(theta-mu))}
   \item Inventor: Unknown (to me, anyway)
   \item Notation 1: \eqn{\theta \sim \mathcal{MVN}(\mu, \Sigma)}{theta ~ MVN(mu, Sigma)}
   \item Notation 2: \eqn{\theta \sim \mathcal{N}_k(\mu, \Sigma)}{theta ~ N[k](mu, Sigma)}
@@ -46,16 +48,23 @@ combination of its components has a univariate normal distribution.
 This distribution has a mean parameter vector \eqn{\mu}{mu} of length
 \eqn{k} and a \eqn{k \times k}{k x k} covariance matrix
 \eqn{\Sigma}{Sigma}, which must be positive-definite.
-
-These functions are similar to those in the \code{bayesm},
-\code{mnormt}, and \code{mvtnorm} packages.
 }
 \value{
   \code{dmvn} gives the density and 
   \code{rmvn} generates random deviates.
 }
+\references{\url{http://www.statisticat.com/laplacesdemon.html}}
+\author{Byron Hall \email{laplacesdemon@statisticat.com}}
+\seealso{
+  \code{\link{dinvwishart}},
+  \code{\link{dnorm}},
+  \code{\link{dnormp}},
+  \code{\link{dnormv}}.
+}
 \examples{
-x <- dmvn(c(1,2,3), c(0,1,2), matrix(c(1,0,0,0,1,0,0,0,1),3,3))
-x <- rmvn(100, c(0,1,2), matrix(c(1,0,0,0,1,0,0,0,1),3,3))
+library(LaplacesDemon)
+x <- dmvn(c(1,2,3), c(0,1,2), diag(3))
+X <- rmvn(1000, c(0,1,2), diag(3))
+joint.density.plot(X[,1], X[,2], color=TRUE)
 }
 \keyword{distribution}

@@ -1,14 +1,15 @@
 ###########################################################################
 # plot.demonoid.ppc                                                       #
 #                                                                         #
-# The purpose of this function is to plot an object of class demonoid.ppc.#
+# The purpose of the plot.demonoid.ppc function is to plot an object of   #
+# class demonoid.ppc.                                                     #
 ###########################################################################
 
 plot.demonoid.ppc <- function(x, Style=NULL, Data=NULL, Rows=NULL,
      PDF=FALSE,  ...)
      {
      ### Initial Checks
-     if(is.null(x)) stop("x is NULL.\n")
+     if(missing(x)) stop("The x argument is required.")
      if(is.null(Style)) Style <- "Density"
      if(is.null(Rows)) Rows <- 1:nrow(x$yhat)
      ### Plots

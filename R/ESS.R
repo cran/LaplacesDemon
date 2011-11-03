@@ -1,10 +1,10 @@
 ###########################################################################
 # ESS                                                                     #
 #                                                                         #
-# The purpose of this function is to estimate the effective sample size   #
-# (ESS) of a target distribution after taking autocorrelation into        #
-# account.  Although the code is slightly different, it is essentially    #
-# the same as the effectiveSize function in the coda package.             #
+# The purpose of the ESS function is to estimate the effective sample     #
+# size (ESS) of a target distribution after taking autocorrelation into   #
+# account. Although the code is slightly different, it is essentially the #
+# same as the effectiveSize function in the coda package.                 #
 ###########################################################################
 
 ESS <- function(x)
@@ -21,15 +21,15 @@ ESS <- function(x)
                order[i] <- 0
                }
           else {
-               ar.out <- ar(x[, i], aic = TRUE)
+               ar.out <- ar(x[, i], aic=TRUE)
                v0[i] <- ar.out$var.pred / {1 - sum(ar.out$ar)}^2
                order[i] <- ar.out$order
                }
           }
-     spec <- list(spec = v0, order = order)
+     spec <- list(spec=v0, order=order)
      spec <- spec$spec
      ESS <- ifelse(spec == 0, 0, nrow(x) * apply(x, 2, var)/spec)
-     ESS <- ifelse(ESS <= 0, 1.0E-5, ESS)
+     ESS <- ifelse(ESS <= .Machine$double.eps, .Machine$double.eps, ESS)
      ESS <- ifelse(ESS > nrow(x), nrow(x), ESS)
      return(ESS)
      }

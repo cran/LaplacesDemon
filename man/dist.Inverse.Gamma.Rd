@@ -7,15 +7,16 @@
   gamma distribution.
 }
 \usage{
-dinvgamma(x, shape, scale=1, log=FALSE)
-rinvgamma(n, shape, scale=1)
+dinvgamma(x, shape=1, scale=1, log=FALSE)
+rinvgamma(n, shape=1, scale=1)
 }
 \arguments{
   \item{n}{This is the number of draws from the distribution.}
   \item{x}{This is the scalar location to evaluate density.}
-  \item{shape}{This is the scalar shape parameter \eqn{\alpha}{alpha}.}
-  \item{scale}{This is the scalar scale parameter \eqn{\beta}{beta}
-    (which defaults to one).}
+  \item{shape}{This is the scalar shape parameter \eqn{\alpha}{alpha},
+    which defaults to one.}
+  \item{scale}{This is the scalar scale parameter \eqn{\beta}{beta},
+    which defaults to one.}
   \item{log}{Logical. If \code{log=TRUE}, then the logarithm of the
     density is returned.}
 }
@@ -50,9 +51,26 @@ These functions are similar to those in the \code{MCMCpack} package.
   \code{rinvgamma} generates random deviates. The parameterization
   is consistent with the Gamma Distribution in the stats package.
 }
+\seealso{
+  \code{\link{dgamma}},
+  \code{\link{dnorm}},
+  \code{\link{dnormp}},
+  \code{\link{dnormv}}.
+}
 \examples{
+library(LaplacesDemon)
 x <- dinvgamma(4.3, 1.1)
 x <- rinvgamma(10, 3.3)
+
+#Plot Probability Functions
+x <- seq(from=0.1, to=20, by=0.1)
+plot(x, dinvgamma(x,1,1), ylim=c(0,1), type="l", main="Probability Function",
+     ylab="density", col="red")
+lines(x, dinvgamma(x,1,0.6), type="l", col="green")
+lines(x, dinvgamma(x,0.6,1), type="l", col="blue")
+legend(2, 0.9, expression(paste(alpha==1, ", ", beta==1),
+     paste(alpha==1, ", ", beta==0.6), paste(alpha==0.6, ", ", beta==1)),
+     lty=c(1,1,1), col=c("red","green","blue"))
 }
 \keyword{distribution}
 

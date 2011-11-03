@@ -9,14 +9,11 @@
 
 Cov2Cor <- function(Sigma)
      {
-     if(any(is.na(Sigma))) stop("Sigma has missing values in Cov2Cor().")
-     if(any(is.nan(Sigma)))
-          stop("Sigma has non-numeric values (NaNs) in Cov2Cor().")
-     if(any(is.infinite(Sigma)))
-          stop("Sigma has infinite values in Cov2Cor().")
+     if(missing(Sigma)) stop("Sigma is a required argument.")
+     if(any(!is.finite(Sigma))) stop("Sigma must have finite values.")
      if(is.matrix(Sigma)) {
-          if(nrow(Sigma) != ncol(Sigma))
-               stop("Sigma is not symmetric in Cov2Cor().")
+          if(!is.positive.definite(Sigma))
+               stop("Sigma is not positive-definite.")
           x <- 1 / sqrt(diag(Sigma))
           R <- x * t(x * Sigma)}
      else if(is.vector(Sigma)) {

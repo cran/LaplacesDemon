@@ -1,6 +1,39 @@
+2011-11-02 Added Elicitation
+2011-11-01 Added Importance
+2011-10-31 Added CSF and additional MCSE methods
+2011-10-30 Added BayesTheorem and more Mode functions
+2011-10-29 Vignette Examples: Added Covariance Separation Strategy
+2011-10-28 Made LML public and added methods LME2 and NSIS
+2011-10-27 Added Gelman.Diagnostic, renamed indmat to as.indicator.matrix
+2011-10-26 Added as.initial.values and as.inverse
+2011-10-26 parm.names: Converted parm.names to as.parm.names, added arrays
+2011-10-25 Added is.appeased, is.demonoid, is.laplace, is.stationary
+2011-10-24 Distributions: Added Inverse-Chi-Squared and Pareto
+2011-10-23 Added is.positive.definite and is.positive.semidefinite
+2011-10-23 Added is.square.matrix, is.symmetric.matrix, and tr (trace)
+2011-10-23 Added lower.triangle and upper.triangle
+2011-10-22 Distributions: Added Log-Normal with precision parameterization
+2011-10-21 Distributions: Added Multivariate Cauchy with precision param.
+2011-10-20 Distributions: Added Multivariate Cauchy
+2011-10-19 Distributions: Added Multivariate Polya
+2011-10-18 Distributions: Added Skew-Laplace
+2011-10-17 Distributions: Added Power Exponential
+2011-10-16 Distributions: Added Asymmetric Log-Laplace
+2011-10-15 Distributions: Added Log-Laplace
+2011-10-14 Distributions: Added Student t with precision param.
+2011-10-13 Distributions: Added Laplace with precision parameterization
+2011-10-12 Distributions: Added Multivariate t with precision param.
+2011-10-11 Distributions: Added Multivariate Laplace
+2011-10-10 Distributions: Added Multivariate Power Exponential
+2011-10-09 Distributions: Added Multivariate Normal with precision param.
+2011-10-08 Added as.parm.matrix to prepare matrices in a model spec.
+2011-10-07 Added as.positive.definite and as.positive.semidefinite
+2011-10-06 Precision: Added elementary functions for precision conversions
+2011-10-05 Distributions: Added the normal with variance parameterization
+2011-10-04 Distributions: Added the asymmetric Laplace
 2011-10-03 Added KLD for Kullback-Leibler Divergence
 2011-10-03 Distributions: Added the half-normal
-2011-10-02 Documentation: Added LaTeX formulas throughout
+2011-10-02 Documentation: Added LaTeX math formulas throughout
 2011-10-02 Vignette Examples: Added Multivariate Binary Probit
 2011-10-01 Vignette Examples: Added Multivariate Regression
 2011-09-30 Vignette Examples: Added Inverse Gaussian Regression

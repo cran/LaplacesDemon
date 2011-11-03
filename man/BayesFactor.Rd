@@ -4,10 +4,11 @@
 \description{
 This function calculates Bayes factors for two or more fitted objects
 of class \code{demonoid} or  \code{laplace} that were estimated
-respectively with the \code{LaplacesDemon} or \code{LaplaceApproximation}
-functions, and indicates the strength of evidence in favor of the
-hypothesis (that each model, \eqn{\mathcal{M}_i}{M[i]}, is better than
-another model, \eqn{\mathcal{M}_j}{M[j]}).
+respectively with the \code{\link{LaplacesDemon}} or
+\code{\link{LaplaceApproximation}} functions, and indicates the
+strength of evidence in favor of the hypothesis (that each model,
+\eqn{\mathcal{M}_i}{M[i]}, is better than another model,
+\eqn{\mathcal{M}_j}{M[j]}).
 }
 \usage{
 BayesFactor(x)
@@ -27,8 +28,8 @@ factors are notoriously difficult to compute, and the Bayes factor is
 only defined when the marginal density of \code{y} under each model is
 proper. However, the Bayes factor is easy to approximate with the
 Laplace-Metropolis estimator (Lewis and Raftery, 1997), and is
-estimated this way in both the \code{LaplaceApproximation} and
-\code{LaplacesDemon} functions.
+estimated this way in both the \code{\link{LaplaceApproximation}} and
+\code{\link{LaplacesDemon}} functions.
 
 Hypothesis testing with Bayes factors is more robust than frequentist
 hypothesis testing, since the Bayesian form avoids model selection bias,
@@ -38,14 +39,29 @@ course the model must have the same dependent variable). Also,
 frequentist significance tests become biased in favor of rejecting the
 null hypothesis with sufficiently large sample size.
 
-The \code{LaplaceApproximation} and \code{LaplacesDemon} functions
-each return the \code{LML}, the approximate logarithm of the marginal
-likelihood of the data, in each fitted object of class \code{laplace}
-and \code{demonoid}. The \code{BayesFactor} function calculates matrix
-\code{B}, a matrix of Bayes factors, where each element of matrix
-\code{B} is a comparison of two models. Each Bayes factor is calculated
-as the exponentiated difference of \code{LML} of model 1
-(\eqn{\mathcal{M}_1}{M[1]}) and \code{LML} of model 2
+The Bayes factor for comparing two models may be approximated as the
+ratio of the marginal likelihood of the data in model 1 and model
+2. Formally, the Bayes factor in this case is
+
+\deqn{B =
+  \frac{p(\textbf{y}|\mathcal{M}_1)}{p(\textbf{y}|\mathcal{M}_2)} =
+  \frac{\int
+    p(\textbf{y}|\Theta_1,\mathcal{M}_1)p(\Theta_1|\mathcal{M}_1)d\Theta_1}{\int
+    p(\textbf{y}|\Theta_2,\mathcal{M}_2)p(\Theta_2|\mathcal{M}_2)d\Theta_2}}{B
+  = (p(y|M_1)) / p(y|M_2) = (integral of p(y|Theta_1,M_1)p(Theta_1|M_1)dTheta_1)
+  / (integral of p(y|Theta_2,M_2)p(Theta_2|M_2)dTheta_2)}
+
+where \eqn{p(\textbf{y}|\mathcal{M}_1)}{p(y|M_1)} is the marginal
+likelihood of the data in model 1.
+
+The \code{\link{LaplaceApproximation}} and \code{\link{LaplacesDemon}}
+functions each return the \code{\link{LML}}, the approximate logarithm
+of the marginal likelihood of the data, in each fitted object of class
+\code{laplace} and \code{demonoid}. The \code{BayesFactor} function
+calculates matrix \code{B}, a matrix of Bayes factors, where each
+element of matrix \code{B} is a comparison of two models. Each Bayes
+factor is calculated as the exponentiated difference of \code{LML} of
+model 1 (\eqn{\mathcal{M}_1}{M[1]}) and \code{LML} of model 2
 (\eqn{\mathcal{M}_2}{M[2]}), and the hypothesis for each element of
 matrix \code{B} is that the model associated with the row is greater
 than the model associated with the column. For example, element
@@ -64,13 +80,14 @@ compute the relative probabilities of the models conditional on one
 of them being true. Gelman prefers approaches that measure the
 distance of the data to each of the approximate models (Gelman et al.,
 2004, p. 180), such as with posterior predictive checks (see the
-\code{predict.laplace} function in the context of Laplace Approximation,
-or the \code{predict.demon} function in the context of MCMC). Kass et
-al. (1995) asserts this can be done without assuming one model is the
-true model.
+\code{\link{predict.laplace}} function in the context of Laplace
+Approximation, or the \code{\link{predict.demonoid}} function in the
+context of MCMC). Kass et al. (1995) asserts this can be done without
+assuming one model is the true model.
 }
 \value{
-     \code{BayesFactor} returns a list with the following components:
+     \code{BayesFactor} returns an object of class \code{bayesfactor}
+     that is a list with the following components:
      \item{B}{This is a matrix of Bayes factors.}
      \item{Hypothesis}{
           This is the hypothesis, and is stated as 'row > column',
@@ -90,7 +107,10 @@ true model.
      Gelman, A., Carlin, J., Stern, H., and Rubin, D. (2004). "Bayesian
      Data Analysis, Texts in Statistical Science, 2nd ed.". Chapman and
      Hall, London.
-  
+
+     Hall, B. (2011). "Bayesian Inference", STATISTICAT, LLC.
+     URL=\url{http://www.statisticat.com/laplacesdemon.html}
+     
      Jeffreys, H. (1961). "Theory of Probability, Third Edition". Oxford
      University Press: Oxford, England.
   
@@ -102,7 +122,14 @@ true model.
      Estimator". Journal of the American Statistical Association, 92,
      p. 648--655.
 }
-\seealso{\code{\link{LaplaceApproximation}}}
+\author{Byron Hall \email{laplacesdemon@statisticat.com}}
+\seealso{
+  \code{\link{LaplaceApproximation}},
+  \code{\link{LaplacesDemon}},
+  \code{\link{LML}}
+  \code{\link{predict.demonoid}},
+  \code{\link{predict.laplace}}.
+}
 \examples{
 # The following example fits a model as Fit1, then adds a predictor, and
 # fits another model, Fit2. The two models are compared with Bayes
@@ -112,13 +139,13 @@ library(LaplacesDemon)
 
 ##############################  Demon Data  ###############################
 data(demonsnacks)
-N <- NROW(demonsnacks)
+N <- nrow(demonsnacks)
 J <- 2
 y <- log(demonsnacks$Calories)
 X <- cbind(1, as.matrix(demonsnacks[,7]))
 X[,2] <- CenterScale(X[,2])
 mon.names <- c("LP","sigma")
-parm.names <- parm.names(list(beta=rep(0,J), log.sigma=0))
+parm.names <- as.parm.names(list(beta=rep(0,J), log.sigma=0))
 MyData <- list(J=J, X=X, mon.names=mon.names, parm.names=parm.names, y=y)
 
 ############################  Initial Values  #############################
@@ -131,7 +158,7 @@ Model <- function(parm, Data)
      beta <- parm[1:Data$J]
      sigma <- exp(parm[Data$J+1])
      ### Log(Prior Densities)
-     beta.prior <- sum(dnorm(beta, 0, sqrt(1000), log=TRUE))
+     beta.prior <- sum(dnormv(beta, 0, 1000, log=TRUE))
      sigma.prior <- dhalfcauchy(sigma, 25, log=TRUE)
      ### Log-Likelihood
      mu <- tcrossprod(beta, Data$X)
@@ -150,14 +177,14 @@ Fit1
 
 ##############################  Demon Data  ###############################
 data(demonsnacks)
-N <- NROW(demonsnacks)
+N <- nrow(demonsnacks)
 J <- 3
 y <- log(demonsnacks$Calories)
 X <- cbind(1, as.matrix(demonsnacks[,c(7,8)]))
 X[,2] <- CenterScale(X[,2])
 X[,3] <- CenterScale(X[,3])
 mon.names <- c("sigma","mu[1]")
-parm.names <- parm.names(list(beta=rep(0,J), log.sigma=0))
+parm.names <- as.parm.names(list(beta=rep(0,J), log.sigma=0))
 MyData <- list(J=J, X=X, mon.names=mon.names, parm.names=parm.names, y=y)
 
 ############################  Initial Values  #############################

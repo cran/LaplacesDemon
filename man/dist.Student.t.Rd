@@ -37,16 +37,22 @@ rst(n, mu=0, sigma=1, nu=10)
   \item Application: Continuous Univariate
   \item Density: \eqn{p(\theta) =
     \frac{\Gamma[(\nu+1)/2]}{\Gamma(\nu/2)} \sqrt{\nu \pi} \sigma[1 +
-    (1/\nu)[(\theta - \mu) / \sigma]^2]^{(-\nu + 1)/2}}{p(theta) = [{Gamma[(nu + 1) / 2]} / Gamma(nu/2)]*sqrt(nu*pi)*sigma*[1 + (1/nu)*[(theta - mu)/sigma]^2]^[(-nu + 1)/2]}
+    \frac{1}{\nu}[\frac{\theta - \mu}{\sigma}]^2]^{(-\nu + 1)/2}}{p(theta) =
+    [{Gamma[(nu + 1) / 2]} / Gamma(nu/2)]*sqrt(nu*pi)*sigma*[1 +
+    (1/nu)*[(theta - mu)/sigma]^2]^[(-nu+ 1)/2]}
   \item Inventor: William Sealy Gosset (1908)
-  \item Notation 1: \eqn{\theta \sim \mathrm{t}(\mu, \sigma, \nu)}{theta ~ t(mu, sigma, nu)}
-  \item Notation 2: \eqn{p(\theta) = \mathrm{t}(\theta | \mu, \sigma, \nu)}{p(theta) = t(theta | mu, sigma, nu)}
+  \item Notation 1: \eqn{\theta \sim \mathrm{t}(\mu, \sigma, \nu)}{theta
+    ~ t(mu, sigma,nu)}
+  \item Notation 2: \eqn{p(\theta) = \mathrm{t}(\theta | \mu, \sigma,
+    \nu)}{p(theta) = t(theta | mu, sigma,nu)}
   \item Parameter 1: location parameter \eqn{\mu}{mu}
   \item Parameter 2: scale parameter \eqn{\sigma > 0}{sigma > 0}
   \item Parameter 3: degrees of freedom \eqn{\nu > 0}{nu > 0}
-  \item Mean: \eqn{E(\theta) = \mu}{E(theta) = mu}, for \eqn{\nu > 1}{nu > 1}, otherwise undefined
-  \item Variance: \eqn{var(\theta) = \frac{\nu}{\nu - 2}}{var(theta) = [nu / (nu - 2)]sigma^2}, for
-  \eqn{\nu > 2}{nu > 2}
+  \item Mean: \eqn{E(\theta) = \mu}{E(theta) = mu}, for \eqn{\nu > 1}{nu
+    > 1}, otherwise undefined
+  \item Variance: \eqn{var(\theta) = \frac{\nu}{\nu -
+      2}\sigma^2}{var(theta) = [nu / (nu - 2)]sigma^2}, for \eqn{\nu >
+    2}{nu> 2}
   \item Mode: \eqn{mode(\theta) = \mu}{mode(theta) = mu}
 }
 
@@ -80,10 +86,32 @@ These functions are similar to those in the \code{gamlss.dist} package.
   \code{qst} gives the quantile function, and
   \code{rst} generates random deviates.
 }
+\seealso{
+  \code{\link{dcauchy}},
+  \code{\link{dmvt}},
+  \code{\link{dmvtp}},
+  \code{\link{dnorm}},
+  \code{\link{dnormp}},
+  \code{\link{dnormv}},
+  \code{\link{dstp}},
+  \code{\link{dt}}.
+}
 \examples{
+library(LaplacesDemon)
 x <- dst(1,0,1,10)
 x <- pst(1,0,1,10)
 x <- qst(0.5,0,1,10)
 x <- rst(100,0,1,10)
+
+#Plot Probability Functions
+x <- seq(from=-5, to=5, by=0.1)
+plot(x, dst(x,0,1,0.1), ylim=c(0,1), type="l", main="Probability Function",
+     ylab="density", col="red")
+lines(x, dst(x,0,1,1), type="l", col="green")
+lines(x, dst(x,0,1,10), type="l", col="blue")
+legend(1, 0.9, expression(paste(mu==0, ", ", sigma==1, ", ", nu==0.5),
+     paste(mu==0, ", ", sigma==1, ", ", nu==1),
+     paste(mu==0, ", ", sigma==1, ", ", nu==10)),
+     lty=c(1,1,1), col=c("red","green","blue"))
 }
 \keyword{distribution}

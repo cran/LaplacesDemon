@@ -1,19 +1,22 @@
 ###########################################################################
 # summary.laplace.ppc                                                     #
 #                                                                         #
-# The purpose of this function is to summarize an object of class         #
-# laplace.ppc (posterior predictive check).                               #
+# The purpose of the summary.laplace.ppc function is to summarize an      #
+# object of class laplace.ppc (posterior predictive check).               #
 ###########################################################################
 
 summary.laplace.ppc <- function(object=NULL, Categorical=FALSE, Rows=NULL,
      Discrep=NULL, d=0, Quiet=FALSE, ...)
      {
-     if(is.null(object)) stop("The object argument is NULL.\n")
+     if(is.null(object)) stop("The object argument is NULL.")
      y <- object$y
      yhat <- object$yhat
      deviance <- object$deviance
      monitor <- object$monitor
      if(is.null(Rows)) Rows <- 1:length(y)
+     if(any(Rows > length(y)) || any(Rows <= 0)) {
+          warning("Invalid Rows argument; All rows included.")
+          Rows <- 1:length(y)}
      ### Create Continuous Summary Table for y and yhat
      if(Categorical == FALSE) {
           Summ <- matrix(NA, length(y), 8, dimnames=list(1:length(y),
@@ -36,6 +39,16 @@ summary.laplace.ppc <- function(object=NULL, Categorical=FALSE, Rows=NULL,
                Summ[,8] <- round((y - apply(yhat,1,mean))^2 /
                     apply(yhat,1,var),3)
                Discrepancy.Statistic <- round(sum(Summ[,8]),3)}
+          if(!is.null(Discrep) && {Discrep == "Chi-Square2"}) {
+               chisq.obs <- chisq.rep <- yhat
+               E.y <- E.yrep <- rowMeans(yhat)
+               for (i in 1:nrow(yhat)) {
+                    chisq.obs[i,] <- (y[i] - E.y[i])^2 / E.y[i]
+                    chisq.rep[i,] <- (yhat[i,] - E.yrep[i])^2 / E.yrep[i]
+                    }
+               Summ[,8] <- round(rowMeans(chisq.rep > chisq.obs),3)
+               Discrepancy.Statistic <- round(mean((Summ[,8] < 0.025) |
+                    (Summ[,8] > 0.975)),3)}
           if(!is.null(Discrep) && {Discrep == "Kurtosis"}) {
                kurtosis <- function(x) {  
                     m4 <- mean((x-mean(x))^4) 
@@ -44,9 +57,9 @@ summary.laplace.ppc <- function(object=NULL, Categorical=FALSE, Rows=NULL,
                for (i in 1:length(y)) {Summ[i,8] <- round(kurtosis(yhat[i,]),3)}
                Discrepancy.Statistic <- round(mean(Summ[,8]),3)}
           if(!is.null(Discrep) && {Discrep == "L.criterion"}) {
-               Summ[i,8] <- round(sqrt(apply(yhat,1,var) +
+               Summ[,8] <- round(sqrt(apply(yhat,1,var) +
                     (y - apply(yhat,1,mean))^2),3)
-               Discrepancy.Statistic <- round(sum(Summ[i,8]),3)}
+               Discrepancy.Statistic <- round(sum(Summ[,8]),3)}
           if(!is.null(Discrep) && {Discrep == "Skewness"}) {
                skewness <-  function(x) {
                     m3 <- mean((x-mean(x))^3)
@@ -95,6 +108,8 @@ summary.laplace.ppc <- function(object=NULL, Categorical=FALSE, Rows=NULL,
           ### Create Output
           Summ.out <- list(Concordance=Concordance,
                Discrepancy.Statistic=round(Discrepancy.Statistic,5),
+               L.criterion=L,
+               S.L=S.L,
                Summary=Summ[Rows,])
           if(Quiet == FALSE) {
                cat("Concordance: ", Concordance, "\n")

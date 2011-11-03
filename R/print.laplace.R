@@ -1,13 +1,13 @@
 ###########################################################################
 # print.laplace                                                           #
 #                                                                         #
-# The purpose of this function is to print the contents of an object of   #
-# class laplace to the screen.                                            #
+# The purpose of the print.laplace function is to print the contents of   #
+# an object of class laplace to the screen.                               #
 ###########################################################################
 
 print.laplace <- function(x, ...)
      {
-     if(is.null(x)) stop("x is NULL.\n")
+     if(missing(x)) stop("The x argument is required.")
      cat("\nCall:\n")
      print(x$Call)
      cat("\nConverged: ", x$Converged, "\n", sep="")

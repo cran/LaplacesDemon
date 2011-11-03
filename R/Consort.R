@@ -1,13 +1,13 @@
 ###########################################################################
 # Consort                                                                 #
 #                                                                         #
-# The purpose of this function is to consort with Laplace's Demon         #
+# The purpose of the Consort function is to consort with Laplace's Demon  #
 # regarding an object of class demonoid.                                  #
 ###########################################################################
 
 Consort <- function(object=NULL)
      {
-     if(is.null(object)) stop("The object argument is empty.\n")
+     if(is.null(object)) stop("The object argument is empty.")
      oname <- deparse(substitute(object))
      dname <- as.vector(strsplit(as.character(object$Call), "=")[3][[1]])
      cat("\n#############################################################\n")
@@ -33,15 +33,14 @@ Consort <- function(object=NULL)
      MCSE.crit <- 0.0627
      MCSE.temp <- object$Summary2[1:object$Parameters,3] /
           object$Summary2[1:object$Parameters,2]
-     MCSE.temp2 <- sum(is.na(MCSE.temp))
+     MCSE.temp2 <- sum(!is.finite(MCSE.temp))
+     MCSE.temp <- ifelse(is.finite(MCSE.temp), MCSE.temp, 0)
      MCSE.tot <- 0
      if(MCSE.temp2 < object$Parameters) {
           MCSE.tot <- sum(MCSE.temp < MCSE.crit)}
      ### Check ESS
      ESS.temp <- object$Summary2[1:object$Parameters,4]
-     ESS.temp <- ifelse(is.na(ESS.temp), 0, ESS.temp)
-     ESS.temp <- ifelse(is.nan(ESS.temp), 0, ESS.temp)
-     ESS.temp <- ifelse(is.infinite(ESS.temp), 0, ESS.temp)
+     ESS.temp <- ifelse(!is.finite(ESS.temp), 0, ESS.temp)
      ESS.min <- min(ESS.temp)
      ESS.crit <- 100
      ### Check Stationarity
@@ -70,7 +69,7 @@ Consort <- function(object=NULL)
      else Rec.Status <- trunc(sqrt(Rec.Iterations))
      ### The Demonic Suggestion of Laplace's Demon
      cat("\nDemonic Suggestion\n\n")
-     
+
      cat("Due to the combination of the following conditions,\n\n")
 
      cat("1. ", object$Algorithm, "\n", sep="")
@@ -125,8 +124,7 @@ Consort <- function(object=NULL)
                " console,\n", sep="")
           cat("and running it.\n\n")
 
-          cat("Initial.Values <- ", oname, "$Posterior1",
-                    "[", oname, "$Thinned.Samples,]\n", sep="")
+          cat("Initial.Values <- as.initial.values(", oname, ")\n", sep="")
           ### If adaptive, low acc., bad MCSE, bad ESS, bad Stat...
           if({object$Adaptive <= object$Iterations} &
           {Acc.Rate.Level == 1} & {MCSE.tot < object$Parameters} &

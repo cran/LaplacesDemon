@@ -1,7 +1,7 @@
 ###########################################################################
 # Kullback-Leibler Divergence (KLD)                                       #
 #                                                                         #
-# The purpose of the KLD() function is to calculate the Kullback-Leibler  #
+# The purpose of the KLD function is to calculate the Kullback-Leibler    #
 # divergences between two probability distributions, p(x) and p(y).       #
 ###########################################################################
 
@@ -12,11 +12,9 @@ KLD <- function (px, py, base=exp(1))
      if(is.matrix(py) && ncol(py) == 2) py <- py[, 2]
      n1 <- length(px)
      n2 <- length(py)
-     if(n1 != n2) stop("px and py must have the same length.")
-     if(any(is.na(px)) | any(is.na(py))) {
-          KLD.px.py <- KLD.py.px <- NA
-          warning("Missing values found; KLD is set to missing.",
-               call.=FALSE)
+     if(!identical(n1, n2)) stop("px and py must have the same length.")
+     if(any(!is.finite(px)) | any(!is.finite(py))) {
+          stop("px and py must have finite values.")
           }
      else {
           if(any(px < 0, na.rm=TRUE) | any(py < 0, na.rm=TRUE))

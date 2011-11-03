@@ -1,10 +1,10 @@
 ###########################################################################
 # joint.density.plot                                                      #
 #                                                                         #
-# The purpose of this function is to produce a joint density plot from    #
-# samples of two marginal posterior distributions. This function is       #
-# derived from the kde2d and bandwidth.nrd functions from the MASS        #
-# package.                                                                #
+# The purpose of the joint.density.plot function is to produce a joint    #
+# density plot from samples of two marginal posterior distributions. This #
+# function is derived from the kde2d and bandwidth.nrd functions from the #
+# MASS package.                                                           #
 ###########################################################################
 
 joint.density.plot <- function(x, y, Title=NULL, contour=TRUE, color=FALSE)
@@ -14,18 +14,18 @@ joint.density.plot <- function(x, y, Title=NULL, contour=TRUE, color=FALSE)
      yname <- deparse(substitute(y))
      x <- as.vector(x)
      y <- as.vector(y)
-     if(length(y) != length(x))
-          stop("vectors x and y must be the same length in joint.density.plot().")
+     if(!identical(length(y), length(x)))
+          stop("vectors x and y must be the same length.")
      if(any(!is.finite(x)))
-          stop("x has missing or infinite values in joint.density.plot().")
+          stop("x must have finite values.")
      if(any(!is.finite(y)))
-          stop("y has missing or infinite values in joint.density.plot().")
+          stop("y must have finite values.")
      ### Two-Dimensional Kernel Density Estimates
      kde2d <- function(x, y, h, n=25, lims=c(range(x), range(y)))
           {
           nx <- length(x)
           if(any(!is.finite(lims)))
-               stop("only finite values are allowed in 'lims'")
+               stop("x and y must have finite values.")
           n <- rep(n, length.out=2L)
           gx <- seq.int(lims[1L], lims[2L], length.out=n[1L])
           gy <- seq.int(lims[3L], lims[4L], length.out=n[2L])
@@ -53,6 +53,6 @@ joint.density.plot <- function(x, y, Title=NULL, contour=TRUE, color=FALSE)
           image(dd, main=Title, xlab=xname, ylab=yname, col=topo.colors(200))
           }
      if(contour == TRUE) {contour(dd, nlevels=10, add=TRUE)}
-}
+     }
 
 #End

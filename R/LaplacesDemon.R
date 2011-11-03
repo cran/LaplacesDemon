@@ -1,46 +1,39 @@
 ###########################################################################
 # LaplacesDemon                                                           #
 #                                                                         #
-# The purpose of this function is to perform one of four MCMC algorithms  #
-# on the logarithm of the unnormalized joint posterior density of a       #
-# Bayesian model.                                                         #
+# The purpose of the LaplacesDemon function is to perform one of four     #
+# MCMC algorithms on the logarithm of the unnormalized joint posterior    #
+# density of a Bayesian model.                                            #
 ###########################################################################
 
-LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
-     Covar=NULL, DR=1, Initial.Values=NULL, Iterations=1000,
-     Periodicity=1, Status=100, Thinning=1)
+LaplacesDemon <- function(Model, Data, Adaptive=0, Covar=NULL, DR=1,
+     Initial.Values, Iterations=1000, Periodicity=1, Status=100,
+     Thinning=1)
      {
      cat("\nLaplace's Demon was called on ", date(), "\n", sep="")
      time1 <- proc.time()
      ##########################  Initial Checks  ##########################
      cat("\nPerforming initial checks...\n")
-     if(is.null(Model)) stop("A function must be entered for Model.\n")
-     if(is.null(Data)) stop("A list containing data must be entered for Data.\n")
-     if(is.null(Data$mon.names)) stop("In Data, mon.names is NULL.\n")
-     if(is.null(Data$parm.names)) stop("In Data, parm.names is NULL.\n")
+     if(missing(Model)) stop("A function must be entered for Model.")
+     if(missing(Data)) stop("A list containing data must be entered for Data.")
+     if(is.null(Data$mon.names)) stop("In Data, mon.names is NULL.")
+     if(is.null(Data$parm.names)) stop("In Data, parm.names is NULL.")
      for (i in 1:length(Data)) {
           if(is.matrix(Data[[i]])) {
-               if(!any(is.na(Data[[i]])) & !any(is.nan(Data[[i]])) &
-                    !any(is.infinite(Data[[i]]))) {
+               if(all(is.finite(Data[[i]]))) {
                     mat.rank <- qr(Data[[i]], tol=1e-10)$rank
                     if(mat.rank < ncol(Data[[i]])) {
                          cat("WARNING: Matrix", names(Data)[[i]],
                               "may be rank-deficient.\n")}}}}
-     if(is.null(Initial.Values)) {
+     if(missing(Initial.Values)) {
           cat("WARNING: Initial Values were not supplied.\n")
           Initial.Values <- rep(0, length(Data$parm.names))}
-     if(length(Initial.Values) != length(Data$parm.names)) {
+     if(!identical(length(Initial.Values), length(Data$parm.names))) {
           cat("WARNING: The length of Initial Values differed from ",
                "Data$parm.names.\n")
           Initial.Values <- rep(0, length(Data$parm.names))}
-     if(any(is.na(Initial.Values))) {
-          cat("WARNING: Initial Values contain missing values.\n")
-          Initial.Values <- rep(0, length(Data$parm.names))}
-     if(any(is.nan(Initial.Values))) {
-          cat("WARNING: Initial Values contain NaN values.\n")
-          Initial.Values <- rep(0, length(Data$parm.names))}
-     if(any(is.infinite(Initial.Values))) {
-          cat("WARNING: Initial Values contain infinite values.\n")
+     if(any(!is.finite(Initial.Values))) {
+          cat("WARNING: Initial Values contain non-finite values.\n")
           Initial.Values <- rep(0, length(Data$parm.names))}
      if(Iterations < 11) {
           Iterations <- 11
@@ -64,9 +57,9 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
           cat("'Thinning' has been changed to ", Thinning, ".\n",
                sep="")}
      Mo0 <- Model(Initial.Values, Data)
-     if(length(Mo0[[1]]) > 1) stop("Multiple joint posteriors exist!\n")
-     if(length(Mo0[[3]]) != length(Data$mon.names)) {
-          stop("Length of mon.names differs from length of monitors.\n")}
+     if(length(Mo0[[1]]) > 1) stop("Multiple joint posteriors exist!")
+     if(!identical(length(Mo0[[3]]), length(Data$mon.names))) {
+          stop("Length of mon.names differs from length of monitors.")}
      as.character.function <- function(x, ... )
           {
           fname <- deparse(substitute(x))
@@ -90,37 +83,37 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
      #########################  Initial Settings  #########################
      Acceptance <- 0
      Mo0 <- Model(Initial.Values, Data)
-     if(is.na(Mo0[[1]]) || is.nan(Mo0[[1]]) || is.infinite(Mo0[[1]])) {
+     if(!is.finite(Mo0[[1]])) {
           Initial.Values <- runif(length(Initial.Values),-3,3)
           Mo0 <- Model(Initial.Values, Data)
-          if(is.na(Mo0[[1]]) || is.nan(Mo0[[1]]) || is.infinite(Mo0[[1]])) {
+          if(!is.finite(Mo0[[1]])) {
                Initial.Values <- runif(length(Initial.Values),-3,3)
                Mo0 <- Model(Initial.Values, Data)
                }
           }
-     if(is.na(Mo0[[1]])) stop("The posterior is a missing value!\n")
+     if(is.na(Mo0[[1]])) stop("The posterior is a missing value!")
      if(is.infinite(Mo0[[1]])) {
           cat("Initial values are being randomized due to an infinite posterior.\n")
           for (i in 1:1000) {
                Initial.Values <- runif(length(Initial.Values),-2,2)
                Mo0 <- Model(Initial.Values, Data)
-               if(!is.infinite(Mo0[[1]])) {
+               if(is.finite(Mo0[[1]])) {
                     cat("Initial values now result in a finite posterior.\n")
                     break
                     }
                }
           }
-     if(is.infinite(Mo0[[1]])) stop("The posterior is infinite!\n")
-     if(is.nan(Mo0[[1]])) stop("The posterior was not a number!\n")
-     if(is.na(Mo0[[2]])) stop("The deviance is a missing value!\n")
-     if(is.infinite(Mo0[[2]])) stop("The deviance is infinite!\n")
-     if(is.nan(Mo0[[2]])) stop("The deviance is not a number!\n")
+     if(is.infinite(Mo0[[1]])) stop("The posterior is infinite!")
+     if(is.nan(Mo0[[1]])) stop("The posterior is not a number!")
+     if(is.na(Mo0[[2]])) stop("The deviance is a missing value!")
+     if(is.infinite(Mo0[[2]])) stop("The deviance is infinite!")
+     if(is.nan(Mo0[[2]])) stop("The deviance is not a number!")
      if(any(is.na(Mo0[[3]])))
-          stop("Monitored variable(s) have a missing value!\n")
+          stop("Monitored variable(s) have a missing value!")
      if(any(is.infinite(Mo0[[3]])))
-          stop("Monitored variable(s) have an infinite value!\n")
+          stop("Monitored variable(s) have an infinite value!")
      if(any(is.nan(Mo0[[3]])))
-          stop("Monitored variable(s) include a value that is not a number!\n")
+          stop("Monitored variable(s) include a value that is not a number!")
      ######################  Laplace Approximation  #######################
      ### Sample Size of Data
      if(!is.null(Data$n)) if(length(Data$n) == 1) N <- Data$n
@@ -132,7 +125,8 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
           {N >= 5*length(Initial.Values)}) {
           cat("\nLaplace Approximation will be used on initial values.\n")
           Fit.LA = LaplaceApproximation(Model, Initial.Values, Data)
-          Covar <- 2.381204 * 2.381204 / length(Initial.Values) * Fit.LA$Covar
+          Covar <- 2.381204 * 2.381204 / length(Initial.Values) *
+               Fit.LA$Covar
           Initial.Values <- Fit.LA$Summary[1:length(Initial.Values),1]
           cat("The covariance matrix from Laplace Approximation has been scaled\n")
           cat("for Laplace's Demon, and the posterior modes are now the initial\n")
@@ -169,13 +163,11 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
           cat("Algorithm: Random-Walk Metropolis\n")}
      ############################  Begin MCMC  ############################
      cat("\nLaplace's Demon is beginning to update...\n")
-     for (iter in 1:{Iterations-1})
-          {
+     for (iter in 1:{Iterations-1}) {
           ### Print Status
           if(iter %% Status == 0) {cat("Iteration: ", iter, sep="")}
           ### Save Thinned Samples
-          if(iter %% Thinning == 0)
-               {
+          if(iter %% Thinning == 0) {
                thinned <- rbind(thinned, post[iter,])
                Dev <- rbind(Dev, Mo0[[2]])
                Mon <- rbind(Mon, Mo0[[3]])
@@ -184,23 +176,16 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
           post[iter+1,] <- post[iter,]
           ### Log-Posterior of the current state
           Mo0 <- Model(post[iter,], Data)
-          if(is.na(Mo0[[1]])) stop("The posterior is a missing value!\n")
-          if(is.infinite(Mo0[[1]])) stop("The posterior is infinite!\n")
-          if(is.nan(Mo0[[1]])) stop("The posterior was not a number!\n")
-          if(is.na(Mo0[[2]])) stop("The deviance is a missing value!\n")
-          if(is.infinite(Mo0[[2]])) stop("The deviance is infinite!\n")
-          if(is.nan(Mo0[[2]])) stop("The deviance is not a number!\n")
-          if(any(is.na(Mo0[[3]])))
-               stop("Monitored variable(s) have a missing value!\n")
-          if(any(is.infinite(Mo0[[3]])))
-               stop("Monitored variable(s) have an infinite value!\n")
-          if(any(is.nan(Mo0[[3]])))
-               stop("Monitored variable(s) include a value that is not a number!\n")
+          if(!is.finite(Mo0[[1]])) stop("The posterior is not finite!")
+          if(!is.finite(Mo0[[2]])) stop("The deviance is not finite!")
+          if(any(!is.finite(Mo0[[3]])))
+               stop("Monitored variable(s) have a non-finite value!")
           ### Propose new parameter values
           MVN.rand <- rnorm(LIV, 0, 1)
           MVN.test <- try(MVNz <- matrix(MVN.rand,1,LIV) %*% chol(VarCov),
                silent=TRUE)
-          if(is.numeric(MVN.test[1]) & ((Acceptance / Iterations) >= 0.05)) {
+          if(is.numeric(MVN.test[[1]]) &
+               ((Acceptance / Iterations) >= 0.05)) {
                if(iter %% Status == 0) {
                    cat(",   Proposal: Multivariate\n")}
                MVNz <- as.vector(MVN.test)
@@ -213,26 +198,18 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
                prop[j] <- rnorm(1, post[iter,j], tuning[j])}
           ### Log-Posterior of the proposed state
           Mo1 <- Model(prop, Data)
-          if(is.na(Mo1[[1]])) {Mo1 <- Mo0; prop <- post[iter,]}
-          if(is.infinite(Mo1[[1]])) {Mo1 <- Mo0; prop <- post[iter,]}
-          if(is.nan(Mo1[[1]])) {Mo1 <- Mo0; prop <- post[iter,]}
-          if(is.na(Mo1[[2]])) {Mo1 <- Mo0; prop <- post[iter,]}
-          if(is.infinite(Mo1[[2]])) {Mo1 <- Mo0; prop <- post[iter,]}
-          if(is.nan(Mo1[[2]])) {Mo1 <- Mo0; prop <- post[iter,]}
-          if(any(is.na(Mo1[[3]]))) {Mo1 <- Mo0; prop <- post[iter,]}
-          if(any(is.infinite(Mo1[[3]]))) {Mo1 <- Mo0; prop <- post[iter,]}
-          if(any(is.nan(Mo1[[3]]))) {Mo1 <- Mo0; prop <- post[iter,]}
+          if(!is.finite(Mo1[[1]])) {Mo1 <- Mo0; prop <- post[iter,]}
+          if(!is.finite(Mo1[[2]])) {Mo1 <- Mo0; prop <- post[iter,]}
+          if(any(!is.finite(Mo1[[3]]))) {Mo1 <- Mo0; prop <- post[iter,]}
           prop <- Mo1[[5]]
           ### Accept/Reject
           log.u <- log(runif(1))
           log.alpha <- Mo1[[1]] - Mo0[[1]]
           log.alpha <- ifelse(is.na(log.alpha), 0, log.alpha)
-          if(log.u < log.alpha)
-               {
+          if(log.u < log.alpha) {
                post[iter+1,] <- prop
                Acceptance <- Acceptance + 1
-               if(iter %% Thinning == 0)
-                    {
+               if(iter %% Thinning == 0) {
                     Dev[length(Dev)] <- Mo1[[2]]
                     Mon <- as.matrix(Mon)
                     Mon[nrow(Mon),] <- Mo1[[3]]
@@ -244,7 +221,8 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
                MVN.rand <- rnorm(LIV, 0, 1)
                MVN.test <- try(MVNz <- matrix(MVN.rand,1,LIV) %*%
                     chol(VarCov * 0.5), silent=TRUE)
-               if(is.numeric(MVN.test[1]) & ((Acceptance / Iterations) >= 0.05)) {
+               if(is.numeric(MVN.test[[1]]) &
+                    ((Acceptance / Iterations) >= 0.05)) {
                     MVNz <- as.vector(MVN.test)
                     prop <- t(post[iter,] + t(MVNz))}
                else {
@@ -253,23 +231,17 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
                     prop[j] <- rnorm(1, post[iter,j], tuning[j])}
                ### Log-Posterior of the proposed state
                Mo12 <- Model(prop, Data)
-               if(is.na(Mo12[[1]])) {Mo12 <- Mo0; prop <- post[iter,]}
-               if(is.infinite(Mo12[[1]])) {Mo12 <- Mo0; prop <- post[iter,]}
-               if(is.nan(Mo12[[1]])) {Mo12 <- Mo0; prop <- post[iter,]}
-               if(is.na(Mo12[[2]])) {Mo12 <- Mo0; prop <- post[iter,]}
-               if(is.infinite(Mo12[[2]])) {Mo12 <- Mo0; prop <- post[iter,]}
-               if(is.nan(Mo12[[2]])) {Mo12 <- Mo0; prop <- post[iter,]}
-               if(any(is.na(Mo12[[3]]))) {Mo12 <- Mo0; prop <- post[iter,]}
-               if(any(is.infinite(Mo12[[3]]))) {Mo12 <- Mo0; prop <- post[iter,]}
-               if(any(is.nan(Mo12[[3]]))) {Mo12 <- Mo0; prop <- post[iter,]}
+               if(!is.finite(Mo12[[1]]) || !is.finite(Mo12[[2]])) {
+                    Mo12 <- Mo0; prop <- post[iter,]}
+               if(any(!is.finite(Mo12[[3]]))) {
+                    Mo12 <- Mo0; prop <- post[iter,]}
                prop <- Mo12[[5]]
                ### Accept/Reject
                log.u <- log(runif(1))
                options(warn=-1)
                log.alpha.comp <- log(1 - exp(Mo1[[1]] - Mo12[[1]]))
                options(warn=0)
-               if(is.nan(log.alpha.comp)) log.alpha.comp <- 0
-               if(is.infinite(log.alpha.comp)) log.alpha.comp <- 0
+               if(!is.finite(log.alpha.comp)) log.alpha.comp <- 0
                log.alpha <- Mo12[[1]] + log.alpha.comp  -
                     {Mo0[[1]] + log(1 - exp(Mo1[[1]] - Mo0[[1]]))}
                log.alpha <- ifelse(is.na(log.alpha), 0, log.alpha)
@@ -300,8 +272,7 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
                     {ScaleF * 1.0E-5 * Iden.Mat}
                DiagCovar <- rbind(DiagCovar, diag(VarCov))
                ### Univariate Standard Deviations
-               for (j in 1:LIV)
-                    {
+               for (j in 1:LIV) {
                     tuning[j] <- sqrt(ScaleF * {var(post[1:iter,j])} +
                          ScaleF * 1.0E-5)
                     }
@@ -311,15 +282,9 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
      ### Warnings (After Updating)
      if(Acceptance == 0) cat("\nWARNING: All proposals were rejected.\n")
      ### Real Values
-     thinned <- ifelse(is.na(thinned), 0, thinned)
-     thinned <- ifelse(is.infinite(thinned), 0, thinned)
-     thinned <- ifelse(is.nan(thinned), 0, thinned)
-     Dev <- ifelse(is.na(Dev), 0, Dev)
-     Dev <- ifelse(is.infinite(Dev), 0, Dev)
-     Dev <- ifelse(is.nan(Dev), 0, Dev)
-     Mon <- ifelse(is.na(Mon), 0, Mon)
-     Mon <- ifelse(is.infinite(Mon), 0, Mon)
-     Mon <- ifelse(is.nan(Mon), 0, Mon)
+     thinned <- ifelse(!is.finite(thinned), 0, thinned)
+     Dev <- ifelse(!is.finite(Dev), 0, Dev)
+     Mon <- ifelse(!is.finite(Mon), 0, Mon)
      ### Assess Stationarity
      cat("\nAssessing Stationarity\n")
      burn.start <- trunc(seq(from=1, to=nrow(thinned),
@@ -327,16 +292,14 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
      geweke <- matrix(9, length(burn.start), LIV)
      geweke.ct <- rep(0, LIV)
      options(warn=-1)
-     for (i in 1:length(burn.start))
-          {
+     for (i in 1:length(burn.start)) {
           thinned2 <- thinned[burn.start[i]:nrow(thinned),]
           test <- try(as.vector(Geweke.Diagnostic(thinned2)), silent=TRUE)
-          if(is.numeric(test)) geweke[i,] <- as.vector(test)
+          if(class(test) != "try-error") geweke[i,] <- as.vector(test)
           }
      options(warn=0)
      rm(thinned2)
-     geweke <- ifelse(is.na(geweke), 9, geweke)
-     geweke <- ifelse(is.nan(geweke), 9, geweke)
+     geweke <- ifelse(!is.finite(geweke), 9, geweke)
      geweke <- ifelse({geweke > -2} & {geweke < 2}, TRUE, FALSE)
      for (j in 1:LIV) {geweke.ct[j] <- which(geweke[,j] == TRUE)[1]}
      geweke.ct <- ifelse(is.na(geweke.ct), nrow(thinned), geweke.ct)
@@ -346,8 +309,7 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
      cat("Assessing Thinning and ESS\n")
      acf.temp <- matrix(1, trunc(10*log10(nrow(thinned))), LIV)
      ESS1 <- Rec.Thin <- rep(1, LIV)
-     for (j in 1:LIV)
-          {
+     for (j in 1:LIV) {
           temp0 <- acf(thinned[,j], lag.max=NROW(acf.temp), plot=FALSE)
           acf.temp[,j] <- abs(temp0$acf[2:{NROW(acf.temp)+1},,1])
           ESS1[j] <- ESS(thinned[,j])
@@ -358,8 +320,7 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
      ESS2 <- ESS(Dev)
      ESS3 <- ESS(Mon)
      ### Assess ESS for stationary samples
-     if(BurnIn < nrow(thinned))
-          {
+     if(BurnIn < nrow(thinned)) {
           ESS4 <- ESS(thinned[BurnIn:nrow(thinned),])
           ESS5 <- ESS(Dev[BurnIn:nrow(Dev),])
           ESS6 <- ESS(Mon[BurnIn:nrow(Mon),])
@@ -404,8 +365,7 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
      ### Posterior Summary Table 2: Stationary Samples
      Summ2 <- matrix(NA, LIV, 7, dimnames=list(Data$parm.names,
           c("Mean","SD","MCSE","ESS","LB","Median","UB")))
-     if(BurnIn < nrow(thinned))
-          {
+     if(BurnIn < nrow(thinned)) {
           Summ2[,1] <- colMeans(thinned[BurnIn:nrow(thinned),])
           Summ2[,2] <- apply(thinned[BurnIn:nrow(thinned),], 2, sd)
           Summ2[,3] <- Summ2[,2] / sqrt(ESS4)
@@ -446,16 +406,22 @@ LaplacesDemon <- function(Model=NULL, Data=NULL, Adaptive=0,
                }
           }
      ### Column names to samples
-     if(ncol(Mon) == length(Data$mon.names)) colnames(Mon) <- Data$mon.names
+     if(ncol(Mon) == length(Data$mon.names))
+          colnames(Mon) <- Data$mon.names
      if(ncol(thinned) == length(Data$parm.names)) {
           colnames(thinned) <- Data$parm.names}
      ### Logarithm of the Marginal Likelihood
-     if(Algorithm == "Random-Walk Metropolis") {
+     LML <- list(LML=NA, VarCov=NA)
+     if({Algorithm == "Random-Walk Metropolis"} &
+          {BurnIn < nrow(thinned)}) {
           cat("Estimating Log of the Marginal Likelihood\n")
-          if(BurnIn >= nrow(thinned)) {LML <- LML(Model, Data,
-               thinned[nrow(thinned),])}
-          else {LML <- LML(Model, Data, Summ2[1:LIV,6])}}
-     else {LML <- list(LML=NA, VarCov=NA)}
+          if(any(Data$mon.names == "LP"))
+               LML <- LML(theta=thinned[BurnIn:nrow(thinned),],
+                    LP=Mon[BurnIn:nrow(thinned),
+                         which(Data$mon.names == "LP")], method="NSIS")
+          else LML <- LML(Model, Data, Modes=Summ2[1:LIV,6],
+                    method="LME2")
+          }
      time2 <- proc.time()
      ### Compile Output
      cat("Creating Output\n")

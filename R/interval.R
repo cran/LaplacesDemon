@@ -7,10 +7,10 @@
 
 interval <- function(x, a=-Inf, b=Inf)
      {
-     if(a > b) stop("a > b in interval().")
-     if(is.null(x)) stop("x is null in interval().")
+     if(a > b) stop("a > b.")
+     if(missing(x)) stop("The x argument is required.")
      if(is.array(x) & {length(dim(x)) > 2})
-          stop("arrays are unsupported by interval().")
+          stop("Arrays are unsupported.")
      ### Scalar
      if(is.vector(x) && {length(x) == 1}) x <- max(a,min(b,x))
      ### Vector

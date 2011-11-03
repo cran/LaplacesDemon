@@ -33,12 +33,16 @@ weighted. The reason that logit is so prevalent is because logistic
 parameters can be interpreted as odds ratios.
 }
 \value{
- \code{cloglog} returns \code{x}, \code{invcloglog} and \code{invloglog} return probability \code{p}, and \code{loglog} returns \code{x}.
+  \code{cloglog} returns \code{x},
+  \code{invcloglog} and \code{invloglog} return probability \code{p},
+  and \code{loglog} returns \code{x}.
 }
+\references{\url{http://www.statisticat.com/laplacesdemon.html}}
+\author{Byron Hall \email{laplacesdemon@statisticat.com}}
 \seealso{\code{\link{LaplacesDemon}}}
 \examples{
 x <- -5:5
 p <- invloglog(x)
 x <- loglog(p)
 }
-\keyword{complementary log-log, log-log}
+\keyword{complementary log-log, link function, log-log}

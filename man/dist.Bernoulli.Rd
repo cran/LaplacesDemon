@@ -46,7 +46,7 @@ The Bernoulli distribution is a binomial distribution with
 Bernoulli trial. One coin flip is a Bernoulli trial, for example. The
 categorical distribution is the generalization of the Bernoulli
 distribution for variables with more than two discrete values. The
-Beta distribution is the conjugate prior distribution of the Bernoulli
+beta distribution is the conjugate prior distribution of the Bernoulli
 distribution. The geometric distribution is the number of Bernoulli
 trials needed to get one success.
 }
@@ -60,6 +60,7 @@ trials needed to get one success.
   \code{\link{dbinom}}
 }
 \examples{
+library(LaplacesDemon)
 dbern(1, 0.7)
 rbern(10, 0.5)
 }

@@ -1,6 +1,6 @@
 \name{plot.demonoid}
 \alias{plot.demonoid}
-\title{Plot samples from the output of \code{LaplacesDemon}}
+\title{Plot samples from the output of \code{\link{LaplacesDemon}}}
 \description{
   This may be used to plot, or save plots of, samples in an object of
   class \code{demonoid}. Plots include a trace plot, density plot, 
@@ -19,7 +19,7 @@
      }
      \item{Data}{
      This required argument must receive the list of data that
-     was supplied to \code{LaplacesDemon} to create the object of
+     was supplied to \code{\link{LaplacesDemon}} to create the object of
      class \code{demonoid}.
      }
      \item{PDF}{
@@ -71,13 +71,16 @@
   The ideal autocorrelation plot shows perfect correlation at zero lag,
   and quickly falls to zero autocorrelation for all other lags.
 
-  If an adaptive algorithm was used, then the distribution of absolute
+  If an adaptive algorithm were used, then the distribution of absolute
   differences in the proposal variances is plotted across each
   adaptation. The proposal variance should change less as the adaptive
   algorithm approaches the target distributions.  The following
   quantiles are plotted: 0.025, 0.500, and 0.975.
 }
-\references{\url{http://www.statisticat.com/laplacesdemon.html}}
+\references{
+  Hall, B. (2011). "Laplace's Demon", STATISTICAT, LLC.
+  URL=\url{http://www.statisticat.com/laplacesdemon.html}
+}
 \author{Byron Hall \email{laplacesdemon@statisticat.com}}
 \seealso{\code{\link{LaplacesDemon}}}
 \examples{### See the LaplacesDemon function for an example.}

@@ -15,27 +15,22 @@
 
 loglog <- function(p)
      {
-     if ({any(p < 0)} | {any(p > 1)}) {
-          stop("p is not in the interval [0,1] in loglog().")}
+     if({any(p < 0)} || {any(p > 1)}) stop("p must be in [0,1].")
      x <- log(-log(p))
      return(x)
      }
-
 invloglog <- function(x)
      {
      x <- as.vector(x)
      p <- exp(-exp(x))
      return(p)
      }
-
 cloglog <- function(p)
      {
-     if ({any(p < 0)} | {any(p > 1)}) {
-          stop("p is not in the interval [0,1] in cloglog().")}
+     if({any(p < 0)} || {any(p > 1)}) stop("p must be in [0,1].")
      x <- log(-log(1 - p))
      return(x)
      }
-
 invcloglog <- function(x)
      {
      x <- as.vector(x)

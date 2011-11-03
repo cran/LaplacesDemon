@@ -1,16 +1,28 @@
 ###########################################################################
 # HPD                                                                     #
 #                                                                         #
-# The purpose of this function is to estimate the interval of highest     #
-# posterior density (HPD) of samples. Although this code is slightly      #
-# different, it is essentially the same as in the coda package.           #
+# The purpose of the HPD function is to estimate the interval of highest  #
+# posterior density (HPD) of samples. This function is similar to code in #
+# the coda package, but this is designed to work with objects of class    #
+# demonoid.                                                               #
 ###########################################################################
 
 HPD <- function(obj, prob=0.95, ...)
      {
-     obj <- as.matrix(obj)
+     if(class(obj) == "demonoid") {
+          thin <- obj$Rec.BurnIn.Thinned
+          n <- nrow(obj$Posterior1)
+          if(thin < nrow(obj$Posterior1))
+               x <- cbind(obj$Posterior1[thin:n,], obj$Monitor[thin:n,])
+          if(thin >= nrow(obj$Posterior1))
+               x <- cbind(obj$Posterior1, obj$Monitor)
+          colnames(x) <- c(colnames(obj$Posterior1),
+               colnames(obj$Monitor))
+          obj <- x
+          }
+     else obj <- as.matrix(obj)
      vals <- apply(obj, 2, sort)
-     if(!is.matrix(vals)) stop("obj must have nsamp > 1")
+     if(!is.matrix(vals)) stop("obj must have nsamp > 1.")
      nsamp <- nrow(vals)
      npar <- ncol(vals)
      gap <- max(1, min(nsamp - 1, round(nsamp * prob)))

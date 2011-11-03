@@ -1,24 +1,30 @@
 ###########################################################################
 # plot.laplace                                                            #
 #                                                                         #
-# The purpose of this function is to plot an object of class laplace.     #
+# The purpose of the plot.laplace function is to plot an object of class  #
+# laplace.                                                                #
 ###########################################################################
 
 plot.laplace <- function(x, Data=NULL, PDF=FALSE, Parms=NULL, ...)
      {
      ### Initial Checks
-     if(is.null(x)) stop("x is NULL.\n")
-     if(is.null(Data)) stop("The Data argument is NULL.\n")
-     if(is.na(x$History)) stop("There is no history to plot.\n")
+     if(missing(x)) stop("The x argument is required.")
+     if(is.null(Data)) stop("The Data argument is NULL.")
+     if(is.na(x$History)) stop("There is no history to plot.")
      ### Selecting Parms
      if(is.null(Parms)) History <- x$History
      else {
           Parms <- sub("\\[","\\\\[",Parms)
           Parms <- sub("\\]","\\\\]",Parms)
           Parms <- sub("\\.","\\\\.",Parms)
+          if(length(grep(Parms[1], colnames(x$History))) == 0)
+               stop("Parameter in Parms does not exist.")
           keepcols <- grep(Parms[1], colnames(x$History))
           if(length(Parms) > 1) {
                for (i in 2:length(Parms)) {
+                    if(length(grep(Parms[i],
+                         colnames(x$History))) == 0)
+                         stop("Parameter in Parms does not exist.")
                     keepcols <- c(keepcols, grep(Parms[i],
                          colnames(x$History)))}}
           History <- as.matrix(x$History[,keepcols])

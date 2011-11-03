@@ -23,8 +23,7 @@ invlogit <- function(x)
 logit <- function(p)
      {
      p <- as.vector(p)
-     if ({any(p < 0)} | {any(p > 1)}) {
-          stop("p is not in the interval [0,1] in logit().")}
+     if({any(p < 0)} || {any(p > 1)}) stop("p must be in [0,1].")
      Logit <- log(p / {1 - p})
      return(Logit)
      }

@@ -31,29 +31,48 @@ rdirichlet(n, alpha)
           theta[1],...,theta[k] >= 0, 
           (the sum of j=1 to k of) theta[j] = 1}
     \item Inventor: Johann Peter Gustav Lejeune Dirichlet (1805-1859)
-    \item Notation 1: \eqn{\theta \sim}{theta ~} Dirichlet(\eqn{\alpha_1,\dots,\alpha_k}{alpha[1],..., alpha[k]})
+    \item Notation 1: \eqn{\theta \sim}{theta ~}
+    Dirichlet(\eqn{\alpha_1,\dots,\alpha_k}{alpha[1],..., alpha[k]})
     \item Notation 2: \eqn{p(\theta) =}{p(theta) =} Dirichlet(\eqn{\theta
       | \alpha_1,\dots,\alpha_k}{theta | alpha[1],...,alpha[k]})
-    \item Notation 3: \eqn{\theta \sim \mathcal{DIR}(\alpha_1,\dots,\alpha_k)}{theta ~ Dir(alpha[1],..., alpha[k])}
-    \item Notation 4: \eqn{p(\theta) = \mathcal{DIR}(\theta | \alpha_1,\dots,\alpha_k)}{p(theta) = Dir(theta | alpha[1],...,alpha[k])}
+    \item Notation 3: \eqn{\theta \sim
+      \mathcal{DIR}(\alpha_1,\dots,\alpha_k)}{theta ~ Dir(alpha[1],...,
+  alpha[k])}
+    \item Notation 4: \eqn{p(\theta) = \mathcal{DIR}(\theta |
+      \alpha_1,\dots,\alpha_k)}{p(theta) = Dir(theta |
+      alpha[1],...,alpha[k])}
     \item Parameter: 'prior sample sizes' \eqn{\alpha_j > 0, \alpha_0 =
-      \sum^k_{j=1} \alpha_j}{alpha[j] > 0, alpha[0] = (the sum from j=1 to k of) alpha[j]}
-    \item Mean: \eqn{E(\theta_j) = \frac{\alpha_j}{\alpha_0}}{E(theta[j]) = alpha[j] / alpha[0]}
+      \sum^k_{j=1} \alpha_j}{alpha[j] > 0, alpha[0] = (the sum from j=1
+      to k of) alpha[j]}
+    \item Mean: \eqn{E(\theta_j) =
+      \frac{\alpha_j}{\alpha_0}}{E(theta[j]) = alpha[j] / alpha[0]}
     \item Variance: \eqn{var(\theta_j) = \frac{\alpha_j (\alpha_0 -
-	\alpha_j)}{\alpha^2_0 (\alpha_0 + 1)}}{var(theta[j]) = (alpha[j] * (alpha[0] - alpha[j])) / 
-    (alpha[0]^2 * (alpha[0] + 1))}
+	\alpha_j)}{\alpha^2_0 (\alpha_0 + 1)}}{var(theta[j]) = (alpha[j]
+      * (alpha[0] - alpha[j])) / (alpha[0]^2 * (alpha[0]+ 1))}
     \item Covariance: \eqn{cov(\theta_i, \theta_j) = - \frac{\alpha_i
-	\alpha_j}{\alpha^2_0 (\alpha_0 + 1)}}{cov(theta[i], theta[j]) = - ((alpha[i]*alpha[j]) / 
-          (alpha[0]^2 * (alpha[0] + 1)))}
-    \item Mode: \eqn{mode(\theta_j) = \frac{\alpha_j - 1}{\alpha_0 - k}}{mode(theta[j]) = (alpha[j] - 1) / (alpha[0] - k)}
+	\alpha_j}{\alpha^2_0 (\alpha_0 + 1)}}{cov(theta[i], theta[j]) =
+      - ((alpha[i]*alpha[j]) / (alpha[0]^2 * (alpha[0] + 1)))}
+    \item Mode: \eqn{mode(\theta_j) = \frac{\alpha_j - 1}{\alpha_0 -
+	k}}{mode(theta[j]) = (alpha[j] - 1) / (alpha[0] - k)}
 }
 
-The Dirichlet is the conjugate prior distribution for the parameters of
-the categorical and multinomial distributions. The Dirichlet is a 
-multivariate generalization of the beta distribution. Its probability
-density function returns the belief that the probabilities of \eqn{k} rival
-events are \eqn{\theta_j}{theta[j]} given that each event has been
-observed \eqn{\alpha_j - 1}{alpha[j] - 1} times.
+The Dirichlet distribution is the multivariate generalization of the
+univariate beta distribution. Its probability density function returns
+the belief that the probabilities of \eqn{k} rival events are
+\eqn{\theta_j}{theta[j]} given that each event has been observed
+\eqn{\alpha_j - 1}{alpha[j] - 1} times.
+
+The Dirichlet distribution is commonly used as a prior distribution in
+Bayesian inference. The Dirichlet distribution is the conjugate prior
+distribution for the parameters of the categorical and multinomial
+distributions.
+
+A very common special case is the symmetric Dirichlet distribution,
+where all of the elements in parameter vector \eqn{\alpha}{alpha} have
+the same value. Symmetric Dirichlet distributions are often used as 
+uninformative Dirichlet prior distributions, so that one component is not
+favored over another. The single value that is entered into all elements
+of \eqn{\alpha}{alpha} is called the concentration parameter.
 
 These functions are similar to those in the \code{MCMCpack} package.
 }
@@ -61,7 +80,14 @@ These functions are similar to those in the \code{MCMCpack} package.
   \code{ddirichlet} gives the density and
   \code{rdirichlet} generates random deviates.
 }
+\seealso{
+  \code{\link{dbeta}},
+  \code{\link{dcat}},
+  \code{\link{dmvpolya}},
+  \code{\link{dmultinom}}.
+}
 \examples{
+library(LaplacesDemon)
 x <- ddirichlet(c(.1,.3,.6), c(1,1,1))
 x <- rdirichlet(10, c(1,1,1))
 }
