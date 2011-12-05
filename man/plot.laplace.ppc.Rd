@@ -8,45 +8,40 @@
 \usage{\method{plot}{laplace.ppc}(x, Style=NULL, Data=NULL,  Rows=NULL,
      PDF=FALSE, \dots)}
 \arguments{
-     \item{x}{
-     This required argument is an object of class \code{laplace.ppc}.
-     } 
-     \item{Style}{
-     This optional argument specifies one of several styles of plots,
-     and defaults to \code{NULL} (which is the same as
-     \code{"Density"}). Styles of plots are indicated in quotes. Optional
-     styles include \code{"Covariates"}, \code{"Covariates, Categorical DV"},
-     \code{"Density"}, \code{"Fitted"}, \code{"Fitted, Multivariate, C"},
-     \code{"Fitted, Multivariate, R"}, \code{"Predictive Quantiles"},
-     \code{"Residuals"}, \code{"Residuals, Multivariate, C"},
-     \code{"Residuals, Multivariate, R"}, \code{"Space-Time by Space"},
-     \code{"Space-Time by Time"}, \code{"Spatial"},
-     \code{"Spatial Uncertainty"}, \code{"Time-Series"},
-     \code{"Time-Series, Multivariate, C"}, and
-     \code{"Time-Series, Multivariate, R"}. Details are given below.
-     }
-     \item{Data}{
-     This optional argument accepts the data set used when updating the
-     model. Data is required only with certain plot styles, including
-     \code{"Covariates"}, \code{"Covariates, Categorical DV"},
-     \code{"Fitted, Multivariate, C"}, \code{"Fitted, Multivariate, R"},
-     \code{"Residuals, Multivariate, C"}, \code{"Residuals, Multivariate, R"},
-     \code{"Space-Time by Space"}, \code{"Space-Time by Time"},
-     \code{"Spatial"}, \code{"Spatial Uncertainty"},
-     \code{"Time-Series, Multivariate, C"}, and
-     \code{"Time-Series, Multivariate, R"}.
-     }
-     \item{Rows}{
-     This optional argument is for a vector of row numbers that 
-     specify the records associated by row in the object of class
-     \code{laplace.ppc}. Only these rows are plotted. The default is to
-     plot all rows. Some plots do not allow rows to be specified.
-     }
-     \item{PDF}{
-     This logical argument indicates whether or not the user wants
-     Laplace's Demon to save the plots as a .pdf file.
-     }
-     \item{\dots}{Additional arguments are unused.}
+  \item{x}{
+    This required argument is an object of class \code{laplace.ppc}.}
+  \item{Style}{
+    This optional argument specifies one of several styles of plots, and
+    defaults to \code{NULL} (which is the same as
+    \code{"Density"}). Styles of plots are indicated in quotes. Optional 
+    styles include \code{"Covariates"}, \code{"Covariates, Categorical DV"},
+    \code{"Density"}, \code{"Fitted"}, \code{"Fitted, Multivariate, C"},
+    \code{"Fitted, Multivariate, R"}, \code{"Predictive Quantiles"},
+    \code{"Residuals"}, \code{"Residuals, Multivariate, C"},
+    \code{"Residuals, Multivariate, R"}, \code{"Space-Time by Space"},
+    \code{"Space-Time by Time"}, \code{"Spatial"},
+    \code{"Spatial Uncertainty"}, \code{"Time-Series"},
+    \code{"Time-Series, Multivariate, C"}, and
+    \code{"Time-Series, Multivariate, R"}. Details are given below.}
+  \item{Data}{
+    This optional argument accepts the data set used when updating the
+    model. Data is required only with certain plot styles, including
+    \code{"Covariates"}, \code{"Covariates, Categorical DV"},
+    \code{"Fitted, Multivariate, C"}, \code{"Fitted, Multivariate, R"},
+    \code{"Residuals, Multivariate, C"}, \code{"Residuals, Multivariate, R"},
+    \code{"Space-Time by Space"}, \code{"Space-Time by Time"},
+    \code{"Spatial"}, \code{"Spatial Uncertainty"},
+    \code{"Time-Series, Multivariate, C"}, and
+    \code{"Time-Series, Multivariate, R"}.}
+  \item{Rows}{
+    This optional argument is for a vector of row numbers that 
+    specify the records associated by row in the object of class
+    \code{laplace.ppc}. Only these rows are plotted. The default is to
+    plot all rows. Some plots do not allow rows to be specified.}
+  \item{PDF}{
+    This logical argument indicates whether or not the user wants
+    Laplace's Demon to save the plots as a .pdf file.}
+  \item{\dots}{Additional arguments are unused.}
 }
 \details{
   This function can be used to produce a variety of posterior predictive

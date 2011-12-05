@@ -2,9 +2,7 @@
 \alias{Combine}
 \title{Combine Demonoid Objects}
 \description{
-This function combines objects of class \code{demonoid}, and is useful when
-more than 1,000,000 iterations is required, prior to thinning, to
-achieve stationarity.
+This function combines objects of class \code{demonoid}.
 }
 \usage{
 Combine(x, Data)
@@ -16,16 +14,18 @@ Combine(x, Data)
        \code{\link{LaplacesDemon}}.}
 }
 \details{
-  The \code{\link{LaplacesDemon}} algorithm limits the number of
-  iterations to 1,000,000. Nonetheless, some complicated models may
-  require millions of iterations, prior to thinning, to achieve
-  stationarity. Without using the \code{Combine} function, Laplace's
-  Demon (via \code{\link{Consort}}), may suggest another million
-  iterations to a user. After such updating, another million may be
-  suggested again. These suggestions may continue to infinity, and
-  the unnormalized logarithm of the joint posterior density, \code{LP},
-  may seem to oscillate, sometimes improving and getting higher, and
-  getting lower during other updates.
+  The purpose of the \code{Combine} function is to enable a user to
+  combine the output objects of multiple updates from
+  \code{\link{LaplacesDemon}}. This is most useful in complicated models
+  that are run for large numbers of iterations, where it may be
+  suspected that stationarity has been achieved, but that thinning is
+  insufficient, and the samples may be combined and thinned. The
+  \code{\link{Consort}} function limits suggestions to a maximum of
+  1,000,000 iterations for numerical reasons, though this may be too
+  small in complicated models. If followed, then these suggestions may
+  continue to infinity, and the unnormalized logarithm of the joint
+  posterior density, \code{LP}, may seem to oscillate, sometimes
+  improving and getting higher, and getting lower during other updates.
 
   In these cases, which usually involve complicated models with high
   autocorrelation in the chains, the user should save (meaning, not
@@ -51,8 +51,6 @@ Combine(x, Data)
   function can now be applied to Fit3, to see if stationarity is found.
   If not, more objects of class \code{demonoid} can be collected and
   combined.
-
-  This is faster than updating millions of iterations in one function call.
 }
 \value{
  This function returns an object of class \code{demonoid}. For more

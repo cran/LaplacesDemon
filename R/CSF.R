@@ -36,7 +36,8 @@ CSF <- function(x, name, method="Quantiles", quantiles=c(.025,.5,.975),
           for (i in 1:length(x)) {
                test <- try(as.vector(HPD(x[1:i])[1,]), silent=TRUE)
                if(is.numeric(test[1])) Y[i,] <- test}
-          plot(x, type="l", col="gray", xlab="Sample Size", ylab="HPD")
+          plot(x, type="l", col="gray", xlab="Sample Size",
+               ylab="HPD (95%)")
           for (i in 1:2) lines(Y[,i], col="black")
           if(output == TRUE) return(Y)}
      if(method == "is.stationary") {

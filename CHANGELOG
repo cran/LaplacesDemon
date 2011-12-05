@@ -1,3 +1,28 @@
+2011-12-03 Added plot.importance
+2011-12-01 CITATION now includes citations for vignettes
+2011-11-26 Added GIV
+2011-11-26 OnLoad: Included version number
+2011-11-23 Examples: Changed sigma in Kriging, Predictive Process
+2011-11-22 LaplacesDemon: MCSE with method IMPS becomes default
+2011-11-21 Consort: Changed the Demonic Suggestions due to new MCMC algs
+2011-11-20 Added partial and Hessian
+2011-11-19 LML: Added the HME method, changed defaults for LA and LD
+2011-11-18 LML: Fixed major bug between LL and LP
+2011-11-17 caterpillar.plot: Added posterior samples due to SIR from LA
+2011-11-16 plot.laplace: Added posterior samples due to SIR
+2011-11-15 PosteriorChecks: Added Burn-In and posterior LA samples
+2011-11-14 LaplaceApproximation: Added posterior samples with sir=TRUE
+2011-11-13 LaplaceApproximation: Deprecated the CG method
+2011-11-12 LaplaceApproximation: Added algorithms LBFGS and Rprop
+2011-11-11 LaplaceApproximation: Sped up AGA with efficient coding
+2011-11-10 LaplacesDemon: Added 3 MCMC algorithms - AMM, AMWG, and MWG
+2011-11-09 LaplacesDemon: Sped up MCMC algorithms with efficient coding
+2011-11-08 Added Model.Spec.Time
+2011-11-07 Added SIR for sampling importance resampling
+2011-11-06 Added de.Finetti.Game
+2011-11-05 Added burnin
+2011-11-04 Added KS.Diagnostic
+2011-11-03 Added MCSS
 2011-11-02 Added Elicitation
 2011-11-01 Added Importance
 2011-10-31 Added CSF and additional MCSE methods

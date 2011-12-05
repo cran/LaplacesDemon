@@ -16,12 +16,7 @@
   After the parameter is constrained to an interval in
   \code{\link{LaplaceApproximation}} or \code{\link{LaplacesDemon}}, the
   constrained parameter should be updated back into the \code{parm}
-  vector, so the algorithm knows it has been constrained. In
-  \code{\link{LaplaceApproximation}}, however, note that
-  \code{Method="CG"} will be unaware from iteration to iteration that
-  the user constrained a parameter to an interval, so the much slower
-  algorithm, \code{Method="AGA"}, must be used instead when constraining
-  intervals.
+  vector, so the algorithm knows it has been constrained.
 }
 \usage{
 interval(x, a=-Inf, b=Inf)
@@ -33,17 +28,6 @@ interval(x, a=-Inf, b=Inf)
     bound of the interval, and defaults to \code{-Inf}.}
   \item{b}{This optional argument allows the specification of the upper
     bound of the interval, and defaults to \code{Inf}.}
-}
-\details{
-  For \code{\link{LaplacesDemon}}, the MCMC algorithm makes a proposal
-  that may or may not be accepted. If it is accepted, then the accepted
-  values may be constrained in the model specification, and returned
-  to the algorithm with \code{parm}. This is an inconsistency between
-  what the algorithm accepted, and what was used. Perhaps the
-  constrained values would have been rejected. After running hundreds of
-  different types of models in Laplace's Demon with constrained
-  parameters, it seems this inconsistency does not pose any problems,
-  but it is important to note it.
 }
 \value{
   The \code{interval} function returns a scalar, vector, or matrix in

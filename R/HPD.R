@@ -20,6 +20,11 @@ HPD <- function(obj, prob=0.95, ...)
                colnames(obj$Monitor))
           obj <- x
           }
+     else if(class(obj) == "laplace") {
+          if(any(is.na(obj$Posterior)))
+               stop("Posterior samples do not exist in obj.")
+          obj <- obj$Posterior
+          }
      else obj <- as.matrix(obj)
      vals <- apply(obj, 2, sort)
      if(!is.matrix(vals)) stop("obj must have nsamp > 1.")
@@ -32,7 +37,7 @@ HPD <- function(obj, prob=0.95, ...)
      ans <- cbind(vals[cbind(inds, 1:npar)],
           vals[cbind(inds + gap, 1:npar)])
      dimnames(ans) <- list(colnames(obj), c("Lower", "Upper"))
-     attr(ans, "Probability") <- gap / nsamp
+     attr(ans, "Probability.Interval") <- gap / nsamp
      return(ans)
      }
 

@@ -3,10 +3,13 @@
 #                                                                         #
 # The purpose of the MCSE function is to estimate the Monte Carlo         #
 # Standard Error of a vector of posterior samples. Multiple methods are   #
-# provided.                                                               #
+# provided. The purpose of the MCSS function is to calculate the required #
+# sample size `n' to achieve acceptable error `a' given a vector `x' of   #
+# Monte Carlo samples and the sample variance (rather than the asymptotic #
+# variance).                                                              #
 ###########################################################################
 
-MCSE <- function(x, method="IMPS", batch.size="sqrt", warn=TRUE)
+MCSE <- function(x, method="IMPS", batch.size="sqrt", warn=FALSE)
      {
      if(missing(x)) stop("The x argument is required.")
      if(method == "sample.variance") {
@@ -47,7 +50,7 @@ MCSE <- function(x, method="IMPS", batch.size="sqrt", warn=TRUE)
           k <- 1
           while ((k < length(gammaAC)) && (gammaAC[k+1] > 0) && (gammaAC[k] >= gammaAC[k+1]))
                k <- k +1
-          if(k == length(gammaAC))
+          if({k == length(gammaAC)} & {warn == TRUE})
                warning("May need to compute more autocovariances for IMPS.")
           options(warn=-1)
           sigmasq <- -chainAC[1] + 2*sum(gammaAC[1:k])
@@ -56,6 +59,17 @@ MCSE <- function(x, method="IMPS", batch.size="sqrt", warn=TRUE)
           return(se)
           }
      else stop("The method is unknown.")
+     }
+MCSS <- function(x, a)
+     {
+     if(missing(x)) stop("The x argument is required.")
+     if(missing(a)) stop("The a argument is required.")
+     ess <- ESS(x)
+     ratio <- length(x) / ess
+     fx <- function(sdx,n,a) ((sdx / sqrt(n)) - a)^2
+     optimized <- optimize(f=fx, interval=c(0,.Machine$integer.max),
+          maximum=FALSE, a=a, sdx=sd(x))
+     return(round(optimized$minimum * ratio))
      }
 
 #End

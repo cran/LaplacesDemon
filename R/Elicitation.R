@@ -89,14 +89,7 @@ elicit <- function(n, cats, cat.names, show.plot=FALSE)
      #Output
      return(out)
      }
-#relicit <- function(n, x, a=-Inf, b=Inf)
-#     {
-#     if(missing(n)) stop("The n argument is required.")
-#     if(missing(x)) stop("The x argument is required.")
-#     kde <- density(x)
-#     z <- runif(n)
-#     dens <- approx(kde$x, kde$y, theta)$y
-#     }
+
 
 #End
 

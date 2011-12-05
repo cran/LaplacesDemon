@@ -1,9 +1,52 @@
-citHeader("To cite LaplacesDemon in publications use:")
+if( !exists('meta') || is.null(meta) ) meta <- packageDescription("LaplacesDemon")
 
-citEntry(entry  = "manual",
-         author = "Byron Hall",
-         title  = "LaplacesDemon: Software for Bayesian Inference",
-         year   = "2011",
-         note   = "R package version 11.11.03",
-         url    = "http://cran.r-project.org/web/packages/LaplacesDemon/index.html",
-     )
+year <- sub(".*(2[[:digit:]]{3})-.*", "\\1", meta$Date)
+vers <- paste("R package version", meta$Version)
+author <- as.personList(meta$Author)
+url <- sprintf("http://cran.r-project.org/web/packages/%s/index.html", meta$Package)
+
+citHeader(sprintf("To cite package '%s' in publications use:", meta$Package))
+
+citEntry(entry="Manual",
+         author = author,
+         year = year,
+         title =sprintf("%s: %s", meta$Package, meta$Title),
+         note = vers,
+         url = url,
+    	 publisher = "CRAN",
+    	 textVersion = sprintf("%s (%s). %s: %s. CRAN. %s. [%s]", author, year, meta$Package, meta$Title, vers, url),
+    	 header = "Technical documentation:"
+)
+
+citEntry(entry="Manual",
+         author = author,
+         year = year,
+         title = vign <- "Bayesian Inference",
+         note = vers,
+         url = url,
+    	 publisher = "CRAN",
+    	 textVersion = sprintf("%s (%s). %s. CRAN. %s. [%s]", author, year, vign, vers, url),
+    	 header = "Vignette(s):"
+)
+
+citEntry(entry="Manual",
+         author = author,
+         year = year,
+         title = vign <- "LaplacesDemon Examples",
+         note = vers,
+         url = url,
+    	 publisher = "CRAN",
+    	 textVersion = sprintf("%s (%s). %s. CRAN. %s. [%s]", author, year, vign, vers, url),
+    	 header = "Vignette(s):"
+)
+
+citEntry(entry="Manual",
+         author = author,
+         year = year,
+         title = vign <- "LaplacesDemon Tutorial",
+         note = vers,
+         url = url,
+    	 publisher = "CRAN",
+    	 textVersion = sprintf("%s (%s). %s. CRAN. %s. [%s]", author, year, vign, vers, url),
+    	 header = "Vignette(s):"
+)

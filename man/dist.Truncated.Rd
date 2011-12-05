@@ -61,8 +61,9 @@ vartrunc(spec, a=-Inf, b=Inf, ...)
   \code{\link{LaplacesDemon}}.
 }
 \references{
-Nadarajah, S. and Kotz, S. (2006). R Programs for Computing Truncated
-Distributions. Journal of Statistical Software, 16, Code Snippet 2, p. 1--8.
+  Nadarajah, S. and Kotz, S. (2006). "R Programs for Computing Truncated
+  Distributions". Journal of Statistical Software, 16, Code Snippet 2,
+  p. 1--8.
 }
 \examples{
 library(LaplacesDemon)

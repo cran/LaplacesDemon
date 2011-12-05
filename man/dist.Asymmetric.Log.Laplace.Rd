@@ -59,7 +59,7 @@ These functions are similar to those in the \code{VGAM} package.
   \code{rallaplace} generates random deviates.
 }
 \references{
-  Kozubowski, T. J. and Podgorski, K. (2003) Log-Laplace Distributions.
+  Kozubowski, T. J. and Podgorski, K. (2003) "Log-Laplace Distributions".
   International Mathematical Journal, 3, p. 467--495.
 }
 \seealso{

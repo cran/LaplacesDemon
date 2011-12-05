@@ -7,40 +7,26 @@
 # matrix, its negative inverse).                                          #
 ###########################################################################
 
-LML <- function(Model=NULL, Data=NULL, Modes=NULL, theta=NULL,
-     LP=NULL, method="NSIS")
+LML <- function(Model=NULL, Data=NULL, Modes=NULL, theta=NULL, LL=NULL,
+     method="NSIS")
      {
      LML.out <- list(LML=NA, VarCov=NA)
+     if(!is.null(LL) & method == "HME") {
+          med <- median(LL)
+          LML <- med - log(mean(exp(-LL + med)))
+          ### Output
+          LML.out <- list(LML=LML, VarCov=NA)
+          }
      if(!is.null(Model) & !is.null(Data) & !is.null(Modes) &
           (method == "LME1")) {
           Interval <- 1.0E-6
           parm.len <- length(Modes)
           eps <- Interval * Modes
           timetest <- system.time(Model(Modes, Data))
-          timeest <- parm.len^2 * 4 * as.vector(timetest[3]) * 1.1 / 60
+          timeest <- parm.len^2 * 2 * as.vector(timetest[3]) * 1.1 / 60
           cat("\nApproximating LML should take just over",
                round(timeest), "minutes.\n")
-          ### Approximate Hessian
-          Approx.Hessian <- matrix(0, parm.len, parm.len)
-          for (i in 1:parm.len) {
-               for (j in 1:parm.len) {
-                    x1 <- Modes
-                    x1[i] <- x1[i] + eps[i]
-                    x1[j] <- x1[j] + eps[j]
-                    x2 <- Modes
-                    x2[i] <- x2[i] + eps[i]
-                    x2[j] <- x2[j] - eps[j]
-                    x3 <- Modes
-                    x3[i] <- x3[i] - eps[i]
-                    x3[j] <- x3[j] + eps[j]
-                    x4 <- Modes
-                    x4[i] <- x4[i] - eps[i]
-                    x4[j] <- x4[j] - eps[j]
-                    Approx.Hessian[i, j] <- {Model(x1, Data)[[1]] -
-                         Model(x2, Data)[[1]] - Model(x3, Data)[[1]] +
-                         Model(x4, Data)[[1]]} / {4 * eps[i] * eps[j]}
-                    }
-               }
+          Approx.Hessian <- Hessian(Model, Modes, Data)
           Inverse.test <- try(VarCov.t <- -as.inverse(Approx.Hessian),
                silent=TRUE)
           if(class(Inverse.test) != "try-error") {
@@ -49,7 +35,7 @@ LML <- function(Model=NULL, Data=NULL, Modes=NULL, theta=NULL,
                     .Machine$double.eps, diag(VarCov))}
           else {
                cat("\nWARNING: Failure to solve matrix inversion of ",
-                    "Approx. Hessian.\n")
+                    "Approx. Hessian in LML.\n", sep="")
                cat("NOTE: Identity matrix is supplied instead.\n")
                VarCov <- diag(parm.len)}
           ### Logarithm of the Marginal Likelihood
@@ -105,7 +91,7 @@ LML <- function(Model=NULL, Data=NULL, Modes=NULL, theta=NULL,
                     .Machine$double.eps, diag(VarCov))}
           else {
                cat("\nWARNING: Failure to solve matrix inversion of ",
-                    "Approx. Hessian.\n")
+                    "Approx. Hessian in LML.\n", sep="")
                cat("NOTE: Identity matrix is supplied instead.\n")
                VarCov <- diag(parm.len)}
           ### Logarithm of the Marginal Likelihood
@@ -119,19 +105,19 @@ LML <- function(Model=NULL, Data=NULL, Modes=NULL, theta=NULL,
           ### Output
           LML.out <- list(LML=LML, VarCov=VarCov)
      }
-     if(!is.null(theta) & !is.null(LP) & (method =="NSIS")) {
+     if(!is.null(theta) & !is.null(LL) & (method =="NSIS")) {
           if(!is.matrix(theta)) stop("theta must be a matrix.")
           thetacol <- ncol(theta)
-          LP <- as.vector(LP)
-          LPlen <- length(LP)
-          if(nrow(theta) != LPlen)
+          LL <- as.vector(LL)
+          LLlen <- length(LL)
+          if(nrow(theta) != LLlen)
                stop("The number of rows in theta differs from the ",
-                    "length of LP.")
-          if(LPlen < 301) {
-               warning("At least 301 samples are required for NSIS.")
+                    "length of LL.")
+          if(LLlen < 301) {
+               cat("\nWARNING: At least 301 samples are required for NSIS.\n")
                return(list(LML=NA, VarCov=NA))}
-          if(thetacol > round(LPlen / 2))
-               stop("At least ", round(LPlen / 2) ,
+          if(thetacol > round(LLlen / 2))
+               stop("At least ", round(LLlen / 2) ,
                     " stationary samples are required for",
                     thetacol," parameters for NSIS.")
           cov.prob <- 0.5
@@ -190,21 +176,21 @@ LML <- function(Model=NULL, Data=NULL, Modes=NULL, theta=NULL,
                {
                return(max(abs(p1 - p2)))
                }
-          .GetWidth <- function(theta.hist, theta.width, LP.hist,
+          .GetWidth <- function(theta.hist, theta.width, LL.hist,
                opt.prob=0.5)
                {
-               low.point <- theta.hist[which(LP.hist == min(LP.hist))[1], ,
+               low.point <- theta.hist[which(LL.hist == min(LL.hist))[1], ,
                     drop=FALSE]
-               high.point <- theta.hist[which(LP.hist == max(LP.hist))[1], ,
+               high.point <- theta.hist[which(LL.hist == max(LL.hist))[1], ,
                     drop=FALSE]
-               minLP.dists <- apply(theta.hist, 1, function(theta) {
+               minLL.dists <- apply(theta.hist, 1, function(theta) {
                     .Dist(theta, low.point)})
-               maxLP.dists <- apply(theta.hist, 1, function(theta) {
+               maxLL.dists <- apply(theta.hist, 1, function(theta) {
                     .Dist(theta, high.point)})
-               small.dist <- 0.5 * min(maxLP.dists[maxLP.dists > 0])
-               big.dist <- 2 * max(minLP.dists)
+               small.dist <- 0.5 * min(maxLL.dists[maxLL.dists > 0])
+               big.dist <- 2 * max(minLL.dists)
                F <- function(width) {
-                    hist <- .PopulateHist(theta.hist, LP.hist, width)
+                    hist <- .PopulateHist(theta.hist, LL.hist, width)
                     return(.Coverage(theta.width, hist) - opt.prob)
                     }
                options(warn=-1)
@@ -229,18 +215,18 @@ LML <- function(Model=NULL, Data=NULL, Modes=NULL, theta=NULL,
                rownames(result) <- c("min", "max")
                return(result)
                }
-          .MargLL <- function(hist, theta.imp, LP.imp)
+          .MargLL <- function(hist, theta.imp, LL.imp)
                {
-               n <- length(LP.imp)
+               n <- length(LL.imp)
                samples <- rep(0, n)
                for (i in seq(length=n))
                     samples[i] <- exp(.Lookup(theta.imp[i, ],
-                         hist) - LP.imp[i])
+                         hist) - LL.imp[i])
                return(list(samples=samples, mll=-log(mean(samples))))
                }
-          .SplitComponents <- function(theta, LP)
+          .SplitComponents <- function(theta, LL)
                {
-               tot.count <- length(LP)
+               tot.count <- length(LL)
                hist.count <- min(0.2 * tot.count,
                     round(sqrt(tot.count) * 2))
                width.count <- 40
@@ -250,8 +236,8 @@ LML <- function(Model=NULL, Data=NULL, Modes=NULL, theta=NULL,
                          width.count), , drop=FALSE],
                     theta.imp=theta[(tot.count - imp.count + 1):tot.count, ,
                          drop=FALSE],
-                    LP.hist=LP[1:hist.count],
-                    LP.imp=LP[(tot.count - imp.count + 1):tot.count]))
+                    LL.hist=LL[1:hist.count],
+                    LL.imp=LL[(tot.count - imp.count + 1):tot.count]))
                }
           .CheckBounds <- function(hist, bounds)
                {
@@ -270,13 +256,13 @@ LML <- function(Model=NULL, Data=NULL, Modes=NULL, theta=NULL,
                return(hist)
                }
           options(warn=-1)
-          comps <- .SplitComponents(theta, LP)
+          comps <- .SplitComponents(theta, LL)
           width <- .GetWidth(comps$theta.hist, comps$theta.bw,
-               comps$LP.hist, cov.prob)
-          hist <- .PopulateHist(comps$theta.hist, comps$LP.hist, width)
+               comps$LL.hist, cov.prob)
+          hist <- .PopulateHist(comps$theta.hist, comps$LL.hist, width)
           hist <- .SetHistNorm(hist)
           hist <- .CheckBounds(hist, bounds)
-          ml.out <- .MargLL(hist, comps$theta.imp, comps$LP.imp)
+          ml.out <- .MargLL(hist, comps$theta.imp, comps$LL.imp)
           ml.out$samples <- ml.out$samples[is.finite(ml.out$samples)]
           sd.samples <- sd(ml.out$samples) / sqrt(length(ml.out$samples))
           conf.interval <- qnorm(c(.975, .025)) * sd.samples +

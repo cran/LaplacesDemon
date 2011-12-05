@@ -22,13 +22,22 @@ print.laplace <- function(x, ...)
      cat("Log-Posterior (Final): ", x$LP.Final, "\n", sep="")
      cat("Log-Posterior (Initial): ", x$LP.Initial, "\n", sep="")
      cat("Minutes of run-time: ", x$Minutes, "\n", sep="")
-     cat("Step Size (Final): ", x$Step.Size.Final, "\n", sep="")
+     cat("Monitor: (NOT SHOWN HERE)\n")
+     cat("Posterior: (NOT SHOWN HERE)\n")
+     cat("Step Size (Final): ")
+     print(x$Step.Size.Final)
      cat("Step Size (Initial): ", x$Step.Size.Initial, "\n", sep="")
-     cat("Stop Tolerance: ", x$Stop.Tolerance, "\n", sep="")
-     cat("Summary: (SHOWN BELOW)\n")
-     cat("Tolerance: ", x$Tolerance, "\n", sep="")
-     cat("\nSummary:\n")
-     print(x$Summary)
+     cat("Summary1: (SHOWN BELOW)\n")
+     cat("Summary2: (SHOWN BELOW)\n")
+     cat("Tolerance (Final): ", x$Tolerance.Final, "\n", sep="")
+     cat("Tolerance (Stop): ", x$Tolerance.Stop, "\n", sep="")
+     
+     cat("\nSummary1:\n")
+     print(x$Summary1)
+     if({x$Converged == TRUE} && !any(is.na(x$Posterior))) {
+          cat("\nSummary2:\n")
+          print(x$Summary2)}
+     
      invisible(x)
      }
 

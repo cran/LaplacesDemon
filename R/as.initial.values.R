@@ -13,7 +13,7 @@ as.initial.values <- function(x)
      if(class(x) == "demonoid")
           initial.values <- as.vector(x$Posterior1[x$Thinned.Samples,])
      if(class(x) == "laplace")
-          initial.values <- as.vector(x$Summary[,"Mode"])
+          initial.values <- as.vector(x$Summary1[,"Mode"])
      return(initial.values)
      }
 

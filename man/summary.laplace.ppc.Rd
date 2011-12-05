@@ -12,31 +12,30 @@
 \usage{\method{summary}{laplace.ppc}(object, Categorical, Rows, Discrep,
      d, Quiet, \dots)}
 \arguments{
-     \item{object}{An object of class \code{laplace.ppc} is required.}
-     \item{Categorical}{Logical. If \code{TRUE}, then \code{y} and
-          \code{yhat} are considered to be categorical (such as y=0 or
-           y=1),  rather than continuous.}
-     \item{Rows}{An optional vector of row numbers, for example
-          \code{c(1:10)}. All rows will be estimated, but only these
-          rows will appear in the summary.}
-     \item{Discrep}{A character string indicating a discrepancy test.
-          \code{Discrep} defaults to \code{NULL}. Valid character
-          strings when \code{y} is continuous are: \code{"Chi-Square"},
-	  \code{"Chi-Square2"}, \code{"Kurtosis"},
-	  \code{"L-criterion"}, \code{"Skewness"},
-	  \code{"max(yhat[i,]) > max(y)"}, \code{"mean(yhat[i,]) > mean(y)"},
-	  \code{"mean(yhat[i,] > d)"}, \code{"mean(yhat[i,] > mean(y))"},
-	  \code{"min(yhat[i,]) < min(y)"}, \code{"round(yhat[i,]) = d"},
-	  and \code{"sd(yhat[i,]) > sd(y)"}. Valid character strings
-	  when \code{y} is categorical are: \code{"p(yhat[i,] != y[i])"}. 
-	  Kurtosis and skewness are not discrepancies, but are included
-	  here for convenience.}
-     \item{d}{This is an optional integer to be used with the
-	  \code{Discrep} argument above, and it defaults to \code{d=0}.}
-     \item{Quiet}{This logical argument defaults to \code{FALSE} and
-          will print results to the console. When \code{TRUE},
-          results are not printed.}
-     \item{\dots}{Additional arguments are unused.}
+  \item{object}{An object of class \code{laplace.ppc} is required.}
+  \item{Categorical}{Logical. If \code{TRUE}, then \code{y} and
+    \code{yhat} are considered to be categorical (such as y=0 or y=1),
+    rather than continuous.}
+  \item{Rows}{An optional vector of row numbers, for example
+    \code{c(1:10)}. All rows will be estimated, but only these rows will
+    appear in the summary.}
+  \item{Discrep}{A character string indicating a discrepancy
+    test. \code{Discrep} defaults to \code{NULL}. Valid character
+    strings when \code{y} is continuous are: \code{"Chi-Square"},
+    \code{"Chi-Square2"}, \code{"Kurtosis"}, \code{"L-criterion"},
+    \code{"Skewness"}, \code{"max(yhat[i,]) > max(y)"},
+    \code{"mean(yhat[i,]) > mean(y)"}, \code{"mean(yhat[i,] > d)"},
+    \code{"mean(yhat[i,] > mean(y))"}, \code{"min(yhat[i,]) < min(y)"},
+    \code{"round(yhat[i,]) = d"}, and \code{"sd(yhat[i,]) >
+    sd(y)"}. Valid character strings when \code{y} is categorical are:
+    \code{"p(yhat[i,] != y[i])"}. Kurtosis and skewness are not
+    discrepancies, but are included here for convenience.}
+  \item{d}{This is an optional integer to be used with the
+    \code{Discrep} argument above, and it defaults to \code{d=0}.}
+  \item{Quiet}{This logical argument defaults to \code{FALSE} and will
+    print results to the console. When \code{TRUE}, results are not
+    printed.}
+  \item{\dots}{Additional arguments are unused.}
 }
 \details{
   This function summarizes an object of class \code{laplace.ppc}, which
@@ -77,73 +76,69 @@
   percent of records that were outside of the 95\% probability interval.
 }
 \value{
-     This function returns a list with the following components:
-     \item{Concordance}{
-          This is the percentage of the records of y that are within the 
-          95\% probability interval of \eqn{\textbf{y}^{rep}}{y[rep]}. A
-	  probability interval is also called a credible interval.
-	  Gelfand's suggested goal is to achieve 95\% predictive
-	  concordance. Lower percentages indicate too many outliers
-	  and a poor fit of the model to the data, and higher
-	  percentages may suggest overfitting. Concordance occurs only
-	  when \eqn{\textbf{y}}{y} is continuous.}
-     \item{Mean Lift}{
-	  This is the mean of the record-level lifts, and occurs only
-	  when \eqn{\textbf{y}}{y} is categorical.}
-     \item{DIC (Dbar)}{
-          This is the mean deviance, and is a component of the Deviance
-          Information Criterion.}
-     \item{DIC (pD)}{
-          This is the effective number of parameters, and is a component
-          of the Deviance Information Criterion. \code{pD} is calculated
-	  as \code{var(Deviance) / 2}.}
-     \item{DIC (DIC)}{
-          This is the Deviance Information Criterion, a measure of model
-          fit. It is the sum of Dbar and pD.}
-     \item{Discrepancy.Statistic}{
-          This is only reported if the \code{Discrep} argument receives a
-          valid discrepancy measure as listed above. The \code{Discrep}
-	  applies to each record of \eqn{\textbf{y}}{y}, and the
-	  \code{Discrepancy.Statistic} reports the results of the
-	  discrepancy measure on the entire data set. For example, if
-	  \code{Discrep="min(yhat[i,] < min(y)"}, then the overall
-	  result is the proportion of records in which the minimum
-	  sample of yhat was less than the overall minimum
-	  \eqn{\textbf{y}}{y}. This is
-	  \code{Pr(min(yhat[i,]) < min(y) | y, Theta)}, where
-	  \code{Theta} is the parameter set.}
-	\item{L-criterion}{
-	  The L-criterion (Laud and Ibrahim, 1995) was developed for
-	  model and variable selection. It is a sum of two components:
-	  one involves the predictive variance and the other includes
-	  the accuracy of the means of the predictive distribution. The
-	  L-criterion measures model performance with a combination of
-	  how close its predictions are to the observed data and
-	  variability of the predictions. Better models have smaller
-	  values of \code{L}. \code{L} is measured in the same units as
-	  the response variable, and measures how close the data vector
-	  \eqn{\textbf{y}}{y} is to the predictive distribution. In
-	  addition to the value of \code{L}, there is a value for
-	  \code{S.L}, which is the calibration number of \code{L}, and
-	  is useful in determining how much of a decrease is necessary
-	  between models to be noteworthy.}
-     \item{Monitor}{
-          This is a \eqn{N \times 5}{N x 5} matrix, where \eqn{N} is the
-          number of monitored variables and there are 5 columns, as
-	  follows: Mean, SD, LB (the 2.5\% quantile), Median, and UB
-	  (the 97.5\% quantile).}
-     \item{Summary}{
-          When \eqn{\textbf{y}}{y} is continuous, this is a
-          \eqn{N \times 8}{N x 8} matrix, where \eqn{N} is the number
-	  of records of \eqn{\textbf{y}}{y} and there are 8 columns,
-	  as follows: y, Mean, SD, LB (the 2.5\% quantile), Median, UB
-	  (the 97.5\% quantile), PQ (the predictive quantile, which is
-	  \eqn{Pr(\textbf{y}^{rep} \ge \textbf{y})}{Pr(y[rep] >= y)}),
-	  and Test, which shows the record-level result of a test, if
-	  specified. When \eqn{\textbf{y}}{y} is categorical,
-	  this matrix has a number of columns equal to the number of
-	  categories of \eqn{\textbf{y}}{y} plus 3, also including
-	  \code{y}, \code{Lift}, and \code{Discrep}.}
+  This function returns a list with the following components:
+  \item{Concordance}{
+    This is the percentage of the records of y that are within the 
+    95\% probability interval of \eqn{\textbf{y}^{rep}}{y[rep]}. A
+    probability interval is also called a credible interval. Gelfand's
+    suggested goal is to achieve 95\% predictive concordance. Lower
+    percentages indicate too many outliers and a poor fit of the model
+    to the data, and higher percentages may suggest
+    overfitting. Concordance occurs only when \eqn{\textbf{y}}{y} is
+    continuous.}
+  \item{Mean Lift}{
+    This is the mean of the record-level lifts, and occurs only when
+    \eqn{\textbf{y}}{y} is categorical.}
+  \item{DIC (Dbar)}{
+    This is the mean deviance, and is a component of the Deviance
+    Information Criterion.}
+  \item{DIC (pD)}{
+    This is the effective number of parameters, and is a component of
+    the Deviance Information Criterion. \code{pD} is calculated as
+    \code{var(Deviance) / 2}.}
+  \item{DIC (DIC)}{
+    This is the Deviance Information Criterion, a measure of model
+    fit. It is the sum of Dbar and pD.}
+  \item{Discrepancy.Statistic}{
+    This is only reported if the \code{Discrep} argument receives a
+    valid discrepancy measure as listed above. The \code{Discrep} applies
+    to each record of \eqn{\textbf{y}}{y}, and the
+    \code{Discrepancy.Statistic} reports the results of the discrepancy
+    measure on the entire data set. For example, if
+    \code{Discrep="min(yhat[i,] < min(y)"}, then the overall result is the
+    proportion of records in which the minimum sample of yhat was less
+    than the overall minimum \eqn{\textbf{y}}{y}. This is
+    \code{Pr(min(yhat[i,]) < min(y) | y, Theta)}, where \code{Theta} is
+    the parameter set.}
+  \item{L-criterion}{
+    The L-criterion (Laud and Ibrahim, 1995) was developed for model and
+    variable selection. It is a sum of two components: one involves the
+    predictive variance and the other includes the accuracy of the means
+    of the predictive distribution. The L-criterion measures model
+    performance with a combination of how close its predictions are to the
+    observed data and variability of the predictions. Better models have
+    smaller values of \code{L}. \code{L} is measured in the same units as
+    the response variable, and measures how close the data vector
+    \eqn{\textbf{y}}{y} is to the predictive distribution. In addition to
+    the value of \code{L}, there is a value for \code{S.L}, which is the
+    calibration number of \code{L}, and is useful in determining how much
+    of a decrease is necessary between models to be noteworthy.}
+  \item{Monitor}{
+    This is a \eqn{N \times 5}{N x 5} matrix, where \eqn{N} is the
+    number of monitored variables and there are 5 columns, as follows:
+    Mean, SD, LB (the 2.5\% quantile), Median, and UB (the 97.5\%
+    quantile).}
+  \item{Summary}{
+    When \eqn{\textbf{y}}{y} is continuous, this is a \eqn{N \times 8}{N
+    x 8} matrix, where \eqn{N} is the number of records of
+    \eqn{\textbf{y}}{y} and there are 8 columns, as follows: y, Mean, SD,
+    LB (the 2.5\% quantile), Median, UB (the 97.5\% quantile), PQ (the
+    predictive quantile, which is \eqn{Pr(\textbf{y}^{rep} \ge
+    \textbf{y})}{Pr(y[rep] >= y)}), and Test, which shows the record-level
+    result of a test, if specified. When \eqn{\textbf{y}}{y} is
+    categorical, this matrix has a number of columns equal to the number
+    of categories of \eqn{\textbf{y}}{y} plus 3, also including
+    \code{y}, \code{Lift}, and \code{Discrep}.}
 }
 \references{
   Gelfand, A. (1996). "Model Determination Using Sampling Based

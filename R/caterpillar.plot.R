@@ -59,7 +59,12 @@ caterpillar.plot <- function(x, Parms=NULL, Title=NULL)
                cex.axis=cex.labels)
           }
      else if(class(x) == "laplace") {
-          x.lab <- "Gaussian Samples"
+          if(any(is.na(x$Posterior))) {
+               x <- x$Summary1
+               x.lab <- "Point-Estimates"}
+          else {
+               x <- x$Summary2[1:length(x$Initial.Values),]
+               x.lab <- "SIR Samples"}
           if(is.null(Parms)) {
                keeprows <- Parms <- 1:length(x$Initial.Values)}
           else {
@@ -68,27 +73,30 @@ caterpillar.plot <- function(x, Parms=NULL, Title=NULL)
                     Parms <- sub("\\[","\\\\[",Parms)
                     Parms <- sub("\\]","\\\\]",Parms)
                     Parms <- sub("\\.","\\\\.",Parms)
-                    if(length(grep(Parms[1], rownames(x$Summary))) == 0)
+                    if(length(grep(Parms[1], rownames(x))) == 0)
                          stop("Parameter in Parms does not exist.")
-                    keeprows <- grep(Parms[1], rownames(x$Summary))
+                    keeprows <- grep(Parms[1], rownames(x))
                     if(length(Parms) > 1) {
                          for (i in 2:length(Parms)) {
                               if(length(grep(Parms[i],
-                                   rownames(x$Summary))) == 0)
+                                   rownames(x))) == 0)
                                    stop("Parameter in Parms does not exist.")
                               keeprows <- c(keeprows,
-                                   grep(Parms[i], rownames(x$Summary)))}
+                                   grep(Parms[i], rownames(x)))}
                          }
                     }
                }
-          temp <- x$Summary
-          x$Summary <- matrix(x$Summary[keeprows,], length(keeprows),
+          temp <- x
+          x <- matrix(x[keeprows,], length(keeprows),
                ncol(temp))
-          rownames(x$Summary) <- rownames(temp)[keeprows]
-          colnames(x$Summary) <- colnames(temp)
-          Modes <- x$Summary[,1]
-          LB <- x$Summary[,3]
-          UB <- x$Summary[,4]
+          rownames(x) <- rownames(temp)[keeprows]
+          colnames(x) <- colnames(temp)
+          if(x.lab != "SIR Samples") Modes <- x[,1]
+          else Modes <- x[,6]
+          if(x.lab != "SIR Samples") LB <- x[,3]
+          else LB <- x[,5]
+          if(x.lab != "SIR Samples") UB <- x[,4]
+          else UB <- x[,7]
           ### Setup
           x.rows <- length(Modes)
           x.lim <- c(min(LB), max(UB))
@@ -105,11 +113,10 @@ caterpillar.plot <- function(x, Parms=NULL, Title=NULL)
           ### Add y-axis labels
           yy <- x.rows:1
           cex.labels <- 1/{log(x.rows)/5 + 1}
-          axis(2, labels=rownames(x$Summary), tick=FALSE, las=1,
+          axis(2, labels=rownames(x), tick=FALSE, las=1,
                at=yy, cex.axis=cex.labels)
           }
-     else {
-          stop("x must be of class demonoid or laplace.")}
+     else stop("x must be of class demonoid or laplace.")
      }
 
 #End

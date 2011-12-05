@@ -9,6 +9,7 @@ Combine <- function(x, Data)
      {
      ### Initial Checks
      if(missing(x)) stop("x is a required argument.")
+     if(missing(Data)) stop("Data is a required argument.")
      len.x <- Thinning <- length(x)
      if(!all(sapply(x, class) == "demonoid")) {
           stop("At least one item in list x is not of class demonoid.")}
@@ -49,12 +50,10 @@ Combine <- function(x, Data)
      geweke <- matrix(9, length(burn.start), LIV)
      geweke.ct <- rep(0, LIV)
      options(warn=-1)
-     for (i in 1:length(burn.start))
-          {
+     for (i in 1:length(burn.start)) {
           thinned2 <- thinned[burn.start[i]:nrow(thinned),]
           test <- try(as.vector(Geweke.Diagnostic(thinned2)), silent=TRUE)
-          if(class(test) != "try-error") geweke[i,] <- as.vector(test)
-          }
+          if(class(test) != "try-error") geweke[i,] <- as.vector(test)}
      options(warn=0)
      rm(thinned2)
      geweke <- ifelse(!is.finite(geweke), 9, geweke)
@@ -67,24 +66,20 @@ Combine <- function(x, Data)
      cat("Assessing Thinning and ESS\n")
      acf.temp <- matrix(1, trunc(10*log10(nrow(thinned))), LIV)
      ESS1 <- Rec.Thin <- rep(1, LIV)
-     for (j in 1:LIV)
-          {
+     for (j in 1:LIV) {
           temp0 <- acf(thinned[,j], lag.max=NROW(acf.temp), plot=FALSE)
           acf.temp[,j] <- abs(temp0$acf[2:{NROW(acf.temp)+1},,1])
           ESS1[j] <- ESS(thinned[,j])
-          Rec.Thin[j] <- which(acf.temp[,j] <= 0.1)[1]*Thinning
-          }
+          Rec.Thin[j] <- which(acf.temp[,j] <= 0.1)[1]*Thinning}
      Rec.Thin <- ifelse(is.na(Rec.Thin), NROW(acf.temp), Rec.Thin)
      ### Assess ESS for all deviance and monitor samples
      ESS2 <- ESS(Dev)
      ESS3 <- ESS(Mon)
      ### Assess ESS for stationary samples
-     if(BurnIn < nrow(thinned))
-          {
+     if(BurnIn < nrow(thinned)) {
           ESS4 <- ESS(thinned[BurnIn:nrow(thinned),])
           ESS5 <- ESS(Dev[BurnIn:length(Dev)])
-          ESS6 <- ESS(Mon[BurnIn:nrow(Mon),])
-          }
+          ESS6 <- ESS(Mon[BurnIn:nrow(Mon),]) }
      ### Posterior Summary Table 1: All Thinned Samples
      cat("Creating Summaries\n")
      Mon <- as.matrix(Mon)
@@ -171,12 +166,15 @@ Combine <- function(x, Data)
      if(ncol(thinned) == length(Data$parm.names)) {
           colnames(thinned) <- Data$parm.names}
      ### Logarithm of the Marginal Likelihood
-     if(Algorithm == "Random-Walk Metropolis") {
+     LML <- list(LML=NA, VarCov=NA)
+     if(({Algorithm == "Delayed Rejection Metropolis"} |
+          {Algorithm == "Metropolis-within-Gibbs"} | 
+          {Algorithm == "Random-Walk Metropolis"}) &
+          {BurnIn < nrow(thinned)}) {
           cat("Estimating Log of the Marginal Likelihood\n")
-          if(BurnIn >= nrow(thinned)) {LML <- LML(Model, Data,
-               thinned[nrow(thinned),])}
-          else {LML <- LML(Model, Data, Summ2[1:LIV,6])}}
-     else {LML <- list(LML=NA, VarCov=NA)}
+          LML <- LML(theta=thinned[BurnIn:nrow(thinned),],
+               LL=as.vector(Dev[BurnIn:nrow(thinned)])*(-1/2),
+               method="NSIS")}
      ### Compile Output
      cat("Creating Output\n")
      LaplacesDemon.out <- list(Acceptance.Rate=Acceptance.Rate,

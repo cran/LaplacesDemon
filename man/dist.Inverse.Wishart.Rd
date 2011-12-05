@@ -77,24 +77,24 @@ These functions are parameterized as per Gelman et al. (2004).
   \code{\link{dwishart}}.
 }
 \references{
-  Barnard, J., McCulloch, R., and Meng, X. (2000). Modeling Covariance
+  Barnard, J., McCulloch, R., and Meng, X. (2000). "Modeling Covariance
   Matrices in Terms of Standard Deviations and Correlations, with
-  Application to Shrinkage. Statistica Sinica, 10, p. 1281--1311.
+  Application to Shrinkage". Statistica Sinica, 10, p. 1281--1311.
   
-  Bouriga, M. and Feron, O. (2011). Estimation of Covariance Matrices
-  Based on Hierarchical Inverse-Wishart Priors. URL:
+  Bouriga, M. and Feron, O. (2011). "Estimation of Covariance Matrices
+  Based on Hierarchical Inverse-Wishart Priors". URL:
   http://www.citebase.org/abstract?id=oai:arXiv.org:1106.3203.
   
-  Daniels, M., and Kass, R. (1999). Nonconjugate Bayesian Estimation of
-  Covariance Matrices and its use in Hierarchical Models. Journal of the
+  Daniels, M., and Kass, R. (1999). "Nonconjugate Bayesian Estimation of
+  Covariance Matrices and its use in Hierarchical Models". Journal of the
   American Statistical Association, 94 (448), p. 1254--1263.
   
   Gelman, A., Carlin, J., Stern, H., and Rubin, D. (2004). "Bayesian
   Data Analysis, Texts in Statistical Science, 2nd ed.". Chapman and
   Hall, London.
 
-  Wishart, J. (1928). The Generalised Product Moment Distribution in
-  Samples from a Normal Multivariate Population. Biometrika, 20A (1-2),
+  Wishart, J. (1928). "The Generalised Product Moment Distribution in
+  Samples from a Normal Multivariate Population". Biometrika, 20A (1-2),
   p. 32--52.
 }
 \examples{

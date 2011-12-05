@@ -8,8 +8,9 @@
   of the parameters (referred to generically as \eqn{\theta}{theta}), is
   greater than zero [\eqn{p(\theta > 0)}{p(theta > 0)}], the estimated
   number of modes, the kurtosis and skewness of the posterior
-  distributions. A correlation matrix is provided only for objects of
-  class \code{demonoid}.
+  distributions, and the burn-in of each chain (for MCMC only). A
+  correlation matrix is provided only for objects of class
+  \code{demonoid}.
 }
 \usage{
 PosteriorChecks(x, Parms)
@@ -35,27 +36,30 @@ PosteriorChecks(x, Parms)
   \code{posteriorchecks} that is a list with the following components:
   \item{Posterior.Correlation}{
     This is a correlation matrix of the parameters selected with the
-    \code{Parm} argument. This component is returned as \code{NA} for
+    \code{Parms} argument. This component is returned as \code{NA} for
     objects of class \code{"laplace"}.}
   \item{Posterior.Summary}{This is a matrix in which each row is a
-    parameter and there are four columns: p(theta > 0), N.Modes,
-    Kurtosis, and Skewness. The first column, p(theta > 0), indicates
-    parameter importance by reporting how much of the distribution is
-    greater than zero. An important parameter distribution will have a
-    result at least as extreme as 0.025 or 0.975, and an unimportant
-    parameter distribution is centered at 0.5. This is not the
-    importance of the associated variable relative to how well the model
-    fits the data. For variable importance, see the
-    \code{\link{Importance}} function. The second column, N.Modes, is
-    the number of modes, estimated with the \code{\link{Modes}}
-    function. Lastly, kurtosis and skewness are useful posterior checks
-    that may suggest that a posterior distribution is non-normal or does
-    not fit well with a distributional assumption, assuming a
-    distributional assumption exists, which it may not.}
+    parameter and there are five columns: p(theta > 0), N.Modes,
+    Kurtosis, Skewness, and Burn-In. The first column, p(theta > 0),
+    indicates parameter importance by reporting how much of the
+    distribution is greater than zero. An important parameter
+    distribution will have a result at least as extreme as 0.025 or
+    0.975, and an unimportant parameter distribution is centered at
+    0.5. This is not the importance of the associated variable relative
+    to how well the model fits the data. For variable importance, see
+    the \code{\link{Importance}} function. The second column, N.Modes,
+    is the number of modes, estimated with the \code{\link{Modes}}
+    function. Kurtosis and skewness are useful posterior checks that may
+    suggest that a posterior distribution is non-normal or does not fit
+    well with a distributional assumption, assuming a distributional
+    assumption exists, which it may not. Lastly, the burn-in is
+    estimated for each chain (only for objects of class \code{demonoid})
+    with the \code{\link{burnin}} function.}
 }
 \references{\url{http://www.statisticat.com/laplacesdemon.html}}
 \author{Byron Hall \email{laplacesdemon@statisticat.com}}
 \seealso{
+  \code{\link{burnin}},
   \code{\link{Importance}},
   \code{\link{LaplaceApproximation}},
   \code{\link{LaplacesDemon}},

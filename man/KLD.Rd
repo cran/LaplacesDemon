@@ -53,15 +53,15 @@ such, KLD is the basis of reference priors (Berger, Bernardo, and Sun, 2009).
      \item{intrinsic.discrepancy}{This is the minimum of the two summed components.}
 }
 \references{
-     Berger, J.O., Bernardo, J.M., and Sun, D. (2009). The Formal
-     Definition of Reference Priors. The Annals of Statistics, 37(2),
-     p. 905--938.
+  Berger, J.O., Bernardo, J.M., and Sun, D. (2009). "The Formal
+  Definition of Reference Priors". The Annals of Statistics, 37(2),
+  p. 905--938.
 
-     Hall, B. (2011). "Bayesian Inference", STATISTICAT, LLC.
-     URL=\url{http://www.statisticat.com/laplacesdemon.html}
+  Hall, B. (2011). "Bayesian Inference", STATISTICAT, LLC.
+  URL=\url{http://www.statisticat.com/laplacesdemon.html}
   
-     Kullback, S. and Leibler, R.A. (1951). On Information and
-     Sufficiency. The Annals of Mathematical Statistics, 22(1), p. 79--86.
+  Kullback, S. and Leibler, R.A. (1951). "On Information and
+  Sufficiency". The Annals of Mathematical Statistics, 22(1), p. 79--86.
 }
 \author{Byron Hall \email{laplacesdemon@statisticat.com}}
 \examples{

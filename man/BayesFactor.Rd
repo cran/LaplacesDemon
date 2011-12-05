@@ -104,23 +104,22 @@ assuming one model is the true model.
 	  }
 }
 \references{
-     Gelman, A., Carlin, J., Stern, H., and Rubin, D. (2004). "Bayesian
-     Data Analysis, Texts in Statistical Science, 2nd ed.". Chapman and
-     Hall, London.
+  Gelman, A., Carlin, J., Stern, H., and Rubin, D. (2004). "Bayesian
+  Data Analysis, Texts in Statistical Science, 2nd ed.". Chapman and
+  Hall, London.
 
-     Hall, B. (2011). "Bayesian Inference", STATISTICAT, LLC.
-     URL=\url{http://www.statisticat.com/laplacesdemon.html}
-     
-     Jeffreys, H. (1961). "Theory of Probability, Third Edition". Oxford
-     University Press: Oxford, England.
-  
-     Kass, R.E. and Raftery, A.E. (1995). "Bayes Factors". Journal of the
-     American Statistical Association, 90(430), p. 773--795.
+  Hall, B. (2011). "Bayesian Inference", STATISTICAT, LLC.
+  URL=\url{http://www.statisticat.com/laplacesdemon.html}
 
-     Lewis, S.M. and Raftery, A.E. (1997). "Estimating Bayes Factors via
-     Posterior Simulation with the Laplace-Metropolis
-     Estimator". Journal of the American Statistical Association, 92,
-     p. 648--655.
+  Jeffreys, H. (1961). "Theory of Probability, Third Edition". Oxford
+  University Press: Oxford, England.
+
+  Kass, R.E. and Raftery, A.E. (1995). "Bayes Factors". Journal of the
+  American Statistical Association, 90(430), p. 773--795.
+
+  Lewis, S.M. and Raftery, A.E. (1997). "Estimating Bayes Factors via
+  Posterior Simulation with the Laplace-Metropolis Estimator". Journal
+  of the American Statistical Association, 92, p. 648--655.
 }
 \author{Byron Hall \email{laplacesdemon@statisticat.com}}
 \seealso{
@@ -172,7 +171,7 @@ Model <- function(parm, Data)
 
 ########################  Laplace Approximation  ##########################
 Fit1 <- LaplaceApproximation(Model, Initial.Values, Data=MyData,
-     Iterations=1000)
+     Iterations=10000)
 Fit1
 
 ##############################  Demon Data  ###############################
@@ -192,7 +191,7 @@ Initial.Values <- c(rep(0,J), log(1))
 
 ########################  Laplace Approximation  ##########################
 Fit2 <- LaplaceApproximation(Model, Initial.Values, Data=MyData,
-     Iterations=1000)
+     Iterations=10000)
 Fit2
 
 #############################  Bayes Factor  ##############################

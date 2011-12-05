@@ -14,7 +14,7 @@ BayesFactor <- function(x)
           if({class(x[[i]]) != "demonoid"} & {class(x[[i]]) != "laplace"})
             stop("x is not of class demonoid or laplace.")
           if({class(x[[i]]) == "laplace"} && {x[[i]]$Converged == FALSE}) { 
-               cat("WARNING: LaplaceApproximation() did not converge in ",
+               stop("LaplaceApproximation() did not converge in ",
                     "M[",i,"].\n", sep="")}
           if(is.na(x[[i]]$LML))
                stop(cat("LML is missing in M[",i,"].", sep=""))

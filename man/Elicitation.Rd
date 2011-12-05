@@ -84,23 +84,24 @@ elicit(n, cats, cat.names, show.plot=FALSE)
   As an alternative, Hahn (2006) also used a categorical approach,
   eliciting judgements about the relative likelihood of each category,
   and then minimizes the KLD (for more information on KLD, see the
-  \code{\link{KLD}}.
+  \code{\link{KLD}}).
 }
 \references{
-  Hahn, E.D. (2006). Re-examining Informative Prior Elicitation Through
-  the Lens of Markov chain Monte Carlo Methods. Journal of the Royal
+  Hahn, E.D. (2006). "Re-examining Informative Prior Elicitation Through
+  the Lens of Markov chain Monte Carlo Methods". Journal of the Royal
   Statistical Society, A 169 (1), p. 37--48.
 
   Hall, B. (2011). "Laplace's Demon", STATISTICAT, LLC.
   URL=\url{http://www.statisticat.com/laplacesdemon.html}
   
-  Savage, L.J. (1971). Elicitation of Personal Probabilities and
-  Expectations. Journal of the American Statistical Association,
+  Savage, L.J. (1971). "Elicitation of Personal Probabilities and
+  Expectations". Journal of the American Statistical Association,
   66(336), p. 783--801.
 
   \url{http://www.statisticat.com/laplacesdemon.html}}
 \author{Byron Hall \email{laplacesdemon@statisticat.com}}
 \seealso{
+  \code{\link{de.Finetti.Game}},
   \code{\link{KLD}},
   \code{\link{LaplaceApproximation}},
   \code{\link{LaplacesDemon}}.
@@ -112,4 +113,4 @@ theta <- seq(from=-5,to=15,by=.1)
 plot(theta, delicit(theta,x), type="l", xlab=expression(theta),
      ylab=expression("p(" * theta * ")"))
 }
-\keyword{prior, utility}
+\keyword{prior, subjective probability, utility}

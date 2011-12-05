@@ -81,8 +81,8 @@ These functions are similar to those in the \code{HyperbolicDist} package.
   \code{\link{dlaplacep}}.
 }
 \references{
-  Fieller, N.J., Flenley, E.C., and Olbricht, W. (1992). Statistics of
-  Particle Size Data. Applied Statistics, 41, p. 127--146.
+  Fieller, N.J., Flenley, E.C., and Olbricht, W. (1992). "Statistics of
+  Particle Size Data". Applied Statistics, 41, p. 127--146.
 }
 \examples{
 library(LaplacesDemon)

@@ -16,7 +16,9 @@
      will be attempted first, and if missing, then the parameters of all
      posterior samples (\code{Summary1}) will be plotted. For an object
      of class \code{laplace}, the distributions in the posterior
-     summary, \code{Summary}, are plotted.
+     summary, \code{Summary}, are plotted according to the posterior
+     draws, sampled with sampling importance resampling in the
+     \code{\link{SIR}} function.
      }
      \item{Parms}{
      This argument accepts a vector of quoted strings to be matched for
@@ -51,6 +53,7 @@
 \author{Byron Hall \email{laplacesdemon@statisticat.com}}
 \seealso{
   \code{\link{LaplaceApproximation}},
-  \code{\link{LaplacesDemon}}.
+  \code{\link{LaplacesDemon}},
+  \code{\link{SIR}}.
 }
 \examples{#An example is provided in the LaplacesDemon function.}

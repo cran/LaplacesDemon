@@ -3,82 +3,86 @@
 \title{Laplace Approximation}
 \description{
   The \code{LaplaceApproximation} function deterministically maximizes
-  the logarithm of the unnormalized joint posterior density with a
-  conjugate gradient or adaptive gradient ascent algorithm. The goal of
-  Laplace Approximation is to estimate the posterior mode and variance
-  of each parameter. This function is useful for optimizing initial
-  values and estimating a covariance matrix to be input into the
-  \code{\link{LaplacesDemon}} function, or sometimes for model
-  estimation in its own right.
+  the logarithm of the unnormalized joint posterior density with one of
+  several optimization algorithms. The goal of Laplace Approximation is
+  to estimate the posterior mode and variance of each parameter. This
+  function is useful for optimizing initial values and estimating a
+  covariance matrix to be input into the \code{\link{LaplacesDemon}}
+  function, or sometimes for model estimation in its own right.
 }
 \usage{
 LaplaceApproximation(Model, parm, Data, Interval=1.0E-6,
-     Iterations=100, Method="CG", Stop.Tolerance=1.0E-5)
+     Iterations=100, Method="LBFGS", Samples=1000, sir=TRUE,
+     Stop.Tolerance=1.0E-5)
 }
 \arguments{
-     \item{Model}{
-          This required argument receives the model from a user-defined
-          function. The user-defined function is where the model is
-	  specified. \code{LaplaceApproximation} passes two arguments to
-	  the model function, \code{parms} and \code{Data}. For more
-	  information, see the \code{\link{LaplacesDemon}} function and
-	  ``LaplacesDemon Tutorial'' vignette.
-          }
-     \item{parm}{
-          This argument requires a vector of initial values equal in
-          length to the number of parameters. \code{LaplaceApproximation} 
-	  will attempt to optimize these initial values for the
-	  parameters, where the optimized values are the posterior
-	  modes, for later use with the \code{\link{LaplacesDemon}}
-	  function.
-          }
-     \item{Data}{
-          This required argument accepts a list of data. The list of
-	  data must include \code{mon.names} which contains monitored
-	  variable names, and \code{parm.names} which contains parameter
-	  names. \code{LaplaceApproximation} must be able to determine
-	  the sample size of the data, and will look for a scalar sample
-	  size variable \code{n} or \code{N}. If not found, it will look
-	  for variable \code{y} or \code{Y}, and attempt to take its
-	  number of rows as sample size. \code{LaplaceApproximation}
-	  needs to determine sample size due to the asymptotic nature
-	  of this method.
-          }
-     \item{Interval}{
-          This argument receives an interval for estimating approximate
-          gradients. The logarithm of the unnormalized joint posterior
-	  density of the Bayesian model is evaluated at +/- 1/2 of this
-	  interval. \code{Interval} defaults to 1.0E-6. This interval is
-	  applicable only when \code{Method="AGA"}.
-          }
-     \item{Iterations}{
-          This argument accepts an integer that determines the number
-          of iterations that \code{LaplaceApproximation} will attempt to
-	  maximize the logarithm of the unnormalized joint posterior density.
-	  \code{Iterations} defaults to 100. \code{LaplaceApproximation}
-	  will stop before this number of iterations if the tolerance is
-	  less than or equal to the \code{Stop.Tolerance} criterion when
-	  \code{Method="AGA"} (see below). When \code{Method="CG"}, the
-	  algorithm stops as in \code{optim}.
-          }
-     \item{Method}{
-	  This optional argument specifies the method used for Laplace
-	  Approximation. The default method is \code{CG} or conjugate
-	  gradient, in which case \code{LaplaceApproximation} becomes a
-	  wrapper for \code{optim}. Alternatively, \code{AGA} specifies
-	  the Adaptive Gradient Ascent, which is much slower, but can
-	  handle constrained parameters, where \code{CG} cannot.
-	  }
-     \item{Stop.Tolerance}{
-	  This argument accepts any positive number, defaults to 1.0E-5,
-	  and is applicable only with \code{Method="AGA"}. At each
-	  iteration, the square root of the sum of the squared
-	  differences of the logarithm of the unnormalized joint
-	  posterior density is calculated. If this result is less than
-	  or equal to the value of \code{Stop.Tolerance}, then
-	  \code{LaplaceApproximation} has converged to the user-specified 
-	  tolerance and will terminate at the end of the current iteration. 
-	  }
+  \item{Model}{
+    This required argument receives the model from a user-defined
+    function. The user-defined function is where the model is
+    specified. \code{LaplaceApproximation} passes two arguments to the
+    model function, \code{parms} and \code{Data}. For more information,
+    see the \code{\link{LaplacesDemon}} function and ``LaplacesDemon
+    Tutorial'' vignette.}
+  \item{parm}{
+    This argument requires a vector of initial values equal in length to
+    the number of parameters. \code{LaplaceApproximation} will attempt
+    to optimize these initial values for the parameters, where the
+    optimized values are the posterior modes, for later use with the
+    \code{\link{LaplacesDemon}} function. The \code{\link{GIV}} function
+    may be used to randomly generate initial values.}
+  \item{Data}{
+    This required argument accepts a list of data. The list of data must
+    include \code{mon.names} which contains monitored variable names,
+    and \code{parm.names} which contains parameter
+    names. \code{LaplaceApproximation} must be able to determine the
+    sample size of the data, and will look for a scalar sample size
+    variable \code{n} or \code{N}. If not found, it will look for
+    variable \code{y} or \code{Y}, and attempt to take its number of
+    rows as sample size. \code{LaplaceApproximation} needs to determine
+    sample size due to the asymptotic nature of this method.}
+  \item{Interval}{
+    This argument receives an interval for estimating approximate
+    gradients. The logarithm of the unnormalized joint posterior density
+    of the Bayesian model is evaluated at +/- 1/2 of this
+    interval. \code{Interval} defaults to 1.0E-6.}
+  \item{Iterations}{
+    This argument accepts an integer that determines the number of
+    iterations that \code{LaplaceApproximation} will attempt to maximize
+    the logarithm of the unnormalized joint posterior density.
+    \code{Iterations} defaults to 100. \code{LaplaceApproximation} will
+    stop before this number of iterations if the tolerance is less than
+    or equal to the \code{Stop.Tolerance} criterion. The required
+    amount of computer memory increases with \code{Iterations}. If
+    computer memory is exceeded, then all will be lost.}
+  \item{Method}{
+    This optional argument specifies the method used for Laplace
+    Approximation. The default method is \code{LBFGS}. Options include
+    \code{AGA} for adaptive gradient ascent and \code{Rprop} for
+    resilient backpropagation. The previous default, \code{CG}
+    (conjugate gradient), has been deprecated.}
+  \item{Samples}{
+    This argument indicates the number of posterior samples to be taken
+    with sampling importance resampling via the \code{\link{SIR}}
+    function, which occurs only when \code{sir=TRUE}.}
+  \item{sir}{
+    This logical argument indicates whether or not sampling importance
+    resampling is conducted via the \code{\link{SIR}} function to draw
+    independent posterior samples. This argument defaults to
+    \code{TRUE}. Even when \code{TRUE}, posterior samples are drawn only
+    when \code{LaplaceApproximation} has converged. Posterior samples
+    are required for many other functions, including \code{plot.laplace}
+    and \code{predict.laplace}. The only time that it is advantageous for
+    \code{sir=FALSE} is when \code{LaplaceApproximation} is used to help
+    the initial values for \code{LaplacesDemon}, and it is unnecessary
+    for time to be spent on sampling.}
+  \item{Stop.Tolerance}{
+    This argument accepts any positive number and defaults to 1.0E-5. At
+    each iteration, the square root of the sum of the squared
+    differences of the logarithm of the unnormalized joint posterior
+    density is calculated. If this result is less than or equal to the
+    value of \code{Stop.Tolerance}, then \code{LaplaceApproximation} has
+    converged to the user-specified tolerance and will terminate at the
+    end of the current iteration.}
 }
 \details{
   The Laplace Approximation or Laplace Method is a family of asymptotic
@@ -106,43 +110,36 @@ LaplaceApproximation(Model, parm, Data, Interval=1.0E-6,
   dominant form of numerical approximation in Bayesian inference. The
   run-time of Laplace Approximation is a little longer than Maximum
   Likelihood Estimation (MLE), and much shorter than MCMC (Azevedo and
-  Shachter, 1994). In the \code{LaplacesDemon} package, Laplace
-  Approximation with the \code{CG} method is much faster than MCMC,
-  though the \code{AGA} method may be slower than MCMC. Laplace
-  Approximation extends MLE, but shares similar limitations, such as
-  its asymptotic nature with respect to sample size. Bernardo and Smith
-  (2000) note that Laplace Approximation is an attractive numerical
-  approximation algorithm, and will continue to develop, though it
-  currently works best with few parameters.
+  Shachter, 1994).
 
-  The \code{LaplaceApproximation} function may be called by the user
-  before using \code{\link{LaplacesDemon}}, or
-  \code{\link{LaplacesDemon}} may call this function if all initial
-  values are zero and the sample size is at least five times the number
-  of parameters. Chasing convergence with \code{LaplaceApproximation}
-  may be time-consuming and unimportant. The goal, instead, is to
-  improve the logarithm of the unnormalized joint posterior density so
-  that it is easier for the \code{\link{LaplacesDemon}} function to
-  begin updating the parameters in search of the target
-  distributions. This can be difficult when the initial values are in
-  low-probability regions, and can cause unreasonably low acceptance
-  rates.
+  The speed of Laplace Approximation depends on the optimization
+  algorithm selected, and typically involves many evaluations of the
+  objective function per iteration (where the AM MCMC algorithm
+  evaluates once per iteration), making most of the MCMC algorithms
+  faster per iteration. The attractiveness of Laplace Approximation is
+  that it typically improves the objective function better than MCMC
+  when the parameters are in low-probability regions (in which MCMC
+  algorithms may suffer unreasonably low acceptance rates) until an
+  adaptive MCMC has ``learned'' how to move better. Laplace
+  Approximation is also typically faster because it is seeking
+  point-estimates, rather than attempting to represent the target
+  distribution with enough simulation draws. Laplace Approximation
+  extends MLE, but shares similar limitations, such as its asymptotic
+  nature with respect to sample size. Bernardo and Smith (2000) note
+  that Laplace Approximation is an attractive numerical approximation
+  algorithm, and will continue to develop.
 
   \code{LaplaceApproximation} seeks a global maximum of the logarithm of
-  the unnormalized joint posterior density by taking adaptive steps
-  proportional to an approximate gradient. This portion of the
-  \code{LaplaceApproximation} function uses a conjugate gradient or
-  gradient ascent algorithm, where gradient ascent is called a gradient
-  descent or steepest descent algorithm elsewhere for minimization
-  problems. Laplace's Demon uses the \code{LaplaceApproximation}
-  algorithm to optimize initial values, estimate covariance, and save
-  time for the user.
+  the unnormalized joint posterior density. The approach differs by
+  \code{Method}. The \code{\link{LaplacesDemon}} function uses the
+  \code{LaplaceApproximation} algorithm to optimize initial values,
+  estimate covariance, and save time for the user.
 
-  This algorithm assumes that the logarithm of the unnormalized joint
-  posterior density is defined and differentiable. An approximate
-  gradient is taken for each initial value as the difference in the
-  logarithm of the unnormalized joint posterior density due to a slight
-  increase versus decrease in the parameter.
+  Most optimization algorithms assume that the logarithm of the
+  unnormalized joint posterior density is defined and differentiable. An
+  approximate gradient is taken for each initial value as the difference
+  in the logarithm of the unnormalized joint posterior density due to a
+  slight increase versus decrease in the parameter.
 
   When \code{Method="AGA"}, at 10 evenly-space times,
   \code{LaplaceApproximation} attempts several step sizes, which are
@@ -154,15 +151,27 @@ LaplaceApproximation(Model, parm, Data, Interval=1.0E-6,
   Gradient ascent is criticized for sometimes being relatively slow when
   close to the maximum, and its asymptotic rate of convergence is
   inferior to other methods. However, compared to other popular
-  optimization algorithms such as Newton-Rhapson, an advantage of the
+  optimization algorithms such as Newton-Raphson, an advantage of the
   gradient ascent is that it works in infinite dimensions, requiring
-  only sufficient computer memory. Although Newton-Rhapson converges in
+  only sufficient computer memory. Although Newton-Raphson converges in
   fewer iterations, calculating the inverse of the negative Hessian
   matrix of second-derivatives is more computationally expensive and
   subject to singularities. Therefore, gradient ascent takes longer to
-  converge, but is more generalizable. The conjugate gradient method
-  should be superior to gradient ascent, though possibly not in very
-  large dimensions.
+  converge, but is more generalizable.
+
+  When \code{Method="LBFGS"}, the limited-memory BFGS
+  (Broyden-Fletcher-Goldfarb-Shanno) algorithm is called in
+  \code{optim}, once per iteration.
+
+  When \code{Method="Rprop"}, the approximate gradient is taken for each
+  parameter in each iteration, and its sign is compared to the
+  approximate gradient in the previous iteration. A weight element in a
+  weight vector is associated with each approximate gradient. A weight
+  element is multiplied by 1.2 when the sign does not change, or by 0.5
+  if the sign changes. The weight vector is the step size, and is
+  constrained to the interval [0.001, 50], and initial weights are
+  0.0125. This is the resilient backpropagation algorithm, which is
+  often denoted as the ``Rprop-'' algorithm of Riedmiller (1994).
 
   After \code{LaplaceApproximation} finishes, due either to early
   convergence or completing the number of specified iterations, it
@@ -170,154 +179,147 @@ LaplaceApproximation(Model, parm, Data, Interval=1.0E-6,
   calculate the covariance matrix by taking the inverse of the negative
   of this matrix. If successful, then this covariance matrix may be
   passed to \code{\link{LaplacesDemon}}, and the diagonal of this matrix
-  is the variance of the parameters. If unsuccessful, a scaled identity
-  matrix is returned, and each parameter's variance will be 1.
+  is the variance of the parameters. If unsuccessful, then a scaled
+  identity matrix is returned, and each parameter's variance will be 1.
 
 }
 \value{
-     \code{LaplaceApproximation} returns an object of class \code{laplace}
-          that is a list with the following components:
-     \item{Call}{
-	  This is the matched call of \code{LaplaceApproximation}.
-	  }
-     \item{Converged}{
-          This is a logical indicator of whether or not
-          \code{LaplaceApproximation} converged within the specified
-	  \code{Iterations} according to the supplied
-	  \code{Stop.Tolerance} criterion (when \code{Method="AGA"}).
-	  Convergence does not indicate that the global maximum has
-	  been found, but only that the tolerance was less than or
-	  equal to the \code{Stop.Tolerance} criterion. 
-          }
-     \item{Covar}{
-          This covariance matrix is the negative inverse of an
-	  approximate Hessian matrix. If an error is encountered in
-	  attempting to solve the matrix inversion, then an
-	  identity matrix is returned. The \code{Covar} matrix may be
-	  scaled and input into the \code{Covar} argument of the
-	  \code{\link{LaplacesDemon}} function for further MCMC
-	  estimation, or the diagonal of this matrix may be used to
-	  represent the posterior variance of the parameters, provided
-	  the algorithm converged and matrix inversion was
-	  successful. To scale this matrix for use with Laplace's Demon,
-	  multiply it by \eqn{2.38^2/d}, where \eqn{d} is the number of
-	  initial values.
-          }
-     \item{Deviance}{
-	  This is a vector of the iterative history of the deviance in
-          the \code{LaplaceApproximation} function, as it sought
-	  convergence. This is empty when \code{Method="CG"}.
-	  }
-     \item{History}{
-	  This is a matrix of the iterative history of the parameters in
-          the \code{LaplaceApproximation} function, as it sought
-	  convergence. This is empty when \code{Method="CG"}.
-	  }
-     \item{Initial.Values}{
-	  This is the vector of initial values that was originally 
-          given to \code{LaplaceApproximation} in the \code{parm}
-	  argument.
-	  }
-     \item{LML}{
-          This is an approximation of the logarithm of the marginal
-          likelihood of the data (see the \code{\link{LML}} function for
-	  more information), and is the logarithmic form of equation 4
-	  in Lewis and Raftery (1997). As a rough estimate of Kass and
-	  Raftery (1995), \code{LML} is worrisome when the sample size
-	  of the data is less than five times the number of parameters,
-	  and \code{LML} should be adequate in most problems when the
-	  sample size of the data exceeds twenty times the number of
-	  parameters (p. 778). \code{LML} is useful for comparing
-	  multiple models with the \code{BayesFactor} function. The
-	  Laplace-Metropolis Estimator (LME) is inappropriate with
-	  hierarchical models, and the extension (the Compound 
-	  Laplace-Metropolis Estimator) may soon be attempted to be
-	  included.
-          }
-     \item{LP.Final}{
-          This reports the final scalar value for the logarithm of the
-          unnormalized joint posterior density.
-          }
-     \item{LP.Initial}{
-          This reports the initial scalar value for the logarithm of the
-          unnormalized joint posterior density. 
-          }
-     \item{Minutes}{
-          This indicates the number of minutes that
-          \code{LaplaceApproximation} was running, and this includes the
-	  initial checks as well as creating summaries.
-	  }
-     \item{Step.Size.Final}{
-          This is the final, scalar \code{Step.Size} value at the end 
-          of the \code{LaplaceApproximation} algorithm. This is empty
-	  when \code{Method="CG"}.
-	  }
-     \item{Step.Size.Initial}{
-          This is the initial, scalar \code{Step.Size}. This is empty
-	  when \code{Method="CG"}.
-          }
-     \item{Stop.Tolerance}{
-          This is the \code{Stop.Tolerance} criterion. This is empty
-	  when \code{Method="CG"}.
-	  }
-     \item{Summary}{
-          This is a summary matrix. Rows are parameters. The following
-          columns are included: Mode, SD (Standard Deviation), LB
-	  (Lower Bound), and UB (Upper Bound).
-	  }
-     \item{Tolerance}{
-	  This is the last \code{Tolerance} of the \code{LaplaceApproxiation}
-	  algorithm. It is calculated as the square root of the sum of
-	  the squared differences between a new and current vector of
-	  parameters. This is empty when \code{Method="CG"}.
-          }
+  \code{LaplaceApproximation} returns an object of class \code{laplace}
+  that is a list with the following components:
+  \item{Call}{
+    This is the matched call of \code{LaplaceApproximation}.}
+  \item{Converged}{
+    This is a logical indicator of whether or not
+    \code{LaplaceApproximation} converged within the specified
+    \code{Iterations} according to the supplied \code{Stop.Tolerance}
+    criterion. Convergence does not indicate that the global maximum has
+    been found, but only that the tolerance was less than or equal to
+    the \code{Stop.Tolerance} criterion.}
+  \item{Covar}{
+    This covariance matrix is the negative inverse of an approximate
+    Hessian matrix. If an error is encountered in attempting to solve
+    the matrix inversion, then an identity matrix is returned. The
+    \code{Covar} matrix may be scaled and input into the \code{Covar}
+    argument of the \code{\link{LaplacesDemon}} function for further
+    MCMC estimation, or the diagonal of this matrix may be used to
+    represent the posterior variance of the parameters, provided the
+    algorithm converged and matrix inversion was successful. To scale
+    this matrix for use with Laplace's Demon, multiply it by
+    \eqn{2.38^2/d}, where \eqn{d} is the number of initial values.}
+  \item{Deviance}{
+    This is a vector of the iterative history of the deviance in the
+    \code{LaplaceApproximation} function, as it sought convergence.}
+  \item{History}{
+    This is a matrix of the iterative history of the parameters in the
+    \code{LaplaceApproximation} function, as it sought convergence.}
+  \item{Initial.Values}{
+    This is the vector of initial values that was originally given to
+    \code{LaplaceApproximation} in the \code{parm} argument.}
+  \item{LML}{
+    This is an approximation of the logarithm of the marginal likelihood
+    of the data (see the \code{\link{LML}} function for more
+    information). When the model has converged and \code{sir=TRUE}, the
+    NSIS method is used. When the model has converged and
+    \code{sir=FALSE}, the LME2 (one of the Laplace-Metropolis Estimator
+    functions in Laplace's Demon) method is used, which is the
+    logarithmic form of equation 4 in Lewis and Raftery (1997). As a
+    rough estimate of Kass and Raftery (1995), the LME-based LML is
+    worrisome when the sample size of the data is less than five times
+    the number of parameters, and \code{LML} should be adequate in most
+    problems when the sample size of the data exceeds twenty times the
+    number of parameters (p. 778). The LME is inappropriate with
+    hierarchical models. However \code{LML} is estimated, it is useful
+    for comparing multiple models with the \code{BayesFactor} function.}
+  \item{LP.Final}{
+    This reports the final scalar value for the logarithm of the
+    unnormalized joint posterior density.}
+  \item{LP.Initial}{
+    This reports the initial scalar value for the logarithm of the
+    unnormalized joint posterior density.}
+  \item{Minutes}{
+    This is the number of minutes that \code{LaplaceApproximation} was
+    running, and this includes the initial checks as well as drawing
+    posterior samples and creating summaries.}
+  \item{Monitor}{
+    When \code{sir=TRUE}, a number of independent posterior samples
+    equal to \code{Samples} is taken, and the draws are stored here as a
+    matrix. The rows of the matrix are the samples, and the columns are
+    the monitored variables.}
+  \item{Posterior}{
+    When \code{sir=TRUE}, a number of independent posterior samples
+    equal to \code{Samples} is taken, and the draws are stored here as a
+    matrix. The rows of the matrix are the samples, and the columns are
+    the parameters.}
+  \item{Step.Size.Final}{
+    This is the final, scalar \code{Step.Size} value at the end of the
+    \code{LaplaceApproximation} algorithm.}
+  \item{Step.Size.Initial}{
+    This is the initial, scalar \code{Step.Size}.}
+  \item{Summary}{
+    This is a summary matrix. Rows are parameters. The following columns
+    are included: Mode, SD (Standard Deviation), LB (Lower Bound), and
+    UB (Upper Bound). The bounds constitute a 95\% probability
+    interval.}
+  \item{Tolerance.Final}{
+    This is the last \code{Tolerance} of the \code{LaplaceApproxiation}
+    algorithm. It is calculated as the square root of the sum of the
+    squared differences between a new and current vector of
+    parameters.}
+  \item{Tolerance.Stop}{
+    This is the \code{Stop.Tolerance} criterion.}
 }
 \references{
-     Azevedo-Filho, A. and Shachter, R. (1994). "Laplace's Method
-     Approximations for Probabilistic Inference in Belief Networks with
-     Continuous Variables". In "Uncertainty in Artificial Intelligence",
-     Mantaras, R. and Poole, D., Morgan Kauffman, San Francisco, CA,
-     p. 28--36.
+  Azevedo-Filho, A. and Shachter, R. (1994). "Laplace's Method
+  Approximations for Probabilistic Inference in Belief Networks with
+  Continuous Variables". In "Uncertainty in Artificial Intelligence",
+  Mantaras, R. and Poole, D., Morgan Kauffman, San Francisco, CA,
+  p. 28--36.
      
-     Bernardo, J.M. and Smith, A.F.M. (2000). "Bayesian Theory". John
-     Wiley \& Sons: West Sussex, England.
+  Bernardo, J.M. and Smith, A.F.M. (2000). "Bayesian Theory". John
+  Wiley \& Sons: West Sussex, England.
 
-     Hall, B. (2011). "Laplace's Demon", STATISTICAT, LLC.
-     URL=\url{http://www.statisticat.com/laplacesdemon.html}
+  Hall, B. (2011). "Laplace's Demon", STATISTICAT, LLC.
+  URL=\url{http://www.statisticat.com/laplacesdemon.html}
 
-     Kass, R.E. and Raftery, A.E. (1995). "Bayes Factors". Journal of the
-     American Statistical Association, 90(430), p. 773--795.
+  Kass, R.E. and Raftery, A.E. (1995). "Bayes Factors". Journal of the
+  American Statistical Association, 90(430), p. 773--795.
      
-     Laplace, P. (1774). "Memoire sur la Probabilite des Causes par les
-     Evenements." l'Academie Royale des Sciences, 6, 621--656. English
-     translation by S.M. Stigler in 1986 as "Memoir on the Probability
-     of the Causes of Events" in Statistical Science, 1(3), 359--378.
+  Laplace, P. (1774). "Memoire sur la Probabilite des Causes par les
+  Evenements." l'Academie Royale des Sciences, 6, 621--656. English
+  translation by S.M. Stigler in 1986 as "Memoir on the Probability
+  of the Causes of Events" in Statistical Science, 1(3), 359--378.
 
-     Laplace, P. (1814). "Essai Philosophique sur les Probabilites."
-     English translation in Truscott, F.W. and Emory, F.L. (2007) from
-     (1902) as "A Philosophical Essay on Probabilities". ISBN
-     1602063281, translated from the French 6th ed. (1840).
+  Laplace, P. (1814). "Essai Philosophique sur les Probabilites."
+  English translation in Truscott, F.W. and Emory, F.L. (2007) from
+  (1902) as "A Philosophical Essay on Probabilities". ISBN
+  1602063281, translated from the French 6th ed. (1840).
 
-     Lewis, S.M. and Raftery, A.E. (1997). "Estimating Bayes Factors via
-     Posterior Simulation with the Laplace-Metropolis
-     Estimator". Journal of the American Statistical Association, 92,
-     p. 648--655.
+  Lewis, S.M. and Raftery, A.E. (1997). "Estimating Bayes Factors via
+  Posterior Simulation with the Laplace-Metropolis
+  Estimator". Journal of the American Statistical Association, 92,
+  p. 648--655.
+
+  Riedmiller, M. (1994). "Advanced Supervised Learning in Multi-Layer
+  Perceptrons - From Backpropagation to Adaptive Learning
+  Algorithms". Computer Standards and Interfaces, 16, p. 265--278.
      
-     Tierney, L. and Kadane, J.B. (1986). "Accurate Approximations for
-     Posterior Moments and Marginal Densities". Journal of the American
-     Statistical Association, 81(393), p. 82--86.
+  Tierney, L. and Kadane, J.B. (1986). "Accurate Approximations for
+  Posterior Moments and Marginal Densities". Journal of the American
+  Statistical Association, 81(393), p. 82--86.
 
-     Tierney, L., Kass. R., and Kadane, J.B. (1989). "Fully Exponential
-     Laplace Approximations to Expectations and Variances of Nonpositive
-     Functions". Journal of the American Statistical Association,
-     84(407), p. 710--716.
+  Tierney, L., Kass. R., and Kadane, J.B. (1989). "Fully Exponential
+  Laplace Approximations to Expectations and Variances of Nonpositive
+  Functions". Journal of the American Statistical Association,
+  84(407), p. 710--716.
 }
 \author{Byron Hall \email{laplacesdemon@statisticat.com}}
 \seealso{
   \code{\link{BayesFactor}},
   \code{\link{LaplacesDemon}},
+  \code{\link{GIV}},
   \code{\link{LML}},
-  \code{\link{optim}}.
+  \code{\link{optim}},
+  \code{\link{SIR}}.
 }
 \examples{
 # The accompanying Examples vignette is a compendium of examples.
@@ -358,7 +360,7 @@ Model <- function(parm, Data)
      }
 
 Fit <- LaplaceApproximation(Model, Initial.Values, Data=MyData,
-     Iterations=1000)
+     Iterations=10000, Method="AGA")
 Fit
 print(Fit)
 PosteriorChecks(Fit)
@@ -376,7 +378,7 @@ plot(Pred, Style="Residuals")
 #End
 }
 \keyword{
-Adaptive, Bayesian Inference, Conjugate Gradient, Gradient Ascent, Initial Values,
-Laplace Approximation, LaplaceApproximation, LaplacesDemon,
-Laplace's Demon, Optimization
+  Adaptive, Bayesian Inference, Gradient Ascent, Initial Values, Laplace
+     Approximation, LaplaceApproximation, LaplacesDemon, Laplace's
+     Demon, Optimization, Resilient Backpropagation
 }

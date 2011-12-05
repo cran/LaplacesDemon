@@ -60,38 +60,38 @@ var2sd(var=1)
   \eqn{\sigma^2}{sigma^2} is the variance, and \eqn{\tau}{tau} is the
   precision, which is the inverse of the variance.}
 \value{
-     \item{Cov2Prec}{
-          This returns a precision matrix, \eqn{\Omega}{Omega},
-          from a covariance matrix, \eqn{\Sigma}{Sigma}, where \eqn{\Omega =
-            \Sigma^{-1}}{Omega = Sigma^(-1)}.}
-     \item{Prec2Cov}{
-	  This returns a covariance matrix, \eqn{\Sigma}{Sigma},
-          from a precision matrix, \eqn{\Omega}{Omega}, where \eqn{\Sigma =
-            \Omega^{-1}}{Sigma = Omega^(-1)}.}
-     \item{prec2sd}{
-	  This returns a standard deviation, \eqn{\sigma}{sigma},
-          from a precision, \eqn{\tau}{tau}, where \eqn{\sigma =
-            \sqrt{\tau^{-1}}}{sigma = sqrt(tau^(-1))}.}
-     \item{prec2var}{
-	  This returns a variance, \eqn{\sigma^2}{sigma^2},
-          from a precision, \eqn{\tau}{tau}, where \eqn{\sigma^2 =
-            \tau^{-1}}{sigma^2 = tau^(-1)}.}
-     \item{sd2prec}{
-	  This returns a precision, \eqn{\tau}{tau},
-          from a standard deviation, \eqn{\sigma}{sigma}, where
-          \eqn{\tau = \sigma^{-2}}{tau = sigma^(-2)}.}
-     \item{sd2var}{
-	  This returns a variance, \eqn{\sigma^2}{sigma^2},
-          from a standard deviation, \eqn{\sigma}{sigma}, where
-          \eqn{\sigma^2 = \sigma \sigma}{sigma^2 = sigma x sigma}.}
-     \item{var2prec}{
-	  This returns a precision, \eqn{\tau}{tau},
-          from a variance, \eqn{\sigma^2}{sigma^2}, where
-          \eqn{\tau = \frac{1}{\sigma^2}}{tau = 1 / sigma^2}.}
-     \item{var2sd}{
-	  This returns a standard deviation, \eqn{\sigma}{sigma},
-          from a variance, \eqn{\sigma^2}{sigma^2}, where
-          \eqn{\sigma = \sqrt{\sigma^2}}{sigma = sqrt(sigma^2)}.}
+  \item{Cov2Prec}{
+    This returns a precision matrix, \eqn{\Omega}{Omega}, from a
+    covariance matrix, \eqn{\Sigma}{Sigma}, where \eqn{\Omega =
+    \Sigma^{-1}}{Omega = Sigma^(-1)}.}
+  \item{Prec2Cov}{
+    This returns a covariance matrix, \eqn{\Sigma}{Sigma}, from a
+    precision matrix, \eqn{\Omega}{Omega}, where \eqn{\Sigma =
+    \Omega^{-1}}{Sigma = Omega^(-1)}.}
+  \item{prec2sd}{
+    This returns a standard deviation, \eqn{\sigma}{sigma}, from a
+    precision, \eqn{\tau}{tau}, where \eqn{\sigma =
+    \sqrt{\tau^{-1}}}{sigma = sqrt(tau^(-1))}.}
+  \item{prec2var}{
+    This returns a variance, \eqn{\sigma^2}{sigma^2}, from a precision,
+    \eqn{\tau}{tau}, where \eqn{\sigma^2 = \tau^{-1}}{sigma^2 =
+    tau^(-1)}.}
+  \item{sd2prec}{
+    This returns a precision, \eqn{\tau}{tau}, from a standard
+    deviation, \eqn{\sigma}{sigma}, where \eqn{\tau = \sigma^{-2}}{tau =
+    sigma^(-2)}.}
+  \item{sd2var}{
+    This returns a variance, \eqn{\sigma^2}{sigma^2}, from a standard
+    deviation, \eqn{\sigma}{sigma}, where \eqn{\sigma^2 = \sigma
+    \sigma}{sigma^2 = sigma x sigma}.}
+  \item{var2prec}{
+    This returns a precision, \eqn{\tau}{tau}, from a variance,
+    \eqn{\sigma^2}{sigma^2}, where \eqn{\tau = \frac{1}{\sigma^2}}{tau = 1
+    / sigma^2}.}
+  \item{var2sd}{
+    This returns a standard deviation, \eqn{\sigma}{sigma}, from a
+    variance, \eqn{\sigma^2}{sigma^2}, where \eqn{\sigma =
+    \sqrt{\sigma^2}}{sigma = sqrt(sigma^2)}.}
 }
 \references{\url{http://www.statisticat.com/laplacesdemon.html}}
 \author{Byron Hall \email{laplacesdemon@statisticat.com}}

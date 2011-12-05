@@ -389,7 +389,9 @@ rinvchisq <- function(n, df, scale=1/df)
      df <- rep(df, len=n); scale <- rep(scale, len=n)
      if(any(df <= 0)) stop("The df parameter must be positive.")
      if(any(scale <= 0)) stop("The scale parameter must be positive.")
-     x <- (df*scale) / rchisq(n, df=df)
+     z <- rchisq(n, df=df)
+     z <- ifelse(z == 0, 1e-100, z)
+     x <- (df*scale) / z
      return(x)
      }
 
@@ -710,6 +712,7 @@ rmvc <- function(n=1, mu=rep(0,k), S)
           stop("Matrix S is not positive-definite.")
      k <- ncol(S)
      x <- rchisq(n,1)
+     x <- ifelse(x == 0, 1e-100, x)
      z <- rmvn(n, rep(0,k), S)
      x <- t(mu + t(z/sqrt(x)))
      return(x)
@@ -746,6 +749,7 @@ rmvcp <- function(n=1, mu, Omega)
      Sigma <- as.inverse(Omega)
      k <- ncol(Sigma)
      x <- rchisq(n,1)
+     x <- ifelse(x == 0, 1e-100, x)
      z <- rmvn(n, rep(0,k), Sigma)
      x <- t(mu + t(z/sqrt(x)))
      return(x)
@@ -894,6 +898,7 @@ dmvt <- function(x, mu, S, df=Inf, log=FALSE)
      if(!is.positive.definite(S))
           stop("Matrix S is not positive-definite.")
      if(any(df <= 0)) stop("The df parameter must be positive.")
+     if(any(df > 10000)) return(dmvn(x, mu, S, log))
      k <- nrow(S)
      ss <- x - mu
      Omega <- as.inverse(S)
@@ -913,6 +918,7 @@ rmvt <- function(n=1, mu=rep(0,k), S, df=Inf)
      if(any(df <= 0)) stop("The df parameter must be positive.")
      k <- ncol(S)
      if(df==Inf) x <- 1 else x <- rchisq(n,df) / df
+     x <- ifelse(x == 0, 1e-100, x)
      z <- rmvn(n, rep(0,k), S)
      x <- t(mu + t(z/sqrt(x)))
      return(x)
@@ -931,6 +937,7 @@ dmvtp <- function(x, mu, Omega, nu=Inf, log=FALSE)
      if(!is.positive.definite(Omega))
           stop("Matrix Omega is not positive-definite.")
      if(any(nu <= 0)) stop("The nu parameter must be positive.")
+     if(any(nu > 10000)) return(dmvnp(x, mu, Omega, log))
      k <- ncol(Omega)
      detOmega <- det(Omega)
      ss <- x - mu
@@ -951,6 +958,7 @@ rmvtp <- function(n=1, mu, Omega, nu=Inf)
      Sigma <- as.inverse(Omega)
      k <- ncol(Sigma)
      if(nu == Inf) x <- 1 else x <- rchisq(n,nu) / nu
+     x <- ifelse(x == 0, 1e-100, x)
      z <- rmvn(n, rep(0,k), Sigma)
      x <- t(mu + t(z/sqrt(x)))
      return(x)
@@ -1324,8 +1332,8 @@ dtrunc <- function(x, spec, a=-Inf, b=Inf, ...)
      {
      if(a >= b) stop("Lower bound a is not less than upper bound b.")
      tt <- rep(0, length(x))
-     g <- get(paste("d", spec, sep = ""), mode = "function")
-     G <- get(paste("p", spec, sep = ""), mode = "function")
+     g <- get(paste("d", spec, sep=""), mode="function")
+     G <- get(paste("p", spec, sep=""), mode="function")
      tt[x>=a & x<=b] <- g(x[x>=a & x<=b], ...) / (G(b, ...) - G(a, ...))
      return(tt)
      }
@@ -1341,25 +1349,25 @@ ptrunc <- function(x, spec, a=-Inf, b=Inf, ...)
      tt <- x
      aa <- rep(a, length(x))
      bb <- rep(b, length(x))
-     G <- get(paste("p", spec, sep = ""), mode = "function")
+     G <- get(paste("p", spec, sep=""), mode="function")
      tt <- G(apply(cbind(apply(cbind(x, bb), 1, min), aa), 1, max), ...)
      tt <- tt - G(aa, ...)
-     tt <- tt/{G(bb, ...) - G(aa, ...)}
+     tt <- tt / {G(bb, ...) - G(aa, ...)}
      return(tt)
      }
 qtrunc <- function(p, spec, a=-Inf, b=Inf, ...)
      {
      if(a >= b) stop("Lower bound a is not less than upper bound b.")
      tt <- p
-     G <- get(paste("p", spec, sep = ""), mode = "function")
-     Gin <- get(paste("q", spec, sep = ""), mode = "function")
+     G <- get(paste("p", spec, sep=""), mode="function")
+     Gin <- get(paste("q", spec, sep=""), mode="function")
      tt <- Gin(G(a, ...) + p*{G(b, ...) - G(a, ...)}, ...)
      return(tt)
      }
 rtrunc <- function(n, spec, a=-Inf, b=Inf, ...)
      {
      if(a >= b) stop("Lower bound a is not less than upper bound b.")
-     x <- u <- runif(n, min = 0, max = 1)
+     x <- u <- runif(n)
      x <- qtrunc(u, spec, a = a, b = b,...)
      return(x)
      }
@@ -1408,12 +1416,13 @@ rwishart <- function(nu, S)
           stop("The nu parameter is less than the dimension of S.")}
      k <- nrow(S)
      Z <- matrix(0, k, k)
-     diag(Z) <- sqrt(rchisq(k, nu:{nu - k + 1}))
+     x <- rchisq(k, nu:{nu - k + 1})
+     x <- ifelse(x == 0, 1e-100, x)
+     diag(Z) <- sqrt(x)
      if(k > 1) {
           kseq <- 1:(k-1)
           Z[rep(k*kseq, kseq) +
-               unlist(lapply(kseq, seq))] <- rnorm(k*{k-1}/2)
-          }
+               unlist(lapply(kseq, seq))] <- rnorm(k*{k-1}/2)}
      return(crossprod(Z %*% chol(S)))
      }
 

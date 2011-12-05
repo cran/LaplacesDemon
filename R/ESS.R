@@ -28,10 +28,10 @@ ESS <- function(x)
           }
      spec <- list(spec=v0, order=order)
      spec <- spec$spec
-     ESS <- ifelse(spec == 0, 0, nrow(x) * apply(x, 2, var)/spec)
-     ESS <- ifelse(ESS <= .Machine$double.eps, .Machine$double.eps, ESS)
-     ESS <- ifelse(ESS > nrow(x), nrow(x), ESS)
-     return(ESS)
+     out <- ifelse(spec == 0, 0, nrow(x) * apply(x, 2, var)/spec)
+     out <- ifelse(out <= .Machine$double.eps, .Machine$double.eps, out)
+     out <- ifelse(out > nrow(x), nrow(x), out)
+     return(out)
      }
 
 #End

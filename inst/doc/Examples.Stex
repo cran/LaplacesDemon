@@ -2229,7 +2229,7 @@ $$ \rho = \exp(-\phi \textbf{D}^{new})^\kappa$$
 $$ \zeta \sim \mathcal{N}_N(\zeta_\mu, \Sigma)$$
 $$ \Sigma = \sigma^2_2 \exp(-\phi \textbf{D})^\kappa$$
 $$ \beta_j \sim \mathcal{N}(0, 1000), \quad j=1,\dots,2$$
-$$ \sigma_j \sim \mathcal{HC}(25), \quad j=1,\dots,2$$
+$$ \sigma_j \sim \mathcal{HC}(25) \in [1,\infty], \quad j=1,\dots,2$$
 $$ \phi \sim \mathcal{U}(1, 5)$$
 $$ \zeta_\mu = 0$$
 $$ \kappa = 1$$
@@ -2250,15 +2250,15 @@ longitude <- longitude[1:N]; latitude <- latitude[1:N] \\
 X <- X[1:N,]; y <- y[1:N] \\
 D <- as.matrix(dist(cbind(longitude,latitude), diag=TRUE, upper=TRUE)) \\
 D.new <- sqrt((longitude - longitude.new)\textasciicircum 2 + (latitude - latitude.new)\textasciicircum 2) \\
-mon.names <- c("LP","sigma[1]","sigma[2]","ynew") \\
+mon.names <- c("LP","ynew") \\
 parm.names <- as.parm.names(list(zeta=rep(0,N), beta=rep(0,2), \\
-\hspace*{0.27 in} log.sigma=rep(0,2), phi=0)) \\
+\hspace*{0.27 in} sigma=rep(0,2), phi=0)) \\
 MyData <- list(D=D, D.new=D.new, N=N, X=X, Xnew=Xnew, latitude=latitude, \\
 \hspace*{0.27 in} longitude=longitude, mon.names=mon.names, parm.names=parm.names, \\
 \hspace*{0.27 in} y=y)
 }
 \subsection{Initial Values}
-\code{Initial.Values <- c(rep(0,N), rep(0,2), rep(0,2), 1)}
+\code{Initial.Values <- c(rep(0,N), rep(0,2), rep(1,2), 1)}
 \subsection{Model}
 \code{Model <- function(parm, Data) \\
 \hspace*{0.27 in} \{ \\
@@ -2266,14 +2266,14 @@ MyData <- list(D=D, D.new=D.new, N=N, X=X, Xnew=Xnew, latitude=latitude, \\
 \hspace*{0.27 in} beta <- parm[grep("beta", Data$parm.names)] \\
 \hspace*{0.27 in} zeta <- parm[grep("zeta", Data$parm.names)] \\
 \hspace*{0.27 in} kappa <- 1 \\
-\hspace*{0.27 in} sigma <- exp(parm[grep("log.sigma", Data$parm.names)]) \\
+\hspace*{0.27 in} sigma <- interval(parm[grep("sigma", Data$parm.names)], 1, Inf) \\
 \hspace*{0.27 in} phi <- interval(parm[grep("phi", Data$parm.names)], 1, 5) \\
 \hspace*{0.27 in} parm[grep("phi", Data$parm.names)] <- phi \\
 \hspace*{0.27 in} Sigma <- sigma[2]*sigma[2] * exp(-phi * Data$D)\textasciicircum kappa \\
 \hspace*{0.27 in} \#\#\# Log(Prior Densities) \\
 \hspace*{0.27 in} beta.prior <- sum(dnormv(beta, 0, 1000, log=TRUE)) \\
 \hspace*{0.27 in} zeta.prior <- dmvn(zeta, rep(0, Data$N), Sigma, log=TRUE) \\
-\hspace*{0.27 in} sigma.prior <- sum(dhalfcauchy(sigma, 25, log=TRUE)) \\
+\hspace*{0.27 in} sigma.prior <- sum(dhalfcauchy(sigma - 1, 25, log=TRUE)) \\
 \hspace*{0.27 in} phi.prior <- dunif(phi, 1, 5, log=TRUE) \\
 \hspace*{0.27 in} \#\#\# Interpolation \\
 \hspace*{0.27 in} rho <- exp(-phi * Data$D.new)\textasciicircum kappa \\
@@ -2283,7 +2283,7 @@ MyData <- list(D=D, D.new=D.new, N=N, X=X, Xnew=Xnew, latitude=latitude, \\
 \hspace*{0.27 in} LL <- sum(dnorm(Data$y, mu, sigma[1], log=TRUE)) \\
 \hspace*{0.27 in} \#\#\# Log-Posterior \\
 \hspace*{0.27 in} LP <- LL + beta.prior + zeta.prior + sigma.prior + phi.prior \\
-\hspace*{0.27 in} Modelout <- list(LP=LP, Dev=-2*LL, Monitor=c(LP,sigma,ynew), \\
+\hspace*{0.27 in} Modelout <- list(LP=LP, Dev=-2*LL, Monitor=c(LP,ynew), \\
 \hspace*{0.62 in} yhat=mu, parm=parm) \\
 \hspace*{0.27 in} return(Modelout) \\
 \hspace*{0.27 in} \}

@@ -45,8 +45,8 @@
   Hall, B. (2011). "Laplace's Demon", STATISTICAT, LLC.
   URL=\url{http://www.statisticat.com/laplacesdemon.html}
 
-  Kass, R.E., Carlin, B.P., Gelman, A., and Neal, R. (1998). Markov
-  Chain Monte Carlo in Practice: A Roundtable Discussion. The American
+  Kass, R.E., Carlin, B.P., Gelman, A., and Neal, R. (1998). "Markov
+  Chain Monte Carlo in Practice: A Roundtable Discussion". The American
   Statistician, 52, p. 93--100. 
 }
 \seealso{

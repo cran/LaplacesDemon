@@ -18,12 +18,11 @@
 
   Second, Laplace's Demon considers a combination of five conditions
   when making the largest part of its suggestion. These conditions are:
-  the algorithm, acceptance rate, MCSE, ESS, and stationarity. There
-  are 48 combinations of these five conditions, though several
-  combinations yield the same suggestion. Other things are considered
-  as well, such as the recommended thinning value is used to suggest a
-  new number of iterations. The \code{Periodicity} argument is
-  suggested to be set equal to the value of \code{Rec.Thinning}.
+  the algorithm, acceptance rate, MCSE, ESS, and stationarity. Other
+  things are considered as well, such as the recommended thinning value
+  is used to suggest a new number of iterations. The \code{Periodicity}
+  argument is suggested to be set equal to the value of
+  \code{Rec.Thinning}.
 
   Appeasement Conditions
   \itemize{
@@ -35,7 +34,12 @@
     satisfactory for each target distribution if it is less than 6.27\%
     of the standard deviation of the target distribution. This allows
     the true mean to be within 5\% of the area under a Gaussian
-    distribution around the estimated mean.
+    distribution around the estimated mean. The \code{\link{MCSE}}
+    function is used. The criterion of 6.27\% for this stopping rule is
+    arbitary, and may be too lenient or strict, depending on the needs of
+    the user. Nonetheless, it has performed well, and this type of
+    stopping rule has been observed to perform better than MCMC
+    convergence diagnostics (Flegal et al., 2008).
   \item ESS: The effective sample size (ESS) is considered satisfactory
     for each target distribution if it is at least 100, which is usually
     enough to describe 95\% probability intervals. The \code{\link{ESS}}
@@ -47,12 +51,28 @@
 
   If all five conditions are satisfactory, then Laplace's Demon is
   appeased. Otherwise, Laplace's Demon will suggest and supply R
-  code that is ready to be copy/pasted and executed.
+  code that is ready to be copy/pasted and executed. Suggestions are
+  limited to a million iterations, though the user is free to exceed
+  this limit, which is best exceeded in complicated models.
+
+  To visualize the MCSE-based stopping rule, run the following code:
+
+  \code{x <- seq(from=-3, to=3, by=0.1);}
+  \code{plot(x, dnorm(x,0,1), type="l");}
+  \code{abline(v=-0.0627); abline(v=0.0627);}
+  \code{abline(v=2*-0.0627, col="red"); abline(v=2*0.0627, col="red")}
+
+  The black vertical lines show the standard error, and the red vertical
+  lines show the 95\% interval.
 
   The Demonic Suggestion is usually very helpful, but should not be
   followed blindly. Do not let it replace critical thinking.
 }
 \references{
+  Flegal, J.M., Haran, M., and Jones, G.L. (2008). "Markov chain Monte
+  Carlo: Can We Trust the Third Significant Figure?". Statistical
+  Science, 23, p. 250--260.
+  
   Hall, B. (2011). "Laplace's Demon", STATISTICAT, LLC.
   URL=\url{http://www.statisticat.com/laplacesdemon.html}
 }
@@ -60,5 +80,6 @@
 \seealso{
   \code{\link{ESS}},
   \code{\link{Geweke.Diagnostic}},
-  \code{\link{LaplacesDemon}}.
+  \code{\link{LaplacesDemon}},
+  \code{\link{MCSE}}.
 }

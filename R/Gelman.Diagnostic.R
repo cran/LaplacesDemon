@@ -21,8 +21,7 @@ Gelman.Diagnostic <- function (x, confidence=0.95, transform=FALSE)
                Niter[i] <- Ntot[i]
           if(Burn[i] < Ntot[i])
                Niter[i] <- Ntot[i] - Burn[i] + 1
-          Nvar[i] <- x[[i]]$Parameters
-          }
+          Nvar[i] <- x[[i]]$Parameters}
      if(length(unique(Ntot)) != 1)
           stop("Total number of iterations differs with demonoid objects.")
      Ntot <- Ntot[1]

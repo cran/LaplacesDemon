@@ -39,8 +39,8 @@ Gelman (2008) recommends centering and scaling continuous predictors to facilita
  untransformed vector.
 }
 \references{
-  Gelman, A. (2008). Scaling Regression Inputs by Dividing by Two Standard
-  Devations. Statistics in Medicine, 27, p. 2865--2873.
+  Gelman, A. (2008). "Scaling Regression Inputs by Dividing by Two Standard
+  Devations". Statistics in Medicine, 27, p. 2865--2873.
 
   Hall, B. (2011). "Laplace's Demon", STATISTICAT, LLC.
   URL=\url{http://www.statisticat.com/laplacesdemon.html}

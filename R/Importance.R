@@ -27,6 +27,7 @@ Importance <- function(object, Model, Data, Categorical=FALSE, Discrep,
      if(Categorical == FALSE) {
           out[1,3] <- Summ$L.criterion
           S.L <- Summ$S.L}
+     else S.L <- NA
      for (i in 1:ncol(X.orig)) {
           cat("\nEstimating without X[,", i, "]...", sep="")
           X.temp <- X.orig
@@ -43,6 +44,8 @@ Importance <- function(object, Model, Data, Categorical=FALSE, Discrep,
      if(Categorical == FALSE) cat("\n\nS.L:", S.L)
      colnames(out) <- c("Concordance", "Discrep", "L-criterion")
      rownames(out) <- c("Full", paste("X[,-", 1:ncol(X.orig), "]", sep=""))
+     attr(out, "S.L") <- S.L
+     class(out) <- "importance"
      cat("\n\n")
      return(out)
      }

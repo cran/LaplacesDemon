@@ -12,11 +12,11 @@
 }
 \usage{\method{predict}{demonoid}(object, Model, Data, \dots)}
 \arguments{
-     \item{object}{An object of class \code{demonoid} is required.}
-     \item{Model}{The model specification function is required.}
-     \item{Data}{A data set in a list is required. The dependent
-          variable is required to be named either \code{y} or \code{Y}.}
-     \item{\dots}{Additional arguments are unused.}
+  \item{object}{An object of class \code{demonoid} is required.}
+  \item{Model}{The model specification function is required.}
+  \item{Data}{A data set in a list is required. The dependent variable
+    is required to be named either \code{y} or \code{Y}.}
+  \item{\dots}{Additional arguments are unused.}
 }
 \details{
   This function passes each iteration of marginal posterior samples
@@ -41,22 +41,21 @@
   \code{Model} function.
 }
 \value{
-     This function returns an object of class \code{demonoid.ppc} (where
-     ppc stands for posterior predictive checks). The returned object is
-     a list with the following components:
-     \item{y}{
-          This stores the vectorized form of \eqn{\textbf{y}}{y}, the
-          dependent variable.
-          }
-     \item{yhat}{
-          This is a \eqn{N \times S}{N x S} matrix, where \eqn{N} is
-          the number of records of \eqn{\textbf{y}}{y} and \eqn{S} is
-	  the number of posterior samples.
-          }
+  This function returns an object of class \code{demonoid.ppc} (where
+  ppc stands for posterior predictive checks). The returned object is
+  a list with the following components:
+
+  \item{y}{
+    This stores the vectorized form of \eqn{\textbf{y}}{y}, the
+    dependent variable.}
+  \item{yhat}{
+    This is a \eqn{N \times S}{N x S} matrix, where \eqn{N} is the
+    number of records of \eqn{\textbf{y}}{y} and \eqn{S} is the number
+    of posterior samples.}
 }
 \references{
-     Hall, B. (2011). "Laplace's Demon", STATISTICAT, LLC.
-     URL=\url{http://www.statisticat.com/laplacesdemon.html}
+  Hall, B. (2011). "Laplace's Demon", STATISTICAT, LLC.
+  URL=\url{http://www.statisticat.com/laplacesdemon.html}
 }
 \author{Byron Hall \email{laplacesdemon@statisticat.com}}
 \seealso{

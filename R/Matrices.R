@@ -185,6 +185,50 @@ as.symmetric.matrix <- function(x, k=NULL)
      else stop("x must be a vector or matrix.")
      return(symm)
      }
+Cov2Cor <- function(Sigma)
+     {
+     if(missing(Sigma)) stop("Sigma is a required argument.")
+     if(any(!is.finite(Sigma))) stop("Sigma must have finite values.")
+     if(is.matrix(Sigma)) {
+          if(!is.positive.definite(Sigma))
+               stop("Sigma is not positive-definite.")
+          x <- 1 / sqrt(diag(Sigma))
+          R <- x * t(x * Sigma)}
+     else if(is.vector(Sigma)) {
+          k <- as.integer(sqrt(length(Sigma)))
+          Sigma <- matrix(Sigma, k, k)
+          x <- 1 / sqrt(diag(Sigma))
+          R <- as.vector(x * t(x * Sigma))}
+     return(R)
+     }
+Hessian <- function(Model, parm, Data)
+     {
+     if(missing(Model)) stop("The Model argument is required.")
+     if(missing(parm)) stop("The parm argument is required.")
+     if(missing(Data)) stop("The Data argument is required.")
+     Interval <- 1.0E-6
+     parm.len <- length(parm)
+     eps <- Interval * parm
+     H <- matrix(0, parm.len, parm.len)
+     for (i in 1:parm.len) {
+          for (j in i:parm.len) {
+               x1 <- x2 <- x3 <- x4 <- parm
+               x1[i] <- x1[i] + eps[i]
+               x1[j] <- x1[j] + eps[j]
+               x2[i] <- x2[i] + eps[i]
+               x2[j] <- x2[j] - eps[j]
+               x3[i] <- x3[i] - eps[i]
+               x3[j] <- x3[j] + eps[j]
+               x4[i] <- x4[i] - eps[i]
+               x4[j] <- x4[j] - eps[j]
+               H[i, j] <- {Model(x1, Data)[[1]] -
+                    Model(x2, Data)[[1]] - Model(x3, Data)[[1]] +
+                    Model(x4, Data)[[1]]} / {4 * eps[i] * eps[j]}
+               }
+          }
+     H[lower.tri(H)] <- t(H)[lower.tri(H)]
+     return(H)
+     }
 is.positive.definite <- function(x)
      {
      if(!is.matrix(x)) stop("x is not a matrix.")

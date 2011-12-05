@@ -21,32 +21,31 @@ constant of proportionality. Several methods of approximation are
 available.
 }
 \usage{
-LML(Model=NULL, Data=NULL, Modes=NULL, theta=NULL, LP=NULL, method="NSIS")
+LML(Model=NULL, Data=NULL, Modes=NULL, theta=NULL, LL=NULL, method="NSIS")
 }
 \arguments{
   \item{Model}{This is the model specification for the model that was
     updated either in \code{\link{LaplaceApproximation}} or
     \code{\link{LaplacesDemon}}. This argument does not need to be
-    specified for the \code{NSIS} method.}
+    specified for the \code{HME} or \code{NSIS} methods.}
   \item{Data}{This is the list of data passed to the model
     specification. This argument does not need to be specified for the
-    \code{NSIS} method.}
+    \code{HME} or \code{NSIS} methods.}
   \item{Modes}{This is a vector of the posterior modes (or medians, in
     the case of MCMC), and does not need to be specified for the
-    \code{NSIS} method.}
+    \code{HME} or \code{NSIS} methods.}
   \item{theta}{This is a matrix of posterior samples (parameters only),
-    and is specified only with the \code{NSIS} method.}
-  \item{LP}{This is a vector of MCMC samples of the logarithm of
-    the un-normalized joint posterior density, and is specified only
-    with the \code{NSIS} method.}
-  \item{method}{The method may be "LME1", "LME2", or "NSIS", and
-    defaults to "NSIS". "LME1" approximates the Hessian matrix with
-    finite differences and uses the Laplace-Metropolis Estimator. "LME2"
-    approximates the Hessian matrix with a Koschal design and uses the
-    Laplace-Metropolis Estimator. "NSIS" does not approximate the
-    Hessian matrix, and estimates the logarithm of the marginal
-    likelihood with nonparametric self-normalized importance sampling
-    (NSIS).}
+    and is specified only with the \code{HME} or \code{NSIS} methods.}
+  \item{LL}{This is a vector of MCMC samples of the log-likelihood, and
+    is specified only with the \code{HME} or \code{NSIS} methods.}
+  \item{method}{The method may be "HME", "LME1", "LME2", or "NSIS", and
+    defaults to "NSIS". "HME" approximates the logarithm of the marginal
+    likelihood with the harmonic mean. "LME1" approximates the Hessian
+    matrix with finite differences and uses the Laplace-Metropolis
+    Estimator. "LME2" approximates the Hessian matrix with a Koschal
+    design and uses the Laplace-Metropolis Estimator. "NSIS" estimates
+    the logarithm of the marginal likelihood with nonparametric
+    self-normalized importance sampling (NSIS).}
 }
 \details{
   Generally, a user of \code{\link{LaplaceApproximation}} or
@@ -56,8 +55,17 @@ LML(Model=NULL, Data=NULL, Modes=NULL, theta=NULL, LP=NULL, method="NSIS")
   estimate the logarithm of the marginal likelihood with a different
   method, or with non-stationary chains. The \code{\link{LaplacesDemon}}
   function only calls \code{LML} when all parameters are stationary, and
-  only with the random-walk Metropolis algorithm (not with an adaptive
-  algorithm).
+  only with the random-walk Metropolis or Metropolis-within-Gibbs
+  algorithms (not with an adaptive algorithm).
+
+  The \code{HME} method, where HME stands for harmonic mean estimator,
+  of Newton-Raftery (1994) is the easiest, and therefore fastest,
+  estimation of the logarithm of the marginal likelihood. However, it is
+  an unreliable estimator and should be avoided, because small
+  likelihood values can overly influence the estimator. It is included
+  here for completeness. There is not a function in this package that
+  uses this method by default. Given \eqn{N} samples, the estimator is
+  \eqn{1/[\frac{1}{N} \sum_N \exp(-LL)]}{1 / [1/N sum_N exp(-LL)]}.
 
   The \code{LME1} method uses the Laplace-Metropolis Estimator (LME), in
   which the estimation of the Hessian matrix is approximated numerically
@@ -65,28 +73,26 @@ LML(Model=NULL, Data=NULL, Modes=NULL, theta=NULL, LP=NULL, method="NSIS")
   though with a tolerance of \eqn{1e-06}. It is the slowest method here,
   though it returns an estimate in more cases than the other methods.
   The supplied \code{Model} specification must be executed a number of
-  times equal to \eqn{k^2 \times 4}{k^2 x 4}, where \eqn{k} is the
+  times equal to \eqn{k^2 \times 4}{k^2 x 2}, where \eqn{k} is the
   number of parameters. In large dimensions, this is very slow. The
   Laplace-Metropolis Estimator is inappropriate with hierarchical
   models.
   
   The \code{LME2} method uses a version of the Laplace-Metropolis
   Estimator (LME) in which the estimation of the Hessian matrix is
-  essentially the \code{fdHess} function in the nlme package,
+  essentially the \code{fdHess} function in the \code{nlme} package,
   converted for Laplace's Demon. The \code{\link{LaplaceApproximation}}
-  function, with \code{method=AGA}, uses \code{LME2}, in which case uses
-  the posterior modes, and is itself Laplace Approximation. In
-  \code{\link{LaplacesDemon}}, if the user did not include \code{LP} as a
-  monitored variable, then \code{LME2} will be used. When applied to
-  MCMC, the the posterior medians are used. In large dimensions,
-  \code{LME2} is very slow. The Laplace-Metropolis Estimator is
-  inappropriate with hierarchical models.
+  function uses \code{LME2} when it has converged and \code{sir=FALSE},
+  in which case it uses the posterior modes, and is itself Laplace
+  Approximation. In large dimensions, \code{LME2} is very slow. The
+  Laplace-Metropolis Estimator is inappropriate with hierarchical models.
 
   The \code{NSIS} method is essentially the \code{MarginalLikelihood}
-  function in the MargLikArrogance package. This is the fastest method
-  available here. The \code{\link{LaplacesDemon}} function uses
-  \code{NSIS} when the user specifies \code{LP} as a monitored
-  variable. When this is not found, \code{LME2} is used.
+  function in the \code{MargLikArrogance} package. After \code{HME},
+  this is the fastest method available here. The
+  \code{\link{LaplaceApproximation}} function uses \code{NSIS} when it
+  has converged and \code{sir=TRUE}. The \code{\link{LaplacesDemon}}
+  function uses \code{NSIS}.
 
   The Laplace-Metropolis Estimator (LME) is the logarithmic form of
   equation 4 in Lewis and Raftery (1997). In a non-hierarchical model,
@@ -111,31 +117,34 @@ LML(Model=NULL, Data=NULL, Modes=NULL, theta=NULL, LP=NULL, method="NSIS")
   \code{LML} returns a list with two components:
   \item{LML}{
     This is an approximation of the logarithm of the marginal
-  likelihood (LML), which is notoriously difficult to estimate. For this
-  reason, several methods are provided. The marginal likelihood is
-  useful when comparing models, such as with Bayes factors in the
-  \code{\link{BayesFactor}} function. When the method fails, \code{NA}
-  is returned.}
+    likelihood (LML), which is notoriously difficult to estimate. For this
+    reason, several methods are provided. The marginal likelihood is
+    useful when comparing models, such as with Bayes factors in the
+    \code{\link{BayesFactor}} function. When the method fails, \code{NA}
+    is returned.}
   \item{VarCov}{
     This is a variance-covariance matrix, and is the negative inverse of
-  the Hessian matrix, if estimated. The \code{NSIS} method does not
-  estimate \code{VarCov}, and returns \code{NA}.}
+    the Hessian matrix, if estimated. The \code{HME} and \code{NSIS}
+    methods do not estimate \code{VarCov}, and return \code{NA}.}
 }
 \references{
-     Gelman, A., Carlin, J., Stern, H., and Rubin, D. (2004). "Bayesian
-     Data Analysis, Texts in Statistical Science, 2nd ed.". Chapman and
-     Hall, London.
+  Gelman, A., Carlin, J., Stern, H., and Rubin, D. (2004). "Bayesian
+  Data Analysis, Texts in Statistical Science, 2nd ed.". Chapman and
+  Hall, London.
      
-     Hall, B. (2011). "Laplace's Demon", STATISTICAT, LLC.
-     URL=\url{http://www.statisticat.com/laplacesdemon.html}
+  Hall, B. (2011). "Laplace's Demon", STATISTICAT, LLC.
+  URL=\url{http://www.statisticat.com/laplacesdemon.html}
 
-     Kass, R.E. and Raftery, A.E. (1995). "Bayes Factors". Journal of the
-     American Statistical Association, 90(430), p. 773--795.
+  Kass, R.E. and Raftery, A.E. (1995). "Bayes Factors". Journal of the
+  American Statistical Association, 90(430), p. 773--795.
 
-     Lewis, S.M. and Raftery, A.E. (1997). "Estimating Bayes Factors via
-     Posterior Simulation with the Laplace-Metropolis
-     Estimator". Journal of the American Statistical Association, 92,
-     p. 648--655.
+  Lewis, S.M. and Raftery, A.E. (1997). "Estimating Bayes Factors via
+  Posterior Simulation with the Laplace-Metropolis Estimator". Journal
+  of the American Statistical Association, 92, p. 648--655.
+
+  Newton, M.A. and Raftery, A.E. (1994). "Approximate Bayesian
+  Inference by the Weighted Likelihood Bootstrap". Journal of the
+  Royal Statistical Society, Series B 3, p. 3--48.
 }
 \author{Byron Hall \email{laplacesdemon@statisticat.com}}
 \seealso{
@@ -146,6 +155,9 @@ LML(Model=NULL, Data=NULL, Modes=NULL, theta=NULL, LP=NULL, method="NSIS")
 \examples{
 ### If a model object were created and called Fit, then:
 #
+### Applying HME to an object of class demonoid:
+#LML(LL=Fit$Deviance*(-1/2), method="HME")
+#
 ### Applying LME1 to an object of class demonoid:
 #LML(Model, MyData, Modes=apply(Fit$Posterior1, 2, median), method="LME1")
 #
@@ -153,13 +165,12 @@ LML(Model=NULL, Data=NULL, Modes=NULL, theta=NULL, LP=NULL, method="NSIS")
 #LML(Model, MyData, Modes=apply(Fit$Posterior1, 2, median), method="LME2")
 #
 ### Applying NSIS to an object of class demonoid
-#LML(theta=Fit$Posterior1, LP=Fit$Monitor[,"LP"], method="NSIS")
+#LML(theta=Fit$Posterior1, LL=Fit$Deviance*-(1/2), method="NSIS")
 #
 ### Applying LME1 to an object of class laplace:
-#LML(Model, MyData, Modes=Fit$Summary[,1], method="LME1")
+#LML(Model, MyData, Modes=Fit$Summary1[,1], method="LME1")
 #
 ### Applying LME2 to an object of class laplace
-#LML(Model, MyData, Modes=Fit$Summary[,1], method="LME2")
-
+#LML(Model, MyData, Modes=Fit$Summary1[,1], method="LME2")
 }
 \keyword{marginal likelihood}

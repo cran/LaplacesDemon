@@ -75,9 +75,9 @@ multivariate normal distribution.
   \code{\link{dnormv}}.
 }
 \references{
-  Gomez, E., Gomez-Villegas, M.A., and Marin, J.M. (1998). A
+  Gomez, E., Gomez-Villegas, M.A., and Marin, J.M. (1998). "A
   Multivariate Generalization of the Power Exponential Family of
-  Distributions. Communications in Statistics-Theory and Methods, 27(3),
+  Distributions". Communications in Statistics-Theory and Methods, 27(3),
   p. 589--600.
 }
 \author{Byron Hall \email{laplacesdemon@statisticat.com}}

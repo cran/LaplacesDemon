@@ -84,6 +84,7 @@ Modes(x, min.size=0.1)
   possible. However, the highest mode may be uncharacteristic of the
   majority of the posterior.
 }
+\author{Byron Hall \email{laplacesdemon@statisticat.com}}
 \seealso{
   \code{\link{LaplaceApproximation}},
   \code{\link{LaplacesDemon}}.

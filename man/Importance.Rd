@@ -10,9 +10,7 @@ from the model by setting it equal to zero. Here, variable
 importance is considered in terms of the comparison of posterior
 predictive checks. This may be considered to be a form of sensitivity
 analysis, and can be useful for model revision, variable selection, and
-model interpretation. It is believed that variable importance through
-posterior predictive checks, here, is a novel contribution to applied
-Bayesian inference.
+model interpretation.
 
 Currently, this function only tests the variable importance of design
 matrix \eqn{\textbf{X}}{X}.
@@ -98,13 +96,13 @@ Importance(object, Model, Data, Categorical=FALSE, Discrep, d=0)
   for model revision, or reporting the relative importance of variables.
 }
 \value{
-     \code{Importance} returns a matrix with a number of rows equal
-     to the number of columns in design matrix X + 1 (including the full
-     model), and 3 columns, which are Concordance (or Mean.Lift if
-     categorical), Discrep, and L-criterion. Each row represents a model
-     with a predictor in \eqn{\textbf{X}}{X} removed (except for the
-     first row, which is the full model), and the resulting posterior
-     predictive checks.
+  \code{Importance} returns a matrix with a number of rows equal to the
+  number of columns in design matrix \eqn{\textbf{X}}{X} + 1 (including
+  the full model), and 3 columns, which are Concordance (or Mean.Lift if
+  categorical), Discrep, and L-criterion. Each row represents a model
+  with a predictor in \eqn{\textbf{X}}{X} removed (except for the first
+  row, which is the full model), and the resulting posterior predictive
+  checks.
 }
 \references{\url{http://www.statisticat.com/laplacesdemon.html}}
 \author{Byron Hall \email{laplacesdemon@statisticat.com}}

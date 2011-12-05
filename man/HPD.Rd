@@ -30,7 +30,9 @@ HPD(obj, prob=0.95, \dots)
   highest density region near zero to be outside of its interval. In
   contrast, the \code{HPD} is recommended for such skewed posterior
   distributions. However, posterior distributions with multiple modes
-  probably should not be characterized with any probability interval.
+  probably should not be characterized with any probability
+  interval. The presence of multiple modes may be checked with the
+  \code{\link{is.multimodal}} function.
   
   For each parameter (or deviance or monitored variable), the HPD is
   estimated from the empirical CDF of the sample as the shortest
@@ -50,4 +52,6 @@ HPD(obj, prob=0.95, \dots)
 #Then
 #HPD(Fit)
 }
-\seealso{\code{\link{LaplacesDemon}}}
+\seealso{
+  \code{\link{is.multimodal}},
+  \code{\link{LaplacesDemon}}.}

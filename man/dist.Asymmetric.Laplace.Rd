@@ -73,9 +73,9 @@ These functions are similar to those in the \code{VGAM} package.
   \code{ralaplace} generates random deviates.
 }
 \references{
-  Kotz, S., Kozubowski, T.J., and Podgorski, K. (2001). The Laplace
+  Kotz, S., Kozubowski, T.J., and Podgorski, K. (2001). "The Laplace
   Distribution and Generalizations: a Revisit with Applications to
-  Communications, Economics, Engineering, and Finance, Boston:
+  Communications, Economics, Engineering, and Finance". Boston:
   Birkhauser.
 }
 \seealso{\code{\link{dlaplace}}}

@@ -7,8 +7,8 @@
 }
 \usage{\method{print}{laplace}(x, \dots)}
 \arguments{
-     \item{x}{An object of class \code{laplace} is required.}
-     \item{\dots}{Additional arguments are unused.}
+  \item{x}{An object of class \code{laplace} is required.}
+  \item{\dots}{Additional arguments are unused.}
 }
 \references{
   Hall, B. (2011). "Laplace's Demon", STATISTICAT, LLC.
