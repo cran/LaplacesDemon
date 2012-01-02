@@ -78,7 +78,9 @@ This vignette will grow over time as examples of more methods become included. C
 \item Distributed Lag, Koyck \ref{dl.koyck}
 \item Dynamic Linear Model (DLM) \ref{dlm}
 \item Exponential Smoothing \ref{exp.smo}
+\item Factor Analysis, Approximate Dynamic (ADFA) \ref{adfa}
 \item Factor Analysis, Confirmatory (CFA) \ref{cfa}
+\item Factor Analysis, Dynamic (DFA) \ref{dfa}
 \item Factor Analysis, Exploratory (EFA) \ref{efa}
 \item Factor Regression \ref{factor.reg}
 \item Gamma Regression \ref{gamma.reg}
@@ -94,6 +96,7 @@ This vignette will grow over time as examples of more methods become included. C
 \item Linear Regression, Multilevel \ref{linear.reg.ml}
 \item Linear Regression with Full Missingness \ref{linear.reg.full.miss}
 \item Linear Regression with Missing Response \ref{linear.reg.miss.resp}
+\item LSTAR \ref{lstar}
 \item MANCOVA \ref{mancova}
 \item MANOVA \ref{manova}
 \item Mixture Model, Finite \ref{fmm}
@@ -343,7 +346,7 @@ MyData <- list(J=J, X=X, mon.names=mon.names, parm.names=parm.names, y=y) \\
 \hspace*{0.27 in} \#\#\# Log(Prior Densities) \\
 \hspace*{0.27 in} beta.prior <- sum(dnormv(beta, 0, 1000, log=TRUE)) \\
 \hspace*{0.27 in} \#\#\# Log-Likelihood Approximation \\
-\hspace*{0.27 in} mu <- tcrossprod(beta, Data$X) \\
+\hspace*{0.27 in} mu <- tcrossprod(Data$X, t(beta)) \\
 \hspace*{0.27 in} LL <- -sum(abs(Data$y - mu)) \\
 \hspace*{0.27 in} \#\#\# Log-Posterior Approximation \\
 \hspace*{0.27 in} LP <- LL + beta.prior \\
@@ -423,7 +426,7 @@ MyData <- list(T=T, mon.names=mon.names, parm.names=parm.names, y=y) \\
 \hspace*{0.27 in} sigma2.new <- theta[1] + theta[2]*epsilon[Data$T]\textasciicircum 2 \\
 \hspace*{0.27 in} LL <- sum(dnormv(Data$y, mu, sigma2, log=TRUE)) \\
 \hspace*{0.27 in} \#\#\# Log-Posterior \\
-\hspace*{0.27 in} LP <- LL + alpha.prior + phi.prior + delta.prior + theta.prior + \\
+\hspace*{0.27 in} LP <- LL + alpha.prior + phi.prior + delta.prior + theta.prior \\
 \hspace*{0.27 in} Modelout <- list(LP=LP, Dev=-2*LL, Monitor=c(LP, ynew, sigma2.new), \\
 \hspace*{0.62 in} yhat=mu, parm=parm) \\
 \hspace*{0.27 in} return(Modelout) \\
@@ -580,7 +583,6 @@ $$\alpha \sim \mathcal{N}(0, 1000)$$
 $$\phi \sim \mathcal{N}(0, 1000)$$
 $$\sigma \sim \mathcal{HC}(25)$$
 $$\theta \sim \mathcal{N}(0, 1000)$$
-\subsection{Data}
 \subsection{Data}
 \code{y <- c(0.02, -0.51, -0.30,  1.46, -1.26, -2.15, -0.91, -0.53, -1.91, \\
 \hspace*{0.27 in} 2.64,  1.64,  0.15,  1.46,  1.61,  1.96, -2.67, -0.19, -3.28, \\
@@ -739,15 +741,14 @@ MyData <- list(J=J, X=X, mon.names=mon.names, parm.names=parm.names, y=y) \\
 \hspace*{0.27 in} beta <- parm[1:Data$J] \\
 \hspace*{0.27 in} \#\#\# Log(Prior Densities) \\
 \hspace*{0.27 in} beta.prior <- sum(dnormv(beta, 0, 1000, log=TRUE)) \\
-\hspace*{0.27 in} mu <- tcrossprod(beta, Data$X) \\
-\hspace*{0.27 in} eta <- invlogit(mu) \\
 \hspace*{0.27 in} \#\#\# Log-Likelihood \\
+\hspace*{0.27 in} mu <- tcrossprod(Data$X, t(beta)) \\
+\hspace*{0.27 in} eta <- invlogit(mu) \\
 \hspace*{0.27 in} LL <- sum(dbern(Data$y, eta, log=TRUE)) \\
 \hspace*{0.27 in} yrep <- ifelse(eta >= (sum(Data$y)/length(Data$y)),1,0) \\
 \hspace*{0.27 in} \#\#\# Log-Posterior \\
 \hspace*{0.27 in} LP <- LL + beta.prior \\
-\hspace*{0.27 in} Modelout <- list(LP=LP, Dev=-2*LL, Monitor=LP, \\
-\hspace*{0.62 in} yhat=yrep, parm=parm) \\
+\hspace*{0.27 in} Modelout <- list(LP=LP, Dev=-2*LL, Monitor=LP, yhat=yrep, parm=parm) \\
 \hspace*{0.27 in} return(Modelout) \\
 \hspace*{0.27 in} \} \\
 }
@@ -782,9 +783,9 @@ MyData <- list(J=J, X=X, mon.names=mon.names, parm.names=parm.names, y=y) \\
 \hspace*{0.27 in} \#\#\# Log(Prior Densities) \\
 \hspace*{0.27 in} alpha.prior <- dunif(alpha, 0, 1, log=TRUE) \\
 \hspace*{0.27 in} beta.prior <- sum(dnormv(beta, 0, 1000, log=TRUE)) \\
-\hspace*{0.27 in} mu <- tcrossprod(beta, Data$X) \\
-\hspace*{0.27 in} eta <- alpha*invloglog(mu) + (1-alpha)*invcloglog(mu) \\
 \hspace*{0.27 in} \#\#\# Log-Likelihood \\
+\hspace*{0.27 in} mu <- tcrossprod(Data$X, t(beta)) \\
+\hspace*{0.27 in} eta <- alpha*invloglog(mu) + (1-alpha)*invcloglog(mu) \\
 \hspace*{0.27 in} LL <- sum(dbern(Data$y, eta, log=TRUE)) \\
 \hspace*{0.27 in} yrep <- ifelse(eta >= (sum(Data$y)/length(Data$y)),1,0) \\
 \hspace*{0.27 in} \#\#\# Log-Posterior \\
@@ -823,7 +824,7 @@ MyData <- list(J=J, X=X, mon.names=mon.names, parm.names=parm.names, y=y)
 \hspace*{0.27 in} \#\#\# Log(Prior Densities) \\
 \hspace*{0.27 in} beta.prior <- sum(dnormv(beta, 0, 1000, log=TRUE)) \\
 \hspace*{0.27 in} \#\#\# Log-Likelihood \\
-\hspace*{0.27 in} mu <- tcrossprod(beta, Data$X) \\
+\hspace*{0.27 in} mu <- tcrossprod(Data$X, t(beta)) \\
 \hspace*{0.27 in} mu <- interval(mu, -10, 10) \\
 \hspace*{0.27 in} p <- pnorm(mu) \\
 \hspace*{0.27 in} LL <- sum(dbern(Data$y, p, log=TRUE)) \\
@@ -1055,7 +1056,7 @@ MyData <- list(A=A, E=E, N=N, mon.names=mon.names, parm.names=parm.names, \\
 \hspace*{0.27 in} epsilon <- parm[grep("epsilon", Data$parm.names)] \\
 \hspace*{0.27 in} rho <- interval(parm[grep("rho", Data$parm.names)], -1, 1) \\
 \hspace*{0.27 in} parm[grep("rho", Data$parm.names)] <- rho \\
-\hspace*{0.62 in} epsilon.mu[i] <- rho * rowSums(epsilon * Data$A) \\
+\hspace*{0.62 in} epsilon.mu <- rho * rowSums(epsilon * Data$A) \\
 \hspace*{0.27 in} sigma <- exp(parm[grep("log.sigma", Data$parm.names)]) \\
 \hspace*{0.27 in} \#\#\# Log(Prior Densities) \\
 \hspace*{0.27 in} beta.prior <- sum(dnormv(beta, 0, 1000, log=TRUE)) \\
@@ -1107,7 +1108,7 @@ MyData <- list(J=J, X=X, mon.names=mon.names, parm.names=parm.names, y=y) \\
 \hspace*{0.27 in} beta.prior <- sum(dnormv(beta, 0, 1000, log=TRUE)) \\
 \hspace*{0.27 in} sigma.prior <- dhalfcauchy(sigma, 25, log=TRUE) \\
 \hspace*{0.27 in} \#\#\# Log-Likelihood \\
-\hspace*{0.27 in} mu <- tcrossprod(beta, Data$X) \\
+\hspace*{0.27 in} mu <- tcrossprod(Data$X, t(beta)) \\
 \hspace*{0.27 in} LL <- dnorm(Data$y, mu, sigma, log=TRUE) \\
 \hspace*{0.27 in} InvL <- 1 / exp(LL) \\
 \hspace*{0.27 in} LL <- sum(LL) \\
@@ -1336,7 +1337,7 @@ MyData <- list(C=C, J=J, K=K, N=N, X=X, Z=Z, mon.names=mon.names, \\
 \hspace*{0.27 in} gamma.prior <- sum(dnormv(gamma, 0, 1000, log=TRUE)) \\
 \hspace*{0.27 in} \#\#\# Log-Likelihood \\
 \hspace*{0.27 in} mu <- matrix(rep(tcrossprod(gamma, Data$Z), Data$J), Data$N, Data$J) \\
-\hspace*{0.27 in} mu[,-Data$J] <- mu[,-Data$J] + t(tcrossprod(beta, Data$X)) \\
+\hspace*{0.27 in} mu[,-Data$J] <- mu[,-Data$J] + tcrossprod(Data$X, beta) \\
 \hspace*{0.27 in} mu <- interval(mu, -700, 700) \\
 \hspace*{0.27 in} phi <- exp(mu) \\
 \hspace*{0.27 in} p <- phi / rowSums(phi) \\
@@ -1351,7 +1352,7 @@ MyData <- list(C=C, J=J, K=K, N=N, X=X, Z=Z, mon.names=mon.names, \\
 
 \section{Discrete Choice, Mixed Logit} \label{mixed.logit}
 \subsection{Form}
-$$\textbf{y}_i \sim \mathcal{CAT}(\textbf{p}_{i,1:J}), \quad i=1,\dots,N, \quad j=1,\dots,J$$
+$$\textbf{y}_i \sim \mathcal{CAT}(\textbf{p}_{i,1:J}), \quad i=1,\dots,N$$
 $$\textbf{p}_{i,j} = \frac{\phi_{i,j}}{\sum^J_{j=1} \phi_{i,j}}$$
 $$\phi = \exp(\mu)$$
 $$\mu_{i,j} = \beta_{j,1:K} \textbf{X}_{i,1:K} + \gamma \textbf{Z}_{i,1:C} \in [-700,700], \quad j=1,\dots,(J-1)$$
@@ -1401,12 +1402,14 @@ MyData <- list(C=C, J=J, K=K, N=N, X=X, Z=Z, mon.names=mon.names, \\
 \hspace*{0.27 in} zeta.sigma <- exp(parm[grep("log.zeta.sigma", Data$parm.names)]) \\
 \hspace*{0.27 in} \#\#\# Log(Prior Densities) \\
 \hspace*{0.27 in} beta.prior <- sum(dnormv(beta, 0, 1000, log=TRUE)) \\
-\hspace*{0.27 in} gamma.prior <- sum(dnormv(gamma, 0, 1000, log=TRUE)) \\
+\hspace*{0.27 in} gamma.prior <- sum(dnorm(gamma, matrix(zeta.mu, Data$N, Data$C, \\
+\hspace*{0.62 in} byrow=TRUE), matrix(zeta.sigma, Data$N, Data$C, byrow=TRUE), \\
+\hspace*{0.27 in} log=TRUE)) \\
 \hspace*{0.27 in} zeta.mu.prior <- sum(dnormv(zeta.mu, 0, 1000, log=TRUE)) \\
 \hspace*{0.27 in} zeta.sigma.prior <- sum(dhalfcauchy(zeta.sigma, 25, log=TRUE)) \\
 \hspace*{0.27 in} \#\#\# Log-Likelihood \\
 \hspace*{0.27 in} mu <- matrix(rep(rowSums(gamma * Data$Z),Data$J), Data$N, Data$J) \\
-\hspace*{0.27 in} mu[,-Data$J] + mu[,-Data$J] + t(tcrossprod(beta, Data$X)) \\
+\hspace*{0.27 in} mu[,-Data$J] <- tcrossprod(Data$X, beta) + gamma * Data$Z \\
 \hspace*{0.27 in} mu <- interval(mu, -700, 700) \\
 \hspace*{0.27 in} phi <- exp(mu) \\
 \hspace*{0.27 in} p <- phi / rowSums(phi) \\
@@ -1414,7 +1417,7 @@ MyData <- list(C=C, J=J, K=K, N=N, X=X, Z=Z, mon.names=mon.names, \\
 \hspace*{0.27 in} yrep <- max.col(p) \\
 \hspace*{0.27 in} \#\#\# Log-Posterior \\
 \hspace*{0.27 in} LP <- LL + beta.prior + gamma.prior + zeta.mu.prior + zeta.sigma.prior\\
-\hspace*{0.27 in} Modelout <- list(LP=LP, Dev=-2*LL, Monitor=c(LP,zeta.sigma.prior), \\
+\hspace*{0.27 in} Modelout <- list(LP=LP, Dev=-2*LL, Monitor=c(LP,zeta.sigma), \\
 \hspace*{0.62 in} yhat=yrep, parm=parm) \\
 \hspace*{0.27 in} return(Modelout) \\
 \hspace*{0.27 in} \} \\
@@ -1483,7 +1486,7 @@ MyData <- list(J=J, K=K, N=N, S=S, W=W, X=X, mon.names=mon.names, \\
 \hspace*{0.27 in} gamma <- rbind(gamma, gamma*-1) \#Sum to zero constraint \\
 \hspace*{0.27 in} Sigma <- as.parm.matrix(Sigma, Data$J, parm, Data, restrict=TRUE) \\
 \hspace*{0.27 in} parm[grep("Sigma", Data$parm.names)] <- upper.triangle(Sigma, \\
-\hspace*{0.62 in} diag=TRUE)][-1] \\
+\hspace*{0.62 in} diag=TRUE)[-1] \\
 \hspace*{0.27 in} Z <- matrix(parm[grep("Z", Data$parm.names)], Data$N, Data$J) \\
 \hspace*{0.27 in} \#\#\# Log(Prior Densities) \\
 \hspace*{0.27 in} beta.prior <- sum(dnormv(beta, 0, 1000, log=TRUE)) \\
@@ -1493,7 +1496,7 @@ MyData <- list(J=J, K=K, N=N, S=S, W=W, X=X, mon.names=mon.names, \\
 \hspace*{0.27 in} \#\#\# Log-Likelihood \\
 \hspace*{0.27 in} mu <- matrix(c(rep(tcrossprod(gamma[1,], Data$W),J), \\
 \hspace*{0.62 in} tcrossprod(gamma[2,], Data$W)),Data$N,Data$J) \\
-\hspace*{0.27 in} mu <- mu + t(tcrossprod(beta, Data$X)) \\
+\hspace*{0.27 in} mu <- mu + tcrossprod(Data$X, beta) \\
 \hspace*{0.27 in} Y <- as.indicator.matrix(Data$y) \\
 \hspace*{0.27 in} Z <- ifelse(Z > 10, 10, Z); Z <- ifelse(\{Y == 0\} \& \{Z > 0\}, 0, Z) \\
 \hspace*{0.27 in} Z <- ifelse(Z < -10, -10, Z); Z <- ifelse(\{Y == 1\} \& \{Z < 0\}, 0, Z) \\
@@ -1697,11 +1700,58 @@ MyData <- list(T=T, mon.names=mon.names, parm.names=parm.names, y=y) \\
 \hspace*{0.27 in} \} \\
 }
 
+\section{Factor Analysis, Approximate Dynamic} \label{adfa}
+The Approximate Dynamic Factor Analysis (ADFA) model has many names, including the approximate factor model and approximate dynamic factor model. An ADFA is a Dynamic Factor Analysis (DFA) in which the factor scores of the dynamic factors are approximated with principal components. This is a combination of principal components and common factor analysis, in which the factor loadings of common factors are estimated from the data and factor scores are estimated from principal components. This is a two-stage model: principal components are estimated in the first stage and a decision is made regarding how many principal components to retain, and ADFA is estimated in the second stage. For more information on DFA, see section \ref{dfa}.
+\subsection{Form}
+$$\textbf{Y}_{t,j} \sim \mathcal{N}(\mu_{t,j}, \sigma^2_j), \quad t=2,\dots,T, \quad j=1,\dots,J$$
+$$\mu_{t,} = \textbf{F}_{t-1,} \Lambda$$
+$$\Lambda_{p,j} \sim \mathcal{N}(0, 1000), \quad p=1,\dots,P, \quad j=1,\dots,J$$
+$$\sigma_j \sim \mathcal{HC}(25), \quad j=1,\dots,J$$
+\subsection{Data}
+\code{T <- 10 \#Number of time-periods \\
+J <- 20 \#Number of variables \\
+P <- 5 \#Number of approximate dynamic factors \\
+Lambda <- matrix(runif(J*P,-1,1), P, J) \\
+Sigma <- matrix(runif(P*P), P, P); diag(Sigma) <- runif(P)*5 \\
+Sigma <- as.symmetric.matrix(Sigma); Sigma <- as.positive.definite(Sigma) \\
+F <- rmvn(T, rep(0,P), Sigma) \\
+Y <- tcrossprod(F, t(Lambda)) \\
+PCA <- prcomp(Y, scale=TRUE) \\
+F <- PCA$x[,1:P] \\
+mon.names <- c("LP", paste("ynew[", 1:J, "]", sep="")) \\
+parm.names <- as.parm.names(list(Lambda=matrix(0,P,J), log.sigma=rep(0,J))) \\
+MyData <- list(F=F, J=J, P=P, T=T, Y=Y, mon.names=mon.names, \\
+\hspace*{0.27 in} parm.names=parm.names) \\
+}
+\subsection{Initial Values}
+\code{Initial.Values <- c(rep(0,P*J), rep(1,J))}
+\subsection{Model}
+\code{Model <- function(parm, Data) \\
+\hspace*{0.27 in} \{ \\
+\hspace*{0.27 in} \#\#\# Parameters \\
+\hspace*{0.27 in} Lambda <- matrix(parm[1:(Data$P*Data$J)], Data$P, Data$J) \\
+\hspace*{0.27 in} sigma <- exp(parm[grep("log.sigma", Data$parm.names)]) \\
+\hspace*{0.27 in} \#\#\# Log(Prior Densities) \\
+\hspace*{0.27 in} Lambda.prior <- sum(dnormv(Lambda, 0, 1000, log=TRUE)) \\
+\hspace*{0.27 in} sigma.prior <- sum(dhalfcauchy(sigma, 25, log=TRUE)) \\
+\hspace*{0.27 in} \#\#\# Log-Likelihood \\
+\hspace*{0.27 in} mu <- rbind(rep(0, Data$J), tcrossprod(F[-Data$T,], t(Lambda))) \\
+\hspace*{0.27 in} ynew <- tcrossprod(F[Data$T,], t(Lambda)) \\
+\hspace*{0.27 in} LL <- sum(dnorm(Data$Y, mu, matrix(sigma, Data$T, Data$J, byrow=TRUE), \\
+\hspace*{0.27 in}      log=TRUE)) \\
+\hspace*{0.27 in} \#\#\# Log-Posterior \\
+\hspace*{0.27 in} LP <- LL + Lambda.prior + sigma.prior \\
+\hspace*{0.27 in} Modelout <- list(LP=LP, Dev=-2*LL, Monitor=c(LP,ynew), yhat=mu, \\
+\hspace*{0.27 in}      parm=parm) \\
+\hspace*{0.27 in} return(Modelout) \\
+\hspace*{0.27 in} \} \\
+}
+
 \section{Factor Analysis, Confirmatory} \label{cfa}
 Factor scores are in matrix \textbf{F}, factor loadings for each variable are in vector $\lambda$, and $\textbf{f}$ is a vector that indicates which variable loads on which factor.
 \subsection{Form}
 $$\textbf{Y}_{i,m} \sim \mathcal{N}(\mu_{i,m}, \sigma^2_m), \quad i=1,\dots,N, \quad m=1,\dots,M$$
-$$\mu_{i,m} = \alpha_m + \lambda_m \textbf{F}_{i,\textbf{f}[m]}, \quad i=1,\dots,N, \quad m=1,\dots,M$$
+$$\mu = \alpha^T + \textbf{F}_{1:N,\textbf{f}} \lambda^T$$
 $$\textbf{F}_{i,1:P} \sim \mathcal{N}_P(\gamma, \Omega^{-1}), \quad i=1,\dots,N$$
 $$\alpha_m \sim \mathcal{N}(0, 1000), \quad m=1,\dots,M$$
 $$\lambda_m \sim \mathcal{N}(0, 1000), \quad m=1,\dots,M$$
@@ -1717,7 +1767,7 @@ P <- 3 \#Number of factors \\
 f <- c(1,3,2,2,1) \#Indicator f for the factor for each variable m \\
 gamma <- rep(0,P) \\
 S <- diag(P) \\
-mon.names <- c("LP","mu[1,1]") \\
+mon.names <- "LP" \\
 parm.names <- as.parm.names(list(F=matrix(0,N,P), lambda=rep(0,M), \\
 \hspace*{0.27 in} Omega=diag(P), alpha=rep(0,M), log.sigma=rep(0,M)), \\
 \hspace*{0.27 in} uppertri=c(0,0,1,0,0)) \\
@@ -1745,24 +1795,81 @@ MyData <- list(M=M, N=N, P=P, S=S, Y=Y, f=f, gamma=gamma, \\
 \hspace*{0.27 in} Omega.prior <- dwishart(Omega, Data$N, Data$S, log=TRUE) \\
 \hspace*{0.27 in} F.prior <- sum(dmvnp(F, Data$gamma, Omega, log=TRUE)) \\
 \hspace*{0.27 in} \#\#\# Log-Likelihood \\
-\hspace*{0.27 in} mu <- Data$Y \\
-\hspace*{0.27 in} for (m in 1:Data$M) \{mu[,m] <- alpha[m] + lambda[m] * F[,Data$f[m]]\} \\
+\hspace*{0.27 in} mu <- matrix(alpha, Data$N, Data$M, byrow=TRUE) + F[,Data$f] * \\
+\hspace*{0.62 in} matrix(lambda, Data$N, Data$M, byrow=TRUE) \\
 \hspace*{0.27 in} LL <- sum(dnorm(Data$Y, mu, sigma, log=TRUE)) \\
 \hspace*{0.27 in} \#\#\# Log-Posterior \\
 \hspace*{0.27 in} LP <- LL + alpha.prior + lambda.prior + sigma.prior + F.prior + \\
 \hspace*{0.62 in} Omega.prior \\
-\hspace*{0.27 in} Modelout <- list(LP=LP, Dev=-2*LL, Monitor=c(LP,mu[1,1]), \\
-\hspace*{0.62 in} yhat=mu, parm=parm) \\
+\hspace*{0.27 in} Modelout <- list(LP=LP, Dev=-2*LL, Monitor=LP, yhat=mu, parm=parm) \\
+\hspace*{0.27 in} return(Modelout) \\
+\hspace*{0.27 in} \}
+}
+
+\section{Factor Analysis, Dynamic} \label{dfa}
+The factor scores in \textbf{F} are dynamic with respect to time, and are estimated as in a dynamic linear model (DLM) with constant variance in the state vector. For more information on DLMs, see section \ref{dlm}. For more information on exploratory factor analysis, see section \ref{efa}.
+\subsection{Form}
+$$\textbf{Y}_{t,j} \sim \mathcal{N}(\mu_{t,j}, \sigma^2_j), \quad t=2,\dots,T, \quad j=1,\dots,J$$
+$$\mu_{2:T,} = \textbf{F}_{1:(T-1),} \Lambda$$
+$$\textbf{F}_{1,1:P} \sim \mathcal{N}_P(0, \Omega^{-1})$$
+$$\textbf{F}_{t,1:P} \sim \mathcal{N}_P(\textbf{F}_{t-1,1:P}, \Omega^{-1}), \quad t=2,\dots,T$$
+$$\Lambda_{p,j} \sim \mathcal{N}(0, 1000), \quad p=1,\dots,P, \quad j=1,\dots,J$$
+$$\Omega \sim \mathcal{W}_N(\textbf{S}), \quad \textbf{S} = \textbf{I}_P$$
+$$\sigma_j \sim \mathcal{HC}(25), \quad j=1,\dots,J$$
+\subsection{Data}
+\code{T <- 10 \#Number of time-periods \\
+J <- 20 \#Number of time-series \\
+P <- 3 \#Number of dynamic factors \\
+Lambda <- matrix(runif(J*P,-1,1), P, J) \\
+Sigma <- matrix(runif(P*P), P, P); diag(Sigma) <- runif(P)*5 \\
+Sigma <- as.symmetric.matrix(Sigma); Sigma <- as.positive.definite(Sigma) \\
+F <- rmvn(T, rep(0,P), Sigma) \\
+Y <- tcrossprod(F, t(Lambda)) \\
+S <- diag(P) \\
+mon.names <- c("LP", paste("ynew[", 1:J, "]", sep="")) \\
+parm.names <- as.parm.names(list(F=matrix(0,T,P), Omega=diag(P), \\
+\hspace*{0.27 in} Lambda=matrix(0,P,J), log.sigma=rep(0,J)), uppertri=c(0,1,0,0)) \\
+MyData <- list(J=J, P=P, S=S, T=T, Y=Y, mon.names=mon.names, \\
+\hspace*{0.27 in} parm.names=parm.names) \\
+}
+\subsection{Initial Values}
+\code{Initial.Values <- c(rep(0,T*P), S[upper.tri(S, diag=TRUE)], rep(0,P*J), \\
+\hspace*{0.27 in} rep(0,J)) \\
+}
+\subsection{Model}
+\code{Model <- function(parm, Data) \\
+\hspace*{0.27 in} \{ \\
+\hspace*{0.27 in} \#\#\# Parameters \\
+\hspace*{0.27 in} F <- matrix(parm[1:(Data$T*Data$P)], Data$T, Data$P) \\
+\hspace*{0.27 in} Omega <- as.parm.matrix(Omega, Data$P, parm, Data) \\
+\hspace*{0.27 in} parm[grep("Omega", Data$parm.names)] <- Omega[upper.tri(Omega, \\
+\hspace*{0.62 in} diag=TRUE)] \\
+\hspace*{0.27 in} Lambda <- matrix(parm[grep("Lambda", Data$parm.names)], Data$P, Data$J) \\
+\hspace*{0.27 in} sigma <- exp(parm[grep("log.sigma", Data$parm.names)]) \\
+\hspace*{0.27 in} \#\#\# Log(Prior Densities) \\
+\hspace*{0.27 in} F.prior <- sum(dmvnp(F[1,], rep(0, Data$P), Omega, log=TRUE), \\
+\hspace*{0.62 in} dmvnp(F[-1,], F[-Data$T,], Omega, log=TRUE)) \\
+\hspace*{0.27 in} Omega.prior <- dwishart(Omega, Data$P+1, Data$S, log=TRUE) \\
+\hspace*{0.27 in} Lambda.prior <- sum(dnormv(Lambda, 0, 1000, log=TRUE)) \\
+\hspace*{0.27 in} sigma.prior <- sum(dhalfcauchy(sigma, 25, log=TRUE)) \\
+\hspace*{0.27 in} \#\#\# Log-Likelihood \\
+\hspace*{0.27 in} mu <- rbind(rep(0, Data$J), tcrossprod(F[-Data$T,], t(Lambda))) \\
+\hspace*{0.27 in} ynew <- tcrossprod(F[Data$T,], t(Lambda)) \\
+\hspace*{0.27 in} LL <- sum(dnorm(Data$Y, mu, matrix(sigma, Data$T, Data$J, byrow=TRUE), \\
+\hspace*{0.62 in} log=TRUE)) \\
+\hspace*{0.27 in} \#\#\# Log-Posterior \\
+\hspace*{0.27 in} LP <- LL + F.prior + Omega.prior + Lambda.prior + sigma.prior \\
+\hspace*{0.27 in} Modelout <- list(LP=LP, Dev=-2*LL, Monitor=c(LP,ynew), yhat=mu, \\
+\hspace*{0.62 in} parm=parm) \\
 \hspace*{0.27 in} return(Modelout) \\
 \hspace*{0.27 in} \}
 }
 
 \section{Factor Analysis, Exploratory} \label{efa}
-Factor scores are in matrix \textbf{F} and factor loadings are in matrix $\Lambda$. Although the calculation for the recommended number of factors to explore $P$ is also provided below \citep{fokoue04}, this example sets $P=3$.
+Factor scores are in matrix \textbf{F} and factor loadings are in matrix $\Lambda$.
 \subsection{Form}
 $$\textbf{Y}_{i,m} \sim \mathcal{N}(\mu_{i,m}, \sigma^2_m), \quad i=1,\dots,N, \quad m=1,\dots,M$$
-$$\mu_{i,m} = \alpha_m + \displaystyle\sum^P_{p=1} \nu_{i,m,p}, \quad i=1,\dots,N, \quad m=1,\dots,M$$
-$$\nu_{i,m,p} = \textbf{F}_{i,p} \Lambda_{p,m}, \quad i=1,\dots,N, \quad m=1,\dots,M, \quad p=1,\dots,P$$
+$$\mu = \alpha^T + \textbf{F} \Lambda$$
 $$\textbf{F}_{i,1:P} \sim \mathcal{N}_P(\gamma, \Omega^{-1}), \quad i=1,\dots,N$$
 $$\alpha_m \sim \mathcal{N}(0, 1000), \quad m=1,\dots,M$$
 $$\gamma_p = 0, \quad p=1,\dots,P$$
@@ -1770,17 +1877,18 @@ $$\Lambda_{p,m} \sim \mathcal{N}(0, 1000), \quad p=1,\dots,P, \quad m=1,\dots,M$
 $$\Omega \sim \mathcal{W}_N(\textbf{S}), \quad \textbf{S} = \textbf{I}_P$$
 $$\sigma_m \sim \mathcal{HC}(25), \quad m=1,\dots,M$$
 \subsection{Data}
-\code{
-data(swiss) \\
-Y <- cbind(swiss$Agriculture, swiss$Examination, swiss$Education, \\
-          swiss$Catholic, swiss$Infant.Mortality) \\
-M <- ncol(Y) \#Number of variables \\
-N <- nrow(Y) \#Number of records \\
-P <- trunc(0.5*(2*M + 1 - sqrt(8*M + 1))) \#Number of factors to explore \\
-P <- 3 \#Number of factors to explore (override for this example) \\
+\code{M <- 10 \#Number of variables \\
+N <- 20 \#Number of records \\
+P <- 3 \#Number of factors \\
+alpha <- runif(M)*10 \\
+Lambda <- matrix(runif(M*P,-1,1), P, M) \\
+Sigma <- matrix(runif(P*P), P, P); diag(Sigma) <- 1 + runif(P)*5 \\
+Sigma <- as.symmetric.matrix(Sigma); Sigma <- as.positive.definite(Sigma) \\
+F <- rmvn(N, rep(0,P), Sigma) \\
+Y <- matrix(alpha, N, M, byrow=TRUE) + tcrossprod(F, t(Lambda)) \\
 gamma <- rep(0,P) \\
 S <- diag(P) \\
-mon.names <- c("LP","mu[1,1]") \\
+mon.names <- "LP" \\
 parm.names <- as.parm.names(list(F=matrix(0,N,P), Lambda=matrix(0,P,M), \\
 \hspace*{0.27 in} Omega=diag(P), alpha=rep(0,M), log.sigma=rep(0,M)), \\
 \hspace*{0.27 in} uppertri=c(0,0,1,0,0)) \\
@@ -1794,68 +1902,66 @@ MyData <- list(M=M, N=N, P=P, S=S, Y=Y, gamma=gamma, mon.names=mon.names, \\
 \code{Model <- function(parm, Data) \\
 \hspace*{0.27 in} \{ \\
 \hspace*{0.27 in} \#\#\# Parameters \\
-\hspace*{0.27 in} alpha <- parm[grep("alpha", Data$parm.names)] \\
-\hspace*{0.27 in} sigma <- exp(parm[grep("log.sigma", Data$parm.names)]) \\
 \hspace*{0.27 in} F <- matrix(parm[grep("F", Data$parm.names)], Data$N, Data$P) \\
 \hspace*{0.27 in} Lambda <- matrix(parm[grep("Lambda", Data$parm.names)], \\
 \hspace*{0.62 in} Data$P, Data$M) \\
 \hspace*{0.27 in} Omega <- as.parm.matrix(Omega, Data$P, parm, Data) \\
 \hspace*{0.27 in} parm[grep("Omega", Data$parm.names)] <- upper.triangle(Omega, \\
 \hspace*{0.62 in} diag=TRUE) \\
+\hspace*{0.27 in} alpha <- parm[grep("alpha", Data$parm.names)] \\
+\hspace*{0.27 in} sigma <- exp(parm[grep("log.sigma", Data$parm.names)]) \\
 \hspace*{0.27 in} \#\#\# Log(Prior Densities) \\
-\hspace*{0.27 in} alpha.prior <- sum(dnormv(alpha, 0, 1000, log=TRUE)) \\
-\hspace*{0.27 in} sigma.prior <- sum(dhalfcauchy(sigma, 25, log=TRUE)) \\
-\hspace*{0.27 in} Omega.prior <- dwishart(Omega, Data$N, Data$S, log=TRUE) \\
 \hspace*{0.27 in} F.prior <- sum(dmvnp(F, Data$gamma, Omega, log=TRUE)) \\
 \hspace*{0.27 in} Lambda.prior <- sum(dnormv(Lambda, 0, 1000, log=TRUE)) \\
+\hspace*{0.27 in} Omega.prior <- dwishart(Omega, Data$N, Data$S, log=TRUE) \\
+\hspace*{0.27 in} alpha.prior <- sum(dnormv(alpha, 0, 1000, log=TRUE)) \\
+\hspace*{0.27 in} sigma.prior <- sum(dhalfcauchy(sigma, 25, log=TRUE)) \\
 \hspace*{0.27 in} \#\#\# Log-Likelihood \\
-\hspace*{0.27 in} mu <- Data$Y \\
-\hspace*{0.27 in} nu <- array(NA, dim=c(Data$N, Data$M, Data$P)) \\
-\hspace*{0.27 in} for (p in 1:Data$P) \{nu[, ,p] <- F[,p, drop=FALSE] \%*\% Lambda[p,]\} \\
-\hspace*{0.27 in} for (m in 1:Data$M) \{mu[,m] <- alpha[m] + rowSums(nu[,1,])\} \\
-\hspace*{0.27 in} LL <- sum(dnorm(Data$Y, mu, sigma, log=TRUE)) \\
+\hspace*{0.27 in} mu <- matrix(alpha, Data$N, Data$M, byrow=TRUE) + \\
+\hspace*{0.62 in} tcrossprod(F, t(Lambda)) \\
+\hspace*{0.27 in} LL <- sum(dnorm(Data$Y, mu, matrix(sigma, Data$N, Data$M, \\
+\hspace*{0.62 in} byrow=TRUE), log=TRUE)) \\
 \hspace*{0.27 in} \#\#\# Log-Posterior \\
-\hspace*{0.27 in} LP <- LL + alpha.prior + sigma.prior + Omega.prior + F.prior + \\
-\hspace*{0.62 in} Lambda.prior \\
-\hspace*{0.27 in} Modelout <- list(LP=LP, Dev=-2*LL, Monitor=c(LP,mu[1,1]), \\
-\hspace*{0.62 in} yhat=mu, parm=parm) \\
+\hspace*{0.27 in} LP <- LL + F.prior + Lambda.prior + Omega.prior + alpha.prior +
+\hspace*{0.62 in} sigma.prior \\
+\hspace*{0.27 in} Modelout <- list(LP=LP, Dev=-2*LL, Monitor=LP, yhat=mu, parm=parm) \\
 \hspace*{0.27 in} return(Modelout) \\
 \hspace*{0.27 in} \}
 }
 
 \section{Factor Regression} \label{factor.reg}
-This example of factor regression is constrained to the case where the number of factors is equal to the number of independent variables (IVs) less the intercept, or $J-1$. The purpose of this form of factor regression is to orthogonalize the IVs with respect to $\textbf{y}$, rather than variable reduction. This method is the combination of confirmatory factor analysis in section \ref{cfa} and linear regression in section \ref{linear.reg}.
+This example of factor regression is constrained to the case where the number of factors is equal to the number of independent variables (IVs) less the intercept. The purpose of this form of factor regression is to orthogonalize the IVs with respect to $\textbf{y}$, rather than variable reduction. This method is the combination of confirmatory factor analysis in section \ref{cfa} and linear regression in section \ref{linear.reg}.
 \subsection{Form}
-$$\textbf{y}_i \sim \mathcal{N}(\nu, \sigma^2_J)$$
+$$\textbf{y} \sim \mathcal{N}(\nu, \sigma^2_{J+1})$$
 $$\nu = \mu \beta$$
 $$\mu_{i,1} = 1$$
-$$\mu_{i,j+1} = \mu_{i,j}, \quad j=1,\dots,(J-1)$$
+$$\mu_{i,j+1} = \mu_{i,j}, \quad j=1,\dots,J$$
 $$\textbf{X}_{i,j} \sim \mathcal{N}(\mu_{i,j}, \sigma^2_j), \quad i=1,\dots,N, \quad j=2,\dots,J$$
 $$\mu_{i,j} = \alpha_j + \lambda_j \textbf{F}_{i,j}, \quad i=1,\dots,N, \quad j=2,\dots,J$$
 $$\textbf{F}_{i,1:J} \sim \mathcal{N}_{J-1}(0, \Omega^{-1}), \quad i=1,\dots,N$$
 $$\alpha_j \sim \mathcal{N}(0, 1000), \quad j=1,\dots,(J-1)$$
 $$\beta_j \sim \mathcal{N}(0, 1000), \quad j=1,\dots,J$$
 $$\lambda_j \sim \mathcal{N}(0, 1000), \quad j=1,\dots,(J-1)$$
-$$\sigma_j \sim \mathcal{HC}(25), \quad j=1,\dots,J$$
-$$\Omega \sim \mathcal{W}_N(\textbf{S}), \quad \textbf{S} = \textbf{I}_{J-1}$$
+$$\sigma_j \sim \mathcal{HC}(25), \quad j=1,\dots,(J+1)$$
+$$\Omega \sim \mathcal{W}_N(\textbf{S}), \quad \textbf{S} = \textbf{I}_J$$
 \subsection{Data}
 \code{data(demonsnacks) \\
 N <- nrow(demonsnacks) \\
-J <- 4 \\
+J <- 3 \\
 y <- log(demonsnacks$Calories) \\
-X <- cbind(1, as.matrix(demonsnacks[,c(7,8,10)])) \\
-for (j in 2:J) \{X[,j] <- CenterScale(X[,j])\} \\
-S <- diag((J-1)) \\
+X <- as.matrix(demonsnacks[,c(7,8,10)]) \\
+for (j in 1:J) \{X[,j] <- CenterScale(X[,j])\} \\
+S <- diag(J) \\
 mon.names <- "LP" \\
-parm.names <- as.parm.names(list(alpha=rep(0,J-1), beta=rep(0,J), \\
-\hspace*{0.27 in} lambda=rep(0,J-1), log.sigma=rep(0,J), F=matrix(0,N,J-1), \\
-\hspace*{0.27 in} Omega=diag(J-1)), uppertri=c(0,0,0,0,0,1)) \\
+parm.names <- as.parm.names(list(alpha=rep(0,J), beta=rep(0,J+1), \\
+\hspace*{0.27 in} lambda=rep(0,J), log.sigma=rep(0,J+1), F=matrix(0,N,J), \\
+\hspace*{0.27 in} Omega=diag(J)), uppertri=c(0,0,0,0,0,1)) \\
 MyData <- list(J=J, N=N, S=S, X=X, mon.names=mon.names, \\
 \hspace*{0.27 in} parm.names=parm.names, y=y) \\
 }
 \subsection{Initial Values}
-\code{Initial.Values <- c(rep(0,J-1), rep(0,J), rep(0,J-1), rep(0,J), \\
-\hspace*{0.27 in} rep(0,N*(J-1)), upper.triangle(S, diag=TRUE))}
+\code{Initial.Values <- c(rep(0,J), rep(0,J+1), rep(0,J), rep(0,J+1), \\
+\hspace*{0.27 in} rep(0,N*J), upper.triangle(S, diag=TRUE))}
 \subsection{Model}
 \code{Model <- function(parm, Data) \\
 \hspace*{0.27 in} \{ \\
@@ -1864,8 +1970,8 @@ MyData <- list(J=J, N=N, S=S, X=X, mon.names=mon.names, \\
 \hspace*{0.27 in} beta <- parm[grep("beta", Data$parm.names)] \\
 \hspace*{0.27 in} lambda <- parm[grep("lambda", Data$parm.names)] \\
 \hspace*{0.27 in} sigma <- exp(parm[grep("log.sigma", Data$parm.names)]) \\
-\hspace*{0.27 in} F <- matrix(parm[grep("F", Data$parm.names)], Data$N, Data$J-1) \\
-\hspace*{0.27 in} Omega <- as.parm.matrix(Omega, Data$J-1, parm, Data) \\
+\hspace*{0.27 in} F <- matrix(parm[grep("F", Data$parm.names)], Data$N, Data$J) \\
+\hspace*{0.27 in} Omega <- as.parm.matrix(Omega, Data$J, parm, Data) \\
 \hspace*{0.27 in} parm[grep("Omega", Data$parm.names)] <- upper.triangle(Omega, \\
 \hspace*{0.62 in} diag=TRUE) \\
 \hspace*{0.27 in} \#\#\# Log(Prior Densities) \\
@@ -1874,12 +1980,13 @@ MyData <- list(J=J, N=N, S=S, X=X, mon.names=mon.names, \\
 \hspace*{0.27 in} lambda.prior <- sum(dnormv(lambda, 0, 1000, log=TRUE)) \\
 \hspace*{0.27 in} sigma.prior <- sum(dhalfcauchy(sigma, 25, log=TRUE)) \\
 \hspace*{0.27 in} Omega.prior <- dwishart(Omega, Data$N, Data$S, log=TRUE) \\
-\hspace*{0.27 in} F.prior <- sum(dmvnp(F, rep(0,Data$J-1), Omega, log=TRUE)) \\
+\hspace*{0.27 in} F.prior <- sum(dmvnp(F, rep(0,Data$J), Omega, log=TRUE)) \\
 \hspace*{0.27 in} \#\#\# Log-Likelihood \\
-\hspace*{0.27 in} mu <- matrix(alpha, Data$N, Data$J-1, byrow=TRUE) + \\
-\hspace*{0.62 in} matrix(lambda, Data$N, Data$J-1, byrow=TRUE) * F \\
+\hspace*{0.27 in} mu <- matrix(alpha, Data$N, Data$J, byrow=TRUE) + F * \\
+\hspace*{0.62 in} matrix(lambda, Data$N, Data$J, byrow=TRUE) \\
 \hspace*{0.27 in} nu <- tcrossprod(beta, cbind(rep(1,Data$N),mu)) \\
-\hspace*{0.27 in} LL <- sum(dnorm(Data$y, nu, sigma[Data$J], log=TRUE)) \\
+\hspace*{0.27 in} LL <- sum(dnorm(Data$X, mu, matrix(sigma[1:Data$J], Data$N, Data$J, \\
+\hspace*{0.62 in} byrow=TRUE)), dnorm(Data$y, nu, sigma[Data$J+1], log=TRUE)) \\
 \hspace*{0.27 in} \#\#\# Log-Posterior \\
 \hspace*{0.27 in} LP <- LL + alpha.prior + beta.prior + lambda.prior + sigma.prior + \\
 \hspace*{0.62 in} F.prior + Omega.prior \\
@@ -1899,7 +2006,7 @@ $$\tau \sim \mathcal{HC}(25)$$
 J <- 3 \\
 X <- matrix(runif(N*J,-2,2),N,J); X[,1] <- 1 \\
 beta <- runif(J,-2,2) \\
-y <- as.vector(round(exp(tcrossprod(beta, X)))) + 0.1 \#Must be > 0 \\
+y <- round(exp(tcrossprod(X, t(beta)))) + 0.1 \#Must be > 0 \\
 mon.names <- c("LP","sigma2") \\
 parm.names <- as.parm.names(list(beta=rep(0,J), log.tau=0)) \\
 MyData <- list(J=J, N=N, X=X, mon.names=mon.names, parm.names=parm.names, \\
@@ -1918,7 +2025,7 @@ MyData <- list(J=J, N=N, X=X, mon.names=mon.names, parm.names=parm.names, \\
 \hspace*{0.27 in} beta.prior <- sum(dnormv(beta, 0, 1000, log=TRUE)) \\
 \hspace*{0.27 in} tau.prior <- dhalfcauchy(tau, 25, log=TRUE) \\
 \hspace*{0.27 in} \#\#\# Log-Likelihood \\
-\hspace*{0.27 in} lambda <- exp(tcrossprod(beta, Data$X)) \\
+\hspace*{0.27 in} lambda <- exp(tcrossprod(Data$X, t(beta))) \\
 \hspace*{0.27 in} LL <- sum(dgamma(Data$y, tau*lambda, tau, log=TRUE)) \\
 \hspace*{0.27 in} \#\#\# Log-Posterior \\
 \hspace*{0.27 in} LP <- LL + beta.prior + tau.prior \\
@@ -2166,7 +2273,7 @@ MyData <- list(J=J, N=N, X=X, Z=Z, latitude=northing, longitude=easting, \\
 \hspace*{0.27 in} \#\#\# Log-Likelihood \\
 \hspace*{0.27 in} w <- exp(-0.5 * Data$Z\textasciicircum 2) / h \\
 \hspace*{0.27 in} tau <- (1/sigma\textasciicircum 2) * w * nu \\
-\hspace*{0.27 in} mu <- t(tcrossprod(beta, Data$X)) \\
+\hspace*{0.27 in} mu <- tcrossprod(Data$X, beta) \\
 \hspace*{0.27 in} LL <- sum(dnormp(Data$y, mu, tau, log=TRUE)) \\
 \hspace*{0.27 in} \#WSE <- w * nu * (Data$y - mu)\textasciicircum 2; w.y <- w * nu * Data$y \\
 \hspace*{0.27 in} \#WMSE <- rowMeans(WSE); y.w <- rowSums(w.y) / rowSums(w) \\
@@ -2192,7 +2299,7 @@ X <- matrix(1,N,J) \\
 for (j in 2:J) \{X[,j] <- rnorm(N,runif(1,-3,3),runif(1,0.1,1))\} \\
 beta.orig <- runif(J,-3,3) \\
 e <- rnorm(N,0,0.1) \\
-y <- exp(as.vector(tcrossprod(beta.orig, X)) + e) \\
+y <- exp(tcrossprod(X, t(beta.orig)) + e) \\
 mon.names <- c("LP","lambda") \\
 parm.names <- as.parm.names(list(beta=rep(0,J), log.lambda=0)) \\
 MyData <- list(J=J, X=X, mon.names=mon.names, parm.names=parm.names, y=y) \\
@@ -2209,7 +2316,7 @@ MyData <- list(J=J, X=X, mon.names=mon.names, parm.names=parm.names, y=y) \\
 \hspace*{0.27 in} beta.prior <- sum(dnormv(beta, 0, 1000, log=TRUE)) \\
 \hspace*{0.27 in} lambda.prior <- dhalfcauchy(lambda, 25, log=TRUE) \\
 \hspace*{0.27 in} \#\#\# Log-Likelihood \\
-\hspace*{0.27 in} mu <- exp(tcrossprod(beta, Data$X)) + 1.0E-10 \\
+\hspace*{0.27 in} mu <- exp(tcrossprod(Data$X, t(beta))) + 1.0E-10 \\
 \hspace*{0.27 in} LL <- sum(dinvgaussian(Data$y, mu, lambda, log=TRUE)) \\
 \hspace*{0.27 in} \#\#\# Log-Posterior \\
 \hspace*{0.27 in} LP <- LL + beta.prior + lambda.prior \\
@@ -2242,7 +2349,7 @@ Sigma <- 10000 * exp(-1.5 * D) \\
 zeta <- as.vector(apply(rmvn(1000, rep(0,N+1), Sigma), 2, mean)) \\
 beta <- c(50,2) \\
 X <- matrix(runif((N+1)*2,-2,2),(N+1),2); X[,1] <- 1 \\
-mu <- as.vector(tcrossprod(beta, X)) \\
+mu <- as.vector(tcrossprod(X, t(beta))) \\
 y <- mu + zeta \\
 longitude.new <- longitude[N+1]; latitude.new <- latitude[N+1] \\
 Xnew <- X[N+1,]; ynew <- y[N+1] \\
@@ -2279,7 +2386,7 @@ MyData <- list(D=D, D.new=D.new, N=N, X=X, Xnew=Xnew, latitude=latitude, \\
 \hspace*{0.27 in} rho <- exp(-phi * Data$D.new)\textasciicircum kappa \\
 \hspace*{0.27 in} ynew <- sum(beta * Data$Xnew) + sum(rho / sum(rho) * zeta) \\
 \hspace*{0.27 in} \#\#\# Log-Likelihood \\
-\hspace*{0.27 in} mu <- tcrossprod(beta, Data$X) + zeta \\
+\hspace*{0.27 in} mu <- tcrossprod(Data$X, t(beta)) + zeta \\
 \hspace*{0.27 in} LL <- sum(dnorm(Data$y, mu, sigma[1], log=TRUE)) \\
 \hspace*{0.27 in} \#\#\# Log-Posterior \\
 \hspace*{0.27 in} LP <- LL + beta.prior + zeta.prior + sigma.prior + phi.prior \\
@@ -2314,7 +2421,7 @@ Sigma <- 10000 * exp(-1.5 * D) \\
 zeta <- as.vector(apply(rmvn(1000, rep(0,N+1), Sigma), 2, mean)) \\
 beta <- c(50,2) \\
 X <- matrix(runif((N+1)*2,-2,2),(N+1),2); X[,1] <- 1 \\
-mu <- as.vector(tcrossprod(beta, X)) \\
+mu <- as.vector(tcrossprod(X, t(beta))) \\
 y <- mu + zeta \\
 longitude.new <- longitude[N+1]; latitude.new <- latitude[N+1] \\
 Xnew <- X[N+1,]; ynew <- y[N+1] \\
@@ -2330,7 +2437,7 @@ D.new <- sqrt((longitude[1:K] - longitude.new)\textasciicircum 2 + \\
 \hspace*{0.27 in} (latitude[1:K] - latitude.new)\textasciicircum 2) \\
 mon.names <- c("LP","sigma[1]","sigma[2]","ynew") \\
 parm.names <- as.parm.names(list(zeta=rep(0,K), beta=rep(0,2), \\
-\hspace*{0.27 in} log.sigma=rep(0,2), log.phi=0)) \\
+\hspace*{0.27 in} sigma=rep(0,2), log.phi=0)) \\
 MyData <- list(D=D, D.new=D.new, D.P=D.P, K=K, N=N, X=X, Xnew=Xnew, \\
 \hspace*{0.27 in} latitude=latitude, longitude=longitude, \\
 \hspace*{0.27 in} mon.names=mon.names, parm.names=parm.names, y=y) \\
@@ -2344,7 +2451,8 @@ MyData <- list(D=D, D.new=D.new, D.P=D.P, K=K, N=N, X=X, Xnew=Xnew, \\
 \hspace*{0.27 in} beta <- parm[grep("beta", Data$parm.names)] \\
 \hspace*{0.27 in} zeta <- parm[grep("zeta", Data$parm.names)] \\
 \hspace*{0.27 in} kappa <- 1 \\
-\hspace*{0.27 in} sigma <- exp(parm[grep("log.sigma", Data$parm.names)]) \\
+\hspace*{0.27 in} sigma <- interval(parm[grep("sigma", Data$parm.names)], 0, Inf) \\
+\hspace*{0.27 in} parm[grep("sigma", Data$parm.names)] <- sigma \\
 \hspace*{0.27 in} phi <- exp(parm[grep("log.phi", Data$parm.names)]) \\
 \hspace*{0.27 in} Sigma <- sigma[2]*sigma[2] * exp(-phi * Data$D)\textasciicircum kappa \\
 \hspace*{0.27 in} \#\#\# Log(Prior Densities) \\
@@ -2356,7 +2464,7 @@ MyData <- list(D=D, D.new=D.new, D.P=D.P, K=K, N=N, X=X, Xnew=Xnew, \\
 \hspace*{0.27 in} rho <- exp(-phi * Data$D.new)\textasciicircum kappa \\
 \hspace*{0.27 in} ynew <- sum(beta * Data$Xnew) + sum(rho / sum(rho) * zeta) \\
 \hspace*{0.27 in} \#\#\# Log-Likelihood \\
-\hspace*{0.27 in} mu <- tcrossprod(beta, Data$X) \\
+\hspace*{0.27 in} mu <- tcrossprod(Data$X, t(beta)) \\
 \hspace*{0.27 in} mu[1:Data$K] <- mu[1:Data$K] + zeta \\
 \hspace*{0.27 in} lambda <- exp(-phi * Data$D.P)\textasciicircum kappa \\
 \hspace*{0.27 in} mu[(Data$K+1):Data$N] <- mu[(Data$K+1):Data$N] + \\
@@ -2385,7 +2493,7 @@ X <- matrix(1,N,J) \\
 for (j in 2:J) \{X[,j] <- rnorm(N,runif(1,-3,3),runif(1,0.1,1))\} \\
 beta <- runif(J,-3,3) \\
 e <- rlaplace(N,0,0.1) \\
-y <- as.vector(tcrossprod(beta, X) + e) \\
+y <- tcrossprod(X, t(beta)) + e \\
 mon.names <- c("LP", "sigma") \\
 parm.names <- as.parm.names(list(beta=rep(0,J), log.sigma=0)) \\
 MyData <- list(J=J, X=X, mon.names=mon.names, parm.names=parm.names, y=y) \\
@@ -2402,7 +2510,7 @@ MyData <- list(J=J, X=X, mon.names=mon.names, parm.names=parm.names, y=y) \\
 \hspace*{0.27 in} beta.prior <- sum(dnormv(beta, 0, 1000, log=TRUE)) \\
 \hspace*{0.27 in} sigma.prior <- dhalfcauchy(sigma, 25, log=TRUE) \\
 \hspace*{0.27 in} \#\#\# Log-Likelihood \\
-\hspace*{0.27 in} mu <- tcrossprod(beta, Data$X) \\
+\hspace*{0.27 in} mu <- tcrossprod(Data$X, t(beta)) \\
 \hspace*{0.27 in} LL <- sum(dlaplace(Data$y, mu, sigma, log=TRUE)) \\
 \hspace*{0.27 in} \#\#\# Log-Posterior \\
 \hspace*{0.27 in} LP <- LL + beta.prior + sigma.prior \\
@@ -2425,7 +2533,7 @@ X <- matrix(1,N,J) \\
 for (j in 2:J) \{X[,j] <- rnorm(N,runif(1,-3,3),runif(1,0.1,1))\} \\
 beta <- runif(J,-3,3) \\
 e <- rnorm(N,0,0.1) \\
-y <- as.vector(tcrossprod(beta, X) + e) \\
+y <- tcrossprod(X, t(beta)) + e \\
 mon.names <- c("LP", "sigma") \\
 parm.names <- as.parm.names(list(beta=rep(0,J), log.sigma=0)) \\
 MyData <- list(J=J, X=X, mon.names=mon.names, parm.names=parm.names, y=y) \\
@@ -2442,7 +2550,7 @@ MyData <- list(J=J, X=X, mon.names=mon.names, parm.names=parm.names, y=y) \\
 \hspace*{0.27 in} beta.prior <- sum(dnormv(beta, 0, 1000, log=TRUE)) \\
 \hspace*{0.27 in} sigma.prior <- dgamma(sigma, 25, log=TRUE) \\
 \hspace*{0.27 in} \#\#\# Log-Likelihood \\
-\hspace*{0.27 in} mu <- tcrossprod(beta, Data$X) \\
+\hspace*{0.27 in} mu <- tcrossprod(Data$X, t(beta)) \\
 \hspace*{0.27 in} LL <- sum(dnorm(Data$y, mu, sigma, log=TRUE)) \\
 \hspace*{0.27 in} \#\#\# Log-Posterior \\
 \hspace*{0.27 in} LP <- LL + beta.prior + sigma.prior \\
@@ -2464,7 +2572,7 @@ X <- matrix(1,N,J) \\
 for (j in 2:J) \{X[,j] <- rnorm(N,runif(1,-3,3),runif(1,0.1,1))\} \\
 beta <- runif(J,-3,3) \\
 e <- rnorm(N,0,0.1) \\
-y <- as.vector(tcrossprod(beta, X) + e) \\
+y <- tcrossprod(X, t(beta)) + e \\
 mon.names <- c("LL", "sigma") \\
 parm.names <- as.parm.names(list(beta=rep(0,J), log.sigma=0)) \\
 MyData <- list(J=J, X=X, mon.names=mon.names, parm.names=parm.names, y=y) \\
@@ -2478,7 +2586,7 @@ MyData <- list(J=J, X=X, mon.names=mon.names, parm.names=parm.names, y=y) \\
 \hspace*{0.27 in} beta <- parm[1:Data$J] \\
 \hspace*{0.27 in} sigma <- exp(parm[Data$J+1]) \\
 \hspace*{0.27 in} \#\#\# Log-Likelihood \\
-\hspace*{0.27 in} mu <- tcrossprod(beta, Data$X) \\
+\hspace*{0.27 in} mu <- tcrossprod(Data$X, t(beta)) \\
 \hspace*{0.27 in} LL <- sum(dnorm(Data$y, mu, sigma, log=TRUE)) \\
 \hspace*{0.27 in} Modelout <- list(LP=LL, Dev=-2*LL, Monitor=c(LL, sigma), yhat=mu, \\
 \hspace*{0.62 in} parm=parm) \\
@@ -2560,9 +2668,9 @@ J <- 5 \\
 X <- matrix(runif(N*J,-2,2),N,J) \\
 X[,1] <- 1 \\
 alpha <- runif((J-1),-2,2) \\
-X[,2] <- tcrossprod(alpha, X[,-2]) + rnorm(N,0,0.1) \\
+X[,2] <- tcrossprod(X[,-2], t(alpha)) + rnorm(N,0,0.1) \\
 beta <- runif(J,-2,2) \\
-y <- as.vector(tcrossprod(beta, X) + rnorm(N,0,0.1)) \\
+y <- tcrossprod(X, t(beta)) + rnorm(N,0,0.1) \\
 y[sample(1:N, round(N*0.05))] <- NA \\
 M <- ifelse(is.na(y), 1, 0) \\
 X[sample(1:N, round(N*0.05)),2] <- NA \\
@@ -2586,11 +2694,11 @@ MyData <- list(J=J, M=M, N=N, X=X, mon.names=mon.names, parm.names=parm.names, \
 \hspace*{0.27 in} beta.prior <- sum(dnormv(beta, 0, 1000, log=TRUE)) \\
 \hspace*{0.27 in} sigma.prior <- sum(dhalfcauchy(sigma, 25, log=TRUE)) \\
 \hspace*{0.27 in} \#\#\# Log-Likelihood \\
-\hspace*{0.27 in} mu1 <- tcrossprod(alpha, Data$X[,-2]) \\
+\hspace*{0.27 in} mu1 <- tcrossprod(Data$X[,-2], t(alpha)) \\
 \hspace*{0.27 in} X.imputed <- Data$X \\
 \hspace*{0.27 in} X.imputed[,2] <- ifelse(is.na(Data$X[,2]), mu1, Data$X[,2]) \\
 \hspace*{0.27 in} LL1 <- sum(dnorm(X.imputed[,2], mu1, sigma[1], log=TRUE)) \\
-\hspace*{0.27 in} mu2 <- tcrossprod(beta, X.imputed) \\
+\hspace*{0.27 in} mu2 <- tcrossprod(X.imputed, t(beta)) \\
 \hspace*{0.27 in} y.imputed <- ifelse(is.na(Data$y), mu2, Data$y) \\
 \hspace*{0.27 in} LL2 <- sum((1-Data$M) * dnorm(y.imputed, mu2, sigma[2], log=TRUE)) \\
 \hspace*{0.27 in} \#\#\# Log-Posterior \\
@@ -2633,7 +2741,7 @@ MyData <- list(J=J, M=M, X=X, mon.names=mon.names, parm.names=parm.names, y=y) \
 \hspace*{0.27 in} beta.prior <- sum(dnormv(beta, 0, 1000, log=TRUE)) \\
 \hspace*{0.27 in} sigma.prior <- dgamma(sigma, 25, log=TRUE) \\
 \hspace*{0.27 in} \#\#\# Log-Likelihood \\
-\hspace*{0.27 in} mu <- tcrossprod(beta, Data$X) \\
+\hspace*{0.27 in} mu <- tcrossprod(Data$X, t(beta)) \\
 \hspace*{0.27 in} y.imputed <- ifelse(is.na(Data$y), mu, Data$y) \\
 \hspace*{0.27 in} LL <- sum((1-Data$M) * dnorm(y.imputed, mu, sigma, log=TRUE)) \\
 \hspace*{0.27 in} \#\#\# Log-Posterior \\
@@ -2642,6 +2750,90 @@ MyData <- list(J=J, M=M, X=X, mon.names=mon.names, parm.names=parm.names, y=y) \
 \hspace*{0.62 in} yhat=mu, parm=parm) \\
 \hspace*{0.27 in} return(Modelout) \\
 \hspace*{0.27 in} \}
+}
+
+\section{LSTAR} \label{lstar}
+This is a Logistic Smooth-Threshold Autoregression (LSTAR), and is specified with a transition function that includes $\gamma$ as the shape parameter, $\textbf{y}$ as the transition variable, $\theta$ as the location parameter, and $d$ as the delay parameter.
+\subsection{Form}
+$$\textbf{y}_t \sim \mathcal{N}(\mu_t, \sigma^2), \quad t=1,\dots,T$$
+$$\mu_t = \pi_t (\alpha_1 + \phi_1 \textbf{y}_{t-1}) + (1 - \pi_t) (\alpha_2 + \phi_2 \textbf{y}_{t-1}), \quad t=2,\dots,T$$
+$$\pi_t = \frac{1}{1 + \exp(-(\gamma (\textbf{y}_{t-d} - \theta)))}$$
+$$\alpha_j \sim \mathcal{N}(0, 1000) \in [\textbf{y}_{min}, \textbf{y}_{max}], \quad j=1,\dots,2$$
+$$\phi_j \sim \mathcal{N}(0, 1000), \quad j=1,\dots,2$$
+$$\gamma \sim \mathcal{HC}(25)$$
+$$\theta \sim \mathcal{U}(\textbf{y}_{min}, \textbf{y}_{max})$$
+$$\pi_1 \sim \mathcal{U}(0.001, 0.999)$$
+$$\sigma \sim \mathcal{HC}(25)$$
+\subsection{Data}
+\code{y <- c(26.73, 26.75, 26.24, 25.94, 27.40, 26.14, 23.99, 23.08, 22.55, \\
+\hspace*{0.27 in} 20.64, 23.28, 24.92, 25.07, 26.53, 28.14, 30.10, 27.43, 27.24, \\
+\hspace*{0.27 in} 23.96, 25.85, 26.76, 26.05, 26.79, 26.69, 29.89, 29.09, 23.84, \\
+\hspace*{0.27 in} 24.87, 24.47, 22.85, 22.05, 22.82, 22.99, 21.60, 20.32, 20.80, \\
+\hspace*{0.27 in} 19.78, 19.87, 18.78, 19.64, 20.00, 21.51, 21.49, 21.96, 22.58, \\
+\hspace*{0.27 in} 21.22, 22.34, 22.76, 18.37, 17.50, 17.55, 12.14,  4.76,  3.75, \\ 
+\hspace*{0.27 in}  2.05,  2.69,  3.85,  4.72,  5.00,  3.31,  3.02,  3.15,  2.50, \\ 
+\hspace*{0.27 in}  3.33,  3.95,  4.00,  3.86,  3.87,  3.51,  3.19,  2.39,  2.33, \\ 
+\hspace*{0.27 in}  2.57,  2.80,  2.43,  2.43,  2.10,  2.31,  2.21,  2.11,  2.10, \\ 
+\hspace*{0.27 in}  1.70,  1.35,  1.83,  1.55,  1.63,  1.91,  2.14,  2.41,  2.06, \\ 
+\hspace*{0.27 in}  1.87,  2.11,  2.28,  2.26,  2.03,  2.06,  2.08,  1.91,  1.95, \\ 
+\hspace*{0.27 in}  1.56,  1.44,  1.60,  1.77,  1.77,  1.95,  2.01,  1.65,  1.87, \\ 
+\hspace*{0.27 in}  2.01,  1.84,  1.94,  1.93,  1.93,  1.75,  1.73,  1.80,  1.74, \\ 
+\hspace*{0.27 in}  1.80,  1.75,  1.67,  1.60,  1.61,  1.55,  1.56,  1.57,  1.55, \\ 
+\hspace*{0.27 in}  1.56,  1.57,  1.69,  1.66,  1.74,  1.64,  1.65,  1.62,  1.54, \\ 
+\hspace*{0.27 in}  1.58,  1.49,  1.41,  1.42,  1.37,  1.45,  1.31,  1.37,  1.26, \\ 
+\hspace*{0.27 in}  1.35,  1.41,  1.29,  1.28,  1.23,  1.08,  1.03,  1.00,  1.04, \\ 
+\hspace*{0.27 in}  1.04,  0.92,  0.96,  0.90,  0.85,  0.78,  0.73,  0.59,  0.54, \\ 
+\hspace*{0.27 in}  0.53,  0.41,  0.46,  0.52,  0.42,  0.42,  0.43,  0.43,  0.35, \\ 
+\hspace*{0.27 in}  0.35,  0.35,  0.42,  0.41,  0.41,  0.50,  0.83,  0.96,  1.38, \\ 
+\hspace*{0.27 in}  1.62,  1.26,  1.48,  1.39,  1.20,  1.10,  1.02,  0.95,  1.00, \\ 
+\hspace*{0.27 in}  1.07,  1.14,  1.14,  1.10,  1.05,  1.08,  1.16,  1.42,  1.52, \\ 
+\hspace*{0.27 in}  1.60,  1.69,  1.62,  1.29,  1.46,  1.43,  1.50,  1.46,  1.40, \\ 
+\hspace*{0.27 in}  1.34,  1.41,  1.38,  1.38,  1.46,  1.73,  1.84,  1.95,  2.01, \\ 
+\hspace*{0.27 in}  1.90,  1.81,  1.60,  1.84,  1.72,  1.83,  1.81,  1.78,  1.80, \\ 
+\hspace*{0.27 in}  1.70,  1.70,  1.66,  1.67,  1.69,  1.66,  1.56,  1.47,  1.64, \\ 
+\hspace*{0.27 in}  1.71,  1.66,  1.65,  1.60,  1.61,  1.61,  1.53,  1.48,  1.40, \\ 
+\hspace*{0.27 in}  1.47,  1.53,  1.39,  1.41,  1.42,  1.46,  1.46,  1.33,  1.16) \\
+T <- length(y) \\
+mon.names <- c("LP", "sigma", "ynew", paste("pi[", 1:T, "]", sep=""), \\
+\hspace*{0.27 in} "pi.new") \\
+parm.names <- as.parm.names(list(alpha=rep(0,2), phi=rep(0,2), log.gamma=0, \\
+\hspace*{0.27 in} theta=0, pi=0, log.sigma=0)) \\
+MyData <- list(T=T, mon.names=mon.names, parm.names=parm.names, y=y) \\
+}
+\subsection{Initial Values}
+\code{Initial.Values <- c(rep(0,4), log(1), mean(y), 0.5, log(1))}
+\subsection{Model}
+\code{Model <- function(parm, Data) \\
+\hspace*{0.27 in} \{ \\
+\hspace*{0.27 in} \#\#\# Parameters \\
+\hspace*{0.27 in} parm[1:2] <- alpha <- interval(parm[1:2], min(Data$y), max(Data$y)) \\
+\hspace*{0.27 in} parm[3:4] <- phi <- interval(parm[3:4], -1, 1) \\
+\hspace*{0.27 in} gamma <- exp(parm[5]) \\
+\hspace*{0.27 in} parm[6] <- theta <- interval(parm[6], min(Data$y), max(Data$y)) \\
+\hspace*{0.27 in} pi <- interval(parm[7], 0.001, 0.999); parm[7] <- pi \\
+\hspace*{0.27 in} sigma <- exp(parm[8]) \\
+\hspace*{0.27 in} \#\#\# Log(Prior Densities) \\
+\hspace*{0.27 in} alpha.prior <- sum(dnormv(alpha, 0, 1000, log=TRUE)) \\
+\hspace*{0.27 in} phi.prior <- sum(dnorm(phi, 0, 1000, log=TRUE)) \\
+\hspace*{0.27 in} gamma.prior <- dhalfcauchy(gamma, 25, log=TRUE) \\
+\hspace*{0.27 in} theta.prior <- dunif(theta, min(Data$y), max(Data$y), log=TRUE) \\
+\hspace*{0.27 in} pi.prior <- dunif(pi, 0.001, 0.999, log=TRUE) \\
+\hspace*{0.27 in} sigma.prior <- dhalfcauchy(sigma, 25, log=TRUE) \\
+\hspace*{0.27 in} \#\#\# Log-Likelihood \\
+\hspace*{0.27 in} pi <- c(pi, 1 / (1 + exp(-(gamma*(Data$y[-Data$T]-theta))))) \\
+\hspace*{0.27 in} pi.new <- 1 / (1 + exp(-(gamma*(Data$y[Data$T]-theta)))) \\
+\hspace*{0.27 in} mu <- pi * c(alpha[1], alpha[1] + phi[1]*Data$y[-Data$T]) + \\
+\hspace*{0.62 in} (1-pi) * c(alpha[2], alpha[2] + phi[2]*Data$y[-Data$T]) \\
+\hspace*{0.27 in} ynew <- pi.new * (alpha[1] + phi[1]*Data$y[Data$T]) + \\
+\hspace*{0.62 in} (1-pi.new) * (alpha[2] + phi[2]*Data$y[Data$T]) \\
+\hspace*{0.27 in} LL <- sum(dnorm(Data$y, mu, sigma, log=TRUE)) \\
+\hspace*{0.27 in} \#\#\# Log-Posterior \\
+\hspace*{0.27 in} LP <- LL + alpha.prior + phi.prior + gamma.prior + theta.prior + \\
+\hspace*{0.62 in} pi.prior + sigma.prior \\
+\hspace*{0.27 in} Modelout <- list(LP=LP, Dev=-2*LL, Monitor=c(LP,sigma,ynew,pi,pi.new), \\
+\hspace*{0.62 in} yhat=mu, parm=parm) \\
+\hspace*{0.27 in} return(Modelout) \\
+\hspace*{0.27 in} \} \\
 }
 
 \section{MANCOVA} \label{mancova}
@@ -2718,16 +2910,16 @@ MyData <- list(C=C, J=J, K=K, L=L, M=M, N=N, S=S, X=X, Y=Y, \\
 \hspace*{0.27 in} mu <- matrix(0,Data$N,Data$K) \\
 \hspace*{0.27 in} for (k in 1:K) \{ \\
 \hspace*{0.62 in} mu[,k] <- alpha[k] + beta[k,Data$X[,1]] + gamma[k,Data$X[,2]] + \\
-\hspace*{0.62 in} tcrossprod(delta[k,], Data$X[,-c(1,2)])\} \\
+\hspace*{0.62 in} tcrossprod(Data$X[,-c(1,2)], t(delta[k,]))\} \\
 \hspace*{0.27 in} LL <- sum(dmvnp(Data$Y, mu, Omega, log=TRUE)) \\
 \hspace*{0.27 in} \#\#\# Variance Components, Omnibus \\
 \hspace*{0.27 in} s.o.beta <- sd(as.vector(beta)) \\
 \hspace*{0.27 in} s.o.gamma <- sd(as.vector(gamma)) \\
 \hspace*{0.27 in} s.o.epsilon <- sd(as.vector(Data$Y - mu)) \\
 \hspace*{0.27 in} \#\#\# Variance Components, Univariate \\
-\hspace*{0.27 in} s.beta <- sd(t(beta)) \\
-\hspace*{0.27 in} s.gamma <- sd(t(gamma)) \\
-\hspace*{0.27 in} s.epsilon <- sd(Data$Y - mu) \\
+\hspace*{0.27 in} s.beta <- apply(beta,1,sd) \\
+\hspace*{0.27 in} s.gamma <- apply(gamma,1,sd) \\
+\hspace*{0.27 in} s.epsilon <- apply(Data$Y - mu,2,sd) \\
 \hspace*{0.27 in} \#\#\# Log-Posterior \\
 \hspace*{0.27 in} LP <- LL + alpha.prior + beta.prior + gamma.prior + delta.prior + \\
 \hspace*{0.62 in} Omega.prior + sigma.prior \\
@@ -2810,9 +3002,9 @@ MyData <- list(J=J, K=K, L=L, M=M, N=N, S=S, X=X, Y=Y, \\
 \hspace*{0.27 in} s.o.gamma <- sd(as.vector(gamma)) \\
 \hspace*{0.27 in} s.o.epsilon <- sd(as.vector(Data$Y - mu)) \\
 \hspace*{0.27 in} \#\#\# Variance Components, Univariate \\
-\hspace*{0.27 in} s.beta <- sd(t(beta)) \\
-\hspace*{0.27 in} s.gamma <- sd(t(gamma)) \\
-\hspace*{0.27 in} s.epsilon <- sd(Data$Y - mu) \\
+\hspace*{0.27 in} s.beta <- apply(beta,1,sd) \\
+\hspace*{0.27 in} s.gamma <- apply(gamma,1,sd) \\
+\hspace*{0.27 in} s.epsilon <- apply(Data$Y - mu,2,sd) \\
 \hspace*{0.27 in} \#\#\# Log-Posterior \\
 \hspace*{0.27 in} LP <- LL + alpha.prior + beta.prior + gamma.prior + Omega.prior + \\
 \hspace*{0.62 in} sigma.prior \\
@@ -2875,7 +3067,7 @@ MyData <- list(J=J, M=M, N=N, X=X, alpha=alpha, mon.names=mon.names, \\
 \hspace*{0.27 in} sigma.prior <- sum(dhalfcauchy(sigma, 25, log=TRUE)) \\
 \hspace*{0.27 in} \#\#\# Log-Likelihood \\
 \hspace*{0.27 in} p <- delta / rowSums(delta) \\
-\hspace*{0.27 in} mu <- t(tcrossprod(beta, Data$X)) \\
+\hspace*{0.27 in} mu <- tcrossprod(Data$X, beta) \\
 \hspace*{0.27 in} p <- max.col(p) \\
 \hspace*{0.27 in} mu <- diag(mu[,p]) \\
 \hspace*{0.27 in} LL <- sum(dnorm(Data$y, mu, sigma, log=TRUE)) \\
@@ -2900,7 +3092,7 @@ $$\beta_j \sim \mathcal{N}(0, 1000), \quad j=1,\dots,J$$
 J <- 3 \\
 X <- matrix(runif(N*J,-2,2),N,J); X[,1] <- 1 \\
 beta <- runif(J,-2,2) \\
-y <- as.vector(round(exp(tcrossprod(beta, X)))) \\
+y <- round(exp(tcrossprod(X, t(beta)))) \\
 mon.names <- "LP" \\
 parm.names <- as.parm.names(list(log.alpha=0, beta=rep(0,J), \\
 \hspace*{0.27 in} log.lambda=rep(0,N))) \\
@@ -2916,7 +3108,7 @@ MyData <- list(J=J, X=X, mon.names=mon.names, parm.names=parm.names, y=y) \\
 \hspace*{0.27 in} \#\#\# Parameters \\
 \hspace*{0.27 in} beta <- parm[grep("beta", Data$parm.names)] \\
 \hspace*{0.27 in} lambda <- exp(parm[grep("log.lambda", Data$parm.names)]) \\
-\hspace*{0.27 in} mu <- exp(tcrossprod(beta, Data$X)) \\
+\hspace*{0.27 in} mu <- exp(tcrossprod(Data$X, t(beta))) \\
 \hspace*{0.27 in} \#\#\# Log(Hyperprior Densities) \\
 \hspace*{0.27 in} alpha.prior <- dhalfcauchy(alpha, 25, log=TRUE) \\
 \hspace*{0.27 in} \#\#\# Log(Prior Densities) \\
@@ -2970,7 +3162,7 @@ MyData <- list(J=J, K=K, N=N, X=X, mon.names=mon.names, \\
 \hspace*{0.27 in} beta.prior <- sum(dnormv(beta, 0, 1000, log=TRUE)) \\
 \hspace*{0.27 in} \#\#\# Log-Likelihood \\
 \hspace*{0.27 in} mu <- matrix(0,Data$N,Data$J) \\
-\hspace*{0.27 in} mu[,-Data$K] <- t(tcrossprod(beta, Data$X)) \\
+\hspace*{0.27 in} mu[,-Data$K] <- tcrossprod(Data$X, beta) \\
 \hspace*{0.27 in} mu <- interval(mu, -700, 700) \\
 \hspace*{0.27 in} phi <- exp(mu) \\
 \hspace*{0.27 in} p <- phi / rowSums(phi) \\
@@ -3036,11 +3228,11 @@ MyData <- list(J=J, K=K, N=N, X=X, mon.names=mon.names, \\
 \hspace*{0.27 in} \#\#\# Log-Likelihood \\
 \hspace*{0.27 in} mu <- P <- matrix(0,Data$N,Data$J) \\
 \hspace*{0.27 in} iota <- alpha * beta[1,] \\
-\hspace*{0.27 in} mu[,1] <- tcrossprod(iota, Data$X) \\
-\hspace*{0.27 in} mu[,2] <- tcrossprod(beta[2,], Data$X) \\
+\hspace*{0.27 in} mu[,1] <- tcrossprod(Data$X, t(iota)) \\
+\hspace*{0.27 in} mu[,2] <- tcrossprod(Data$X, t(beta[2,])) \\
 \hspace*{0.27 in} mu <- interval(mu, -700, 700) \\
 \hspace*{0.27 in} R <- exp(mu[,1]) \\
-\hspace*{0.27 in} S <- exp(mu[,2:3]) \\
+\hspace*{0.27 in} S <- exp(mu[,-1]) \\
 \hspace*{0.27 in} V <- rowSums(S) \\
 \hspace*{0.27 in} I <- log(V) \\
 \hspace*{0.27 in} P[,1] <- R / (R + exp(alpha*I)) \\
@@ -3111,7 +3303,7 @@ MyData <- list(J=J, K=K, N=N, S=S, X=X, mon.names=mon.names, \\
 \hspace*{0.27 in} Sigma.prior <- dinvwishart(Sigma, Data$J+1, Data$S, log=TRUE) \\
 \hspace*{0.27 in} Z.prior <- sum(dnormv(Z, 0, 1000, log=TRUE)) \\
 \hspace*{0.27 in} \#\#\# Log-Likelihood \\
-\hspace*{0.27 in} mu <- t(tcrossprod(beta, Data$X)) \\
+\hspace*{0.27 in} mu <- tcrossprod(Data$X, beta) \\
 \hspace*{0.27 in} Y <- as.indicator.matrix(Data$y) \\
 \hspace*{0.27 in} Z <- ifelse(Z > 10, 10, Z); Z <- ifelse(\{Y == 0\} \& \{Z > 0\}, 0, Z) \\
 \hspace*{0.27 in} Z <- ifelse(Z < -10, -10, Z); Z <- ifelse(\{Y == 1\} \& \{Z < 0\}, 0, Z) \\
@@ -3155,7 +3347,7 @@ MyData <- list(J=J, K=K, N=N, S=S, X=X, Y=Y, mon.names=mon.names, \\
 \hspace*{0.27 in} parm.names=parm.names) \\
 }
 \subsection{Initial Values}
-\code{Initial.Values <- c(rep(0, length(upper.triangle(S, diag=TRUE)) - 1),
+\code{Initial.Values <- c(rep(0, length(upper.triangle(S, diag=TRUE)) - 1), \\
 \hspace*{0.27 in} rep(0,(J-1)*K), rep(0,N*J))}
 \subsection{Model}
 \code{Model <- function(parm, Data) \\
@@ -3172,7 +3364,7 @@ MyData <- list(J=J, K=K, N=N, S=S, X=X, Y=Y, mon.names=mon.names, \\
 \hspace*{0.27 in} Sigma.prior <- dinvwishart(Sigma, Data$J+1, Data$S, log=TRUE) \\
 \hspace*{0.27 in} Z.prior <- sum(dnormv(Z, 0, 1000, log=TRUE)) \\
 \hspace*{0.27 in} \#\#\# Log-Likelihood \\
-\hspace*{0.27 in} mu <- t(tcrossprod(beta, Data$X)) \\
+\hspace*{0.27 in} mu <- tcrossprod(Data$X, beta) \\
 \hspace*{0.27 in} Z <- ifelse(Z > 10, 10, Z) \\
 \hspace*{0.27 in} Z <- ifelse(\{Data$Y == 0\} \& \{Z > 0\}, 0, Z) \\
 \hspace*{0.27 in} Z <- ifelse(Z < -10, -10, Z) \\
@@ -3199,7 +3391,7 @@ $$\beta_{k,j} \sim \mathcal{N}(0, 1000), \quad j=1,\dots,J$$
 J <- 6 \#Number of columns in design matrix \\
 K <- 3 \#Number of DVs \\
 X <- matrix(runif(N*J),N,J); X[,1] <- 1 \\
-Y <- mu <- t(tcrossprod(matrix(rnorm(J*K),K,J), X)) \\
+Y <- mu <- tcrossprod(X, matrix(rnorm(J*K),K,J)) \\
 Sigma <- matrix(runif(K*K),K,K); diag(Sigma) <- runif(K,1,K) \\
 Sigma <- as.symmetric.matrix(Sigma) \\
 for (i in 1:N) \{Y[i,] <- colMeans(rmvn(1000, mu[i,], Sigma))\} \\
@@ -3225,7 +3417,7 @@ MyData <- list(J=J, K=K, N=N, S=S, X=X, Y=Y, mon.names=mon.names, \\
 \hspace*{0.27 in} beta.prior <- sum(dnormv(beta, 0, 1000, log=TRUE)) \\
 \hspace*{0.27 in} Omega.prior <- dwishart(Omega, Data$K+1, Data$S, log=TRUE) \\
 \hspace*{0.27 in} \#\#\# Log-Likelihood \\
-\hspace*{0.27 in} mu <- t(tcrossprod(beta, Data$X)) \\
+\hspace*{0.27 in} mu <- tcrossprod(Data$X, beta) \\
 \hspace*{0.27 in} LL <- sum(dmvl(Data$Y, mu, Sigma, log=TRUE)) \\
 \hspace*{0.27 in} \#\#\# Log-Posterior \\
 \hspace*{0.27 in} LP <- LL + beta.prior + Omega.prior \\
@@ -3245,7 +3437,7 @@ $$\beta_{k,j} \sim \mathcal{N}(0, 1000), \quad j=1,\dots,J$$
 J <- 6 \#Number of columns in design matrix \\
 K <- 3 \#Number of DVs \\
 X <- matrix(runif(N*J),N,J); X[,1] <- 1 \\
-Y <- mu <- t(tcrossprod(matrix(rnorm(J*K),K,J), X)) \\
+Y <- mu <- tcrossprod(X, matrix(rnorm(J*K),K,J)) \\
 Sigma <- matrix(runif(K*K),K,K); diag(Sigma) <- runif(K,1,K) \\
 Sigma <- as.symmetric.matrix(Sigma) \\
 for (i in 1:N) \{Y[i,] <- colMeans(rmvn(1000, mu[i,], Sigma))\} \\
@@ -3270,7 +3462,7 @@ MyData <- list(J=J, K=K, N=N, S=S, X=X, Y=Y, mon.names=mon.names, \\
 \hspace*{0.27 in} beta.prior <- sum(dnormv(beta, 0, 1000, log=TRUE)) \\
 \hspace*{0.27 in} Omega.prior <- dwishart(Omega, Data$K+1, Data$S, log=TRUE) \\
 \hspace*{0.27 in} \#\#\# Log-Likelihood \\
-\hspace*{0.27 in} mu <- t(tcrossprod(beta, Data$X)) \\
+\hspace*{0.27 in} mu <- tcrossprod(Data$X, beta) \\
 \hspace*{0.27 in} LL <- sum(dmvnp(Data$Y, mu, Omega, log=TRUE)) \\
 \hspace*{0.27 in} \#\#\# Log-Posterior \\
 \hspace*{0.27 in} LP <- LL + beta.prior + Omega.prior \\
@@ -3386,6 +3578,7 @@ MyData <- list(N=N, T=T, Y=Y, mon.names=mon.names, parm.names=parm.names, \\
 
 \section{Penalized Spline Regression} \label{penalized.spline}
 This example is adapted from \citet{crainiceanu05}. The user specifies the degree $D$ of polynomials and the number $K$ of knots. Regression effects $\beta$ regard the polynomial in design matrix $\textbf{X}$, and $\gamma$ regard the splines in design matrix $\textbf{S}$.
+\subsection{Form}
 $$\textbf{y} \sim \mathcal{N}(\mu, \sigma^2_1)$$
 $$\mu = \textbf{X} \beta + \textbf{S} \gamma$$
 \[\textbf{S}_{i,k} = \left\{ 
@@ -3397,23 +3590,25 @@ $$\textbf{X}_{i,1} = 1$$
 $$\beta_d \sim \mathcal{N}(0, 1000), \quad d=1,\dots,(D+1)$$
 $$\gamma_k \sim \mathcal{N}(0, \sigma^2_2), \quad k=1,\dots,K$$
 $$\sigma_j \sim \mathcal{HC}(25), \quad j=1,\dots,2$$
-\subsection{Form}
 \subsection{Data}
-\code{data(demonsnacks) \\
-N <- nrow(demonsnacks) \\
+\code{N <- 100 \\
+x <- 1:N \\
+y <- sin(2*pi*x/N) + runif(N,-1,1) \\
 K <- 10 \#Number of knots \\
 D <- 2 \#Degree of polynomial \\
-y <- log(demonsnacks$Calories) \\
-x <- demonsnacks[,7] \\
+x <- CenterScale(x) \\
 k <- as.vector(quantile(x, probs=(1:K / (K+1)))) \\
+X <- cbind(rep(1,N), matrix(x, N, D)\textasciicircum matrix(1:D, N, D, byrow=TRUE)) \\
+S <- matrix(x, N, K) - matrix(k, N, K, byrow=TRUE) \\
+S <- ifelse(S > 0, S, 0); S <- S\textasciicircum D \\
 mon.names <- "LP" \\
 parm.names <- as.parm.names(list(beta=rep(0,D+1), gamma=rep(0,K), \\
 \hspace*{0.27 in} log.sigma=rep(0,2))) \\
-MyData <- list(D=D, K=K, N=N, mon.names=mon.names, \\
-\hspace*{0.27 in} parm.names=parm.names, k=k, x=x, y=y) \\
+MyData <- list(N=N, S=S, X=X, mon.names=mon.names, parm.names=parm.names, \\
+\hspace*{0.27 in} y=y) \\
 }
 \subsection{Initial Values}
-\code{Initial.Values <- c(rep(0,D+1), rep(0,K), log(c(1,1)))}
+\code{Initial.Values <- c(rep(0,D+1), rep(0,K), c(1,1))}
 \subsection{Model}
 \code{Model <- function(parm, Data) \\
 \hspace*{0.27 in} \{ \\
@@ -3426,14 +3621,7 @@ MyData <- list(D=D, K=K, N=N, mon.names=mon.names, \\
 \hspace*{0.27 in} gamma.prior <- sum(dnorm(gamma, 0, sigma[2], log=TRUE)) \\
 \hspace*{0.27 in} sigma.prior <- sum(dhalfcauchy(sigma, 25, log=TRUE)) \\
 \hspace*{0.27 in} \#\#\# Log-Likelihood \\
-\hspace*{0.27 in} X <- matrix(Data$x, Data$N, Data$D) \\
-\hspace*{0.27 in} for (d in 2:Data$D) {X[,d] <- X[,d]\textasciicircum d} \\
-\hspace*{0.27 in} X <- cbind(1,X) \\
-\hspace*{0.27 in} S <- matrix(Data$x, Data$N, Data$K) - \\
-\hspace*{0.62 in} matrix(Data$k, Data$N, Data$K, byrow=TRUE) \\
-\hspace*{0.27 in} S <- ifelse(S > 0, S, 0) \\
-\hspace*{0.27 in} S <- S\textasciicircum Data$D \\
-\hspace*{0.27 in} mu <- tcrossprod(beta, X) + tcrossprod(gamma, S) \\
+\hspace*{0.27 in} mu <- tcrossprod(Data$X, t(beta)) + tcrossprod(Data$S, t(gamma)) \\
 \hspace*{0.27 in} LL <- sum(dnorm(Data$y, mu, sigma[1], log=TRUE)) \\
 \hspace*{0.27 in} \#\#\# Log-Posterior \\
 \hspace*{0.27 in} LP <- LL + beta.prior + gamma.prior + sigma.prior \\
@@ -3452,7 +3640,7 @@ $$\beta_j \sim \mathcal{N}(0, 1000), \quad j=1,\dots,J$$
 J <- 5 \\
 X <- matrix(runif(N*J,-2,2),N,J); X[,1] <- 1 \\
 beta <- runif(J,-2,2) \\
-y <- as.vector(round(exp(tcrossprod(beta, X)))) \\
+y <- round(exp(tcrossprod(X, t(beta)))) \\
 mon.names <- "LP" \\
 parm.names <- as.parm.names(list(beta=rep(0,J))) \\
 MyData <- list(J=J, X=X, mon.names=mon.names, parm.names=parm.names, y=y) \\
@@ -3467,7 +3655,7 @@ MyData <- list(J=J, X=X, mon.names=mon.names, parm.names=parm.names, y=y) \\
 \hspace*{0.27 in} \#\#\# Log(Prior Densities) \\
 \hspace*{0.27 in} beta.prior <- sum(dnormv(beta, 0, 1000, log=TRUE)) \\
 \hspace*{0.27 in} \#\#\# Log-Likelihood \\
-\hspace*{0.27 in} lambda <- exp(tcrossprod(beta, Data$X)) \\
+\hspace*{0.27 in} lambda <- exp(tcrossprod(Data$X, t(beta))) \\
 \hspace*{0.27 in} LL <- sum(dpois(Data$y, lambda, log=TRUE)) \\
 \hspace*{0.27 in} \#\#\# Log-Posterior \\
 \hspace*{0.27 in} LP <- LL + beta.prior \\
@@ -3512,7 +3700,7 @@ MyData <- list(D=D, N=N, mon.names=mon.names, parm.names=parm.names, x=x, \\
 \hspace*{0.27 in} X <- matrix(Data$x, Data$N, Data$D) \\
 \hspace*{0.27 in} for (d in 2:Data$D) \{X[,d] <- X[,d]\textasciicircum d\} \\
 \hspace*{0.27 in} X <- cbind(1,X) \\
-\hspace*{0.27 in} mu <- tcrossprod(beta, X) \\
+\hspace*{0.27 in} mu <- tcrossprod(X, t(beta)) \\
 \hspace*{0.27 in} LL <- sum(dnorm(Data$y, mu, sigma, log=TRUE)) \\
 \hspace*{0.27 in} \#\#\# Log-Posterior \\
 \hspace*{0.27 in} LP <- LL + beta.prior + sigma.prior \\
@@ -3533,7 +3721,7 @@ $$\gamma \sim \mathcal{G}(1, 0.001)$$
 J <- 5 \\
 X <- matrix(runif(N*J,-2,2),N,J); X[,1] <- 1 \\
 beta <- c(1,runif(J-1,-1,1)) \\
-y <- as.vector(round(exp(tcrossprod(beta, X)))) + 1 \# Undefined at zero \\
+y <- round(exp(tcrossprod(X, t(beta)))) + 1 \# Undefined at zero \\
 mon.names <- c("LP","gamma") \\
 parm.names <- as.parm.names(list(beta=rep(0,J), log.gamma=0)) \\
 MyData <- list(J=J, N=N, X=X, mon.names=mon.names, parm.names=parm.names, \\
@@ -3551,7 +3739,7 @@ MyData <- list(J=J, N=N, X=X, mon.names=mon.names, parm.names=parm.names, \\
 \hspace*{0.27 in} beta.prior <- sum(dnormv(beta, 0, 1000, log=TRUE)) \\
 \hspace*{0.27 in} gamma.prior <- dgamma(gamma, 1, 1.0E-3, log=TRUE) \\
 \hspace*{0.27 in} \#\#\# Log-Likelihood \\
-\hspace*{0.27 in} mu <- exp(tcrossprod(beta, Data$X)) \\
+\hspace*{0.27 in} mu <- exp(tcrossprod(Data$X, t(beta))) \\
 \hspace*{0.27 in} LL <- sum(dweibull(Data$y, gamma, mu, log=TRUE)) \\
 \hspace*{0.27 in} \#\#\# Log-Posterior \\
 \hspace*{0.27 in} LP <- LL + beta.prior + gamma.prior \\
@@ -3628,7 +3816,7 @@ X <- matrix(1,N,J) \\
 for (j in 2:J) \{X[,j] <- rnorm(N,runif(1,-3,3),runif(1,0.1,1))\} \\
 beta <- runif(J,-3,3) \\
 e <- rnorm(N,0,0.1) \\
-y <- as.vector(tcrossprod(beta, X) + e) \\
+y <- tcrossprod(X, t(beta)) + e \\
 mon.names <- c("LP", "sigma", "nu") \\
 parm.names <- as.parm.names(list(beta=rep(0,J), log.sigma=0, log.nu=0)) \\
 MyData <- list(J=J, X=X, mon.names=mon.names, parm.names=parm.names, y=y) \\
@@ -3647,7 +3835,7 @@ MyData <- list(J=J, X=X, mon.names=mon.names, parm.names=parm.names, y=y) \\
 \hspace*{0.27 in} sigma.prior <- dhalfcauchy(sigma, 25, log=TRUE) \\
 \hspace*{0.27 in} nu.prior <- dhalfcauchy(nu, 25, log=TRUE) \\
 \hspace*{0.27 in} \#\#\# Log-Likelihood \\
-\hspace*{0.27 in} mu <- tcrossprod(beta, Data$X) \\
+\hspace*{0.27 in} mu <- tcrossprod(Data$X, t(beta)) \\
 \hspace*{0.27 in} LL <- sum(dst(Data$y, mu, sigma, nu, log=TRUE)) \\
 \hspace*{0.27 in} \#\#\# Log-Posterior \\
 \hspace*{0.27 in} LP <- LL + beta.prior + sigma.prior + nu.prior \\
@@ -3787,7 +3975,7 @@ MyData <- list(A=A, C=C, G=G, I=I, K=K, N=N, P=P, S=S, T=T, Wg=Wg, Wp=Wp, \\
 \hspace*{0.27 in} X=X, Y=Y, Z=Z, mon.names=mon.names, parm.names=parm.names) \\
 }
 \subsection{Initial Values}
-\code{Initial.Values <- c(rep(0,4), rep(0,4), rep(0,4), rep(0,3*7), rep(0,3),
+\code{Initial.Values <- c(rep(0,4), rep(0,4), rep(0,4), rep(0,3*7), rep(0,3), \\
 \hspace*{0.27 in} upper.triangle(S, diag=TRUE))}
 \subsection{Model}
 \code{Model <- function(parm, Data) \\
@@ -3837,7 +4025,7 @@ MyData <- list(A=A, C=C, G=G, I=I, K=K, N=N, P=P, S=S, T=T, Wg=Wg, Wp=Wp, \\
 }
 
 \section{Space-Time, Dynamic} \label{spacetime.dynamic}
-This approach to space-time or spatiotemporal modeling applies kriging to a stationary spatial component for points in space $s=1,\dots,S$ first at time $t=1$, where space is continuous and time is discrete. Vector $\zeta$ contains these spatial effects. Next, SSM (State-Space Model) or DLM (Dynamic Linear Model) components are applied to the spatial parameters ($\phi$, $\kappa$, and $\lambda$) and regression effects ($\beta$). These parameters are allowed to vary dynamically with time $t=2,\dots,T$, and the resulting spatial process is estimated for each of these time-periods. When time is discrete, a dyanmic space-time process can be applied. The matrix $\Theta$ contains the dynamically varying stationary spatial effects, or space-time effects. Spatial coordinates are given in longitude and latitude for $s=1,\dots,S$ points in space and measurements are taken across discrete time-periods $t=1,\dots,T$ for $\textbf{Y}_{s,t}$. The dependent variable is also a function of design matrix $\textbf{X}$ (which may also be dynamic, but is static in this example) and dynamic regression effects matrix $\beta_{1:J,1:T}$. For more information on kriging, see section \ref{kriging}. For more information on state-space or a DLM, see section \ref{dlm}. To extend this to a large spatial data set, consider incorporating the predictive process kriging example in section \ref{kriging.pp}.
+This approach to space-time or spatiotemporal modeling applies kriging to a stationary spatial component for points in space $s=1,\dots,S$ first at time $t=1$, where space is continuous and time is discrete. Vector $\zeta$ contains these spatial effects. Next, SSM (State-Space Model) or DLM (Dynamic Linear Model) components are applied to the spatial parameters ($\phi$, $\kappa$, and $\lambda$) and regression effects ($\beta$). These parameters are allowed to vary dynamically with time $t=2,\dots,T$, and the resulting spatial process is estimated for each of these time-periods. When time is discrete, a dynamic space-time process can be applied. The matrix $\Theta$ contains the dynamically varying stationary spatial effects, or space-time effects. Spatial coordinates are given in longitude and latitude for $s=1,\dots,S$ points in space and measurements are taken across discrete time-periods $t=1,\dots,T$ for $\textbf{Y}_{s,t}$. The dependent variable is also a function of design matrix $\textbf{X}$ (which may also be dynamic, but is static in this example) and dynamic regression effects matrix $\beta_{1:J,1:T}$. For more information on kriging, see section \ref{kriging}. For more information on state-space or a DLM, see section \ref{dlm}. To extend this to a large spatial data set, consider incorporating the predictive process kriging example in section \ref{kriging.pp}.
 \subsection{Form}
 $$\textbf{Y}_{s,t} \sim \mathcal{N}(\mu_{s,t}, \sigma^2_1), \quad s=1,\dots,S, \quad t=1,\dots,T$$
 $$\mu_{s,t} = \textbf{X}_{s,1:J} \beta_{1:J,t} + \Theta_{s,t}$$
@@ -3874,11 +4062,11 @@ Sigma <- array(0, dim=c(S,S,T)) \\
 for (t in 1:T) \{ \\
 \hspace*{0.27 in} Sigma[ , ,t] <- lambda[t] * exp(-phi[t] * D)\textasciicircum kappa[t]\} \\
 zeta <- as.vector(apply(rmvn(1000, rep(0,S), Sigma[ , ,1]), 2, mean)) \\
-mu <- Theta <- matrix(zeta,S,T) \\
+Theta <- matrix(zeta,S,T) \\
 for (t in 2:T) \{for (s in 1:S) \{ \\
 \hspace*{0.27 in} Theta[,t] <- sum(Sigma[,s,t] / sum(Sigma[,s,t]) * Theta[,t-1])\}\} \\
 X <- matrix(runif(S*2,-2,2),S,2); X[,1] <- 1 \\
-for (t in 1:T) \{mu[,t] <- as.vector(tcrossprod(beta[,t], X))\} \\
+mu <- tcrossprod(X, t(beta)) \\
 Y <- mu + Theta + matrix(rnorm(S*T,0,0.1),S,T) \\
 mon.names <- c("LP", as.parm.names(list(sigma=rep(0,6)))) \\
 parm.names <- as.parm.names(list(zeta=rep(0,S), beta=matrix(0,2,T), \\
@@ -3919,10 +4107,9 @@ MyData <- list(D=D, S=S, T=T, X=X, Y=Y, latitude=latitude, longitude=longitude, 
 \hspace*{0.62 in} sd=sigma[6], log=TRUE)) \\
 \hspace*{0.27 in} sigma.prior <- sum(dhalfcauchy(sigma, 25, log=TRUE)) \\
 \hspace*{0.27 in} \#\#\# Log-Likelihood \\
-\hspace*{0.27 in} mu <- Theta <- matrix(zeta, Data$S, Data$T) \\
-\hspace*{0.27 in} mu[,1] <- as.vector(tcrossprod(beta[,1], Data$X)) \\
+\hspace*{0.27 in} mu <- tcrossprod(Data$X, t(beta)) \\
+\hspace*{0.27 in} Theta <- matrix(zeta, Data$S, Data$T) \\
 \hspace*{0.27 in} for (t in 2:Data$T) \{ \\
-\hspace*{0.62 in} mu[,t] <- as.vector(tcrossprod(beta[,t], Data$X)) \\
 \hspace*{0.62 in} for (s in 1:Data$S) \{ \\
 \hspace*{0.98 in} Theta[,t] <- Sigma[,s,t] / sum(Sigma[,s,t]) * Theta[,t-1]\}\} \\
 \hspace*{0.27 in} mu <- mu + Theta \\
@@ -3963,7 +4150,7 @@ Xi <- as.vector(apply(rmvn(1000, rep(0,S*T), Sigma), 2, mean)) \\
 Xi <- matrix(Xi,S,T) \\
 beta <- c(50,2) \\
 X <- matrix(runif(S*2,-2,2),S,2); X[,1] <- 1 \\
-mu <- as.vector(tcrossprod(beta, X)) \\
+mu <- as.vector(tcrossprod(X, t(beta))) \\
 Y <- mu + Xi \\
 mon.names <- c("LP","psi","sigma[1]","sigma[2]") \\
 parm.names <- as.parm.names(list(Xi=matrix(0,S,T), beta=rep(0,2), \\
@@ -3997,7 +4184,7 @@ MyData <- list(D.S=D.S, D.T=D.T, S=S, T=T, X=X, Y=Y, latitude=latitude, \\
 \hspace*{0.27 in} psi.prior <- dhalfcauchy(psi, 25, log=TRUE) \\
 \hspace*{0.27 in} \#\#\# Log-Likelihood \\
 \hspace*{0.27 in} Xi <- matrix(Xi, Data$S, Data$T) \\
-\hspace*{0.27 in} mu <- as.vector(tcrossprod(beta, Data$X)) + Xi \\
+\hspace*{0.27 in} mu <- as.vector(tcrossprod(Data$X, t(beta))) + Xi \\
 \hspace*{0.27 in} LL <- sum(dnorm(Data$Y, mu, sigma[1], log=TRUE)) \\
 \hspace*{0.27 in} \#\#\# Log-Posterior \\
 \hspace*{0.27 in} LP <- LL + beta.prior + Xi.prior + sigma.prior + phi.prior + psi.prior \\
@@ -4037,7 +4224,7 @@ theta <- as.vector(apply(rmvn(1000, rep(0,T), Sigma.T), 2, mean)) \\
 Theta <- matrix(theta,S,T,byrow=TRUE) \\
 beta <- c(50,2) \\
 X <- matrix(runif(S*2,-2,2),S,2); X[,1] <- 1 \\
-mu <- as.vector(tcrossprod(beta, X)) \\
+mu <- as.vector(tcrossprod(X, t(beta))) \\
 Y <- mu + zeta + Theta + matrix(rnorm(S*T,0,0.1),S,T) \\
 mon.names <- c("LP","sigma[1]","sigma[2]","sigma[3]") \\
 parm.names <- as.parm.names(list(zeta=rep(0,S), theta=rep(0,T), \\
@@ -4071,7 +4258,7 @@ MyData <- list(D.S=D.S, D.T=D.T, S=S, T=T, X=X, Y=Y, latitude=latitude, \\
 \hspace*{0.27 in} phi.prior <- sum(dunif(phi, 1, 5, log=TRUE)) \\
 \hspace*{0.27 in} \#\#\# Log-Likelihood \\
 \hspace*{0.27 in} Theta <- matrix(theta, Data$S, Data$T, byrow=TRUE) \\
-\hspace*{0.27 in} mu <- as.vector(tcrossprod(beta, Data$X)) + zeta + Theta \\
+\hspace*{0.27 in} mu <- as.vector(tcrossprod(Data$X, t(beta))) + zeta + Theta \\
 \hspace*{0.27 in} LL <- sum(dnorm(Data$Y, mu, sigma[1], log=TRUE)) \\
 \hspace*{0.27 in} \#\#\# Log-Posterior \\
 \hspace*{0.27 in} LP <- LL + beta.prior + zeta.prior + theta.prior + sigma.prior + \\
@@ -4257,7 +4444,7 @@ MyData <- list(J=J, T=T, Y=Y, mon.names=mon.names, parm.names=parm.names) \\
 \hspace*{0.27 in} sigma.prior <- sum(dhalfcauchy(sigma, 25, log=TRUE)) \\
 \hspace*{0.27 in} \#\#\# Log-Likelihood \\
 \hspace*{0.27 in} mu <- matrix(alpha,Data$T,Data$J,byrow=TRUE) \\
-\hspace*{0.62 in} mu[-1,] <- mu[-1,] + t(tcrossprod(Phi,Data$Y[-Data$T,])) \\
+\hspace*{0.62 in} mu[-1,] <- mu[-1,] + tcrossprod(Data$Y[-Data$T,], Phi) \\
 \hspace*{0.27 in} ynew <- alpha + as.vector(crossprod(Phi, Data$Y[Data$T,])) \\
 \hspace*{0.27 in} LL <- sum(dnorm(Data$Y, mu, \\
 \hspace*{0.62 in} matrix(sigma,Data$T,Data$J,byrow=TRUE), log=TRUE)) \\
@@ -4302,7 +4489,7 @@ MyData <- list(J=J, X=X, mon.names=mon.names, parm.names=parm.names, w=w, \\
 \hspace*{0.27 in} beta.prior <- sum(dnormv(beta, 0, 1000, log=TRUE)) \\
 \hspace*{0.27 in} sigma.prior <- dhalfcauchy(sigma, 25, log=TRUE) \\
 \hspace*{0.27 in} \#\#\# Log-Likelihood \\
-\hspace*{0.27 in} mu <- tcrossprod(beta, Data$X) \\
+\hspace*{0.27 in} mu <- tcrossprod(Data$X, t(beta)) \\
 \hspace*{0.27 in} LL <- sum(w * dnorm(Data$y, mu, sigma, log=TRUE)) \\
 \hspace*{0.27 in} \#\#\# Log-Posterior \\
 \hspace*{0.27 in} LP <- LL + beta.prior + sigma.prior \\
@@ -4336,8 +4523,8 @@ X1 <- matrix(runif(N*J1,-2,2),N,J1); X1[,1] <- 1 \\
 X2 <- matrix(runif(N*J2,-2,2),N,J2); X2[,1] <- 1 \\
 alpha <- runif(J1,-1,1) \\
 beta <- runif(J2,-1,1) \\
-p <- as.vector(invlogit(tcrossprod(alpha, X1) + rnorm(N,0,0.1))) \\
-mu <- as.vector(round(exp(tcrossprod(beta, X2) + rnorm(N,0,0.1)))) \\
+p <- invlogit(tcrossprod(X1, t(alpha)) + rnorm(N,0,0.1)) \\
+mu <- round(exp(tcrossprod(X2, t(beta)) + rnorm(N,0,0.1))) \\
 y <- ifelse(p > 0.5, 0, mu) \\
 z <- ifelse(y == 0, 1, 0) \\
 mon.names <- "LP" \\
@@ -4351,21 +4538,22 @@ MyData <- list(J1=J1, J2=J2, N=N, X1=X1, X2=X2, mon.names=mon.names, \\
 \code{Model <- function(parm, Data) \\
 \hspace*{0.27 in} \{ \\
 \hspace*{0.27 in} \#\#\# Parameters \\
-\hspace*{0.27 in} alpha <- parm[1:Data$J1] \\
-\hspace*{0.27 in} beta <- parm[grep("beta", Data$parm.names)] \\
+\hspace*{0.27 in} parm[1:Data$J1] <- alpha <- interval(parm[1:Data$J1], -5, 5) \\
+\hspace*{0.27 in} beta <- parm[Data$J1+1:Data$J2] \\
+\hspace*{0.27 in} parm[Data$J1+1:Data$J2] <- beta \\
 \hspace*{0.27 in} \#\#\# Log(Prior Densities) \\
-\hspace*{0.27 in} alpha.prior <- sum(dnormv(alpha, 0, 1000, log=TRUE)) \\
-\hspace*{0.27 in} beta.prior <- sum(dnormv(beta, 0, 1000, log=TRUE)) \\
+\hspace*{0.27 in} alpha.prior <- sum(dnormv(alpha, 0, 5, log=TRUE)) \\
+\hspace*{0.27 in} beta.prior <- sum(dnormv(beta, 0, 5, log=TRUE)) \\
 \hspace*{0.27 in} \#\#\# Log-Likelihood \\
 \hspace*{0.27 in} Lambda <- matrix(NA, Data$N, 2) \\
-\hspace*{0.27 in} Lambda[,1] <- invlogit(tcrossprod(alpha, Data$X1)) \\
-\hspace*{0.27 in} Lambda[,2] <- exp(tcrossprod(beta, Data$X2)) \\
+\hspace*{0.27 in} Lambda[,1] <- invlogit(tcrossprod(Data$X1, t(alpha))) \\
+\hspace*{0.27 in} Lambda[,2] <- exp(tcrossprod(Data$X2, t(beta))) \\
 \hspace*{0.27 in} Lambda[,2] <- ifelse(Lambda[,1] >= 0.5, 0, Lambda[,2]) \\
-\hspace*{0.27 in} LL1 <- sum(dbern(Data$z, Lambda[,1], log=TRUE)) \\
-\hspace*{0.27 in} LL2 <- sum(dpois(Data$y, Lambda[,2], log=TRUE)) \\
+\hspace*{0.27 in} LL <- sum(dbern(Data$z, Lambda[,1], log=TRUE), \\
+\hspace*{0.62 in} dpois(Data$y, Lambda[,2], log=TRUE)) \\
 \hspace*{0.27 in} \#\#\# Log-Posterior \\
-\hspace*{0.27 in} LP <- LL1 + LL2 + alpha.prior + beta.prior \\
-\hspace*{0.27 in} Modelout <- list(LP=LP, Dev=-2*LL2, Monitor=LP, \\
+\hspace*{0.27 in} LP <- LL + alpha.prior + beta.prior \\
+\hspace*{0.27 in} Modelout <- list(LP=LP, Dev=-2*LL, Monitor=LP, \\
 \hspace*{0.62 in} yhat=Lambda[,2], parm=parm) \\
 \hspace*{0.27 in} return(Modelout) \\
 \hspace*{0.27 in} \}

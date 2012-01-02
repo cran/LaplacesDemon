@@ -16,7 +16,8 @@ LaplacesDemon <- function(Model, Data, Adaptive=0, Covar=NULL, DR=0,
      ##########################  Initial Checks  ##########################
      cat("\nPerforming initial checks...\n")
      if(missing(Model)) stop("A function must be entered for Model.")
-     if(missing(Data)) stop("A list containing data must be entered for Data.")
+     if(missing(Data))
+          stop("A list containing data must be entered for Data.")
      if(is.null(Data$mon.names)) stop("In Data, mon.names is NULL.")
      if(is.null(Data$parm.names)) stop("In Data, parm.names is NULL.")
      for (i in 1:length(Data)) {
@@ -173,40 +174,40 @@ LaplacesDemon <- function(Model, Data, Adaptive=0, Covar=NULL, DR=0,
      ############################  Begin MCMC  ############################
      cat("\nLaplace's Demon is beginning to update...\n")
      if(Algorithm == "Adaptive Metropolis") {
-          mcmc.out <- AM(Model, Data, Adaptive, DR, Initial.Values,
-               Iterations, Periodicity, Status, Thinning, Acceptance, Dev,
-               DiagCovar, Iden.Mat, LIV, Mon, Mo0, post, ScaleF, thinned,
-               tuning, VarCov)}
+          mcmc.out <- AM(Model, Data, Adaptive, DR, Iterations,
+               Periodicity, Status, Thinning, Acceptance, Dev, DiagCovar,
+               Iden.Mat, LIV, Mon, Mo0, post, ScaleF, thinned, tuning,
+               VarCov)}
      else if(Algorithm == "Adaptive-Mixture Metropolis") {
-          mcmc.out <- AMM(Model, Data, Adaptive, DR, Initial.Values,
-               Iterations, Periodicity, Status, Thinning, Acceptance, Dev,
-               DiagCovar, Iden.Mat, LIV, Mon, Mo0, post, ScaleF, thinned,
-               tuning, VarCov)}
+          mcmc.out <- AMM(Model, Data, Adaptive, DR, Iterations,
+               Periodicity, Status, Thinning, Acceptance, Dev, DiagCovar,
+               Iden.Mat, LIV, Mon, Mo0, post, ScaleF, thinned, tuning,
+               VarCov)}
      else if(Algorithm == "Adaptive Metropolis-within-Gibbs") {
-          mcmc.out <- AMWG(Model, Data, Adaptive, DR, Initial.Values,
-               Iterations, Periodicity, Status, Thinning, Acceptance, Dev,
-               DiagCovar, Iden.Mat, LIV, Mon, Mo0, post, ScaleF, thinned,
-               tuning, VarCov)}
+          mcmc.out <- AMWG(Model, Data, Adaptive, DR, Iterations,
+               Periodicity, Status, Thinning, Acceptance, Dev, DiagCovar,
+               Iden.Mat, LIV, Mon, Mo0, post, ScaleF, thinned, tuning,
+               VarCov)}
      else if(Algorithm == "Delayed Rejection Adaptive Metropolis") {
-          mcmc.out <- DRAM(Model, Data, Adaptive, DR, Initial.Values,
-               Iterations, Periodicity, Status, Thinning, Acceptance, Dev,
-               DiagCovar, Iden.Mat, LIV, Mon, Mo0, post, ScaleF, thinned,
-               tuning, VarCov)}
+          mcmc.out <- DRAM(Model, Data, Adaptive, DR, Iterations,
+               Periodicity, Status, Thinning, Acceptance, Dev, DiagCovar,
+               Iden.Mat, LIV, Mon, Mo0, post, ScaleF, thinned, tuning,
+               VarCov)}
      else if(Algorithm == "Delayed Rejection Metropolis") {
-          mcmc.out <- DRM(Model, Data, Adaptive, DR, Initial.Values,
-               Iterations, Periodicity, Status, Thinning, Acceptance, Dev,
-               DiagCovar, Iden.Mat, LIV, Mon, Mo0, post, ScaleF, thinned,
-               tuning, VarCov)}
+          mcmc.out <- DRM(Model, Data, Adaptive, DR, Iterations,
+               Periodicity, Status, Thinning, Acceptance, Dev, DiagCovar,
+               Iden.Mat, LIV, Mon, Mo0, post, ScaleF, thinned, tuning,
+               VarCov)}
      else if(Algorithm == "Metropolis-within-Gibbs") {
-          mcmc.out <- MWG(Model, Data, Adaptive, DR, Initial.Values,
-               Iterations, Periodicity, Status, Thinning, Acceptance, Dev,
-               DiagCovar, Iden.Mat, LIV, Mon, Mo0, post, ScaleF, thinned,
-               tuning, VarCov)}
+          mcmc.out <- MWG(Model, Data, Adaptive, DR, Iterations,
+               Periodicity, Status, Thinning, Acceptance, Dev, DiagCovar,
+               Iden.Mat, LIV, Mon, Mo0, post, ScaleF, thinned, tuning,
+               VarCov)}
      else if(Algorithm == "Random-Walk Metropolis") {
-          mcmc.out <- RWM(Model, Data, Adaptive, DR, Initial.Values,
-               Iterations, Periodicity, Status, Thinning, Acceptance, Dev,
-               DiagCovar, Iden.Mat, LIV, Mon, Mo0, post, ScaleF, thinned,
-               tuning, VarCov)}
+          mcmc.out <- RWM(Model, Data, Adaptive, DR, Iterations,
+               Periodicity, Status, Thinning, Acceptance, Dev, DiagCovar,
+               Iden.Mat, LIV, Mon, Mo0, post, ScaleF, thinned, tuning,
+               VarCov)}
      else stop("The algorithm is unrecognized.")
      #########################  MCMC is Finished  #########################
      Acceptance <- mcmc.out$Acceptance
@@ -402,10 +403,9 @@ LaplacesDemon <- function(Model, Data, Adaptive=0, Covar=NULL, DR=0,
      cat("\nLaplace's Demon has finished.\n")
      return(LaplacesDemon.out)
      }
-AM <- function(Model, Data, Adaptive, DR, Initial.Values,
-     Iterations, Periodicity, Status, Thinning, Acceptance, Dev,
-     DiagCovar, Iden.Mat, LIV, Mon, Mo0, post, ScaleF, thinned, tuning,
-     VarCov)
+AM <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
+     Status, Thinning, Acceptance, Dev, DiagCovar, Iden.Mat, LIV, Mon,
+     Mo0, post, ScaleF, thinned, tuning, VarCov)
      {
      for (iter in 1:Iterations) {
           ### Print Status
@@ -476,10 +476,9 @@ AM <- function(Model, Data, Adaptive, DR, Initial.Values,
           VarCov=VarCov)
      return(out)
      }
-AMM <- function(Model, Data, Adaptive, DR, Initial.Values,
-     Iterations, Periodicity, Status, Thinning, Acceptance, Dev,
-     DiagCovar, Iden.Mat, LIV, Mon, Mo0, post, ScaleF, thinned, tuning,
-     VarCov)
+AMM <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
+     Status, Thinning, Acceptance, Dev, DiagCovar, Iden.Mat, LIV, Mon,
+     Mo0, post, ScaleF, thinned, tuning, VarCov)
      {
      w <- 0.05
      obs.sum <- matrix(0, LIV, 1)
@@ -539,10 +538,9 @@ AMM <- function(Model, Data, Adaptive, DR, Initial.Values,
           VarCov=VarCov)
      return(out)
      }
-AMWG <- function(Model, Data, Adaptive, DR, Initial.Values,
-     Iterations, Periodicity, Status, Thinning, Acceptance, Dev,
-     DiagCovar, Iden.Mat, LIV, Mon, Mo0, post, ScaleF, thinned, tuning,
-     VarCov)
+AMWG <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
+     Status, Thinning, Acceptance, Dev, DiagCovar, Iden.Mat, LIV, Mon,
+     Mo0, post, ScaleF, thinned, tuning, VarCov)
      {
      Acceptance <- matrix(0, 1, LIV)
      for (iter in 1:Iterations)
@@ -599,10 +597,9 @@ AMWG <- function(Model, Data, Adaptive, DR, Initial.Values,
           VarCov=VarCov)
      return(out)
      }
-DRAM <- function(Model, Data, Adaptive, DR, Initial.Values,
-     Iterations, Periodicity, Status, Thinning, Acceptance, Dev,
-     DiagCovar, Iden.Mat, LIV, Mon, Mo0, post, ScaleF, thinned, tuning,
-     VarCov)
+DRAM <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
+     Status, Thinning, Acceptance, Dev, DiagCovar, Iden.Mat, LIV, Mon,
+     Mo0, post, ScaleF, thinned, tuning, VarCov)
      {
      for (iter in 1:Iterations) {
           ### Print Status
@@ -709,10 +706,9 @@ DRAM <- function(Model, Data, Adaptive, DR, Initial.Values,
           VarCov=VarCov)
      return(out)
      }
-DRM <- function(Model, Data, Adaptive, DR, Initial.Values,
-     Iterations, Periodicity, Status, Thinning, Acceptance, Dev,
-     DiagCovar, Iden.Mat, LIV, Mon, Mo0, post, ScaleF, thinned, tuning,
-     VarCov)
+DRM <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
+     Status, Thinning, Acceptance, Dev, DiagCovar, Iden.Mat, LIV, Mon,
+     Mo0, post, ScaleF, thinned, tuning, VarCov)
      {
      for (iter in 1:Iterations) {
           ### Print Status
@@ -803,10 +799,9 @@ DRM <- function(Model, Data, Adaptive, DR, Initial.Values,
           VarCov=VarCov)
      return(out)
      }
-MWG <- function(Model, Data, Adaptive, DR, Initial.Values,
-     Iterations, Periodicity, Status, Thinning, Acceptance, Dev,
-     DiagCovar, Iden.Mat, LIV, Mon, Mo0, post, ScaleF, thinned, tuning,
-     VarCov)
+MWG <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
+     Status, Thinning, Acceptance, Dev, DiagCovar, Iden.Mat, LIV, Mon,
+     Mo0, post, ScaleF, thinned, tuning, VarCov)
      {
      Acceptance <- matrix(0, 1, LIV)
      for (iter in 1:Iterations) {
@@ -850,10 +845,9 @@ MWG <- function(Model, Data, Adaptive, DR, Initial.Values,
           VarCov=VarCov)
      return(out)
      }
-RWM <- function(Model, Data, Adaptive, DR, Initial.Values,
-     Iterations, Periodicity, Status, Thinning, Acceptance, Dev,
-     DiagCovar, Iden.Mat, LIV, Mon, Mo0, post, ScaleF, thinned, tuning,
-     VarCov)
+RWM <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
+     Status, Thinning, Acceptance, Dev, DiagCovar, Iden.Mat, LIV, Mon,
+     Mo0, post, ScaleF, thinned, tuning, VarCov)
      {
      for (iter in 1:Iterations) {
           ### Print Status

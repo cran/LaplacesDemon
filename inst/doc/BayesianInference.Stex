@@ -387,7 +387,7 @@ where $\mu$ = \textbf{X}$\beta$, and $\mu$ is the conditional mean, while $\sigm
 
 \section{Bayes Factors}
 
-Introduced by Harold Jeffreys, a `Bayes factor' is a Bayesian alternative to frequentist hypothesis testing that is most often used for the comparison of multiple models by hypothesis testing, usually to determine which model better fits the data \citep{jeffreys61}. Bayes factors are notoriously difficult to compute, and the Bayes factor is only defined when the marginal density of $\textbf{y}$ under each model is proper. However, Bayes factors are easy to approximate with the Laplace-Metropolis Estimator \citep{kass95, lewis97}\footnote{A Bayes factor may be estimated with the \code{BayesFactor} function in \pkg{LaplacesDemon} to compare multiple models that were fit with the \code{LaplaceApproximation} or \code{LaplacesDemon} functions.}.
+Introduced by Harold Jeffreys, a `Bayes factor' is a Bayesian alternative to frequentist hypothesis testing that is most often used for the comparison of multiple models by hypothesis testing, usually to determine which model better fits the data \citep{jeffreys61}. Bayes factors are notoriously difficult to compute, and the Bayes factor is only defined when the marginal density of $\textbf{y}$ under each model is proper. However, Bayes factors are easy to approximate with the Laplace-Metropolis Estimator \citep{kass95, lewis97}\footnote{A Bayes factor may be estimated with the \code{BayesFactor} function in \pkg{LaplacesDemon} to compare multiple models that were fit with the \code{LaplaceApproximation} or \code{LaplacesDemon} functions. See the \code{BayesFactor} function for the interpretation of a Bayes factor regarding strength of evidence.}.
 
 Hypothesis testing with Bayes factors is more robust than frequentist hypothesis testing, since the Bayesian form avoids model selection bias, evaluates evidence in favor the null hypothesis, includes model uncertainty, and allows non-nested models to be compared (though of course the model must have the same dependent variable). Also, frequentist significance tests become biased in favor of rejecting the null hypothesis with sufficiently large sample size.
 
@@ -404,28 +404,6 @@ The Bayes factor, $B$, is the posterior odds in favor of the hypothesis divided 
 \end{center}
 
 For example, when $B=2$, the data favor $\mathcal{M}_1$ over $\mathcal{M}_2$ with 2:1 odds. Table \ref{bf} shows a variation of Jeffreys' interpretation of the Bayes factor \citep{jeffreys61}.
-
-\begin{Scode}{echo=false}
-library(xtable)
-BF <- matrix(NA,6,2, dimnames=list(1:6, 
-     c("Bayes Factor","Strength of Evidence")))
-BF[1,1] <- "B < 0.1"
-BF[2,1] <- "0.1 < B < 1/3"
-BF[3,1] <- "1/3 < B < 1"
-BF[4,1] <- "1 < B < 3"
-BF[5,1] <- "3 < B < 10"
-BF[6,1] <- "B > 10"
-BF[1,2] <- "Strong against M[1]"
-BF[2,2] <- "Substantial against M[1]"
-BF[3,2] <- "Barely worth mentioning against M[1]"
-BF[4,2] <- "Barely worth mentioning for M[1]"
-BF[5,2] <- "Substantial for M[1]"
-BF[6,2] <- "Strong for M[1]"
-\end{Scode}
-
-\begin{Scode}{echo=false,results=tex}
-print(xtable(BF, caption="Bayes Factors and Strength of Evidence", label="bf"))
-\end{Scode}
 
 In a non-hierarchical model, the marginal likelihood may easily be approximated with the Laplace-Metropolis Estimator for model $m$ as
 

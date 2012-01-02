@@ -17,10 +17,12 @@ SIR <- function(Model, Data, mu, Sigma, n=1000)
      if(!is.symmetric.matrix(Sigma)) Sigma <- as.symmetric.matrix(Sigma)
      if(!is.positive.definite(Sigma)) Sigma <- as.positive.definite(Sigma)
      if(length(mu) != nrow(Sigma)) stop("mu and Sigma are incompatible.")
+     ### Sampling
      k <- length(mu)
      theta <- rmvn(n, mu, Sigma)
      theta <- ifelse(!is.finite(theta), 0, theta)
      colnames(theta) <- Data$parm.names
+     ### Importance
      lf <- matrix(0, c(dim(theta)[1], 1))
      for (i in 1:n) {
           mod <- Model(theta[i,], Data)
@@ -29,8 +31,12 @@ SIR <- function(Model, Data, mu, Sigma, n=1000)
           }
      lp <- dmvn(theta, mu, Sigma, log=TRUE)
      md <- max(lf - lp)
-     wt <- exp(lf - lp - md)
-     probs <- wt / sum(wt)
+     w <- exp(lf - lp - md)
+     if(any(is.infinite(w))) {
+          w <- ifelse(w == Inf, max(w[is.finite(w)]), w)
+          w <- ifelse(w == -Inf, min(w[is.finite(w)]), w)}
+     probs <- w / sum(w)
+     ### Resampling
      options(warn=-1)
      test <- try(indices <- sample(1:n, size=n, replace=TRUE,
           prob=probs), silent=TRUE)

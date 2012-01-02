@@ -95,6 +95,9 @@ Model.Spec.Time(Model, Initial.Values, Data, n=1000)
     with \code{x*x}.
     \item Replace \code{mean(x)} with \code{sum(x)/length(x)}.
     \item Replace parentheses (when possible) with curly brackets.
+    \item Replace \code{tcrossprod(Data$X, t(beta))} with
+    \code{Data$X \%*\% beta} when there are few predictors, and avoid
+    \code{tcrossprod(beta, Data$X)}, which is always slowest.
     \item Specify parameters directly, such as \code{parm[53]}, rather
     than with \code{grep}.
     \item Vectorize functions and eliminate \code{apply} and \code{for}

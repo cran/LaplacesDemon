@@ -53,7 +53,7 @@ PosteriorChecks <- function(x, Parms=NULL)
           post <- post[,keepcols]
           colnames(post) <- temp
           #Correlation Table
-          postcor <- cor(post)
+          options(warn=-1); postcor <- cor(post); options(warn=0)
           #Summary Table
           Summ <- matrix(NA, ncol(post), 5)
           rownames(Summ) <- colnames(post)
@@ -95,7 +95,7 @@ PosteriorChecks <- function(x, Parms=NULL)
           Posterior <- x$Posterior
           colnames(Posterior) <- rownames(post)
           ### Correlation Table
-          postcor <- cor(Posterior)
+          options(warn=-1); postcor <- cor(Posterior); options(warn=0)
           ### Summary Table
           Summ <- matrix(NA, nrow(post), 5)
           rownames(Summ) <- rownames(post)

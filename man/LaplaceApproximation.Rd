@@ -350,7 +350,7 @@ Model <- function(parm, Data)
      beta.prior <- sum(dnormv(beta, 0, 1000, log=TRUE))
      sigma.prior <- dhalfcauchy(sigma, 25, log=TRUE)
      ### Log-Likelihood
-     mu <- tcrossprod(beta, Data$X)
+     mu <- tcrossprod(Data$X, t(beta))
      LL <- sum(dnorm(Data$y, mu, sigma, log=TRUE))
      ### Log-Posterior
      LP <- LL + beta.prior + sigma.prior

@@ -1,8 +1,17 @@
+2011-12-30 Vignette Examples: Fixed bugs in Mixed Logit and ZIP
+2011-12-29 Vignette Examples: Vectorized Penalized Spline Regression
+2011-12-22 Vignette Examples: Added LSTAR
+2011-12-21 Vignette Examples: Added Approximate Dynamic Factor Analysis (ADFA)
+2011-12-20 Vignette Examples: Added Dynamic Factor Analysis (DFA)
+2011-12-19 Vignette Examples: Vectorized Factor Regression, and fixed bug
+2011-12-18 Vignette Examples: Vectorized Confirmatory Factor Analysis
+2011-12-17 Vignette Examples: Vectorized Exploratory Factor Analysis
+2011-12-06 SIR: Prevent infinite weights
 2011-12-03 Added plot.importance
 2011-12-01 CITATION now includes citations for vignettes
 2011-11-26 Added GIV
 2011-11-26 OnLoad: Included version number
-2011-11-23 Examples: Changed sigma in Kriging, Predictive Process
+2011-11-23 Vignette Examples: Changed sigma in Kriging, Predictive Process
 2011-11-22 LaplacesDemon: MCSE with method IMPS becomes default
 2011-11-21 Consort: Changed the Demonic Suggestions due to new MCMC algs
 2011-11-20 Added partial and Hessian
