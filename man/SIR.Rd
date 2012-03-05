@@ -31,7 +31,8 @@ SIR(Model, Data, mu, Sigma, n=1000)
   family of algorithms is also known as Sequential Monte Carlo). A
   distribution is approximated with importance weights, which are
   approximations to the relative posterior densities of the particles,
-  and the sum of the weights is one. SIR is a sequential or recursive
+  and the sum of the weights is one. In this terminology, each sample in
+  the distribution is a ``particle''. SIR is a sequential or recursive
   form of importance sampling. As in importance sampling, the
   expectation of a function can be approximated as a weighted
   average. The optimal proposal distribution is the target distribution.
@@ -45,6 +46,10 @@ SIR(Model, Data, mu, Sigma, n=1000)
   posterior distributions. However, it is often useful to have posterior
   samples, in which case the \code{SIR} function is used to draw
   samples.
+
+  In other contexts (for which this function is not designed), SIR is
+  used with dynamic linear models (DLMs) and state-space models (SSMs)
+  for state filtering.
   
   This function is similar to the \code{sir} function in the
   \code{LearnBayes} package.
@@ -58,7 +63,7 @@ SIR(Model, Data, mu, Sigma, n=1000)
   to Nonlinear/Non-Gaussian Bayesian State Estimation". IEEE Proceedings
   F on Radar and Signal Processing, 140 (2), p. 107--113.
 
-  Hall, B. (2011). "Laplace's Demon", STATISTICAT, LLC.
+  Hall, B. (2012). "Laplace's Demon", STATISTICAT, LLC.
   URL=\url{http://www.statisticat.com/laplacesdemon.html}
 }
 \author{Byron Hall \email{laplacesdemon@statisticat.com}}

@@ -1,3 +1,12 @@
+2012-03-04 Vignette Examples: Added Negative Binomial Regression
+2012-03-03 Vignette Examples: Added TARCH(1)
+2012-02-26 Vignette Examples: Added Ordinal Logit and Ordinal Probit
+2012-02-23 logit and log-log functions no longer require vector arguments
+2012-02-21 Distributions: Made rcat faster by using rmultinom
+2012-02-16 Vignette Examples: Added Variable Selection, BAL (Lasso)
+2012-02-11 Vignette Examples: ARCH models updated
+2012-02-02 plot.demonoid.ppc and plot.laplace.ppc: Fitted now has na.rm=TRUE
+2012-01-05 interval: Expanded to include arrays
 2011-12-30 Vignette Examples: Fixed bugs in Mixed Logit and ZIP
 2011-12-29 Vignette Examples: Vectorized Penalized Spline Regression
 2011-12-22 Vignette Examples: Added LSTAR

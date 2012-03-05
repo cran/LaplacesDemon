@@ -278,7 +278,7 @@ LaplaceApproximation(Model, parm, Data, Interval=1.0E-6,
   Bernardo, J.M. and Smith, A.F.M. (2000). "Bayesian Theory". John
   Wiley \& Sons: West Sussex, England.
 
-  Hall, B. (2011). "Laplace's Demon", STATISTICAT, LLC.
+  Hall, B. (2012). "Laplace's Demon", STATISTICAT, LLC.
   URL=\url{http://www.statisticat.com/laplacesdemon.html}
 
   Kass, R.E. and Raftery, A.E. (1995). "Bayes Factors". Journal of the
@@ -328,7 +328,6 @@ library(LaplacesDemon)
 
 ##############################  Demon Data  ###############################
 data(demonsnacks)
-N <- nrow(demonsnacks)
 J <- 6
 y <- log(demonsnacks$Calories)
 X <- cbind(1, as.matrix(demonsnacks[,c(1,3:6)]))

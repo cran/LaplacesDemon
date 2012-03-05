@@ -45,7 +45,7 @@ rhalft(n, scale=25, nu=1)
 
 The half-t distribution is derived from the Student t distribution, and
 is useful as an uninformative prior distribution for a scale
-parameter. It is more adaptable than than the default recommended
+parameter. It is more adaptable than the default recommended
 half-Cauchy, though it may also be more difficult to estimate due to its
 additional degrees of freedom parameter, \eqn{\nu}{nu}. When
 \eqn{\nu=1}{nu=1}, the density is proportional to a proper half-Cauchy

@@ -31,7 +31,8 @@
   MCSE has been demonstrated to be an excellent stopping rule.
 
   Acceptable error may be specified, if known, in the \code{MCSS}
-  function to estimate the required number of posterior samples.
+  (Monte Carlo Sample Size) function to estimate the required number of
+  posterior samples.
 }
 \usage{
 MCSE(x, method="IMPS", batch.size="sqrt", warn=FALSE)
@@ -101,7 +102,7 @@ MCSS(x, a)
   Geyer, C.J. (1992). "Practical Markov Chain Monte Carlo". Statistical
   Science, 7, 4, p. 473--483.
   
-  Hall, B. (2011). "Laplace's Demon", STATISTICAT, LLC.
+  Hall, B. (2012). "Laplace's Demon", STATISTICAT, LLC.
   URL=\url{http://www.statisticat.com/laplacesdemon.html}
   
   Jones, G.L., Haran, M., Caffo, B.S., and Neath, R. (2006). "Fixed-Width

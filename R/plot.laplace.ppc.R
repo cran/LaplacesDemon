@@ -74,7 +74,8 @@ plot.laplace.ppc <- function(x, Style=NULL, Data=NULL, Rows=NULL,
           par(mfrow=c(1,1))
           temp <- summary(x, Quiet=TRUE)$Summary
           plot(temp[Rows,1], temp[Rows,5], pch=16, cex=0.75,
-               ylim=c(min(temp[Rows,c(1,4:6)]),max(temp[Rows,c(1,4:6)])),
+               ylim=c(min(temp[Rows,c(1,4:6)], na.rm=TRUE),
+               max(temp[Rows,c(1,4:6)], na.rm=TRUE)),
                xlab="y", ylab="yhat", main="Fitted",
                sub="Gray dots and lines are yhat at 2.5% and 95%.")
           panel.smooth(temp[Rows,1], temp[Rows,4], pch=16, cex=0.75,
@@ -232,8 +233,8 @@ plot.laplace.ppc <- function(x, Style=NULL, Data=NULL, Rows=NULL,
           temp <- summary(x, Quiet=TRUE)$Summary
           for (s in 1:Data$S) {
                plot(matrix(temp[,1], Data$S, Data$T)[s,],
-                    ylim=c(min(matrix(temp[,4], Data$S, Data$T)[s,]),
-                         max(matrix(temp[,6], Data$S, Data$T)[s,])),
+                    ylim=c(min(matrix(temp[,4], Data$S, Data$T)[s,], na.rm=TRUE),
+                         max(matrix(temp[,6], Data$S, Data$T)[s,]), na.rm=TRUE),
                     type="l", xlab="Time", ylab="y",
                     main=paste("Space-Time at Space s=",s," of ",
                          Data$S, sep=""),

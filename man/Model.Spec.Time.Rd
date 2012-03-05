@@ -122,7 +122,7 @@ Model.Spec.Time(Model, Initial.Values, Data, n=1000)
     each iteration.}
 }
 \references{
-  Hall, B. (2011). "Laplace's Demon", STATISTICAT, LLC.
+  Hall, B. (2012). "Laplace's Demon", STATISTICAT, LLC.
   URL=\url{http://www.statisticat.com/laplacesdemon.html}
 
   Roberts, G.O. and Rosenthal, J.S. (2009). "Examples of Adaptive

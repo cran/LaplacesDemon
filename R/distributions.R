@@ -184,13 +184,7 @@ dcat <- function(x, p, log=FALSE)
      }
 rcat <- function(n, p)
      {
-     p <- as.vector(p)
-     p <- p / sum(p)
-     pmax <- cumsum(p)
-     pmin <- c(0,cumsum(p[-length(p)]))
-     x <- z <- runif(n)
-     for (i in 1:n) {for (j in 1:length(p)) {
-          if({z[i] >= pmin[j]} & {z[i] < pmax[j]}) x[i] <- j}}
+     x <- which(rmultinom(n, size=1, prob=p) == 1, arr.ind=TRUE)[,'row']
      return(x)
      }
 

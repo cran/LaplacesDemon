@@ -33,7 +33,7 @@ partial(Model, parm, Data, Interval=1e-6)
   \code{partial} returns a vector of partial derivatives.
 }
 \references{
-  Hall, B. (2011). "Laplace's Demon", STATISTICAT, LLC.
+  Hall, B. (2012). "Laplace's Demon", STATISTICAT, LLC.
   URL=\url{http://www.statisticat.com/laplacesdemon.html}
 }
 \author{Byron Hall \email{laplacesdemon@statisticat.com}}

@@ -51,7 +51,7 @@ recommended, default, uninformative prior distribution for a scale parameter.
   \code{\link{dcauchy}}
 }
 \references{
-  Hall, B. (2011). "Bayesian Inference", STATISTICAT, LLC.
+  Hall, B. (2012). "Bayesian Inference", STATISTICAT, LLC.
   URL=\url{http://www.statisticat.com/laplacesdemon.html}
 }
 \examples{

@@ -149,7 +149,7 @@
   Assessment of Model Fitness via Realized Discrepancies". Statistica
   Sinica, 6, p. 733--807.
 
-  Hall, B. (2011), "Laplace's Demon", STATISTICAT, LLC.
+  Hall, B. (2012), "Laplace's Demon", STATISTICAT, LLC.
   URL=\url{http://www.statisticat.com/laplacesdemon.html}
 
   Laud, P.W. and Ibrahim, J.G. (1995). "Posterior Model Selection".

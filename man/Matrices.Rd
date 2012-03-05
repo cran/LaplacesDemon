@@ -159,7 +159,7 @@ upper.triangle(x, diag=FALSE)
   whether or not a matrix is positive-semidefinite. A \eqn{k x k}
   symmetric matrix \eqn{\textbf{X}}{X} is positive-semidefinite if all
   of its eigenvalues are non-negative (\eqn{\lambda_i \ge 0, i \in
-    k}{lambda[i] >= 0, i ink}).
+  k}{lambda[i] >= 0, i ink}).
 
   The \code{is.square.matrix} function is a logical test of whether or
   not a matrix is square. A square matrix is a matrix with the same

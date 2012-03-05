@@ -69,7 +69,7 @@ GIV(Model, Data, n=1000)
   to find acceptable initial values, each returned element is \code{NA}.
 }
 \references{
-  Hall, B. (2011). "Laplace's Demon", STATISTICAT, LLC.
+  Hall, B. (2012). "Laplace's Demon", STATISTICAT, LLC.
   URL=\url{http://www.statisticat.com/laplacesdemon.html}
 }
 \author{Byron Hall \email{laplacesdemon@statisticat.com}}
@@ -103,7 +103,7 @@ Model <- function(parm, Data)
      beta.prior <- sum(dnormv(beta, 0, 1000, log=TRUE))
      sigma.prior <- dhalfcauchy(sigma, 25, log=TRUE)
      ### Log-Likelihood
-     mu <- tcrossprod(beta, Data$X)
+     mu <- tcrossprod(Data$X, t(beta))
      LL <- sum(dnorm(Data$y, mu, sigma, log=TRUE))
      ### Log-Posterior
      LP <- LL + beta.prior + sigma.prior

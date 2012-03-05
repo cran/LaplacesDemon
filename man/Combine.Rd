@@ -45,11 +45,10 @@ Combine(x, Data)
   information in Fit1 and Fit2, and returns an object the user names
   Fit3. Fit3 has only 1,000 iterations, which is the result of appending
   the iterations in Fit1 and Fit2, and thinning by 2. If 2,000,000
-  iterations were updated from the beginning (which cannot be, due to
-  the limit of 1,000,000 iterations), and were thinned by 2,000, then
-  the same information exists now in Fit3. The \code{\link{Consort}}
+  iterations were updated from the beginning, and were thinned by 2,000,
+  then the same information exists now in Fit3. The \code{\link{Consort}}
   function can now be applied to Fit3, to see if stationarity is found.
-  If not, more objects of class \code{demonoid} can be collected and
+  If not, then more objects of class \code{demonoid} can be collected and
   combined.
 }
 \value{

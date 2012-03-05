@@ -11,9 +11,9 @@ invlogit(x)
 logit(p)
 }
 \arguments{
-  \item{x}{This is a vector of real values that will be transformed to
+  \item{x}{This object contains real values that will be transformed to
     the interval [0,1].}
-  \item{p}{This is a vector of probabilities p in the interval [0,1]
+  \item{p}{This object contains of probabilities p in the interval [0,1]
     that will be transformed to the real line.}
 }
 \details{

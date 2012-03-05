@@ -108,7 +108,7 @@ assuming one model is the true model.
   Data Analysis, Texts in Statistical Science, 2nd ed.". Chapman and
   Hall, London.
 
-  Hall, B. (2011). "Bayesian Inference", STATISTICAT, LLC.
+  Hall, B. (2012). "Bayesian Inference", STATISTICAT, LLC.
   URL=\url{http://www.statisticat.com/laplacesdemon.html}
 
   Jeffreys, H. (1961). "Theory of Probability, Third Edition". Oxford
@@ -138,7 +138,6 @@ library(LaplacesDemon)
 
 ##############################  Demon Data  ###############################
 data(demonsnacks)
-N <- nrow(demonsnacks)
 J <- 2
 y <- log(demonsnacks$Calories)
 X <- cbind(1, as.matrix(demonsnacks[,7]))
@@ -176,7 +175,6 @@ Fit1
 
 ##############################  Demon Data  ###############################
 data(demonsnacks)
-N <- nrow(demonsnacks)
 J <- 3
 y <- log(demonsnacks$Calories)
 X <- cbind(1, as.matrix(demonsnacks[,c(7,8)]))

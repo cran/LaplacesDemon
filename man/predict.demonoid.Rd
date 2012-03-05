@@ -54,7 +54,7 @@
     of posterior samples.}
 }
 \references{
-  Hall, B. (2011). "Laplace's Demon", STATISTICAT, LLC.
+  Hall, B. (2012). "Laplace's Demon", STATISTICAT, LLC.
   URL=\url{http://www.statisticat.com/laplacesdemon.html}
 }
 \author{Byron Hall \email{laplacesdemon@statisticat.com}}

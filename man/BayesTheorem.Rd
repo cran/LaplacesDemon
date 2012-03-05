@@ -123,7 +123,7 @@ BayesTheorem(PrA, PrBA)
   Transactions of the Royal Statistical Society of London, 53,
   p. 370--418.
 
-  Hall, B. (2011). "Bayesian Inference", STATISTICAT, LLC.
+  Hall, B. (2012). "Bayesian Inference", STATISTICAT, LLC.
   URL=\url{http://www.statisticat.com/laplacesdemon.html}
 
 }

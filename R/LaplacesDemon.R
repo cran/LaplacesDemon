@@ -147,7 +147,7 @@ LaplacesDemon <- function(Model, Data, Adaptive=0, Covar=NULL, DR=0,
           tuning <- rep(ScaleF, LIV)
           VarCov <- matrix(0, LIV, LIV)
           diag(VarCov) <- ScaleF / LIV}
-     Iden.Mat <- VarCov
+     Iden.Mat <- diag(LIV)
      DiagCovar <- matrix(diag(VarCov), 1, LIV)
      ### Determine Algorithm
      if({Adaptive < Iterations} & {DR == 0} & {Gibbs == FALSE} &

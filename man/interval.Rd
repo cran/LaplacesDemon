@@ -2,11 +2,11 @@
 \alias{interval}
 \title{Constrain to Interval}
 \description{
-  This function constrains the value(s) of a scalar, vector, or matrix
-  to a specified interval, \eqn{[a,b]}. In Bayesian inference, it is
-  often useful to truncate a prior distribution to an interval, such as
-  \eqn{p(\theta) \in [a,b]}{p(theta) in [a,b]}. The \code{interval}
-  function is often used in conjunction with the \code{\link{dtrunc}}
+  This function constrains the value(s) of a scalar, vector, matrix, or
+  array to a specified interval, \eqn{[a,b]}. In Bayesian inference, it
+  is often useful to truncate a prior distribution to an interval, such
+  as \eqn{p(\theta) \in [a,b]}{p(theta) in [a,b]}. The \code{interval}
+  function is often used in conjunction with the \code{\link{dtrunc}} 
   function to truncate a probability distribution. While
   \code{\link{dtrunc}} prevents assigning density outside of its
   interval and re-estimates density within the interval, the
@@ -22,17 +22,17 @@
 interval(x, a=-Inf, b=Inf)
 }
 \arguments{
-  \item{x}{This is a scalar, vector, or matrix, and its elements will be
-    constrained to the interval [\code{a},\code{b}].}
+  \item{x}{This is a scalar, vector, matrix or array, and its elements
+    will be constrained to the interval [\code{a},\code{b}].}
   \item{a}{This optional argument allows the specification of the lower
     bound of the interval, and defaults to \code{-Inf}.}
   \item{b}{This optional argument allows the specification of the upper
     bound of the interval, and defaults to \code{Inf}.}
 }
 \value{
-  The \code{interval} function returns a scalar, vector, or matrix in
-  accord with its argument, \code{x}. Each element is constrained to
-  the interval [\code{a},\code{b}].
+  The \code{interval} function returns a scalar, vector, matrix, or
+  array in accord with its argument, \code{x}. Each element is
+  constrained to the interval [\code{a},\code{b}].
 }
 \references{\url{http://www.statisticat.com/laplacesdemon.html}}
 \author{Byron Hall \email{laplacesdemon@statisticat.com}}

@@ -21,7 +21,6 @@ loglog <- function(p)
      }
 invloglog <- function(x)
      {
-     x <- as.vector(x)
      p <- exp(-exp(x))
      return(p)
      }
@@ -33,7 +32,6 @@ cloglog <- function(p)
      }
 invcloglog <- function(x)
      {
-     x <- as.vector(x)
      p <- 1 - exp(-exp(x))
      return(p)
      }

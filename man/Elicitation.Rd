@@ -91,7 +91,7 @@ elicit(n, cats, cat.names, show.plot=FALSE)
   the Lens of Markov chain Monte Carlo Methods". Journal of the Royal
   Statistical Society, A 169 (1), p. 37--48.
 
-  Hall, B. (2011). "Laplace's Demon", STATISTICAT, LLC.
+  Hall, B. (2012). "Laplace's Demon", STATISTICAT, LLC.
   URL=\url{http://www.statisticat.com/laplacesdemon.html}
   
   Savage, L.J. (1971). "Elicitation of Personal Probabilities and

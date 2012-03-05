@@ -16,13 +16,11 @@
 
 invlogit <- function(x)
      {
-     x <- as.vector(x)
      InvLogit <- 1 / {1 + exp(-x)}
      return(InvLogit)
      }
 logit <- function(p)
      {
-     p <- as.vector(p)
      if({any(p < 0)} || {any(p > 1)}) stop("p must be in [0,1].")
      Logit <- log(p / {1 - p})
      return(Logit)

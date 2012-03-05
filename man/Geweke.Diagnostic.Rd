@@ -45,7 +45,7 @@
   \emph{Bayesian Statistics 4} (ed JM Bernardo, JO Berger, AP Dawid,
   and AFM Smith). Clarendon Press, Oxford, UK.
 
-  Hall, B. (2011). "Laplace's Demon", STATISTICAT, LLC.
+  Hall, B. (2012). "Laplace's Demon", STATISTICAT, LLC.
   URL=\url{http://www.statisticat.com/laplacesdemon.html}
 }
 \seealso{

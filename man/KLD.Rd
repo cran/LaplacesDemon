@@ -57,7 +57,7 @@ such, KLD is the basis of reference priors (Berger, Bernardo, and Sun, 2009).
   Definition of Reference Priors". The Annals of Statistics, 37(2),
   p. 905--938.
 
-  Hall, B. (2011). "Bayesian Inference", STATISTICAT, LLC.
+  Hall, B. (2012). "Bayesian Inference", STATISTICAT, LLC.
   URL=\url{http://www.statisticat.com/laplacesdemon.html}
   
   Kullback, S. and Leibler, R.A. (1951). "On Information and

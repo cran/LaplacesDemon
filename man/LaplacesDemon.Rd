@@ -287,7 +287,7 @@ LaplacesDemon(Model, Data, Adaptive=0, Covar=NULL, DR=0, Gibbs=FALSE,
   Data Analysis, Texts in Statistical Science, 2nd ed.". Chapman and
   Hall, London.
 
-  Hall, B. (2011). "Laplace's Demon", STATISTICAT, LLC.
+  Hall, B. (2012). "Laplace's Demon", STATISTICAT, LLC.
   URL=\url{http://www.statisticat.com/laplacesdemon.html}
 
   Haario, H., Laine, M., Mira, A., and Saksman, E. (2006). "DRAM:
@@ -337,7 +337,6 @@ library(LaplacesDemon)
 
 ##############################  Demon Data  ###############################
 data(demonsnacks)
-N <- nrow(demonsnacks)
 J <- ncol(demonsnacks)
 y <- log(demonsnacks$Calories)
 X <- cbind(1, as.matrix(demonsnacks[,c(1,3:10)]))

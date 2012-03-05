@@ -9,8 +9,8 @@ Welcome to LaplacesDemon, an R package for Bayesian inference.
   \tabular{ll}{
     Package: \tab LaplacesDemon\cr
     Type: \tab Package\cr
-    Version: \tab 11.12.05\cr
-    Date: \tab 2011-12-05\cr
+    Version: \tab 12.03.05\cr
+    Date: \tab 2012-03-05\cr
     License: \tab GPL-2\cr
   }
   The goal of LaplacesDemon, often referred to as Laplace's Demon, is to
@@ -35,7 +35,7 @@ Welcome to LaplacesDemon, an R package for Bayesian inference.
   LaplacesDemon Tutorial vignette.
   }
 \references{
-  Hall, B. (2011). "Laplace's Demon", STATISTICAT, LLC.
+  Hall, B. (2012). "Laplace's Demon", STATISTICAT, LLC.
   URL=\url{http://www.statisticat.com/laplacesdemon.html}
 }
 \author{Byron Hall \email{laplacesdemon@statisticat.com}}

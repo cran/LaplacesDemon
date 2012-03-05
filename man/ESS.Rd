@@ -42,7 +42,7 @@
   been taken into account.
 }
 \references{
-  Hall, B. (2011). "Laplace's Demon", STATISTICAT, LLC.
+  Hall, B. (2012). "Laplace's Demon", STATISTICAT, LLC.
   URL=\url{http://www.statisticat.com/laplacesdemon.html}
 
   Kass, R.E., Carlin, B.P., Gelman, A., and Neal, R. (1998). "Markov

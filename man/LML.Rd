@@ -132,7 +132,7 @@ LML(Model=NULL, Data=NULL, Modes=NULL, theta=NULL, LL=NULL, method="NSIS")
   Data Analysis, Texts in Statistical Science, 2nd ed.". Chapman and
   Hall, London.
      
-  Hall, B. (2011). "Laplace's Demon", STATISTICAT, LLC.
+  Hall, B. (2012). "Laplace's Demon", STATISTICAT, LLC.
   URL=\url{http://www.statisticat.com/laplacesdemon.html}
 
   Kass, R.E. and Raftery, A.E. (1995). "Bayes Factors". Journal of the
