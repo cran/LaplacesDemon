@@ -55,16 +55,17 @@ PosteriorChecks <- function(x, Parms=NULL)
           #Correlation Table
           options(warn=-1); postcor <- cor(post); options(warn=0)
           #Summary Table
-          Summ <- matrix(NA, ncol(post), 5)
+          Summ <- matrix(NA, ncol(post), 6)
           rownames(Summ) <- colnames(post)
           colnames(Summ) <- c("p(theta > 0)","N.Modes","Kurtosis",
-               "Skewness","Burn-In")
+               "Skewness","Burn-In","IAT")
           options(warn=-1)
           for (i in 1:ncol(post)) {
                Summ[i,1] <- mean(post[,i] > 0)
                Summ[i,2] <- length(Modes(post[,i])[[1]])
                Summ[i,3] <- round(kurtosis(post[,i]),3)
-               Summ[i,4] <- round(skewness(post[,i]),3)}
+               Summ[i,4] <- round(skewness(post[,i]),3)
+               Summ[i,6] <- round(IAT(post[,i]),3)}
           Summ[,5] <- burnin(post)
           options(warn=0)
           }
@@ -97,17 +98,18 @@ PosteriorChecks <- function(x, Parms=NULL)
           ### Correlation Table
           options(warn=-1); postcor <- cor(Posterior); options(warn=0)
           ### Summary Table
-          Summ <- matrix(NA, nrow(post), 5)
+          Summ <- matrix(NA, nrow(post), 6)
           rownames(Summ) <- rownames(post)
           colnames(Summ) <- c("p(theta > 0)","N.Modes","Kurtosis",
-               "Skewness","Burn-In")
+               "Skewness","Burn-In","IAT")
           options(warn=-1)
           for (i in 1:ncol(Posterior)) {
                Summ[i,1] <- mean(Posterior[,i] > 0)
                Summ[i,2] <- length(Modes(Posterior[,i])[[1]])
                Summ[i,3] <- round(kurtosis(Posterior[,i]),3)
                Summ[i,4] <- round(skewness(Posterior[,i]),3)
-               Summ[i,5] <- 0}
+               Summ[i,5] <- 0
+               Summ[i,6] <- round(IAT(Posterior[,i]),3)}
           options(warn=0)
           }
      #Output

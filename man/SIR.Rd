@@ -45,7 +45,9 @@ SIR(Model, Data, mu, Sigma, n=1000)
   matrix. Assuming normality, this output characterizes the marginal
   posterior distributions. However, it is often useful to have posterior
   samples, in which case the \code{SIR} function is used to draw
-  samples.
+  samples. The number of samples, \code{n}, should increase with the
+  number and intercorrelations of the parameters. Otherwise, multimodal
+  posterior distributions may occur.
 
   In other contexts (for which this function is not designed), SIR is
   used with dynamic linear models (DLMs) and state-space models (SSMs)

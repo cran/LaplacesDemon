@@ -87,12 +87,14 @@ This vignette will grow over time as examples of more methods become included. C
 \item GARCH(1,1) \ref{garch}
 \item GARCH-M(1,1) \ref{garchm}
 \item Geographically Weighted Regression \ref{gwr}
+\item Hierarchical Bayes \ref{linear.reg.hb}
 \item Inverse Gaussian Regression \ref{ig.reg}
 \item Kriging \ref{kriging}
 \item Kriging, Predictive Process \ref{kriging.pp}
 \item Laplace Regression \ref{laplace.reg}
 \item Linear Regression \ref{linear.reg}
 \item Linear Regression, Frequentist \ref{linear.reg.freq}
+\item Linear Regression, Hierarchical Bayesian \ref{linear.reg.hb}
 \item Linear Regression, Multilevel \ref{linear.reg.ml}
 \item Linear Regression with Full Missingness \ref{linear.reg.full.miss}
 \item Linear Regression with Missing Response \ref{linear.reg.miss.resp}
@@ -102,6 +104,7 @@ This vignette will grow over time as examples of more methods become included. C
 \item Mixture Model, Finite \ref{fmm}
 \item Mixture Model, Poisson-Gamma \ref{poisson.gamma}
 \item Model Averaging \ref{ssvs}
+\item Multilevel Model \ref{linear.reg.ml}
 \item Multinomial Logit \ref{mnl}
 \item Multinomial Logit, Nested \ref{nmnl}
 \item Multinomial Probit \ref{mnp}
@@ -125,6 +128,9 @@ This vignette will grow over time as examples of more methods become included. C
 \item Space-Time, Dynamic \ref{spacetime.dynamic}
 \item Space-Time, Nonseparable \ref{spacetime.nonsep}
 \item Space-Time, Separable \ref{spacetime.sep}
+\item Spatial Autoregression (SAR) \ref{sar}
+\item STARMA(1,1) \ref{starma}
+\item Stochastic Volatility \ref{sv}
 \item T-test \ref{anova.one.way}
 \item Threshold Autoregression (TAR) \ref{tar}
 \item TARCH(1) \ref{tarch}
@@ -804,7 +810,7 @@ $$\textbf{y} \sim \mathcal{BERN}(\textbf{p})$$
 $$\textbf{p} = \phi(\mu)$$
 $$\mu = \textbf{X} \beta \in [-10,10]$$
 $$\beta_j \sim \mathcal{N}(0, 1000), \quad j=1,\dots,J$$
-where $\phi$ is the inverse CDF, and $J$=3.
+where $\phi$ is the CDF of the standard normal distribution, and $J$=3.
 \subsection{Data}
 \code{data(demonsnacks) \\
 J <- 3 \\
@@ -881,7 +887,7 @@ $$\textbf{y} \sim \mathcal{BIN}(\textbf{p}, \textbf{n})$$
 $$\textbf{p} = \phi(\mu)$$
 $$\mu = \beta_1 + \beta_2 \textbf{x} \in [-10,10]$$
 $$\beta_j \sim \mathcal{N}(0,1000), \quad j=1,\dots,J$$
-where $\phi$ is the inverse CDF, and $J$=2.
+where $\phi$ is the CDF of the standard normal distribution, and $J$=2.
 \subsection{Data}
 \code{\#10 Trials \\
 exposed <- c(100,100,100,100,100,100,100,100,100,100) \\
@@ -1088,6 +1094,7 @@ $$\beta_j \sim \mathcal{N}(0, 1000), \quad j=1,\dots,J$$
 $$\sigma \sim \mathcal{HC}(25)$$
 \subsection{Data}
 \code{data(demonsnacks) \\
+N <- nrow(demonsnacks) \\
 J <- ncol(demonsnacks) \\
 y <- log(demonsnacks$Calories) \\
 X <- cbind(1, as.matrix(demonsnacks[,c(1,3:10)])) \\
@@ -1604,7 +1611,7 @@ MyData <- list(L=L, T=T, X=X, mon.names=mon.names, parm.names=parm.names, \\
 \section{Dynamic Linear Model (DLM)} \label{dlm}
 The data is presented so that the time-series is subdivided into three 
 sections: modeled ($t=1,\dots,T_m$), one-step ahead forecast ($t=T_m+1$), 
-and future forecast [$t=(T_m+2),\dots,T$].
+and future forecast [$t=(T_m+2),\dots,T$]. Note that \code{Dyn} must also be specified for the SAMWG and SMWG MCMC algorithms.
 \subsection{Form}
 $$\textbf{y}_t \sim \mathcal{N}(\mu_t, \sigma^2_V), \quad t=1,\dots,T_m$$
 $$\textbf{y}^{new}_t \sim \mathcal{N}(\mu_t, \sigma^2_V), \quad t=(T_m+1),\dots,T$$
@@ -1619,16 +1626,17 @@ $$\sigma_W \sim \mathcal{HC}(25)$$
 T.m <- 14 \\
 beta.orig <- x <- rep(0,T) \\
 for (t in 2:T) \{ \\
-     beta.orig[t] <- beta.orig[t-1] + rnorm(1,0,0.1) \\
-     x[t] <- x[t-1] + rnorm(1,0,0.1)\} \\
-y <- 10 + beta.orig*x + rnorm(T,0,0.1) \\
+\hspace*{0.27 in} beta.orig[t] <- beta.orig[t-1] + rnorm(1,0,0.1) \\
+\hspace*{0.27 in} x[t] <- x[t-1] + rnorm(1,0,0.1)\} \\
+y <- 10 + beta.orig*x + rnorm(T,0,0.01) \\
 y[(T.m+2):T] <- NA \\
 mon.names <- rep(NA, (T-T.m)) \\
 for (i in 1:(T-T.m)) {mon.names[i] <- paste("mu[",(T.m+i),"]", sep="")} \\
-parm.names <- as.parm.names(list(alpha=0, beta=rep(0,T), log.beta.w.sigma=0, \\
-\hspace*{0.27 in} log.v.sigma=0)) \\
+parm.names <- as.parm.names(list(alpha=0, beta=rep(0,T), \\
+\hspace*{0.27 in} log.beta.w.sigma=0, log.v.sigma=0)) \\
 MyData <- list(T=T, T.m=T.m, mon.names=mon.names, parm.names=parm.names, \\ 
 \hspace*{0.27 in} x=x, y=y) \\
+Dyn <- matrix(paste("beta[",1:T,"]",sep=""), T, 1) \\
 }
 \subsection{Initial Values}
 \code{Initial.Values <- rep(0,T+3)}
@@ -1642,21 +1650,21 @@ MyData <- list(T=T, T.m=T.m, mon.names=mon.names, parm.names=parm.names, \\
 \hspace*{0.27 in} v.sigma <- exp(parm[Data$T+3]) \\
 \hspace*{0.27 in} \#\#\# Log(Prior Densities) \\
 \hspace*{0.27 in} alpha.prior <- dnormv(alpha, 0, 1000, log=TRUE) \\
-\hspace*{0.27 in} beta.prior <- rep(0,Data$T) \\
-\hspace*{0.27 in} beta.prior[1] <- dnormv(beta[1], 0, 1000, log=TRUE) \\
-\hspace*{0.27 in} beta.prior[2:Data$T] <- dnorm(beta[2:Data$T], beta[1:(Data$T-1)], \\
-\hspace*{0.62 in} beta.w.sigma, log=TRUE) \\
+\hspace*{0.27 in} beta.prior <- sum(dnormv(beta[1], 0, 1000, log=TRUE), \\
+\hspace*{0.62 in} dnorm(beta[-1], beta[-Data$T], beta.w.sigma, log=TRUE)) \\
 \hspace*{0.27 in} beta.w.sigma.prior <- dhalfcauchy(beta.w.sigma, 25, log=TRUE) \\
 \hspace*{0.27 in} v.sigma.prior <- dhalfcauchy(v.sigma, 25, log=TRUE) \\
 \hspace*{0.27 in} \#\#\# Log-Likelihood \\
 \hspace*{0.27 in} mu <- alpha + beta*Data$x \\
 \hspace*{0.27 in} LL <- sum(dnorm(Data$y[1:Data$T.m], mu[1:Data$T.m], v.sigma, \\
 \hspace*{0.62 in} log=TRUE)) \\
+\hspace*{0.27 in} yhat <- alpha + c(beta[1], rnorm(Data$T-1, beta[-Data$T], \\
+\hspace*{0.62 in} beta.w.sigma)) * Data$x \#One-step ahead prediction throughout \\
 \hspace*{0.27 in} \#\#\# Log-Posterior \\
-\hspace*{0.27 in} LP <- LL + alpha.prior + sum(beta.prior) + beta.w.sigma.prior + \\
+\hspace*{0.27 in} LP <- LL + alpha.prior + beta.prior + beta.w.sigma.prior + \\
 \hspace*{0.62 in} v.sigma.prior \\
 \hspace*{0.27 in} Modelout <- list(LP=LP, Dev=-2*LL, Monitor=mu[(Data$T.m+1):Data$T], \\
-\hspace*{0.62 in} yhat=mu, parm=parm) \\
+\hspace*{0.62 in} yhat=yhat, parm=parm) \\
 \hspace*{0.27 in} return(Modelout) \\
 \hspace*{0.27 in} \}
 }
@@ -2594,6 +2602,57 @@ MyData <- list(J=J, X=X, mon.names=mon.names, parm.names=parm.names, y=y) \\
 \hspace*{0.27 in} \}
 }
 
+\section{Linear Regression, Hierarchical Bayesian} \label{linear.reg.hb}
+\subsection{Form}
+$$\textbf{y} \sim \mathcal{N}(\mu, \sigma^2)$$
+$$\mu = \textbf{X}\beta$$
+$$\beta_j \sim \mathcal{N}(\gamma, \delta), \quad j=1,\dots,J$$
+$$\gamma \sim \mathcal{N}(0, 1000)$$
+$$\delta \sim \mathcal{HC}(25)$$
+$$\sigma \sim \mathcal{HC}(\tau)$$
+$$\tau \sim \mathcal{HC}(25)$$
+\subsection{Data}
+\code{data(demonsnacks) \\
+J <- ncol(demonsnacks) \\
+y <- log(demonsnacks$Calories) \\
+X <- cbind(1, as.matrix(demonsnacks[,c(1,3:10)])) \\
+for (j in 2:J) \{X[,j] <- CenterScale(X[,j])\} \\
+mon.names <- c("LP","delta","sigma","tau") \\
+parm.names <- as.parm.names(list(beta=rep(0,J), gamma=0, log.delta=0, \\
+     log.sigma=0, log.tau=0)) \\
+MyData <- list(J=J, X=X, mon.names=mon.names, parm.names=parm.names, y=y) \\
+}
+\subsection{Initial Values}
+\code{Initial.Values <- c(rep(0,J), 0, rep(1,3))}
+\subsection{Model}
+\code{Model <- function(parm, Data) \\
+\hspace*{0.27 in} \{ \\
+\hspace*{0.27 in} \#\#\# Hyperparameters \\
+\hspace*{0.27 in} gamma <- parm[Data$J+1] \\
+\hspace*{0.27 in} delta <- exp(parm[Data$J+2]) \\
+\hspace*{0.27 in} tau <- exp(parm[Data$J+4]) \\
+\hspace*{0.27 in} \#\#\# Parameters \\
+\hspace*{0.27 in} beta <- parm[1:Data$J] \\
+\hspace*{0.27 in} sigma <- exp(parm[Data$J+3]) \\
+\hspace*{0.27 in} \#\#\# Log(Hyperprior Densities) \\
+\hspace*{0.27 in} gamma.prior <- dnorm(gamma, 0, 1000, log=TRUE) \\
+\hspace*{0.27 in} delta.prior <- dhalfcauchy(delta, 25, log=TRUE) \\
+\hspace*{0.27 in} tau.prior <- dhalfcauchy(tau, 25, log=TRUE) \\
+\hspace*{0.27 in} \#\#\# Log(Prior Densities) \\
+\hspace*{0.27 in} beta.prior <- sum(dnormv(beta, gamma, delta, log=TRUE)) \\
+\hspace*{0.27 in} sigma.prior <- dhalfcauchy(sigma, tau, log=TRUE) \\
+\hspace*{0.27 in} \#\#\# Log-Likelihood \\
+\hspace*{0.27 in} mu <- tcrossprod(Data$X, t(beta)) \\
+\hspace*{0.27 in} LL <- sum(dnorm(Data$y, mu, sigma, log=TRUE)) \\
+\hspace*{0.27 in} \#\#\# Log-Posterior \\
+\hspace*{0.27 in} LP <- LL + beta.prior + gamma.prior + delta.prior + sigma.prior + \\
+\hspace*{0.62 in} tau.prior \\
+\hspace*{0.27 in} Modelout <- list(LP=LP, Dev=-2*LL, Monitor=c(LP,delta,sigma,tau), \\
+\hspace*{0.62 in} yhat=mu, parm=parm) \\
+\hspace*{0.27 in} return(Modelout) \\
+\hspace*{0.27 in} \} \\
+}
+
 \section{Linear Regression, Multilevel} \label{linear.reg.ml}
 \subsection{Form}
 $$\textbf{y} \sim \mathcal{N}(\mu, \sigma^2)$$
@@ -2653,60 +2712,71 @@ MyData <- list(G=G, J=J, N=N, S=S, X=X, m=m, mon.names=mon.names, \\
 }
 
 \section{Linear Regression with Full Missingness} \label{linear.reg.full.miss}
-With `full missingness', there are missing values for both the response and at least one predictor. This is a minimal example, since there are missing values in only one of the predictors. Initial values do not need to be specified for missing values in a predictor, unless another predictor variable with missing values is used to predict the missing values of a predictor. More effort is involved in specifying a model with a missing predictor that is predicted by another missing predictor. The full likelihood approach to full missingness is excellent as long as the model is identifiable. When it is not identifiable, then imputation may be done in a previous stage. In this example, \code{X[,2]} is the only predictor with missing values.
+With `full missingness', there are missing values for both the dependent variable (DV) and at least one independent variable (IV). Regarding initial values, only missing values for the IVs need to be specified. The `full likelihood` approach to full missingness is excellent as long as the model is identifiable. When it is not identifiable, imputation may be done in a previous stage.
 \subsection{Form}
-$$\textbf{y} \sim \mathcal{N}(\mu_2, \sigma^2_2)$$
-$$\mu_2 = \textbf{X}\beta$$
-$$\textbf{X}_{1:N,2} \sim \mathcal{N}(\mu_1, \sigma^2_1)$$
-$$\mu_1 = \textbf{X}_{1:N,(1,3:J)}\alpha$$
-$$\alpha_j \sim \mathcal{N}(0, 1000), \quad j=1,\dots,(J-1)$$
+$$\textbf{y} \sim \mathcal{N}(\nu, \sigma^2_J)$$
+$$\nu = \textbf{X} \beta$$
+$$\mu_{,j} = (\textbf{X} | \textbf{A}) \Gamma_{,j-1}, \quad j=2,\dots,J$$
+\[\textbf{A}_{i,j} = \left\{
+\begin{array}{l l}
+ $$\alpha_k$$ & \quad \mbox{if $\textbf{X}_{i,j} = \mathrm{NA}$}\\
+ \textbf{X}_{i,j} \\ \end{array} \right. \]
+$$\quad i=1,\dots,N, \quad j=1,\dots,J, \quad k=1,\dots,K$$
+$$\alpha_k \sim \mathcal{N}(0, 1000), \quad k=1,\dots,K$$
 $$\beta_j \sim \mathcal{N}(0, 1000), \quad j=1,\dots,J$$
-$$\sigma_k \sim \mathcal{HC}(25), \quad k=1,\dots,2$$
+$$\Gamma_{j,l} \sim \mathcal{N}(0, 1000), \quad j=1,\dots,(J-1), \quad l=1,\dots,(J-1)$$
+$$\sigma_j \sim \mathcal{HC}(25), \quad j=1,\dots,J$$
+Missing values for IVs are in vector $\alpha$. These parameter values are inserted into design matrix \textbf{X} via matrix \textbf{A}, which indicates the position of missing values. Matrix $\Gamma$ contains parameters to predict the IVs as additive, linear functions of other IVs. Vector $\beta$ contains parameters to predict \textbf{y}.
 \subsection{Data}
-\code{N <- 1000 \\
+\code{N <- 100 \\
 J <- 5 \\
-X <- matrix(runif(N*J,-2,2),N,J) \\
-X[,1] <- 1 \\
-alpha <- runif((J-1),-2,2) \\
-X[,2] <- tcrossprod(X[,-2], t(alpha)) + rnorm(N,0,0.1) \\
-beta <- runif(J,-2,2) \\
-y <- tcrossprod(X, t(beta)) + rnorm(N,0,0.1) \\
-y[sample(1:N, round(N*0.05))] <- NA \\
-M <- ifelse(is.na(y), 1, 0) \\
-X[sample(1:N, round(N*0.05)),2] <- NA \\
-mon.names <- c("LP","sigma[1]","sigma[2]") \\
-parm.names <- as.parm.names(list(alpha=rep(0,J-1), beta=rep(0,J), \\
-\hspace*{0.27 in} log.sigma=rep(0,2))) \\
-MyData <- list(J=J, M=M, N=N, X=X, mon.names=mon.names, parm.names=parm.names, \\
-\hspace*{0.27 in} y=y)
+X <- matrix(runif(N*J,-2,2),N,J); X[,1] <- 1 \#Design matrix X \\
+M <- matrix(round(runif(N*J)-0.45),N,J); M[,1] <- 0 \#Missing indicators \\
+X <- ifelse(M == 1, NA, X) \#Simulated X gets missings according to M \\
+beta.orig <- runif(J,-2,2) \\
+y <- as.vector(tcrossprod(X, t(beta.orig)) + rnorm(N,0,0.1)) \\
+y[sample(1:N, round(N*.05))] <- NA \\
+m <- ifelse(is.na(y), 1, 0) \#Missing indicator for vector y \\
+mon.names <- "LP" \\
+parm.names <- as.parm.names(list(alpha=rep(0,length(which(is.na(X)))), \\
+\hspace*{0.27 in} beta=rep(0,J), Gamma=matrix(0,J-1,J-1), log.sigma=rep(0,J))) \\
+MyData <- list(J=J, M=M, N=N, X=X, m=m, mon.names=mon.names, \\
+\hspace*{0.27 in} parm.names=parm.names, y=y) \\
 }
 \subsection{Initial Values}
-\code{Initial.Values <- c(rep(0,(J-1)), rep(0,J), rep(0,2))}
+\code{Initial.Values <- c(rep(0,length(which(is.na(X)))), rep(0,J), \\
+\hspace*{0.27 in} rep(0,(J-1)\textasciicircum 2), rep(1,J))}
 \subsection{Model}
 \code{Model <- function(parm, Data) \\
 \hspace*{0.27 in} \{ \\
 \hspace*{0.27 in} \#\#\# Parameters \\
-\hspace*{0.27 in} alpha <- parm[1:(Data$J-1)] \\
-\hspace*{0.27 in} beta <- parm[Data$J:(2*Data$J - 1)] \\
-\hspace*{0.27 in} sigma <- exp(parm[(2*Data$J):(2*Data$J+1)]) \\
+\hspace*{0.27 in} alpha <- parm[grep("alpha", Data$parm.names)] \\
+\hspace*{0.27 in} beta <- parm[grep("beta", Data$parm.names)] \\
+\hspace*{0.27 in} Gamma <- matrix(parm[grep("Gamma", Data$parm.names)], Data$J-1, \\
+\hspace*{0.62 in} Data$J-1) \\
+\hspace*{0.27 in} sigma <- exp(parm[grep("log.sigma", Data$parm.names)]) \\
 \hspace*{0.27 in} \#\#\# Log(Prior Densities) \\
 \hspace*{0.27 in} alpha.prior <- sum(dnormv(alpha, 0, 1000, log=TRUE)) \\
 \hspace*{0.27 in} beta.prior <- sum(dnormv(beta, 0, 1000, log=TRUE)) \\
+\hspace*{0.27 in} Gamma.prior <- sum(dnormv(Gamma, 0, 1000, log=TRUE)) \\
 \hspace*{0.27 in} sigma.prior <- sum(dhalfcauchy(sigma, 25, log=TRUE)) \\
 \hspace*{0.27 in} \#\#\# Log-Likelihood \\
-\hspace*{0.27 in} mu1 <- tcrossprod(Data$X[,-2], t(alpha)) \\
-\hspace*{0.27 in} X.imputed <- Data$X \\
-\hspace*{0.27 in} X.imputed[,2] <- ifelse(is.na(Data$X[,2]), mu1, Data$X[,2]) \\
-\hspace*{0.27 in} LL1 <- sum(dnorm(X.imputed[,2], mu1, sigma[1], log=TRUE)) \\
-\hspace*{0.27 in} mu2 <- tcrossprod(X.imputed, t(beta)) \\
-\hspace*{0.27 in} y.imputed <- ifelse(is.na(Data$y), mu2, Data$y) \\
-\hspace*{0.27 in} LL2 <- sum((1-Data$M) * dnorm(y.imputed, mu2, sigma[2], log=TRUE)) \\
+\hspace*{0.27 in} A <- rep(0,Data$N*Data$J) \\
+\hspace*{0.27 in} A[which(is.na(Data$X))] <- alpha \\
+\hspace*{0.27 in} mu <- X.imputed <- ifelse(is.na(Data$X), 0, Data$X) + \\
+\hspace*{0.62 in} matrix(A, Data$N, Data$J) \\
+\hspace*{0.27 in} for (j in 2:Data$J) \{mu[,j] <- tcrossprod(X.imputed[,-j], \\
+\hspace*{0.62 in} t(Gamma[,(j-1)]))\} \\
+\hspace*{0.27 in} nu <- tcrossprod(X.imputed, t(beta)) \\
+\hspace*{0.27 in} y.imputed <- ifelse(is.na(Data$y), nu, Data$y) \\
+\hspace*{0.27 in} LL <- sum((1-Data$M[,-1]) * dnorm(X.imputed[,-1], mu[,-1], \\
+\hspace*{0.62 in} matrix(sigma[1:(Data$J-1)], Data$N, Data$J-1), log=TRUE), \\
+\hspace*{0.62 in} (1-Data$m) * dnorm(y.imputed, nu, sigma[Data$J], log=TRUE)) \\
 \hspace*{0.27 in} \#\#\# Log-Posterior \\
-\hspace*{0.27 in} LP <- LL1 + LL2 + alpha.prior + beta.prior + sigma.prior \\
-\hspace*{0.27 in} Modelout <- list(LP=LP, Dev=-2*LL2, Monitor=c(LP,sigma), \\
-\hspace*{0.62 in} yhat=mu2, parm=parm) \\
+\hspace*{0.27 in} LP <- LL + alpha.prior + beta.prior + Gamma.prior + sigma.prior \\
+\hspace*{0.27 in} Modelout <- list(LP=LP, Dev=-2*LL, Monitor=LP, yhat=nu, parm=parm) \\
 \hspace*{0.27 in} return(Modelout) \\
-\hspace*{0.27 in} \}
+\hspace*{0.27 in} \} \\
 }
 
 \section{Linear Regression with Missing Response} \label{linear.reg.miss.resp}
@@ -3502,7 +3572,7 @@ MyData <- list(J=J, X=X, mon.names=mon.names, parm.names=parm.names, y=y) \\
 \hspace*{0.27 in} parm[Data$J + 1] <- kappa <- interval(parm[Data$J + 1], \\
 \hspace*{0.62 in} .Machine$double.xmin, Inf) \\
 \hspace*{0.27 in} mu <- exp(tcrossprod(Data$X, t(beta))) \\
-\hspace*{0.27 in} p <- kappa / (kappa + mu) \\
+\hspace*{0.27 in} \#p <- kappa / (kappa + mu) \\
 \hspace*{0.27 in} \#\#\# Log(Prior Densities) \\
 \hspace*{0.27 in} beta.prior <- sum(dnormv(beta, 0, 1000, log=TRUE)) \\
 \hspace*{0.27 in} kappa.prior <- dhalfcauchy(kappa, 25, log=TRUE) \\
@@ -4421,6 +4491,184 @@ MyData <- list(D.S=D.S, D.T=D.T, S=S, T=T, X=X, Y=Y, latitude=latitude, \\
 \hspace*{0.27 in} \}
 }
 
+\section{Spatial Autoregression (SAR)} \label{sar}
+The spatial autoregressive (SAR) model in this example uses areal data that consists of first-order neighbors that were specified and converted from point-based data with longitude and latitude coordinates.
+\subsection{Form}
+$$\textbf{y} \sim \mathcal{N}(\mu, \sigma^2)$$
+$$\mu = \textbf{X}\beta + \phi \textbf{z}$$
+$$\beta_j \sim \mathcal{N}(0, 1000), \quad j=1,\dots,J$$
+$$\phi \sim \mathcal{U}(-1, 1)$$
+$$\sigma \sim \mathcal{HC}(25)$$
+\subsection{Data}
+\code{N <- 100 \\
+latitude <- runif(N,0,100); longitude <- runif(N,0,100) \\
+J <- 3 \#Number of predictors, including the intercept \\
+X <- matrix(runif(N*J,0,3), N, J); X[,1] <- 1 \\
+beta.orig <- runif(J,0,3); phi <- runif(1,0,1) \\
+D <- as.matrix(dist(cbind(longitude, latitude), diag=TRUE, upper=TRUE)) \\
+W <- exp(-D) \#Inverse distance as weights \\
+W <- ifelse(D == 0, 0, W) \\
+epsilon <- rnorm(N,0,1) \\
+y <- tcrossprod(X, t(beta.orig)) + sqrt(latitude) + sqrt(longitude) + \\
+\hspace*{0.27 in} epsilon \\
+Z <- W / matrix(rowSums(W), N, N) * matrix(y, N, N, byrow=TRUE) \\
+z <- as.vector(apply(Z, 1, sum)) \\
+mon.names <- c("LP","sigma") \\
+parm.names <- as.parm.names(list(beta=rep(0,J), phi=0, log.sigma=0)) \\
+MyData <- list(J=J, X=X, latitude=latitude, longitude=longitude, \\
+\hspace*{0.27 in} mon.names=mon.names, parm.names=parm.names, y=y, z=z)}
+\subsection{Initial Values}
+\code{Initial.Values <- c(rep(0,J), 0.5, log(1))}
+\subsection{Model}
+\code{Model <- function(parm, Data) \\
+\hspace*{0.27 in} \{ \\
+\hspace*{0.27 in} \#\#\# Parameters \\
+\hspace*{0.27 in} beta <- parm[1:Data$J] \\
+\hspace*{0.27 in} parm[Data$J+1] <- phi <- interval(parm[Data$J+1], -1, 1) \\
+\hspace*{0.27 in} sigma <- exp(parm[Data$J+2]) \\
+\hspace*{0.27 in} \#\#\# Log(Prior Densities) \\
+\hspace*{0.27 in} beta.prior <- sum(dnormv(beta, 0, 1000, log=TRUE)) \\
+\hspace*{0.27 in} phi.prior <- dunif(phi, -1, 1, log=TRUE) \\
+\hspace*{0.27 in} sigma.prior <- dhalfcauchy(sigma, 25, log=TRUE) \\
+\hspace*{0.27 in} \#\#\# Log-Likelihood \\
+\hspace*{0.27 in} mu <- tcrossprod(Data$X, t(beta)) + phi*Data$z \\
+\hspace*{0.27 in} LL <- sum(dnorm(Data$y, mu, sigma, log=TRUE)) \\
+\hspace*{0.27 in} \#\#\# Log-Posterior \\
+\hspace*{0.27 in} LP <- LL + beta.prior + phi.prior + sigma.prior \\
+\hspace*{0.27 in} Modelout <- list(LP=LP, Dev=-2*LL, Monitor=c(LP,sigma), yhat=mu, \\
+\hspace*{0.62 in} parm=parm) \\
+\hspace*{0.27 in} return(Modelout) \\
+\hspace*{0.27 in} \} \\
+}
+
+\section{STARMA(1,1)} \label{starma}
+The data in this example of a space-time autoregressive moving average (STARMA) are coordinate-based, and the adjacency matrix \textbf{A} is created from $K$ nearest neighbors. Otherwise, an adjacency matrix may be specified as usual for areal data. Spatial coordinates are given in longitude and latitude for $s=1,\dots,S$ points in space and measurements are taken across time-periods $t=1,\dots,T$ for $\textbf{Y}_{s,t}$.
+\subsection{Form}
+$$\textbf{Y} \sim \mathcal{N}(\mu, \sigma^2)$$
+$$\mu_{s,t} = \textbf{X}_{s,t} \beta + \phi \textbf{W1}_{s,t-1} + \theta \textbf{W2}_{s,t-1}, \quad s=1,\dots,S, \quad t=2,\dots,T$$
+$$\textbf{W1} = \textbf{V} \textbf{Y}$$
+$$\textbf{W2} = \textbf{V} \epsilon$$
+$$\epsilon = \textbf{Y} - \mu$$
+$$\beta_j \sim \mathcal{N}(0, 1000), \quad j=1,\dots,J$$
+$$\phi \sim \mathcal{U}(-1, 1)$$
+$$\sigma \sim \mathcal{HC}(25)$$
+$$\theta \sim \mathcal{N}(0, 1000)$$
+where \textbf{V} is an adjacency matrix that is scaled so that each row sums to one, $\beta$ is a vector of regression effects, $\phi$ is the autoregressive space-time parameter, $\sigma$ is the residual variance, and $\theta$ is the moving average space-time parameter.
+\subsection{Data}
+\code{S <- 100 \\
+T <- 10 \\
+K <- 5 \#Number of nearest neighbors \\
+latitude <- runif(S,0,100) \\
+longitude <- runif(S,0,100) \\
+X1 <- matrix(runif(S*T,-2,2), S, T) \\
+X2 <- matrix(runif(S*T,-2,2), S, T) \\
+for (t in 2:T) \{ \\
+\hspace*{0.27 in} X1[,t] <- X1[,t-1] + runif(S,-0.1,0.1) \\
+\hspace*{0.27 in} X2[,t] <- X2[,t-1] + runif(S,-0.1,0.1)\} \\
+beta.orig <- runif(3,-2,2); phi.orig <- 0.8; theta.orig <- 1 \\
+epsilon <- matrix(rnorm(S*T,0,0.1), S, T) \\
+Z <- matrix(rnorm(S*T,0,0.1), S, T) \\
+D <- as.matrix(dist(cbind(longitude, latitude), diag=TRUE, upper=TRUE)) \\
+A <- exp(-D) \\
+A <- ifelse(D == 0, max(D), A) \\
+A <- apply(A, 1, rank) \\
+A <- ifelse(A <= K, 1, 0) \\
+V <- A / rowSums(A) \#Scaled matrix \\
+V <- ifelse(is.nan(V), 1/ncol(V), V) \\
+Y <- beta.orig[1] + beta.orig[2]*X1 + beta.orig*X2 \\
+W1 <- tcrossprod(V, t(Y)) \\
+Y <- Y + phi.orig*cbind(rep(0,S), W1[,-T]) \\
+W2 <- tcrossprod(V, t(epsilon)) \\
+Y <- Y + theta.orig*cbind(rep(0,S), W2[,-T]) \\
+mon.names <- "LP" \\
+parm.names <- as.parm.names(list(beta=rep(0,3), phi=0, log.sigma=0, \\
+\hspace*{0.27 in} theta=0)) \\
+MyData <- list(K=K, S=S, T=T, V=V, X1=X1, X2=X2, Y=Y, latitude=latitude, \\
+\hspace*{0.27 in} longitude=longitude, mon.names=mon.names, parm.names=parm.names) \\
+}
+\subsection{Initial Values}
+\code{Initial.Values <- c(rep(0,3), 0, 1, 0)}
+\subsection{Model}
+\code{Model <- function(parm, Data) \\
+\hspace*{0.27 in} \{ \\
+\hspace*{0.27 in} \#\#\# Parameters \\
+\hspace*{0.27 in} beta <- parm[1:3] \\
+\hspace*{0.27 in} parm[4] <- phi <- interval(parm[4], -1, 1) \\
+\hspace*{0.27 in} sigma <- exp(parm[5]) \\
+\hspace*{0.27 in} theta <- parm[6] \\
+\hspace*{0.27 in} \#\#\# Log(Prior Densities) \\
+\hspace*{0.27 in} beta.prior <- sum(dnormv(beta, 0, 1000, log=TRUE)) \\
+\hspace*{0.27 in} phi.prior <- dunif(phi, -1, 1, log=TRUE) \\
+\hspace*{0.27 in} sigma.prior <- dhalfcauchy(sigma, 25, log=TRUE) \\
+\hspace*{0.27 in} theta.prior <- dnorm(theta, 0, 1000, log=TRUE) \\
+\hspace*{0.27 in} \#\#\# Log-Likelihood \\
+\hspace*{0.27 in} W1 <- tcrossprod(Data$V, t(Data$Y)) \\
+\hspace*{0.27 in} mu <- beta[1] + beta[2]*Data$X1 + beta[3]*Data$X2 + \\
+\hspace*{0.62 in} phi*cbind(rep(0, Data$S), W1[,-Data$T]) \\
+\hspace*{0.27 in} epsilon <- Data$Y - mu \\
+\hspace*{0.27 in} W2 <- tcrossprod(Data$V, t(epsilon)) \\
+\hspace*{0.27 in} mu <- mu + theta*cbind(rep(0, Data$S), W2[,-Data$T]) \\
+\hspace*{0.27 in} LL <- sum(dnorm(Data$Y[,-1], mu[,-1], sigma, log=TRUE)) \\
+\hspace*{0.27 in} \#\#\# Log-Posterior \\
+\hspace*{0.27 in} LP <- LL + beta.prior + phi.prior + sigma.prior + theta.prior \\
+\hspace*{0.27 in} Modelout <- list(LP=LP, Dev=-2*LL, Monitor=LP, yhat=mu, parm=parm) \\
+\hspace*{0.27 in} return(Modelout) \\
+\hspace*{0.27 in} \} \\
+}
+
+\section{Stochastic Volatility} \label{sv}
+\subsection{Form}
+$$\textbf{y} \sim \mathcal{N}(0, \sigma^2)$$
+$$\sigma^2 = \frac{1}{\exp(\theta)}$$
+$$\beta = \exp(\mu / 2)$$
+$$\theta_1 \sim \mathcal{N}(\mu + \phi (\alpha - \mu), \tau)$$
+$$\theta_t \sim \mathcal{N}(\mu + \phi (\theta_{t-1} - \mu), \tau), \quad t=2,\dots,T$$
+$$\alpha \sim \mathcal{N}(\mu, \tau)$$
+$$\phi \sim \mathcal{U}(-1, 1)$$
+$$\mu \sim \mathcal{N}(0, 10)$$
+$$\tau \sim \mathcal{HC}(25)$$
+\subsection{Data}
+\code{T <- 20 \\
+y <- rep(10,T); epsilon <- rnorm(T,0,1) \\
+for (t in 2:T) \{y[t] <- 0.8*y[t-1] + epsilon[t-1]\} \\
+mon.names <- c("LP","tau", paste("sigma2[",1:T,"]",sep="")) \\
+parm.names <- as.parm.names(list(theta=rep(0,T), alpha=0, phi=0, mu=0, \\
+\hspace*{0.27 in} log.tau=0)) \\
+MyData <- list(T=T, mon.names=mon.names, parm.names=parm.names, y=y) \\
+Dyn <- matrix(paste("theta[",1:T,"]",sep=""), T, 1) \\
+}
+\subsection{Initial Values}
+\code{Initial.Values <- rep(0,T+4)}
+\subsection{Model}
+\code{Model <- function(parm, Data) \\
+\hspace*{0.27 in} \{ \\
+\hspace*{0.27 in} \#\#\# Parameters \\
+\hspace*{0.27 in} theta <- parm[1:Data$T] \\
+\hspace*{0.27 in} alpha <- parm[Data$T+1] \\
+\hspace*{0.27 in} parm[Data$T+2] <- phi <- interval(parm[Data$T+2], -1, 1) \\
+\hspace*{0.27 in} mu <- parm[Data$T+3] \\
+\hspace*{0.27 in} tau <- exp(parm[Data$T+4]) \\
+\hspace*{0.27 in} \#\#\# Log(Prior Densities) \\
+\hspace*{0.27 in} alpha.prior <- dnormv(alpha, mu, tau, log=TRUE) \\
+\hspace*{0.27 in} theta.prior <- sum(dnormv(theta[1], mu + phi*(alpha-mu), tau, \\
+\hspace*{0.62 in} log=TRUE), dnormv(theta[-1], mu + phi*(theta[-Data$T]-mu), tau, \\
+\hspace*{0.62 in} log=TRUE)) \\
+\hspace*{0.27 in} phi.prior <- dunif(phi, -1, 1, log=TRUE) \\
+\hspace*{0.27 in} mu.prior <- dnormv(mu, 0, 10, log=TRUE) \\
+\hspace*{0.27 in} tau.prior <- dhalfcauchy(tau, 25, log=TRUE) \\
+\hspace*{0.27 in} \#\#\# Log-Likelihood \\
+\hspace*{0.27 in} beta <- exp(mu / 2) \\
+\hspace*{0.27 in} sigma2 <- 1 / exp(theta) \\
+\hspace*{0.27 in} LL <- sum(dnormv(Data$y, 0, sigma2, log=TRUE)) \\
+\hspace*{0.27 in} \#\#\# Log-Posterior \\
+\hspace*{0.27 in} LP <- LL + alpha.prior + theta.prior + phi.prior + mu.prior + \\
+\hspace*{0.62 in} tau.prior \\
+\hspace*{0.27 in} Modelout <- list(LP=LP, Dev=-2*LL, Monitor=c(LP, tau, sigma2), \\
+\hspace*{0.62 in} yhat=rep(0,T), parm=parm) \\
+\hspace*{0.27 in} return(Modelout) \\
+\hspace*{0.27 in} \} \\
+}
+
 \section{Threshold Autoregression (TAR)} \label{tar}
 \subsection{Form}
 $$\textbf{y}_t \sim \mathcal{N}(\nu_t, \sigma^2), \quad t=1,\dots,T$$
@@ -4504,7 +4752,7 @@ MyData <- list(T=T, mon.names=mon.names, parm.names=parm.names, y=y) \\
 
 \section{TARCH(1)} \label{tarch}
 In this TARCH example, there are two regimes, one for positive residuals in the previous time-period, and the other for negative. The TARCH parameters are the $\theta$ vector.
-\section{Form}
+\subsection{Form}
 $$\textbf{y}_t \sim \mathcal{N}(\mu_t, \sigma^2_t), \quad t=2,\dots,T$$
 $$\sigma^2_t = \omega + \theta_1 \delta_{t-1} \epsilon^2_{t-1} + \theta_2 (1-\delta_{t-1}) \epsilon^2_{t-1}, \quad t=2,\dots,T$$
 \[\delta_t = \left\{ 
@@ -4517,7 +4765,7 @@ $$\alpha \sim \mathcal{N}(0, 1000)$$
 $$\phi \sim \mathcal{U}(-1, 1)$$
 $$\omega \sim \mathcal{HC}(25)$$
 $$\theta_j \sim \mathcal{U}(0, 1), \quad j=1,\dots,2$$
-\section{Data}
+\subsection{Data}
 \code{T <- 20 \\
 phi <- 0.8 \\
 epsilon <- rnorm(T) \\
@@ -4529,9 +4777,9 @@ parm.names <- as.parm.names(list(alpha=0, phi=0, log.omega=0, \\
 \hspace*{0.27 in} theta=rep(0,2))) \\
 MyData <- list(T=T, mon.names=mon.names, parm.names=parm.names, y=y) \\
 }
-\section{Initial Values}
+\subsection{Initial Values}
 \code{Initial.Values <- c(0, 0, 1, 0.5, 0.5)}
-\section{Model}
+\subsection{Model}
 \code{Model <- function(parm, Data) \\
 \hspace*{0.27 in} \{ \\
 \hspace*{0.27 in} \#\#\# Parameters \\

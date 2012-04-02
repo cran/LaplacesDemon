@@ -114,14 +114,11 @@ plot.demonoid <- function(x, BurnIn=1, Data=NULL, PDF=FALSE,
           }
      ### Proposal Variance (Adaptive Algorithms only)
      if(nrow(x$CovarDHis) > 1) {
-          diff <- x$CovarDHis[-1,]
-          adaptchange <- matrix(NA, nrow(diff), 3)
-          for (i in 2:nrow(x$CovarDHis)) {
-               diff[i-1,] <- abs(x$CovarDHis[i,] - x$CovarDHis[i-1,])}
-          for (i in 1:nrow(diff)) {
-               adaptchange[i,1] <- quantile(diff[i,], probs=0.025)
-               adaptchange[i,2] <- quantile(diff[i,], probs=0.500)
-               adaptchange[i,3] <- quantile(diff[i,], probs=0.975)}
+          Diff <- abs(diff(x$CovarDHis))
+          adaptchange <- matrix(NA, nrow(Diff), 3)
+          for (i in 1:nrow(Diff)) {
+               adaptchange[i,1:3] <- as.vector(quantile(Diff[i,],
+                    probs=c(0.025, 0.500, 0.975)))}
           plot(adaptchange[,2], ylim=c(min(adaptchange), max(adaptchange)),
                type="l", col="red", xlab="Adaptations",
                ylab="Absolute Difference", main="Proposal Variance",

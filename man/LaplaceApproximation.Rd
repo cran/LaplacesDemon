@@ -63,7 +63,9 @@ LaplaceApproximation(Model, parm, Data, Interval=1.0E-6,
   \item{Samples}{
     This argument indicates the number of posterior samples to be taken
     with sampling importance resampling via the \code{\link{SIR}}
-    function, which occurs only when \code{sir=TRUE}.}
+    function, which occurs only when \code{sir=TRUE}. Note that the
+    number of samples should increase with the number and
+    intercorrelations of the parameters.}
   \item{sir}{
     This logical argument indicates whether or not sampling importance
     resampling is conducted via the \code{\link{SIR}} function to draw

@@ -55,8 +55,7 @@ LML(Model=NULL, Data=NULL, Modes=NULL, theta=NULL, LL=NULL, method="NSIS")
   estimate the logarithm of the marginal likelihood with a different
   method, or with non-stationary chains. The \code{\link{LaplacesDemon}}
   function only calls \code{LML} when all parameters are stationary, and
-  only with the random-walk Metropolis or Metropolis-within-Gibbs
-  algorithms (not with an adaptive algorithm).
+  only with non-adaptive algorithms (DRM, MWG, or RWM).
 
   The \code{HME} method, where HME stands for harmonic mean estimator,
   of Newton-Raftery (1994) is the easiest, and therefore fastest,

@@ -8,10 +8,8 @@
 }
 \usage{ESS(x)}
 \arguments{
-     \item{x}{
-          This required argument is a vector or matrix of posterior
-          samples.
-          }
+  \item{x}{
+    This required argument is a vector or matrix of posterior samples.}
 }
 \details{
   Effective Sample Size (ESS) was recommended by Radford Neal in the
@@ -29,6 +27,9 @@
   not recommended until \code{ESS} \eqn{\ge 100}. Although the need
   for precision of each modeler differs with each model, it is often
   a good goal to obtain \code{ESS} \eqn{= 1000}.
+
+  \code{ESS} is related to the integrated autocorrelation time (see
+  \code{\link{IAT}} for more information).
 
   This is numerically the same as the \code{effectiveSize} function in
   the \code{coda} package, but programmed to accept a simple vector or
@@ -51,5 +52,7 @@
 }
 \seealso{
   \code{\link{Consort}},
+  \code{\link{IAT}},
   \code{\link{LaplacesDemon}}.
 }
+\keyword{mcmc, diagnostic}

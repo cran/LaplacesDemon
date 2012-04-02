@@ -70,8 +70,10 @@
   If an adaptive algorithm were used, then the distribution of absolute
   differences in the proposal variances is plotted across each
   adaptation. The proposal variance should change less as the adaptive
-  algorithm approaches the target distributions.  The following
-  quantiles are plotted: 0.025, 0.500, and 0.975.
+  algorithm approaches the target distributions, so the absolute
+  differences in the plot should approach zero. If it is not approaching
+  zero, then consider using a different adaptive MCMC algorithm. The
+  following quantiles are plotted: 0.025, 0.500, and 0.975.
 }
 \references{
   Hall, B. (2012). "Laplace's Demon", STATISTICAT, LLC.

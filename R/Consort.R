@@ -21,14 +21,14 @@ Consort <- function(object=NULL)
      Acc.Rate.Low <- 0.15
      Acc.Rate.High <- 0.5
      if(any(object$Acceptance.Rate == 0)) {
-       cat("\nWARNING: Acceptance Rate = 0\n\n")
-       cat(oname, " <- LaplacesDemon(Model, Data=", dname,
-            ", Adaptive=0,\n", sep="")
-       cat("     Covar=NULL, DR=0, Gibbs=FALSE, Initial.Values, Iterations=1000000,\n",
-            sep="")
-       cat("     Mixture=TRUE, Periodicity=0, Status=1000, Thinning=1000)\n\n", sep="")
-       stop("Try the above code before consorting again.")
-       }
+          cat("\nWARNING: Acceptance Rate = 0\n\n")
+          cat(oname, " <- LaplacesDemon(Model, Data=", dname,
+               ", Initial.Values,\n", sep="")
+          cat("     Covar=NULL, Iterations=100000, Status=1000, ",
+               "Thinning=1,\n", sep="")
+          cat("     Algorithm=\"AMM\", Specs=list(Adaptive=500, ",
+               "Periodicity=100, w=0.05))\n\n", sep="")
+          stop("Try the above code before consorting again.")}
      if(any(object$Acceptance.Rate < Acc.Rate.Low)) {Acc.Rate.Level <- 1}
      else if(any(object$Acceptance.Rate > Acc.Rate.High)) {Acc.Rate.Level <- 3}
      ### Check MCSE
@@ -49,6 +49,11 @@ Consort <- function(object=NULL)
      Stationarity <- FALSE
      if(object$Rec.BurnIn.Thinned < object$Thinned.Samples) {
           Stationarity <- TRUE}
+     ### Check Diminishing Adaptation (If Adaptive)
+     if(nrow(object$CovarDHis) > 1) {
+          Dim.Adapt <- as.vector(lm(rowMeans(diff(Fit$CovarDHis)) ~ c(1:nrow(diff(Fit$CovarDHis))))$coef[2]) <= 0
+          }
+     else Dim.Adapt <- TRUE
      ### Suggested Values
      Rec.Iterations <- trunc(object$Rec.Thinning / object$Thinning *
           object$Iterations)
@@ -67,6 +72,7 @@ Consort <- function(object=NULL)
           Rec.Iterations / object$Iterations})
      if(Status.temp < Rec.Iterations) Rec.Status <- Status.temp
      else Rec.Status <- trunc(sqrt(Rec.Iterations))
+     if(Rec.Status > Rec.Iterations) Rec.Status <- Rec.Iterations
      Rec.Thinning <- object$Rec.Thinning
      ### The Demonic Suggestion of Laplace's Demon
      cat("\nDemonic Suggestion\n\n")
@@ -120,6 +126,11 @@ Consort <- function(object=NULL)
           cat("fit before using these samples for inference.\n\n")
           }
      else {
+          if(Dim.Adapt == FALSE) {
+               cat("WARNING: Diminishing adaptation did not occur.\n")
+               if({object$Algorithm != "Sequential Adaptive Metropolis-within-Gibbs"} & {object$Algorithm != "Updating Sequential Adaptive Metropolis-within-Gibbs"})
+                    cat("         A new algorithm will be suggested.\n\n")}
+          
           cat("Laplace's Demon has not been appeased, and suggests\n")
           cat("copy/pasting the following R code into the R",
                " console,\n", sep="")
@@ -130,70 +141,193 @@ Consort <- function(object=NULL)
               {object$Algorithm == "Metropolis-within-Gibbs"}) 
                Time <- object$Iterations / object$Minutes
           else Time <- object$Iterations / object$Minutes / object$Parameters
-          ### If >= 100 componetwise iterations per minute and ready...
-          if({Time >= 100} &
-          ({Acc.Rate.Level == 2} & {MCSE.tot >= object$Parameters} &
-          {ESS.min >= ESS.crit} & {Stationarity == TRUE})) {
-               ### MWG
-               cat(oname, " <- LaplacesDemon(Model, ",
-                    "Data=", dname, ", Adaptive=0,\n", sep="")
-               cat("     Covar=", oname, "$Covar, DR=0, Gibbs=TRUE, ",
-                    "Initial.Values, Iterations=", Rec.Iterations,
-                    ",\n", sep="")
-               cat("     Mixture=FALSE, Periodicity=0", 
-                    ", Status=", Rec.Status, ", Thinning=",
-                    Rec.Thinning, ")\n\n", sep="")
+          if(Time >= 100) Fast <- TRUE
+          else Fast <- FALSE
+
+          if({Acc.Rate.Level == 2} & {MCSE.tot >= object$Parameters} &
+          {ESS.min >= ESS.crit} & {Stationarity == TRUE}) Ready <- TRUE
+          else Ready <- FALSE
+
+          if(object$Algorithm == "Adaptive Metropolis") Alg <- "AM"
+          else if(object$Algorithm == "Adaptive-Mixture Metropolis") Alg <- "AMM"
+          else if(object$Algorithm == "Adaptive Metropolis-within-Gibbs") Alg <- "AMWG"
+          else if(object$Algorithm == "Delayed Rejection Adaptive Metropolis") Alg <- "DRAM"
+          else if(object$Algorithm == "Delayed Rejection Metropolis") Alg <- "DRM"
+          else if(object$Algorithm == "Metropolis-within-Gibbs") Alg <- "MWG"
+          else if(object$Algorithm == "Robust Adaptive Metropolis") Alg <- "RAM"
+          else if(object$Algorithm == "Random-Walk Metropolis") Alg <- "RWM"
+          else if(object$Algorithm == "Sequential Adaptive Metropolis-within-Gibbs") Alg <- "SAMWG"
+          else if(object$Algorithm == "Sequential Metropolis-within-Gibbs") Alg <- "SMWG"
+          else if(object$Algorithm == "Updating Sequential Adaptive Metropolis-within-Gibbs") Alg <- "USAMWG"
+          else Alg <- "USMWG"
+
+          if({(Alg == "AM") & Dim.Adapt & Fast & !Ready} |
+             {(Alg == "AM") & Dim.Adapt & !Fast & !Ready}) {
+               ### AM
+               cat(oname, " <- LaplacesDemon(Model, Data=", dname,
+                    ", Initial.Values,\n", sep="")
+               cat("     Covar=", oname, "$Covar, Iterations=",
+                    Rec.Iterations, ", Status=", Rec.Status, ", ",
+                    "Thinning=", Rec.Thinning, ",\n", sep="")
+               cat("     Algorithm=\"AM\", ",
+                    "Specs=list(Adaptive=", Rec.Adaptive, ", Periodicity=",
+                    Rec.Periodicity, "))\n\n", sep="")
                }
-          ### If >= 100 componetwise iterations per minute not ready...
-          if({Time >= 100} &
-          ({Acc.Rate.Level != 2} | {MCSE.tot < object$Parameters} |
-          {ESS.min < ESS.crit} | {Stationarity == FALSE})) {
-               ### AMWG
-               if({object$Algorithm != "Adaptive Metropolis-within-Gibbs"} &
-                    {object$Algorithm != "Metropolis-within-Gibbs"}) {
-                    Rec.Status <- trunc(Rec.Status / object$Parameters)}
-               cat(oname, " <- LaplacesDemon(Model, ",
-                    "Data=", dname, ", Adaptive=2,\n", sep="")
-               cat("     Covar=", oname, "$Covar, DR=0, Gibbs=TRUE, ",
-                    "Initial.Values, Iterations=", Rec.Iterations,
-                    ",\n", sep="")
-               cat("     Mixture=FALSE, Periodicity=", Rec.Periodicity,
-                    ", Status=", Rec.Status, ", Thinning=",
-                    Rec.Thinning, ")\n\n", sep="")
-               }
-          ### If < 100 componetwise iterations per minute and ready...
-          if({Time < 100} &
-          ({Acc.Rate.Level == 2} & {MCSE.tot >= object$Parameters} &
-          {ESS.min >= ESS.crit} & {Stationarity == TRUE})) {
-               ### RWM
-               cat(oname, " <- LaplacesDemon(Model, ",
-                    "Data=", dname, ", Adaptive=0,\n", sep="")
-               cat("     Covar=", oname, "$Covar, DR=0, Gibbs=FALSE, ",
-                    "Initial.Values, Iterations=", Rec.Iterations,
-                    ",\n", sep="")
-               cat("     Mixture=TRUE, Periodicity=0", 
-                    ", Status=", Rec.Status, ", Thinning=",
-                    Rec.Thinning, ")\n\n", sep="")
-               }
-          ### If < 100 componetwise iterations per minute and not ready...
-          if({Time < 100} &
-          ({Acc.Rate.Level != 2} | {MCSE.tot < object$Parameters} |
-          {ESS.min < ESS.crit} | {Stationarity == FALSE})) {
+          if({(Alg == "AM") & !Dim.Adapt & !Fast & Ready} |
+             {(Alg == "AMM") & Dim.Adapt & Fast & !Ready} |
+             {(Alg == "AMM") & Dim.Adapt & !Fast & !Ready} |
+             {(Alg == "AMWG") & !Dim.Adapt & Fast & Ready} |
+             {(Alg == "AMWG") & !Dim.Adapt & !Fast & Ready} |
+             {(Alg == "DRAM") & !Dim.Adapt & !Fast & Ready} |
+             {(Alg == "DRM") & Dim.Adapt & Fast & !Ready} |
+             {(Alg == "DRM") & Dim.Adapt & !Fast & !Ready} |
+             {(Alg == "RAM") & !Dim.Adapt & !Fast & Ready} |
+             {(Alg == "RAM") & !Dim.Adapt & !Fast & !Ready} |
+             {(Alg == "RWM") & Dim.Adapt & Fast & !Ready} |
+             {(Alg == "RWM") & Dim.Adapt & !Fast & !Ready}) {
                ### AMM
-               if({object$Algorithm == "Adaptive Metropolis-within-Gibbs"} |
-                    {object$Algorithm == "Metropolis-within-Gibbs"}) {
+               if({Alg == "AMWG"} | {Alg == "MWG"}) {
                     Rec.Status <- Rec.Status * object$Parameters}
-               cat(oname, " <- LaplacesDemon(Model, ",
-                    "Data=", dname, ", Adaptive=", Rec.Adaptive, ",\n", sep="")
-               cat("     Covar=", oname, "$Covar, DR=0, Gibbs=FALSE, ",
-                    "Initial.Values, Iterations=", Rec.Iterations,
-                    ",\n", sep="")
-               cat("     Mixture=TRUE, Periodicity=", Rec.Periodicity,
-                    ", Status=", Rec.Status, ", Thinning=",
-                    Rec.Thinning, ")\n\n", sep="")
+               if(Rec.Status > Rec.Iterations) Rec.Status <- Rec.Iterations
+               cat(oname, " <- LaplacesDemon(Model, Data=", dname,
+                    ", Initial.Values,\n", sep="")
+               cat("     Covar=", oname, "$Covar, Iterations=",
+                    Rec.Iterations, ", Status=", Rec.Status, ", ",
+                    "Thinning=", Rec.Thinning, ",\n", sep="")
+               cat("     Algorithm=\"AMM\", ",
+                    "Specs=list(Adaptive=", Rec.Adaptive, ", Periodicity=",
+                    Rec.Periodicity, ", w=0.05))\n\n", sep="")
+               }
+          if({(Alg == "AM") & !Dim.Adapt & Fast & Ready} |
+             {(Alg == "AM") & !Dim.Adapt & Fast & !Ready} |
+             {(Alg == "AMM") & !Dim.Adapt & Fast & Ready} |
+             {(Alg == "AMM") & !Dim.Adapt & Fast & !Ready} |
+             {(Alg == "AMWG") & Dim.Adapt & Fast & !Ready} |
+             {(Alg == "AMWG") & Dim.Adapt & !Fast & !Ready} |
+             {(Alg == "DRAM") & !Dim.Adapt & Fast & Ready} |
+             {(Alg == "DRAM") & !Dim.Adapt & Fast & !Ready} |
+             {(Alg == "MWG") & Dim.Adapt & Fast & !Ready} |
+             {(Alg == "MWG") & Dim.Adapt & !Fast & !Ready} |
+             {(Alg == "RAM") & !Dim.Adapt & Fast & Ready} |
+             {(Alg == "RAM") & !Dim.Adapt & Fast & !Ready}) {
+               ### AMWG
+               if({Alg != "AMWG"} & {Alg != "MWG"}) {
+                    Rec.Status <- trunc(Rec.Status / object$Parameters)}
+               cat(oname, " <- LaplacesDemon(Model, Data=", dname,
+                    ", Initial.Values,\n", sep="")
+               cat("     Covar=", oname, "$Covar, Iterations=",
+                    Rec.Iterations, ", Status=", Rec.Status, ", ",
+                    "Thinning=", Rec.Thinning, ",\n", sep="")
+               cat("     Algorithm=\"AMWG\", ",
+                    "Specs=list(Periodicity=", Rec.Periodicity,
+                    "))\n\n", sep="")
+               }
+          if({(Alg == "DRAM") & Dim.Adapt & Fast & !Ready} |
+             {(Alg == "DRAM") & Dim.Adapt & !Fast & !Ready}) {
+               ### DRAM
+               cat(oname, " <- LaplacesDemon(Model, Data=", dname,
+                    ", Initial.Values,\n", sep="")
+               cat("     Covar=", oname, "$Covar, Iterations=",
+                    Rec.Iterations, ", Status=", Rec.Status, ", ",
+                    "Thinning=", Rec.Thinning, ",\n", sep="")
+               cat("     Algorithm=\"DRAM\", ",
+                    "Specs=list(Adaptive=", Rec.Adaptive, ", Periodicity=",
+                    Rec.Periodicity, "))\n\n", sep="")
+               }
+          if({(Alg == "DRM") & Dim.Adapt & Fast & !Ready} |
+             {(Alg == "DRM") & Dim.Adapt & !Fast & !Ready}) {
+               ### DRM
+               cat(oname, " <- LaplacesDemon(Model, Data=", dname,
+                    ", Initial.Values,\n", sep="")
+               cat("     Covar=", oname, "$Covar, Iterations=",
+                    Rec.Iterations, ", Status=", Rec.Status, ", ",
+                    "Thinning=", Rec.Thinning, ",\n", sep="")
+               cat("     Algorithm=\"DRM\", ",
+                    "Specs=NULL)\n\n", sep="")
+               }
+          if({(Alg == "AMWG") & Dim.Adapt & Fast & Ready} |
+             {(Alg == "AMWG") & Dim.Adapt & !Fast & Ready} |
+             {(Alg == "MWG") & Dim.Adapt & Fast & Ready} |
+             {(Alg == "MWG") & Dim.Adapt & !Fast & Ready}) {
+               ### MWG
+               cat(oname, " <- LaplacesDemon(Model, Data=", dname,
+                    ", Initial.Values,\n", sep="")
+               cat("     Covar=", oname, "$Covar, Iterations=",
+                    Rec.Iterations, ", Status=", Rec.Status, ", ",
+                    "Thinning=", Rec.Thinning, ",\n", sep="")
+               cat("     Algorithm=\"MWG\", ",
+                    "Specs=NULL)\n\n", sep="")
+               }
+          if({(Alg == "AM") & !Dim.Adapt & !Fast & !Ready} | 
+             {(Alg == "AMM") & !Dim.Adapt & !Fast & Ready} | 
+             {(Alg == "AMM") & !Dim.Adapt & !Fast & !Ready} | 
+             {(Alg == "AMWG") & !Dim.Adapt & Fast & !Ready} | 
+             {(Alg == "AMWG") & !Dim.Adapt & !Fast & !Ready} | 
+             {(Alg == "DRAM") & !Dim.Adapt & !Fast & !Ready} |
+             {(Alg == "RAM") & Dim.Adapt & Fast & !Ready} |
+             {(Alg == "RAM") & Dim.Adapt & !Fast & !Ready}) {
+               ### RAM
+               if({Alg == "AMWG"} | {Alg == "MWG"}) {
+                    Rec.Status <- Rec.Status * object$Parameters}
+               if(Rec.Status > Rec.Iterations) Rec.Status <- Rec.Iterations
+               cat(oname, " <- LaplacesDemon(Model, Data=", dname,
+                    ", Initial.Values,\n", sep="")
+               cat("     Covar=", oname, "$Covar, Iterations=",
+                    Rec.Iterations, ", Status=", Rec.Status, ", ",
+                    "Thinning=", Rec.Thinning, ",\n", sep="")
+               cat("     Algorithm=\"RAM\", ",
+                    "Specs=list(alpha.star=0.234, Dist=\"N\", gamma=0.66,\n", sep="")
+               cat("     Periodicity=10))\n\n", sep="")
+               }
+          if({(Alg == "AM") & Dim.Adapt & Fast & Ready} |
+             {(Alg == "AM") & Dim.Adapt & !Fast & Ready} |
+             {(Alg == "AMM") & Dim.Adapt & Fast & Ready} |
+             {(Alg == "AMM") & Dim.Adapt & !Fast & Ready} |
+             {(Alg == "DRAM") & Dim.Adapt & Fast & Ready} |
+             {(Alg == "DRAM") & Dim.Adapt & !Fast & Ready} |
+             {(Alg == "RAM") & Dim.Adapt & Fast & Ready} |
+             {(Alg == "RAM") & Dim.Adapt & !Fast & Ready} |
+             {(Alg == "RWM") & Dim.Adapt & Fast & Ready} |
+             {(Alg == "RWM") & Dim.Adapt & !Fast & Ready}) {
+               ### RWM
+               cat(oname, " <- LaplacesDemon(Model, Data=", dname,
+                    ", Initial.Values,\n", sep="")
+               cat("     Covar=", oname, "$Covar, Iterations=",
+                    Rec.Iterations, ", Status=", Rec.Status, ", ",
+                    "Thinning=", Rec.Thinning, ",\n", sep="")
+               cat("     Algorithm=\"RWM\", ",
+                    "Specs=NULL)\n\n", sep="")
+               }
+          if({(Alg == "SAMWG") & !Ready} |
+             {(Alg == "SMWG") & !Ready}) {
+               ### SAMWG
+               cat(oname, " <- LaplacesDemon(Model, Data=", dname,
+                    ", Initial.Values,\n", sep="")
+               cat("     Covar=", oname, "$Covar, Iterations=",
+                    Rec.Iterations, ", Status=", Rec.Status, ", ",
+                    "Thinning=", Rec.Thinning, ",\n", sep="")
+               cat("     Algorithm=\"SAMWG\", ",
+                    "Specs=list(Dyn=Dyn, Periodicity=", Rec.Periodicity,
+                    "))\n\n", sep="")
+               }
+          if({(Alg == "SAMWG") & Ready} |
+             {(Alg == "SMWG") & Ready}) {
+               ### SMWG
+               cat(oname, " <- LaplacesDemon(Model, Data=", dname,
+                    ", Initial.Values,\n", sep="")
+               cat("     Covar=", oname, "$Covar, Iterations=",
+                    Rec.Iterations, ", Status=", Rec.Status, ", ",
+                    "Thinning=", Rec.Thinning, ",\n", sep="")
+               cat("     Algorithm=\"SMWG\", ",
+                    "Specs=list(Dyn=Dyn))\n\n", sep="")
+               }
+          if((Alg == "USAMWG") | (Alg == "USMWG")) {
+               ### USAMWG or USMWG
+               cat("A Demonic Suggestion will not be made.\n\n")
                }
           }
      cat("Laplace's Demon is finished consorting.\n")
      }
 
 #End
+#dyname <- as.vector(strsplit(as.character(object$Call), "=")[3][[1]])

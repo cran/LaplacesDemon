@@ -21,25 +21,26 @@ HPD(obj, prob=0.95, \dots)
   \item{\dots}{Additional arguments are unused.}
 }
 \details{
-  The \code{HPD} is one form of a Bayesian confidence interval. Bayesians
-  usually refer to the \code{HPD} as a credible interval or probability
-  interval. The \code{HPD} is identical to a quantile-based probability
-  interval when the posterior distribution is uni-modal and
+  The \code{HPD} interval is one form of a Bayesian confidence
+  interval. It is also often called the HPDI. Bayesians usually refer to
+  the \code{HPD} interval as a credible interval or probability
+  interval. The \code{HPD} interval is identical to a quantile-based
+  probability interval when the posterior distribution is uni-modal and
   symmetric. As an example, imagine an exponential posterior
   distribution. A quantile-based probability interval would report the
   highest density region near zero to be outside of its interval. In
-  contrast, the \code{HPD} is recommended for such skewed posterior
-  distributions. However, posterior distributions with multiple modes
-  probably should not be characterized with any probability
-  interval. The presence of multiple modes may be checked with the
-  \code{\link{is.multimodal}} function.
+  contrast, the \code{HPD} interval is recommended for such skewed
+  posterior distributions. However, posterior distributions with
+  multiple modes probably should not be characterized with any
+  probability interval. The presence of multiple modes may be checked
+  with the \code{\link{is.multimodal}} function.
   
-  For each parameter (or deviance or monitored variable), the HPD is
-  estimated from the empirical CDF of the sample as the shortest
-  interval for which the difference in the ECDF values of the end-points
-  is the user-specified probability width. This assumes the
-  distribution is not severely multi-modal. The HPD contains the
-  region of the highest posterior density.
+  For each parameter (or deviance or monitored variable), the HPD
+  interval is estimated from the empirical CDF of the sample as the
+  shortest interval for which the difference in the ECDF values of the
+  end-points is the user-specified probability width. This assumes the
+  distribution is not severely multi-modal. The HPD interval contains
+  the region of the highest posterior density.
 }
 \value{
   A matrix is returned with rows corresponding to the parameters (or

@@ -37,7 +37,7 @@ summary.demonoid.ppc <- function(object=NULL, Categorical=FALSE, Rows=NULL,
           if(!is.null(Discrep) && {Discrep == "Chi-Square"}) {
                Summ[,8] <- round((y - apply(yhat,1,mean))^2 /
                     apply(yhat,1,var),3)
-               Discrepancy.Statistic <- round(sum(Summ[,8]),3)}
+               Discrepancy.Statistic <- round(sum(Summ[,8], na.rm=TRUE),3)}
           if(!is.null(Discrep) && {Discrep == "Chi-Square2"}) {
                chisq.obs <- chisq.rep <- yhat
                E.y <- E.yrep <- rowMeans(yhat)
@@ -47,48 +47,48 @@ summary.demonoid.ppc <- function(object=NULL, Categorical=FALSE, Rows=NULL,
                     }
                Summ[,8] <- round(rowMeans(chisq.rep > chisq.obs),3)
                Discrepancy.Statistic <- round(mean((Summ[,8] < 0.025) |
-                    (Summ[,8] > 0.975)),3)}
+                    (Summ[,8] > 0.975), na.rm=TRUE),3)}
           if(!is.null(Discrep) && {Discrep == "Kurtosis"}) {
                kurtosis <- function(x) {  
                     m4 <- mean((x-mean(x))^4) 
                     kurt <- m4/(sd(x)^4)-3  
                     return(kurt)}
                for (i in 1:length(y)) {Summ[i,8] <- round(kurtosis(yhat[i,]),3)}
-               Discrepancy.Statistic <- round(mean(Summ[,8]),3)}
+               Discrepancy.Statistic <- round(mean(Summ[,8], na.rm=TRUE),3)}
           if(!is.null(Discrep) && {Discrep == "L.criterion"}) {
                Summ[,8] <- round(sqrt(apply(yhat,1,var) +
                     (y - apply(yhat,1,mean))^2),3)
-               Discrepancy.Statistic <- round(sum(Summ[,8]),3)}
+               Discrepancy.Statistic <- round(sum(Summ[,8], na.rm=TRUE),3)}
           if(!is.null(Discrep) && {Discrep == "Skewness"}) {
                skewness <-  function(x) {
                     m3 <- mean((x-mean(x))^3)
                     skew <- m3/(sd(x)^3)
                     return(skew)}
                for (i in 1:length(y)) {Summ[i,8] <- round(skewness(yhat[i,]),3)}
-               Discrepancy.Statistic <- round(mean(Summ[,8]),3)}
+               Discrepancy.Statistic <- round(mean(Summ[,8], na.rm=TRUE),3)}
           if(!is.null(Discrep) && {Discrep == "max(yhat[i,]) > max(y)"}) {
                for (i in 1:length(y)) {Summ[i,8] <- max(yhat[i,]) > max(y)}
-               Discrepancy.Statistic <- round(mean(Summ[,8]),3)}
+               Discrepancy.Statistic <- round(mean(Summ[,8], na.rm=TRUE),3)}
           if(!is.null(Discrep) && {Discrep == "mean(yhat[i,]) > mean(y)"}) {
                for (i in 1:length(y)) {Summ[i,8] <- mean(yhat[i,]) > mean(y)}
-               Discrepancy.Statistic <- round(mean(Summ[,8]),3)}
+               Discrepancy.Statistic <- round(mean(Summ[,8], na.rm=TRUE),3)}
           if(!is.null(Discrep) && {Discrep == "mean(yhat[i,] > d)"}) {
                for (i in 1:length(y)) {Summ[i,8] <- mean(yhat[i,] > d)}
-               Discrepancy.Statistic <- round(mean(Summ[,8]),3)}
+               Discrepancy.Statistic <- round(mean(Summ[,8], na.rm=TRUE),3)}
           if(!is.null(Discrep) && {Discrep == "mean(yhat[i,] > mean(y))"}) {
                for (i in 1:length(y)) {Summ[i,8] <- mean(yhat[i,] > mean(y))}
-               Discrepancy.Statistic <- round(mean(Summ[,8]),3)}
+               Discrepancy.Statistic <- round(mean(Summ[,8], na.rm=TRUE),3)}
           if(!is.null(Discrep) && {Discrep == "min(yhat[i,]) < min(y)"}) {
                for (i in 1:length(y)) {Summ[i,8] <- min(yhat[i,]) < min(y)}
-               Discrepancy.Statistic <- round(mean(Summ[,8]),3)}
+               Discrepancy.Statistic <- round(mean(Summ[,8], na.rm=TRUE),3)}
           if(!is.null(Discrep) && {Discrep == "round(yhat[i,]) = d"}) {
                for (i in 1:length(y)) {Summ[i,8] <- round(yhat[i,]) == d}
-               Discrepancy.Statistic <- round(mean(Summ[,8]),3)}
+               Discrepancy.Statistic <- round(mean(Summ[,8], na.rm=TRUE),3)}
           if(!is.null(Discrep) && {Discrep == "sd(yhat[i,]) > sd(y)"}) {
                for (i in 1:length(y)) {Summ[i,8] <- sd(yhat[i,]) > sd(y)}
-               Discrepancy.Statistic <- round(mean(Summ[,8]),3)}
+               Discrepancy.Statistic <- round(mean(Summ[,8], na.rm=TRUE),3)}
           L <- sqrt(apply(yhat,1,var) + (y - apply(yhat,1,mean))^2)
-          S.L <- round(sd(L),3); L <- round(sum(L),3)
+          S.L <- round(sd(L, na.rm=TRUE),3); L <- round(sum(L, na.rm=TRUE),3)
           ### Create Output
           Summ.out <- list(Concordance=Concordance,
                Discrepancy.Statistic=round(Discrepancy.Statistic,5),
@@ -130,7 +130,8 @@ summary.demonoid.ppc <- function(object=NULL, Categorical=FALSE, Rows=NULL,
           if(!is.null(Discrep) && {Discrep == "p(yhat[i,] != y[i])"}) {
                for (i in 1:length(y)) {Summ[i,ncol(Summ)] <- 1 - 
                     Summ[i, grep(Summ[i,1],names(catcounts))+1]}
-               Discrepancy.Statistic <- round(mean(Summ[,ncol(Summ)]),3)}
+               Discrepancy.Statistic <- round(mean(Summ[,ncol(Summ)],
+                    na.rm=TRUE),3)}
           ### Create Output
           Summ.out <- list(Mean.Lift=Mean.Lift,
                Discrepancy.Statistic=round(Discrepancy.Statistic,5),

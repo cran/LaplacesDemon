@@ -275,11 +275,6 @@ rhalfcauchy <- function(n, scale=25)
 
 dhalfnorm <- function(x, scale=sqrt(pi/2), log=FALSE)
      {
-     x <- as.vector(x); scale <- as.vector(scale)
-     if(any(x < 0)) stop("x must be non-negative.")
-     if(any(scale <= 0)) stop("The scale parameter must be positive.")
-     NN <- max(length(x), length(scale))
-     x <- rep(x, len=NN); scale <- rep(scale, len=NN)
      dens <- 2*dnorm(x, mean=0, sd=sqrt(pi/2) / scale)
      if(log == TRUE) dens <- log(dens  + .Machine$double.xmin) #Prevent -Inf
      return(dens)
@@ -964,12 +959,8 @@ rmvtp <- function(n=1, mu, Omega, nu=Inf)
 
 dnormp <- function(x, mean=0, prec=1, log=FALSE)
      {
-     x <- as.vector(x); mu <- as.vector(mean); prec <- as.vector(prec)
-     if(any(prec < 0)) stop("The prec parameter must be non-negative.")
-     NN <- max(length(x), length(mu), length(prec))
-     x <- rep(x, len=NN); mu <- rep(mu, len=NN); prec <- rep(prec, len=NN)
-     dens <- sqrt(prec/(2*pi)) * exp(-(prec/2)*(x-mu)^2)
-     if(log == TRUE) dens <- log(dens + .Machine$double.xmin) #Prevent -Inf
+     #dens <- sqrt(prec/(2*pi)) * exp(-(prec/2)*(x-mu)^2)
+     dens <- dnorm(x, mean, sqrt(1/prec), log)
      return(dens)
      }
 pnormp <- function(q, mean=0, prec=1, lower.tail=TRUE, log.p=FALSE)
@@ -985,12 +976,8 @@ rnormp <- function(n, mean=0, prec=1)
 
 dnormv <- function(x, mean=0, var=1, log=FALSE)
      {
-     x <- as.vector(x); mu <- as.vector(mean); var <- as.vector(var)
-     if(any(var <= 0)) stop("The var parameter must be positive.")
-     NN <- max(length(x), length(mu), length(var))
-     x <- rep(x, len=NN); mu <- rep(mu, len=NN); var <- rep(var, len=NN)
-     dens <- (1/(sqrt(2*pi*var))) * exp(-((x-mu)^2/(2*var)))
-     if(log == TRUE) dens <- log(dens + .Machine$double.xmin) #Prevent -Inf
+     #dens <- (1/(sqrt(2*pi*var))) * exp(-((x-mu)^2/(2*var)))
+     dens <- dnorm(x, mean, sqrt(var), log)
      return(dens)
      }
 pnormv <- function(q, mean=0, var=1, lower.tail=TRUE, log.p=FALSE)
@@ -1190,22 +1177,7 @@ rslaplace <- function(n, mu, alpha, beta)
 ###########################################################################
 
 dst <- function(x, mu=0, sigma=1, nu=10, log=FALSE)
-     {
-     x <- as.vector(x); mu <- as.vector(mu)
-     sigma <- as.vector(sigma); nu <- as.vector(nu)
-     if(any(sigma <= 0)) stop("The sigma parameter must be positive.")
-     if(any(nu <= 0))  stop("The nu parameter must be positive.")
-     NN <- max(length(x), length(mu), length(sigma), length(nu))
-     x <- rep(x, len=NN); mu <- rep(mu, len=NN)
-     sigma <- rep(sigma, len=NN); nu <- rep(nu, len=NN)
-     if(length(nu) > 1) dens <- ifelse(nu > 1000000,
-          dnorm(x, mu, sigma, log=FALSE),
-          {1/sigma} * dt({x-mu}/sigma, df=nu, log=FALSE))
-     else dens <- if(nu > 1000000) {dnorm(x, mu, sigma, log=FALSE)}
-          else {{1/sigma} * dt({x-mu}/sigma, df=nu, log=FALSE)}
-     if(log == TRUE) dens <- log(dens + .Machine$double.xmin) #Prevent -Inf
-     return(dens)
-     }
+     {return({1/sigma} * dt({x-mu}/sigma, df=nu, log))}
 pst <- function(q, mu=0, sigma=1, nu=10, lower.tail=TRUE, log.p=FALSE)
      {
      q <- as.vector(q); mu <- as.vector(mu)

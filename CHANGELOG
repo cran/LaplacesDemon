@@ -1,3 +1,20 @@
+2012-04-01 Added IAT
+2012-03-31 Vignette Examples: Added Stochastic Volatility
+2012-03-30 Vignette Examples: Updated DLM and DFA to include Dyn
+2012-03-29 LaplacesDemon: Added 2 algorithms: USAMWG and USMWG for SSMs
+2012-03-28 Vignette Examples: Added Spatial Autoregression (SAR)
+2012-03-27 LaplacesDemon: Added 2 algorithms: SAMWG and SMWG for SSMs
+2012-03-26 Vignette Examples: Added Hierarchical Bayesian
+2012-03-25 Consort: Changed the Demonic Suggestions due to a new MCMC alg
+2012-03-19 Vignette Tutorial: Added a Sampler Selection section
+2012-03-18 LaplacesDemon: Added the RAM algorithm
+2012-03-17 LaplacesDemon: Redesigned arguments to make it modular for more algs.
+2012-03-12 Vignette Examples: expanded Linear Regression with Full Missingness
+2012-03-11 summary.demonoid.ppc: Allow missing values for L, S.L., and Discrep
+2012-03-11 summary.laplace.ppc: Allow missing values for L, S.L., and Discrep
+2012-03-10 Vignette Examples: Added STARMA(1,1)
+2012-03-09 LaplacesDemon: Changed MWG and AWMG to random-scan
+2012-03-06 LaplaceApproximation and SIR: Document sample size vs. parm. correl.
 2012-03-04 Vignette Examples: Added Negative Binomial Regression
 2012-03-03 Vignette Examples: Added TARCH(1)
 2012-02-26 Vignette Examples: Added Ordinal Logit and Ordinal Probit

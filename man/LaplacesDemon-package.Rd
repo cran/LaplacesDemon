@@ -9,8 +9,8 @@ Welcome to LaplacesDemon, an R package for Bayesian inference.
   \tabular{ll}{
     Package: \tab LaplacesDemon\cr
     Type: \tab Package\cr
-    Version: \tab 12.03.05\cr
-    Date: \tab 2012-03-05\cr
+    Version: \tab 12.04.02\cr
+    Date: \tab 2012-04-02\cr
     License: \tab GPL-2\cr
   }
   The goal of LaplacesDemon, often referred to as Laplace's Demon, is to

@@ -1,0 +1,70 @@
+\name{IAT}
+\alias{IAT}
+\title{Integrated Autocorrelation Time}
+\description{
+  The \code{IAT} function estimates integrated autocorrelation time,
+  which is the computational inefficiency of a chain or MCMC
+  sampler. Also called the IACT, autocorrelation time, autocovariance
+  time, or inefficiency factor, a lower value of \code{IAT} is
+  better. \code{IAT} is a MCMC diagnostic that is an estimate of the
+  number of iterations, on average, for an independent sample to be
+  drawn, given a chain or Markov chain. Put another way, \code{IAT} is
+  the number of correlated samples with the same variance-reducing power
+  as one independent sample.
+}
+\usage{
+IAT(x)
+}
+\arguments{
+  \item{x}{This requried argument is a vector of samples from a chain.}
+}
+\details{
+  \code{IAT} is a MCMC diagnostic that is often used to compare chains
+  of MCMC samplers for computational inefficiency, where the sampler
+  with the lowest \code{IAT}s is the most efficient sampler. Otherwise,
+  chains may be compared within a model, such as with the output of
+  \code{\link{LaplacesDemon}} to learn about the inefficiency of the
+  chain. \code{IAT} is also estimated in the
+  \code{\link{PosteriorChecks}} function. \code{IAT} is usually applied
+  to a stationary chain after discarding burn-in iterations (see
+  \code{\link{burnin}} for more information). The \code{IAT} of a chain
+  correlates with the variability of the mean of the chain, and relates
+  to Effective Sample Size (\code{\link{ESS}}) and Monte Carlo Standard
+  Error (\code{\link{MCSE}}).
+
+  \code{IAT} and \code{\link{ESS}} are inversely related, though not
+  perfectly, because each is estimated a little differently. Given $N$
+  samples and taking autocorrelation into account, \code{\link{ESS}}
+  estimates a reduced number of $M$ samples. Conversely, \code{IAT}
+  estimates the number of autocorrelated samples, on average, required
+  to produce one independently drawn sample.
+  
+  The \code{IAT} function is similar to the \code{IAT} function in the
+  \code{Rtwalk} package of Christen and Fox (2010), which is currently
+  unavailabe on CRAN.
+}
+\value{
+  The \code{IAT} function returns the integrated autocorrelation time of
+  a chain.
+}
+\references{
+  Christen, J.A. and Fox, C. (2010). "A General Purpose Sampling
+  Algorithm for Continuous Distributions (the t-walk)". Bayesian
+  Analysis, 5(2), p. 263--282.
+
+  Hall, B. (2011). "Laplace's Demon", STATISTICAT, LLC.
+  URL=\url{http://www.statisticat.com/laplacesdemon.html}
+}
+\author{Byron Hall \email{laplacesdemon@statisticat.com}}
+\examples{
+theta <- rnorm(100)
+IAT(theta)
+}
+\seealso{
+  \code{\link{burnin}},
+  \code{\link{ESS}},
+  \code{\link{LaplacesDemon}},
+  \code{\link{MCSE}},
+  \code{\link{PosteriorChecks}}.
+}
+\keyword{mcmc diagnostic}

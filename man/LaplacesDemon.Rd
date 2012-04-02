@@ -9,9 +9,8 @@ posterior density with MCMC and provides samples of the marginal posterior
 distributions, deviance, and other monitored variables.
 }
 \usage{
-LaplacesDemon(Model, Data, Adaptive=0, Covar=NULL, DR=0, Gibbs=FALSE,
-     Initial.Values, Iterations=1000, Mixture=FALSE, Periodicity=1,
-     Status=100, Thinning=1)
+LaplacesDemon(Model, Data, Initial.Values, Covar=NULL, Iterations=100000,
+     Status=1000, Thinning=100, Algorithm="RWM", Specs=NULL)
 }
 \arguments{
   \item{Model}{
@@ -30,18 +29,19 @@ LaplacesDemon(Model, Data, Adaptive=0, Covar=NULL, DR=0, Gibbs=FALSE,
     and must contain \code{parm.names} which contains parameter
     names. The \code{\link{as.parm.names}} function may be helpful for
     preparing the data.}
-  \item{Adaptive}{
-    This argument instructs Laplace's Demon to adapt the proposal
-    covariance matrix, or proposal variance, based on the history of
-    each chain, beginning with a specified iteration. If
-    \code{Adaptive=0} or is greater than the number of iterations, then
-    adaptation will not occur. For example, if \code{Adaptive=100}, then
-    the proposal variances may begin to adapt at the 100th iteration. If
-    the argument is unspecified, then it defaults to \code{Adaptive=0},
-    and does not adapt. Note that adaptation also depends on the
-    \code{Periodicity} argument (see below). When \code{Gibbs=TRUE} and
-    adaptation is desired, adaptation is recommended to begin with
-    \code{Adaptive=2}.}
+  \item{Initial.Values}{
+    This argument requires a vector of initial values equal in length to
+    the number of parameters. Each initial value will be the starting
+    point for an adaptive chain or a non-adaptive Markov chain of a
+    parameter. If all initial values are set to zero, then Laplace's
+    Demon will attempt to optimize the initial values with the
+    \code{\link{LaplaceApproximation}} function. After Laplace's Demon
+    finishes updating, it may be desired to continue updating from where
+    it left off. To continue, this argument should receive the last
+    iteration of the previous update. For example, if Fit is the output
+    object, then \code{Initial.Values=as.initial.values(Fit)}. Initial
+    values may be generated randomly with the \code{\link{GIV}}
+    function.}
   \item{Covar}{
     This argument defaults to \code{NULL}, but may otherwise accept a
     \eqn{K \times K}{K x K} proposal covariance matrix for the first
@@ -55,32 +55,7 @@ LaplacesDemon(Model, Data, Adaptive=0, Covar=NULL, DR=0, Gibbs=FALSE,
     it may be desired to continue updating where it left off, in which
     case the proposal covariance matrix from the last run can be input
     into the next run. The covariance matrix may also be input from the
-    \code{LaplaceApproximation} function, if used.}
-  \item{DR}{
-    This argument indicates whether or not Delayed Rejection will occur,
-    and it defaults to \code{DR=0}. If Delayed Rejection does occur,
-    then a rejected proposal will be followed by another proposal.}
-  \item{Gibbs}{
-    This is a logical argument and defaults to \code{FALSE}. When
-    \code{Gibbs=TRUE}, the Metropolis-within-Gibbs (MWG) hybrid
-    algorithm will be used if \code{Adaptive=0}, otherwise the adaptive
-    Metropolis-within-Gibbs (AMWG) hybrid algorithm of Rosenthal (2007),
-    and Roberts and Rosenthal (2009). These are excellent algorithms, but
-    run-time increases dramatically as the number of parameters
-    increases, and especially as model complexity increases.}
-  \item{Initial.Values}{
-    This argument requires a vector of initial values equal in length to
-    the number of parameters. Each initial value will be the starting
-    point for an adaptive chain or a non-adaptive Markov chain of a
-    parameter. If all initial values are set to zero, then Laplace's
-    Demon will attempt to optimize the initial values with the
-    (\code{\link{LaplaceApproximation}}) function. After Laplace's Demon
-    finishes updating, it may be desired to continue updating from where
-    it left off. To continue, this argument should receive the last
-    iteration of the previous update. For example, if Fit is the output
-    object, then \code{Initial.Values=as.initial.values(Fit)}. Initial
-    values may be generated randomly with the \code{\link{GIV}}
-    function.}
+    \code{\link{LaplaceApproximation}} function, if used.}
   \item{Iterations}{
     This required argument accepts integers larger than 10, and
     determines the number of iterations that Laplace's Demon will update
@@ -89,21 +64,6 @@ LaplacesDemon(Model, Data, Adaptive=0, Covar=NULL, DR=0, Gibbs=FALSE,
     \code{Iterations}. If computer memory is exceeded, then all will be
     lost. The \code{\link{Combine}} function can be used later to
     combine multiple updates.}
-  \item{Mixture}{
-    This is a logical argument and defaults to \code{FALSE}. This
-    argument is used to distinguish between the Adaptive Metropolis (AM)
-    and Adaptive-Mixture Metropolis (AMM) algorithms. When
-    \code{Mixture=TRUE}, the AMM algorithm of Roberts and Rosenthal
-    (2009) will be used if \code{1 <= Adaptive <= N} and \code{1 <=
-    Periodicity <= N}.}
-  \item{Periodicity}{
-    This argument accepts positive integers and determines the
-    periodicity of adaptation in terms of iterations. For example, if
-    \code{Periodicity=10}, then adaptation will occur every 10
-    iterations, and begins after the number of iterations specified in
-    the \code{Adaptive} argument (above). When \code{Periodicity=1}, it
-    will adapt every iteration. Frequent adaptation is desirable, but
-    requires more time due to calculations.}
   \item{Status}{
     This argument accepts integers between 1 and the number of
     iterations, and indicates how often the user would like the status
@@ -117,7 +77,44 @@ LaplacesDemon(Model, Data, Adaptive=0, Covar=NULL, DR=0, Gibbs=FALSE,
     iterations, and indicates that every nth iteration will be retained,
     while the other iterations are discarded. If \code{Thinning=5}, then
     every 5th iteration will be retained. Thinning is performed to
-    reduce autocorrelation and the number of marginal posterior samples.}
+    reduce autocorrelation and the number of marginal posterior
+    samples.}
+  \item{Algorithm}{
+    This argument accepts the abbreviated name of the MCMC algorithm,
+    which must appear in quotes. The argument defaults to RWM. Options
+    include: AM, AMM, AMWG, DRAM, DRM, MWG, RAM, and RWM. Respectively,
+    these algorithms are Adaptive Metropolis, Adaptive-Mixture
+    Metropolis, Adaptive Metropolis-within-Gibbs, Delayed Rejection
+    Adaptive Metropolis, Delayed Rejection Metropolis,
+    Metropolis-within-Gibbs, Robust Adaptive Metropolis, and Random-Walk
+    Metropolis.}
+  \item{Specs}{
+    This argument defaults to NULL, and accepts a list of
+    specifications for the MCMC algorithm declared in the
+    \code{Algorithm} argument. The specifications associated with each
+    algorithm may be seen below in the examples. The \code{Adaptive}
+    argument specifies at which iteration an adaptive algorithm begins
+    to adapt, except for the AMWG algorithm, which begins to adapt
+    immediately. Other adaptive algorithms depend on the sample
+    covariance matrix of past iterations, and should begin later,
+    depending on the size and complexity of the sample covariance
+    matrix. The \code{Periodicity} argument specifies how often the
+    adaptive algorithm should adapt. For example, if
+    \code{Periodicity=10}, then the algorithm adapts every 10th
+    iteration. A higher \code{Periodicity} is associated with an
+    algorithm that runs faster, because it does not have to calculate
+    adaptation as often, though the algorithm adapts less often to the
+    target distributions, so it is a trade-off. It is recommended to use
+    the lowest value that runs fast enough to suit the user, or provide
+    sufficient adaptation. The AMM algorithm also requires \code{w}. The
+    RAM algorithm also requires \code{alpha.star} [the desired
+    acceptance rate(s), which can be a scalar or a vector equal in
+    length to the number of targets]. Dist (which can be t for
+    t-distributed or N for normally-distributed), and \code{gamma}
+    (which controls the decay of adaptation). The SAMWG and SMWG
+    algorithms require a T x K matrix Dyn of dynamic parameters. The
+    USAMWG and USMWG algorithms require \code{Begin} to indicate the
+    time-period at which to begin updating (filtering and predicting).}
 }
 \details{
   \code{LaplacesDemon} offers numerous MCMC algorithms for numerical
@@ -130,18 +127,25 @@ LaplacesDemon(Model, Data, Adaptive=0, Covar=NULL, DR=0, Gibbs=FALSE,
     \item Delayed Rejection Adaptive Metropolis (DRAM)
     \item Delayed Rejection Metropolis (DRM)
     \item Metropolis-within-Gibbs (MWG)
+    \item Robust Adaptive Metropolis (RAM)
     \item Random-Walk Metropolis (RWM)
+    \item Sequential Adaptive Metropolis-within-Gibbs (SAMWG)
+    \item Sequential Metropolis-within-Gibbs (SMWG)
+    \item Updating Sequential Adaptive Metropolis-within-Gibbs (USAMWG)
+    \item Updating Sequential Metropolis-within-Gibbs (USMWG)
   }
 
-  References are provided below. Most non-Gibbs algorithms attempt
-  multivariate proposals, but are modified to use single-component
-  proposals if multivariate estimation is problematic. The AMM algoritm
-  is an exception. Additionally, the \code{\link{LaplaceApproximation}}
-  function may be used to attempt to optimize initial values, which the
-  \code{LaplacesDemon} function attempts automatically when all initial
-  values are set to zero and sample size is at least five times the
-  number of parameters. For more information, see the accompanying
-  vignettes entitled "Bayesian Inference" and "LaplacesDemon Tutorial".
+  References are provided below. The AM, DRAM, DRM, and RWM algorithms
+  attempt multivariate proposals, but are modified to use single-component
+  proposals if multivariate estimation is problematic. The AMM and RAM
+  algorithms are currently multivariate-only, while AMWG and MWG are
+  strictly single-component algorithms here. Additionally, the
+  \code{\link{LaplaceApproximation}} function may be used to attempt to
+  optimize initial values, which the \code{LaplacesDemon} function
+  attempts automatically when all initial values are set to zero and
+  sample size is at least five times the number of parameters. For more
+  information, see the accompanying vignettes entitled
+  "Bayesian Inference" and "LaplacesDemon Tutorial".
 }
 \value{
   \code{LaplacesDemon} returns an object of class \code{demonoid} that
@@ -315,6 +319,9 @@ LaplacesDemon(Model, Data, Adaptive=0, Covar=NULL, DR=0, Gibbs=FALSE,
   
   Rosenthal, J.S. (2007). "AMCMC: An R interface for adaptive MCMC".
   Computational Statistics and Data Analysis, 51, p. 5467--5470.
+
+  Vihola, M. (2011). "Robust Adaptive Metropolis Algorithm with Coerced
+  Acceptance Rate". Statistics and Computing. Springer, Netherlands.
 }
 \author{Byron Hall \email{laplacesdemon@statisticat.com}}
 \seealso{
@@ -374,9 +381,9 @@ Initial.Values <- GIV(Model, MyData)
 ###########################################################################
 
 ##########################  Adaptive Metropolis  ##########################
-Fit <- LaplacesDemon(Model, Data=MyData, Adaptive=500,
-     Covar=NULL, DR=0, Gibbs=FALSE, Initial.Values, Iterations=1000,
-     Mixture=FALSE, Periodicity=10, Status=100, Thinning=1)
+Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
+     Covar=NULL, Iterations=1000, Status=100, Thinning=1,
+     Algorithm="AM", Specs=list(Adaptive=500, Periodicity=10))
 Fit
 print(Fit)
 Consort(Fit)
@@ -393,40 +400,71 @@ plot(Pred, Style="Predictive Quantiles")
 plot(Pred, Style="Residuals")
 
 ######################  Adaptive-Mixture Metropolis  ######################
-Fit <- LaplacesDemon(Model, Data=MyData, Adaptive=500,
-     Covar=NULL, DR=0, Gibbs=FALSE, Initial.Values, Iterations=1000,
-     Mixture=TRUE, Periodicity=10, Status=100, Thinning=1)
+Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
+     Covar=NULL, Iterations=1000, Status=100, Thinning=1,
+     Algorithm="AMM", Specs=list(Adaptive=500, Periodicity=10, w=0.05))
 
 ###################  Adaptive Metropolis-within-Gibbs  ####################
-Fit <- LaplacesDemon(Model, Data=MyData, Adaptive=2,
-     Covar=NULL, DR=0, Gibbs=TRUE, Initial.Values, Iterations=1000,
-     Mixture=FALSE, Periodicity=10, Status=100, Thinning=1)
+Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
+     Covar=NULL, Iterations=1000, Status=100, Thinning=1,
+     Algorithm="AMWG", Specs=list(Periodicity=10))
 
 #################  Delayed Rejection Adaptive Metropolis  #################
-Fit <- LaplacesDemon(Model, Data=MyData, Adaptive=500,
-     Covar=NULL, DR=1, Gibbs=FALSE, Initial.Values, Iterations=1000,
-     Mixture=FALSE, Periodicity=10, Status=100, Thinning=1)
+Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
+     Covar=NULL, Iterations=1000, Status=100, Thinning=1,
+     Algorithm="DRAM", Specs=list(Adaptive=500, Periodicity=10))
 
 #####################  Delayed Rejection Metropolis  ######################
-Fit <- LaplacesDemon(Model, Data=MyData, Adaptive=0,
-     Covar=NULL, DR=1, Gibbs=FALSE, Initial.Values, Iterations=1000,
-     Mixture=FALSE, Periodicity=0, Status=100, Thinning=1)
+Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
+     Covar=NULL, Iterations=1000, Status=100, Thinning=1,
+     Algorithm="DRM", Specs=NULL)
 
 #######################  Metropolis-within-Gibbs  #########################
-Fit <- LaplacesDemon(Model, Data=MyData, Adaptive=0,
-     Covar=NULL, DR=0, Gibbs=TRUE, Initial.Values, Iterations=1000,
-     Mixture=FALSE, Periodicity=0, Status=100, Thinning=1)
+Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
+     Covar=NULL, Iterations=1000, Status=100, Thinning=1,
+     Algorithm="MWG", Specs=NULL)
+
+######################  Robust Adaptive Metropolis  #######################
+Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
+     Covar=NULL, Iterations=1000, Status=100, Thinning=1,
+     Algorithm="RAM", Specs=list(alpha.star=0.234, Dist="N", gamma=0.66,
+     Periodicity=10))
 
 ########################  Random-Walk Metropolis  #########################
-Fit <- LaplacesDemon(Model, Data=MyData, Adaptive=0,
-     Covar=NULL, DR=0, Gibbs=FALSE, Initial.Values, Iterations=1000,
-     Mixture=FALSE, Periodicity=0, Status=100, Thinning=1)
+Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
+     Covar=NULL, Iterations=1000, Status=100, Thinning=1,
+     Algorithm="RWM", Specs=NULL)
+
+##############  Sequential Adaptive Metropolis-within-Gibbs  ##############
+#NOTE: The SAMWG algorithm is only for state-space models (SSMs)
+#Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
+#     Covar=NULL, Iterations=1000, Status=100, Thinning=1,
+#     Algorithm="SAMWG", Specs=list(Dyn=Dyn, Periodicity=10))
+
+##################  Sequential Metropolis-within-Gibbs  ###################
+#NOTE: The SMWG algorithm is only for state-space models (SSMs)
+#Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
+#     Covar=NULL, Iterations=1000, Status=100, Thinning=1,
+#     Algorithm="SMWG", Specs=list(Dyn=Dyn))
+
+##########  Updating Sequential Adaptive Metropolis-within-Gibbs  #########
+#NOTE: The USAMWG algorithm is only for state-space model updating
+#Fit <- LaplacesDemon(Model, MyData, Initial.Values, 
+#     Covar=NULL, Iterations=100000, Status=100, Thinning=100,
+#     Algorithm="USAMWG", Specs=list(Dyn=Dyn, Periodicity=10, Fit=Fit,
+#     Begin=T.m))
+
+##############  Updating Sequential Metropolis-within-Gibbs  ##############
+#NOTE: The USMWG algorithm is only for state-space model updating
+#Fit <- LaplacesDemon(Model, MyData, Initial.Values, 
+#     Covar=NULL, Iterations=100000, Status=100, Thinning=100,
+#     Algorithm="USMWG", Specs=list(Dyn=Dyn, Fit=Fit, Begin=T.m))
 
 #End
 }
 \keyword{
-  Adaptive, Adaptive MCMC, AM, Bayesian Inference, Delayed Rejection,
-  DR, DRAM, DRM, Gibbs, Laplace Approximation, LaplacesDemon, Laplace's
-  Demon, Markov chain Monte Carlo, MCMC, Metropolis, Random Walk,
-  Random-Walk, RWM
+  Adaptive, Adaptive MCMC, AM, AMM, AMWG, Bayesian Inference,
+  Delayed Rejection, DRAM, DRM, Gibbs, Laplace Approximation,
+  LaplacesDemon, Laplace's Demon, Markov chain Monte Carlo, MCMC,
+  Metropolis, MWG, RAM, Random Walk, Random-Walk, Robust, RWM
 }

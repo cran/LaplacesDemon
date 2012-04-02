@@ -20,9 +20,15 @@
   when making the largest part of its suggestion. These conditions are:
   the algorithm, acceptance rate, MCSE, ESS, and stationarity. Other
   things are considered as well, such as the recommended thinning value
-  is used to suggest a new number of iterations. The \code{Periodicity}
-  argument is suggested to be set equal to the value of
-  \code{Rec.Thinning}.
+  is used to suggest a new number of iterations, how fast the algorithm
+  is expected to be, and if the condition of diminishing adaptation was
+  met (for an adaptive algorithm). Diminishing adaptation occurs only
+  when the absolute value of the proposed variances trend downward
+  (toward zero) over the course of all adaptations. When an algorithm is
+  adaptive and it  does not have diminishing adaptations, the
+  \code{Consort} function will suggest a different adaptive algorithm.
+  The \code{Periodicity} argument is suggested to be set equal to the
+  value of \code{Rec.Thinning}.
 
   Appeasement Conditions
   \itemize{
