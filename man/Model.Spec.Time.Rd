@@ -40,6 +40,12 @@ Model.Spec.Time(Model, Initial.Values, Data, n=1000)
   \code{apply} functions), then run-time will typically be slower than
   other popular MCMC-based software algorithms.
 
+  Distributions in the \code{LaplacesDemon} package usually have logical
+  checks to ensure correctness. These checks may slow the 
+  calculation of the density, for example. If the user is confident
+  these checks are unnecessary for their model, then the user may
+  comment-out the checks to improve speed.
+
   Examples in the \code{LaplacesDemon} package are not necessarily
   optimized for speed, which is often compromised for clarity of
   programming. For example, most examples in the ``Examples'' vignette

@@ -33,6 +33,12 @@
   Acceptable error may be specified, if known, in the \code{MCSS}
   (Monte Carlo Sample Size) function to estimate the required number of
   posterior samples.
+
+  \code{MCSE} is a univariate function that is often applied to each
+  marginal posterior distribution. A multivariate form is not
+  included. By chance alone due to multiple independent tests, 5\% of
+  the parameters should indicate unacceptable MSCEs, even when
+  acceptable. Assessing convergence is difficult.
 }
 \usage{
 MCSE(x, method="IMPS", batch.size="sqrt", warn=FALSE)

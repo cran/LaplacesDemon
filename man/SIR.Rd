@@ -40,7 +40,7 @@ SIR(Model, Data, mu, Sigma, n=1000)
   In the \code{LaplacesDemon} package, the main use of the \code{SIR}
   function is to produce posterior samples for Laplace Approximation,
   and \code{SIR} is called behind-the-scenes by the
-  \code{\link{predict.laplace}} function. Laplace Approximation 
+  \code{\link{LaplaceApproximation}} function. Laplace Approximation 
   estimates the posterior mode and the associated covariance
   matrix. Assuming normality, this output characterizes the marginal
   posterior distributions. However, it is often useful to have posterior
@@ -70,8 +70,7 @@ SIR(Model, Data, mu, Sigma, n=1000)
 }
 \author{Byron Hall \email{laplacesdemon@statisticat.com}}
 \seealso{
-  \code{\link{dmvn}},
-  \code{\link{LaplaceApproximation}},
-  \code{\link{predict.laplace}}.
+  \code{\link{dmvn}} and 
+  \code{\link{LaplaceApproximation}}.
 }
 \keyword{utility}

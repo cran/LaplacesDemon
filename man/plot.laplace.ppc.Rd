@@ -15,8 +15,13 @@
     defaults to \code{NULL} (which is the same as
     \code{"Density"}). Styles of plots are indicated in quotes. Optional 
     styles include \code{"Covariates"}, \code{"Covariates, Categorical DV"},
-    \code{"Density"}, \code{"Fitted"}, \code{"Fitted, Multivariate, C"},
-    \code{"Fitted, Multivariate, R"}, \code{"Predictive Quantiles"},
+    \code{"Density"}, \code{"DW"}, \code{"DW, Multivariate, C"},
+    \code{"ECDF"}, \code{"Fitted"}, \code{"Fitted, Multivariate, C"},
+    \code{"Fitted, Multivariate, R"}, \code{"Jarque-Bera"},
+    \code{"Jarque-Bera, Multivariate, C"},
+    \code{"Mardia"}, \code{"Predictive Quantiles"},
+    \code{"Residual Density"}, \code{"Residual Density, Multivariate, C"},
+    \code{"Residual Density, Multivariate, R"},
     \code{"Residuals"}, \code{"Residuals, Multivariate, C"},
     \code{"Residuals, Multivariate, R"}, \code{"Space-Time by Space"},
     \code{"Space-Time by Time"}, \code{"Spatial"},
@@ -27,8 +32,13 @@
     This optional argument accepts the data set used when updating the
     model. Data is required only with certain plot styles, including
     \code{"Covariates"}, \code{"Covariates, Categorical DV"},
-    \code{"Fitted, Multivariate, C"}, \code{"Fitted, Multivariate, R"},
-    \code{"Residuals, Multivariate, C"}, \code{"Residuals, Multivariate, R"},
+    \code{"DW, Multivariate, C"}, \code{"Fitted, Multivariate, C"},
+    \code{"Fitted, Multivariate, R"},
+    \code{"Jarque-Bera, Multivariate, C"}, \code{"Mardia"},
+    \code{"Residual Density, Multivariate, C"},
+    \code{"Residual Density, Multivariate, R"},
+    \code{"Residuals, Multivariate, C"},
+    \code{"Residuals, Multivariate, R"},
     \code{"Space-Time by Space"}, \code{"Space-Time by Time"},
     \code{"Spatial"}, \code{"Spatial Uncertainty"},
     \code{"Time-Series, Multivariate, C"}, and
@@ -68,7 +78,46 @@
   distribution, or outside of the kernel density altogether, then
   there is a large discrepancy between y and the posterior predictive
   distribution. Large discrepancies may be considered outliers, and
-  moreover suggest that an improvement in model fit should be considered.
+  moreover suggest that an improvement in model fit should be
+  considered.
+
+  \code{DW} plots the distributions of the Durbin-Watson (DW) test
+  statistics (Durbin and Watson, 1950), both observed
+  (\eqn{d^{obs}}{d.obs} as black-filled density) and replicated
+  (\eqn{d^{rep}}{d.rep} with a red line). The distribution of
+  \eqn{d^{obs}}{d.obs} is estimated from the model, and
+  \eqn{d^{rep}}{d.rep} is simulated from normal residuals without 
+  autocorrelation, where the number of simulations are the same as the
+  observed number. This DW test may be applied to the residuals of
+  univariate time-series models (or otherwise ordered residuals) to
+  detect first-order autocorrelation. Autocorrelated residuals are not
+  independent. The DW test is applicable only when the residuals are
+  normally-distributed, higher-order autocorrelation is not present, and
+  y is not used also as a lagged predictor. The DW test statistic,
+  \eqn{d^{obs}}{d[obs]}, occurs in the interval (0,4), where 0 is
+  perfect positive autocorrelation, 2 is no autocorrelation, and 4 is
+  perfect negative autocorrelation. The following summary is reported on
+  the plot: the mean of \eqn{d^{obs}}{d[obs]} (and its 95\% probability
+  interval), the probability that \eqn{d^{obs} > d^{rep}}{d[obs] >
+  d[rep]}, and whether or not autocorrelation is found. Positive
+  autocorrelation is reported when the observed process is greater than
+  the replicated process in 2.5\% of the samples, and negative
+  autocorrelation is reported when the observed process is greater than
+  the replicated process in 97.5\% of the samples.
+
+  \code{DW, Multivariate, C} requires \code{Data} to be
+  specified, and also requires that variable \code{Y} exist in the data
+  set with exactly that name. These plots compare each column-wise
+  vector of residuals with a univariate Durbin-Watson test, as in
+  \code{DW} above. This plot is appropriate when Y is multivariate, not
+  categorical, and residuals are desired to be tested column-wise for
+  first-order autocorrelation.
+  
+  \code{ECDF} (Empirical Cumulative Distribution Function) plots compare
+  the ECDF of y with three ECDFs of yhat based on the 2.5\%, 50\%
+  (median), and 97.5\% of its distribution. The ECDF(y) is defined as
+  the proportion of values less than or equal to y. This plot is
+  appropriate when y is univariate and at least ordinal.
 
   \code{Fitted} plots compare y with its replicate and provide loess
   smoothing. Otherwise, y is also compared with the quantiles of the
@@ -93,17 +142,93 @@
   interval of its replicate, and smoothing is also applied. This plot
   is appropriate when Y is multivariate, not categorical, and desired to
   be seen row-wise.
+
+  \code{Jarque-Bera} plots the distributions of the Jarque-Bera (JB)
+  test statistics (Jarque and Bera, 1980), both observed
+  (\eqn{JB^{obs}}{JB.obs} as black-filled density) and replicated
+  (\eqn{JB^{rep}}{JB.rep} with a red line). The distribution of
+  \eqn{JB^{obs}}{JB.obs} is estimated from the model, and
+  \eqn{JB^{rep}}{JB.rep} is simulated from normal residuals, where the
+  number of simulations are the same as the observed number. This
+  Jarque-Bera test may be applied to the residuals of 
+  univariate models to test for normality. The Jarque-Bera test does not
+  test normality per se, but whether or not the distribution has
+  kurtosis and skewness that match a normal distribution, and is
+  therefore a test of the moments of a normal distribution. The
+  following summary is reported on the plot: the mean of
+  \eqn{JB^{obs}}{JB[obs]} (and its 95\% probability interval), the
+  probability that \eqn{JB^{obs} > JB^{rep}}{JB[obs] > JB[rep]}, and
+  whether or not normality is indicated. Non-normality is reported when
+  the observed process is greater than the replicated process in either
+  2.5\% or 97.5\% of the samples.
+
+  \code{Jarque-Bera, Multivariate, C} requires \code{Data} to be
+  specified, and also requires that variable \code{Y} exist in the data
+  set with exactly that name. These plots compare each column-wise
+  vector of residuals with a univariate Jarque-Bera test, as in
+  \code{Jarque-Bera} above. This plot is appropriate when Y is
+  multivariate, not categorical, and residuals are desired to be
+  tested column-wise for normality.
+
+  \code{Mardia} plots the distributions of the skewness (K3) and
+  kurtosis (K4) test statistics (Mardia, 1970), both observed
+  (\eqn{K3^{obs}}{K3.obs} and \eqn{K4^{obs}}{K4.obs} as black-filled
+  density) and replicated (\eqn{K3^{rep}}{K3.rep} and
+  \eqn{K4^{rep}}{K4.rep} with a red line). The distributions of
+  \eqn{K3^{obs}}{K3.obs} and \eqn{K4^{obs}}{K4.obs} are estimated from
+  the model, and both \eqn{K3^{rep}}{K3.rep} \eqn{K4^{rep}}{K4.rep} are
+  simulated from multivariate normal residuals, where the number of
+  simulations are the same as the observed number. This Mardia's test
+  may be applied to the residuals of multivariate models to test for
+  multivariate normality. Mardia's test does not test for multivariate
+  normality per se, but whether or not the distribution has kurtosis and
+  skewness that match a multivariate normal distribution, and is 
+  therefore a test of the moments of a multivariate normal
+  distribution. The following summary is reported on the plots: the
+  means of \eqn{K3^{obs}}{K3[obs]} and \eqn{K4^{obs}}{K4[obs]} (and
+  the associated 95\% probability intervals), the probabilities that
+  \eqn{K3^{obs} > K3^{rep}}{K3[obs] > K3[rep]} and
+  \eqn{K4^{obs} > K4^{rep}}{K4[obs] > K4[rep]}, and whether or not
+  multivariate normality is indicated. Non-normality is reported when 
+  the observed process is greater than the replicated process in either
+  2.5\% or 97.5\% of the samples. \code{Mardia} requires \code{Data} to
+  be specified, and also requires that variable \code{Y} exist in the
+  data set with exactly that name. \code{Y} must be a \eqn{N \times P}{N
+  x P} matrix of \eqn{N}{N} records and \eqn{P}{P} variables. Source
+  code was modified from the deprecated package QRMlib.
   
   \code{Predictive Quantiles} plots compare y with the predictive
   quantile (PQ) of its replicate. This may be useful in looking for
   patterns with outliers. Instances outside of the gray lines are
-  considered outliers. 
+  considered outliers.
+
+  \code{Residual Density} plots the residual density of the median of
+  the samples. A vertical red line occurs at zero. This plot may be
+  useful for inspecting a distributional assumption of residual
+  variance. This plot is appropriate when y is univariate and
+  continuous.
+
+  \code{Residual Density, Multivariate C} requires \code{Data} to be
+  specified, and also requires that variable \code{Y} exist in the data
+  set with exactly that name. These are column-wise plots of residual
+  density, given the median of the samples. These plots may be useful
+  for inspecting a distributional assumption of residual variance.
+  This plot is appropriate when Y is multivariate, continuous, and
+  densities are desired to be seen column-wise.
+
+  \code{Residual Density, Multivariate R} requires \code{Data} to be
+  specified, and also requires that variable \code{Y} exist in the data
+  set with exactly that name. These are row-wise plots of residual
+  density, given the median of the samples. These plots may be useful
+  for inspecting a distributional assumption of residual variance.
+  This plot is appropriate when Y is multivariate, continuous, and
+  densities are desired to be seen row-wise.
 
   \code{Residuals} plots compare y with its residuals. The probability
   interval is plotted as a line in gray. This plot is appropriate when y
   is univariate.
 
-\code{Residuals, Multivariate, C} requires \code{Data} to be
+  \code{Residuals, Multivariate, C} requires \code{Data} to be
   specified, and also requires that variable \code{Y} exist in the data
   set with exactly that name. These are plots of each column-wise
   vector of residuals. The probability interval is plotted as a line in
@@ -166,7 +291,20 @@
   multivariate and each time-series is indexed by row in Y, such as is
   typically true in panel models.
 }
-\references{\url{http://www.statisticat.com/laplacesdemon.html}}
+\references{
+  Durbin, J., and Watson, G.S. (1950). "Testing for Serial Correlation
+  in Least Squares Regression, I." Biometrika 37, p. 409--428.
+  
+  Hall, B. (2012). "Laplace's Demon", STATISTICAT, LLC.
+  URL=\url{http://www.statisticat.com/laplacesdemon.html}
+  
+  Jarque, C.M. and Bera, A.K. (1980). "Efficient Tests for Normality,
+  Homoscedasticity and Serial Independence of Regression Residuals".
+  Economics Letters,  6(3), p. 255--259.
+
+  Mardia, K.V. (1970). "Measures of Multivariate Skewness and Kurtosis
+  with Applications". Biometrika, 57(3), p. 519--530.
+}
 \author{Byron Hall \email{laplacesdemon@statisticat.com}}
 \seealso{
   \code{\link{LaplaceApproximation}},

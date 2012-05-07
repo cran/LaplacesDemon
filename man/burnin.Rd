@@ -28,7 +28,9 @@ burnin(x, method="Geweke")
   Burn-in is not a theoretical part of MCMC, but its use is the norm
   because of the need to limit the number of posterior samples due to
   computer memory. If burn-in were retained rather than discarded, then
-  more posterior samples would have to be retained.
+  more posterior samples would have to be retained. If a Markov chain
+  starts anywhere close to the center of its target distribution, then
+  burn-in iterations do not need to be discarded.
 
   In the \code{\link{LaplacesDemon}} function, stationarity is estimated
   with the \code{\link{Geweke.Diagnostic}} function on all thinned
@@ -38,7 +40,7 @@ burnin(x, method="Geweke")
 
   The term, ``burn-in'', originated in electronics regarding the initial
   testing of component failure at the factory to eliminate initial
-  failures.
+  failures (Geyer, 2011).
 }
 \value{
   The \code{burnin} fucntion returns a vector equal in length to the
@@ -46,6 +48,10 @@ burnin(x, method="Geweke")
   maximum iteration in burn-in.
 }
 \references{
+  Geyer, C.J. (2011). "Introduction to Markov Chain Monte Carlo". In
+  S Brooks, A Gelman, G Jones, and M Xiao-Li (eds.), "Handbook of
+  Markov Chain Monte Carlo", p. 3--48. Chapman \& Hall, Boca Raton, FL.
+
   Hall, B. (2012). "Laplace's Demon", STATISTICAT, LLC.
   URL=\url{http://www.statisticat.com/laplacesdemon.html}
 }

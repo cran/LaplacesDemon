@@ -6,11 +6,18 @@
   which the user may select a measure (such as a variable, summary
   statistic, or other diagnostic), and observe a plot of how the measure
   changes over cumulative posterior samples from MCMC, such as the
-  output of \code{\link{LaplacesDemon}}. As a generalized visual
-  diagnostic across a variety of measures, this function is believed to
-  be a novel contribution to MCMC diagnostics, introduced in the
-  LaplacesDemon package. This may be considered to be a generalized
-  extension of the \code{cumuplot} in the coda package.
+  output of \code{\link{LaplacesDemon}}. This may be considered to be a
+  generalized extension of the \code{cumuplot} in the coda package,
+  which is a more restrictive form of the cusum diagnostic introduced by
+  Yu and Myckland (1998).
+
+  Yu and Myckland (1998) suggest that CSF plots should be examined after
+  traditional trace plots seem convergent, and assert that faster mixing
+  chains (which are more desirable) result in CSF plots that are more
+  `hairy' (as opposed to smooth), though this is subjective and has been
+  debated. The \code{LaplacesDemon} package neither supports nor
+  contradicts the suggestion of mixing and `hairiness', but suggests
+  that CSF plots may be used to provide additional information about a chain.
 }
 \usage{
 CSF(x, name, method="Quantiles", quantiles=c(0.025,0.500,0.975), output=FALSE)
@@ -95,6 +102,10 @@ CSF(x, name, method="Quantiles", quantiles=c(0.025,0.500,0.975), output=FALSE)
 }
 \references{
   \url{http://www.statisticat.com/laplacesdemon.html}
+
+  Yu, B. and Myckland, P. (1997). ``Looking at Markov Samplers through
+  Cusum Path Plots: A Simple Diagnostic Idea''. Statistics and
+  Computing, 8(3), p. 275--286. 
 }
 \author{Byron Hall \email{laplacesdemon@statisticat.com}}
 \seealso{

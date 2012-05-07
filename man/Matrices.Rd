@@ -37,7 +37,7 @@ upper.triangle(x, diag=FALSE)
 }
 \arguments{
   \item{x}{This is a matrix (though \code{as.symmetric.matrix} also
-    accepts vectors.}
+    accepts vectors).}
   \item{k}{For \code{as.parm.matrix}, this is a required argument,
     indicating the dimension of the matrix. For
     \code{as.symmetric.matrix}, this is an optional argument that

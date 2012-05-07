@@ -10,6 +10,7 @@ plot.laplace.ppc <- function(x, Style=NULL, Data=NULL, Rows=NULL,
      {
      ### Initial Checks
      if(missing(x)) stop("The x argument is required.")
+     if(class(x) != "laplace.ppc") stop("x is not of class laplace.ppc.")
      if(is.null(Style)) Style <- "Density"
      if(is.null(Rows)) Rows <- 1:nrow(x$yhat)
      ### Plots
@@ -68,6 +69,88 @@ plot.laplace.ppc <- function(x, Style=NULL, Data=NULL, Rows=NULL,
                polygon(density(x$yhat[Rows[j],]), col="black",
                     border="black")
                abline(v=x$y[Rows[j]], col="red")}
+          }
+     if(Style == "DW") {
+          if(PDF == TRUE) pdf("PPC.Plots.DW.pdf")
+          par(mfrow=c(1,1))
+          epsilon.obs <- x$y - x$yhat
+          N <- nrow(epsilon.obs)
+          S <- ncol(epsilon.obs)
+          epsilon.rep <- matrix(rnorm(N*S), N, S)
+          d.obs <- d.rep <-  rep(0, S)
+          for (s in 1:S) {
+               d.obs[s] <- sum(c(0,diff(epsilon.obs[,s]))^2, na.rm=TRUE) / 
+                    sum(epsilon.obs[,s]^2, na.rm=TRUE)
+               d.rep[s] <- sum(c(0,diff(epsilon.rep[,s]))^2, na.rm=TRUE) / 
+                    sum(epsilon.rep[,s]^2, na.rm=TRUE)}
+          result <- "no"
+          if(mean(d.obs > d.rep, na.rm=TRUE) < 0.025) result <- "positive"
+          if(mean(d.obs > d.rep, na.rm=TRUE) > 0.975) result <- "negative"
+          d.d.obs <- density(d.obs, na.rm=TRUE)
+          d.d.rep <- density(d.rep, na.rm=TRUE)
+          plot(d.d.obs, xlim=c(0,4),
+               ylim=c(0, max(d.d.obs$y, d.d.rep$y)),
+               main="Durbin-Watson test", 
+               xlab=paste("d.obs=", round(mean(d.obs, na.rm=TRUE),2), " (",
+               round(as.vector(quantile(d.obs, probs=0.025, na.rm=TRUE)),2),
+               ", ", round(as.vector(quantile(d.obs, probs=0.975, na.rm=TRUE)),
+               2), "), p(d.obs > d.rep) = ", round(mean(d.obs > d.rep,
+               na.rm=TRUE),3), " = ", result, " autocorrelation", sep=""))
+          polygon(d.d.obs, col="black", border="black")
+          lines(d.d.rep, col="red")
+          abline(v=2, col="red")
+          }
+     if(Style == "DW, Multivariate, C") {
+          if(PDF == TRUE) {pdf("PPC.Plots.DW.M.pdf")
+               par(mfrow=c(1,1))}
+          else {par(mfrow=c(1,1), ask=TRUE)}
+          if(is.null(Data))
+               stop("Data is required for Style=Fitted, Multivariate, C.")
+          if(is.null(Data$Y)) stop("Y is required in Data.")
+          M <- nrow(Data$Y)
+          J <- ncol(Data$Y)
+          epsilon.obs <- x$y - x$yhat
+          N <- nrow(epsilon.obs)
+          S <- ncol(epsilon.obs)
+          epsilon.rep <- matrix(rnorm(N*S), N, S)
+          d.obs <- d.rep <-  rep(0, S)
+          for (j in 1:J) {
+               for (s in 1:S) {
+                    d.obs[s] <- sum(c(0,diff(epsilon.obs[((j-1)*M+1):(j*M),s]))^2, na.rm=TRUE) / 
+                         sum(epsilon.obs[((j-1)*M+1):(j*M),s]^2, na.rm=TRUE)
+                    d.rep[s] <- sum(c(0,diff(epsilon.rep[((j-1)*M+1):(j*M),s]))^2, na.rm=TRUE) / 
+                         sum(epsilon.rep[((j-1)*M+1):(j*M),s]^2, na.rm=TRUE)}
+               result <- "no"
+               if(mean(d.obs > d.rep, na.rm=TRUE) < 0.025) result <- "positive"
+               if(mean(d.obs > d.rep, na.rm=TRUE) > 0.975) result <- "negative"
+               d.d.obs <- density(d.obs, na.rm=TRUE)
+               d.d.rep <- density(d.rep, na.rm=TRUE)
+               plot(d.d.obs, xlim=c(0,4),
+                    ylim=c(0, max(d.d.obs$y, d.d.rep$y)),
+                    main="Durbin-Watson test", 
+                    xlab=paste("d.obs=", round(mean(d.obs, na.rm=TRUE),2), " (",
+                    round(as.vector(quantile(d.obs, probs=0.025, na.rm=TRUE)),2),
+                    ", ", round(as.vector(quantile(d.obs, probs=0.975, na.rm=TRUE)),
+                    2), "), p(d.obs > d.rep) = ", round(mean(d.obs > d.rep,
+                    na.rm=TRUE),3), " = ", result, " autocorrelation", sep=""),
+                    sub=paste("Y[,",j,"]",sep=""))
+               polygon(d.d.obs, col="black", border="black")
+               lines(d.d.rep, col="red")
+               abline(v=2, col="red")}
+          }
+     if(Style == "ECDF") {
+          if(PDF == TRUE) {pdf("PPC.Plots.ECDF.pdf")
+               par(mfrow=c(1,1))}
+          plot(ecdf(x$y[Rows,]), verticals=TRUE, do.points=FALSE,
+               main="Cumulative Fit",
+               xlab="y (black) and yhat (red; gray)",
+               ylab="Cumulative Frequency")
+          lines(ecdf(apply(x$yhat[Rows,], 1, quantile, probs=0.975)),
+               verticals=TRUE, do.points=FALSE, col="gray")
+          lines(ecdf(apply(x$yhat[Rows,], 1, quantile, probs=0.025)),
+               verticals=TRUE, do.points=FALSE, col="gray")
+          lines(ecdf(apply(x$yhat[Rows,], 1, quantile, probs=0.500)),
+               verticals=TRUE, do.points=FALSE, col="red")
           }
      if(Style == "Fitted") {
           if(PDF == TRUE) pdf("PPC.Plots.Fitted.pdf")
@@ -146,6 +229,165 @@ plot.laplace.ppc <- function(x, Style=NULL, Data=NULL, Rows=NULL,
                     matrix(temp[,5], nrow(Data$Y), ncol(Data$Y))[i,],
                     pch=16, cex=0.75)}
           }
+     if(Style == "Jarque-Bera") {
+          if(PDF == TRUE) pdf("PPC.Plots.Jarque.Bera.pdf")
+          par(mfrow=c(1,1))
+          epsilon.obs <- epsilon.rep <- x$y[Rows] - x$yhat[Rows,]
+          kurtosis <- function(x) {  
+               m4 <- mean((x-mean(x, na.rm=TRUE))^4, na.rm=TRUE) 
+               kurt <- m4/(sd(x, na.rm=TRUE)^4)-3  
+               return(kurt)}
+          skewness <-  function(x) {
+               m3 <- mean((x-mean(x, na.rm=TRUE))^3, na.rm=TRUE)
+               skew <- m3/(sd(x, na.rm=TRUE)^3)
+               return(skew)}
+          JB.obs <- JB.rep <- rep(0, ncol(epsilon.obs))
+          N <- nrow(epsilon.obs)
+          for (s in 1:ncol(epsilon.obs)) {
+               epsilon.rep[,s] <- rnorm(N, mean(epsilon.obs[,s],
+                    na.rm=TRUE), sd(epsilon.obs[,s]))
+               K.obs <- kurtosis(epsilon.obs[,s])
+               S.obs <- skewness(epsilon.obs[,s])
+               K.rep <- kurtosis(epsilon.rep[,s])
+               S.rep <- skewness(epsilon.rep[,s])
+               JB.obs[s] <- (N/6)*(S.obs^2 + ((K.obs-3)^2)/4)
+               JB.rep[s] <- (N/6)*(S.rep^2 + ((K.rep-3)^2)/4)}
+          p <- round(mean(JB.obs > JB.rep, na.rm=TRUE), 3)
+          result <- "Non-Normality"
+          if((p >= 0.025) & (p <= 0.975)) result <- "Normality"
+          d.obs <- density(JB.obs)
+          d.rep <- density(JB.rep)
+          plot(d.obs, xlim=c(min(d.obs$x,d.rep$x), max(d.obs$x,d.rep$x)),
+               ylim=c(0, max(d.obs$y, d.rep$y)),
+               main="Jarque-Bera Test",
+               xlab="JB", ylab="Density",
+               sub=paste("JB.obs=", round(mean(JB.obs, na.rm=TRUE),2),
+               " (", round(as.vector(quantile(JB.obs, probs=0.025,
+               na.rm=TRUE)),2), ",", round(as.vector(quantile(JB.obs,
+               probs=0.975, na.rm=TRUE)),2), "), p(JB.obs > JB.rep) = ",
+               p, " = ", result, sep=""))
+          polygon(d.obs, col="black", border="black")
+          lines(d.rep, col="red")
+          }
+     if(Style == "Jarque-Bera, Multivariate, C") {
+          if(PDF == TRUE) {pdf("PPC.Plots.Jarque.Bera.pdf")
+               par(mfrow=c(1,1))}
+          else {par(mfrow=c(1,1), ask=TRUE)}
+          if(is.null(Data))
+               stop("Data is required for Style=Jarque-Bera, Multivariate, C.")
+          if(is.null(Data$Y)) stop("Y is required in Data.")
+          M <- nrow(Data$Y)
+          J <- ncol(Data$Y)
+          epsilon.obs <- epsilon.rep <- x$y - x$yhat
+          kurtosis <- function(x) {  
+               m4 <- mean((x-mean(x, na.rm=TRUE))^4, na.rm=TRUE) 
+               kurt <- m4/(sd(x, na.rm=TRUE)^4)-3  
+               return(kurt)}
+          skewness <-  function(x) {
+               m3 <- mean((x-mean(x, na.rm=TRUE))^3, na.rm=TRUE)
+               skew <- m3/(sd(x, na.rm=TRUE)^3)
+               return(skew)}
+          JB.obs <- JB.rep <- rep(0, ncol(epsilon.obs))
+          N <- nrow(epsilon.obs)
+          for (j in 1:J) {
+               for (s in 1:ncol(epsilon.obs)) {
+                    e.obs <- matrix(epsilon.obs[,s], M, J)
+                    e.rep <- rnorm(M, mean(e.obs[,j], na.rm=TRUE),
+                         sd(e.obs[,j]))
+                    K.obs <- kurtosis(e.obs[,j])
+                    S.obs <- skewness(e.obs[,j])
+                    K.rep <- kurtosis(e.rep)
+                    S.rep <- skewness(e.rep)
+                    JB.obs[s] <- (N/6)*(S.obs^2 + ((K.obs-3)^2)/4)
+                    JB.rep[s] <- (N/6)*(S.rep^2 + ((K.rep-3)^2)/4)}
+               p <- round(mean(JB.obs > JB.rep, na.rm=TRUE), 3)
+               result <- "Non-Normality"
+               if((p >= 0.025) & (p <= 0.975)) result <- "Normality"
+               d.obs <- density(JB.obs)
+               d.rep <- density(JB.rep)
+               plot(d.obs, xlim=c(min(d.obs$x,d.rep$x), max(d.obs$x,d.rep$x)),
+                    ylim=c(0, max(d.obs$y, d.rep$y)),
+                    main="Jarque-Bera Test",
+                    xlab=paste("JB for Y[,",j,"]", sep=""), ylab="Density",
+                    sub=paste("JB.obs=", round(mean(JB.obs, na.rm=TRUE),2),
+                    " (", round(as.vector(quantile(JB.obs, probs=0.025,
+                    na.rm=TRUE)),2), ",", round(as.vector(quantile(JB.obs,
+                    probs=0.975, na.rm=TRUE)),2), "), p(JB.obs > JB.rep) = ",
+                    p, " = ", result, sep=""))
+               polygon(d.obs, col="black", border="black")
+               lines(d.rep, col="red")}
+          }
+     if(Style == "Mardia") {
+          if(PDF == TRUE) pdf("PPC.Plots.Mardia.pdf")
+          par(mfrow=c(2,1))
+          if(is.null(Data))
+               stop("Data is required for Style=Mardia, C.")
+          if(is.null(Data$Y))
+               stop("Variable Y is required for Style=Mardia, C.")
+          epsilon.obs <- x$y - x$yhat
+          M <- nrow(Data$Y)
+          J <- ncol(Data$Y)
+          K3.obs <- K3.rep <- K4.obs <- K4.rep <- rep(0, ncol(epsilon.obs))
+          for (s in 1:ncol(epsilon.obs)) {
+               e.obs <- matrix(epsilon.obs[,s], M, J)
+               e.obs.mu <- colMeans(e.obs)
+               e.obs.mu.mat <- matrix(e.obs.mu, M, J, byrow=TRUE)
+               e.obs.stand <- e.obs - e.obs.mu.mat
+               S.obs <- var(e.obs)
+               A.obs <- t(chol(S.obs))
+               A.inv.obs <- solve(A.obs)
+               Z.obs <- t(A.inv.obs %*% t(e.obs.stand))
+               Dij.obs <- Z.obs %*% t(Z.obs)
+               D2.obs <- diag(Dij.obs)
+               K3.obs[s] <- mean(as.vector(Dij.obs)^3)
+               K4.obs[s] <- mean(D2.obs^2)
+               e.rep <- rmvn(M, e.obs.mu.mat, S.obs)
+               e.rep.mu <- colMeans(e.rep)
+               e.rep.mu.mat <- matrix(e.rep.mu, M, J, byrow=TRUE)
+               e.rep.stand <- e.rep - e.rep.mu.mat
+               S.rep <- var(e.rep)
+               A.rep <- t(chol(S.rep))
+               A.inv.rep <- solve(A.rep)
+               Z.rep <- t(A.inv.rep %*% t(e.rep.stand))
+               Dij.rep <- Z.rep %*% t(Z.rep)
+               D2.rep <- diag(Dij.rep)
+               K3.rep[s] <- mean(as.vector(Dij.rep)^3)
+               K4.rep[s] <- mean(D2.rep^2)
+               }
+          p.K3 <- round(mean(K3.obs > K3.rep), 3)
+          p.K4 <- round(mean(K4.obs > K4.rep), 3)
+          K3.result <- K4.result <- "Non-Normality"
+          if((p.K3 >= 0.025) & (p.K3 <= 0.975)) K3.result <- "Normality"
+          if((p.K4 >= 0.025) & (p.K4 <= 0.975)) K4.result <- "Normality"
+          d.K3.obs <- density(K3.obs)
+          d.K3.rep <- density(K3.rep)
+          d.K4.obs <- density(K4.obs)
+          d.K4.rep <- density(K4.rep)
+          plot(d.K3.obs, xlim=c(min(d.K3.obs$x, d.K3.rep$x),
+               max(d.K3.obs$x, d.K3.rep$x)),
+               ylim=c(0, max(d.K3.obs$y, d.K3.rep$y)),
+               main="Mardia's Test of MVN Skewness",
+               xlab="Skewness Test Statistic (K3)", ylab="Density",
+               sub=paste("K3.obs=", round(mean(K3.obs, na.rm=TRUE), 2),
+                    " (", round(quantile(K3.obs, probs=0.025, na.rm=TRUE),
+                    2), ", ", round(quantile(K3.obs, probs=0.975,
+                    na.rm=TRUE), 2), "), p(K3.obs > K3.rep) = ",
+                    p.K3, " = ", K3.result, sep=""))
+          polygon(d.K3.obs, col="black", border="black")
+          lines(d.K3.rep, col="red")
+          plot(d.K4.obs, xlim=c(min(d.K4.obs$x, d.K4.rep$x),
+               max(d.K4.obs$x, d.K4.rep$x)),
+               ylim=c(0, max(d.K4.obs$y, d.K4.rep$y)),
+               main="Mardia's Test of MVN Kurtosis",
+               xlab="Kurtosis Test Statistic (K4)", ylab="Density",
+               sub=paste("K4.obs=", round(mean(K4.obs, na.rm=TRUE), 2),
+                    " (", round(quantile(K4.obs, probs=0.025, na.rm=TRUE),
+                    2), ", ", round(quantile(K4.obs, probs=0.975,
+                    na.rm=TRUE), 2), "), p(K4.obs > K4.rep) = ",
+                    p.K4, " = ", K4.result, sep=""))
+          polygon(d.K4.obs, col="black", border="black")
+          lines(d.K4.rep, col="red")
+          }
      if(Style == "Predictive Quantiles") {
           if(PDF == TRUE) pdf("PPC.Plots.PQ.pdf")
           par(mfrow=c(1,1))
@@ -155,6 +397,70 @@ plot.laplace.ppc <- function(x, Style=NULL, Data=NULL, Rows=NULL,
           panel.smooth(temp[Rows,1], temp[Rows,7], pch=16, cex=0.75)
           abline(h=0.025, col="gray")
           abline(h=0.975, col="gray")
+          }
+     if(Style == "Predictive Quantiles") {
+          if(PDF == TRUE) pdf("PPC.Plots.PQ.pdf")
+          par(mfrow=c(1,1))
+          temp <- summary(x, Quiet=TRUE)$Summary
+          plot(temp[Rows,1], temp[Rows,7], ylim=c(0,1), pch=16, cex=0.75,
+               xlab="y", ylab="PQ", main="Predictive Quantiles")
+          panel.smooth(temp[Rows,1], temp[Rows,7], pch=16, cex=0.75)
+          abline(h=0.025, col="gray")
+          abline(h=0.975, col="gray")
+          }
+     if(Style == "Residual Density") {
+          if(PDF == TRUE) pdf("PPC.Plots.Residual.Density.pdf")
+          par(mfrow=c(1,1))
+          epsilon <- x$y - x$yhat
+          epsilon.summary <- apply(epsilon, 1, quantile,
+               probs=c(0.025,0.500,0.975), na.rm=TRUE)
+          dens <- density(epsilon.summary[2,Rows], na.rm=TRUE)
+          plot(dens, col="black", main="Residual Density",
+               xlab=expression(epsilon), ylab="Density")
+          polygon(dens, col="black", border="black")
+          abline(v=0, col="red")
+          }
+     if(Style == "Residual Density, Multivariate, C") {
+          if(PDF == TRUE) {pdf("PPC.Plots.Residual.Density.pdf")
+               par(mfrow=c(1,1))}
+          else {par(mfrow=c(1,1), ask=TRUE)}
+          if(is.null(Data))
+               stop("Data is required for Style=Residual Density, Multivariate, C.")
+          if(is.null(Data$Y))
+               stop("Variable Y is required for Style=Residual Density, Multivariate, C.")
+          epsilon <- x$y - x$yhat
+          epsilon.summary <- apply(epsilon, 1, quantile,
+               probs=c(0.025,0.500,0.975), na.rm=TRUE)
+          epsilon.500 <- matrix(epsilon.summary[2,], nrow(Data$Y), ncol(Data$Y))
+          for (i in 1:ncol(Data$Y)) {
+               dens <- density(epsilon.500[,i], na.rm=TRUE)
+               plot(dens, col="black", main="Residual Density",
+                    xlab=paste("epsilon[,", i, "]", sep=""),
+                    ylab="Density")
+               polygon(dens, col="black", border="black")
+               abline(v=0, col="red")
+               }
+          }
+     if(Style == "Residual Density, Multivariate, R") {
+          if(PDF == TRUE) {pdf("PPC.Plots.Residual.Density.pdf")
+               par(mfrow=c(1,1))}
+          else {par(mfrow=c(1,1), ask=TRUE)}
+          if(is.null(Data))
+               stop("Data is required for Style=Residual Density, Multivariate, R.")
+          if(is.null(Data$Y))
+               stop("Variable Y is required for Style=Residual Density, Multivariate, R.")
+          epsilon <- x$y - x$yhat
+          epsilon.summary <- apply(epsilon, 1, quantile,
+               probs=c(0.025,0.500,0.975), na.rm=TRUE)
+          epsilon.500 <- matrix(epsilon.summary[2,], nrow(Data$Y), ncol(Data$Y))
+          for (i in 1:nrow(Data$Y)) {
+               dens <- density(epsilon.500[i,], na.rm=TRUE)
+               plot(dens, col="black", main="Residual Density",
+                    xlab=paste("epsilon[", i, ",]", sep=""),
+                    ylab="Density")
+               polygon(dens, col="black", border="black")
+               abline(v=0, col="red")
+               }
           }
      if(Style == "Residuals") {
           if(PDF == TRUE) pdf("PPC.Plots.Residuals.pdf")

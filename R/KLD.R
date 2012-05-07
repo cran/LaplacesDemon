@@ -13,7 +13,7 @@ KLD <- function (px, py, base=exp(1))
      n1 <- length(px)
      n2 <- length(py)
      if(!identical(n1, n2)) stop("px and py must have the same length.")
-     if(any(!is.finite(px)) | any(!is.finite(py))) {
+     if(any(!is.finite(px)) || any(!is.finite(py))) {
           stop("px and py must have finite values.")
           }
      else {

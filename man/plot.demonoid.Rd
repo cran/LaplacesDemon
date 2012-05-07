@@ -71,7 +71,8 @@
   differences in the proposal variances is plotted across each
   adaptation. The proposal variance should change less as the adaptive
   algorithm approaches the target distributions, so the absolute
-  differences in the plot should approach zero. If it is not approaching
+  differences in the plot should approach zero. This is called the
+  condition of diminishing adaptation. If it is not approaching
   zero, then consider using a different adaptive MCMC algorithm. The
   following quantiles are plotted: 0.025, 0.500, and 0.975.
 }

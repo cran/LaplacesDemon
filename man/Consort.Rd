@@ -23,9 +23,9 @@
   is used to suggest a new number of iterations, how fast the algorithm
   is expected to be, and if the condition of diminishing adaptation was
   met (for an adaptive algorithm). Diminishing adaptation occurs only
-  when the absolute value of the proposed variances trend downward
+  when the absolute value of the proposed variances trends downward
   (toward zero) over the course of all adaptations. When an algorithm is
-  adaptive and it  does not have diminishing adaptations, the
+  adaptive and it does not have diminishing adaptations, the
   \code{Consort} function will suggest a different adaptive algorithm.
   The \code{Periodicity} argument is suggested to be set equal to the
   value of \code{Rec.Thinning}.
@@ -54,6 +54,14 @@
     satisfactory if it is estimated to be stationary with the
     \code{\link{Geweke.Diagnostic}} function.
 }
+  Bear in mind that the MCSE, ESS, and Stationarity criteria are all
+  univariate measures applied to each marginal posterior
+  distribution. Multivariate forms are not included. By chance alone due
+  to multiple independent tests, 5\% of these diagnostics should
+  indicate non-convergence when 'convergence' exists. In contrast, even
+  one non-convergent nuisance parameter is associated with
+  non-convergence in all other parameters. Assessing convergence is
+  difficult.
 
   If all five conditions are satisfactory, then Laplace's Demon is
   appeased. Otherwise, Laplace's Demon will suggest and supply R

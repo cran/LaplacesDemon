@@ -407,7 +407,7 @@ Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
 ###################  Adaptive Metropolis-within-Gibbs  ####################
 Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
      Covar=NULL, Iterations=1000, Status=100, Thinning=1,
-     Algorithm="AMWG", Specs=list(Periodicity=10))
+     Algorithm="AMWG", Specs=list(Periodicity=50))
 
 #################  Delayed Rejection Adaptive Metropolis  #################
 Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
@@ -439,7 +439,7 @@ Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
 #NOTE: The SAMWG algorithm is only for state-space models (SSMs)
 #Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
 #     Covar=NULL, Iterations=1000, Status=100, Thinning=1,
-#     Algorithm="SAMWG", Specs=list(Dyn=Dyn, Periodicity=10))
+#     Algorithm="SAMWG", Specs=list(Dyn=Dyn, Periodicity=50))
 
 ##################  Sequential Metropolis-within-Gibbs  ###################
 #NOTE: The SMWG algorithm is only for state-space models (SSMs)
@@ -451,7 +451,7 @@ Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
 #NOTE: The USAMWG algorithm is only for state-space model updating
 #Fit <- LaplacesDemon(Model, MyData, Initial.Values, 
 #     Covar=NULL, Iterations=100000, Status=100, Thinning=100,
-#     Algorithm="USAMWG", Specs=list(Dyn=Dyn, Periodicity=10, Fit=Fit,
+#     Algorithm="USAMWG", Specs=list(Dyn=Dyn, Periodicity=50, Fit=Fit,
 #     Begin=T.m))
 
 ##############  Updating Sequential Metropolis-within-Gibbs  ##############

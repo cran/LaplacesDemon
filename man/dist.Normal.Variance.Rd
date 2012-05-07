@@ -70,6 +70,11 @@ Laplace or Student t distribution.
 An uninformative distribution is obtained in the limit as
 \eqn{\sigma^2 \rightarrow \infty}{sigma^2 -> infinity}.
 
+For models where the dependent variable, y, is specified to be
+normally distributed given the model, the Jarque-Bera test (see
+\code{\link{plot.demonoid.ppc}} or \code{\link{plot.laplace.ppc}}) may
+be used to test the residuals.
+
 These functions are similar to those in \code{base R}.
 }
 \value{
@@ -85,7 +90,9 @@ These functions are similar to those in \code{base R}.
   \code{\link{dnorm}},
   \code{\link{dnormp}},
   \code{\link{dst}},
-  \code{\link{dt}}.
+  \code{\link{dt}},
+  \code{\link{plot.demonoid.ppc}},
+  \code{\link{plot.laplace.ppc}}.
 }
 \examples{
 library(LaplacesDemon)

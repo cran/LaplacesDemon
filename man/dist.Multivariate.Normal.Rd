@@ -48,6 +48,11 @@ combination of its components has a univariate normal distribution.
 This distribution has a mean parameter vector \eqn{\mu}{mu} of length
 \eqn{k} and a \eqn{k \times k}{k x k} covariance matrix
 \eqn{\Sigma}{Sigma}, which must be positive-definite.
+
+For models where the dependent variable, Y, is specified to be
+distributed multivariate normal given the model, the Mardia test (see
+\code{\link{plot.demonoid.ppc}} or \code{\link{plot.laplace.ppc}}) may
+be used to test the residuals.
 }
 \value{
   \code{dmvn} gives the density and 
@@ -59,7 +64,9 @@ This distribution has a mean parameter vector \eqn{\mu}{mu} of length
   \code{\link{dinvwishart}},
   \code{\link{dnorm}},
   \code{\link{dnormp}},
-  \code{\link{dnormv}}.
+  \code{\link{dnormv}},
+  \code{\link{plot.demonoid.ppc}},
+  \code{\link{plot.laplace.ppc}}.
 }
 \examples{
 library(LaplacesDemon)

@@ -168,15 +168,22 @@ rbern <- function(n, prob)
 
 dcat <- function(x, p, log=FALSE)
      {
-     if(!is.matrix(p)) p <- rbind(p)
+     if(is.vector(x) & !is.matrix(p))
+          p <- matrix(p, length(x), length(p), byrow=TRUE)
+     if(is.matrix(x) & !is.matrix(p))
+          p <- matrix(p, nrow(x), length(p), byrow=TRUE)
      if(is.vector(x) & {length(x) == 1}) {
           temp <- rep(0, ncol(p))
           temp[x] <- 1
-          x <- t(temp)
-          }
-     else if(is.vector(x) & (length(x) > 1)) {x <- as.indicator.matrix(x)}
-     if(!identical(dim(x), dim(p)))
-          stop("The dimensions of x and p differ.")
+          x <- t(temp)}
+     else if(is.vector(x) & (length(x) > 1))
+          x <- as.indicator.matrix(x)
+     if(!identical(nrow(x), nrow(p)))
+          stop("The number of rows of x and p differ.")
+     if(!identical(ncol(x), ncol(p))) {
+          x.temp <- matrix(0, nrow(p), ncol(p))
+          x.temp[,as.numeric(colnames(x))] <- x
+          x <- x.temp}
      dens <- x*p
      if(log == TRUE) dens <- x*log(p)
      dens <- as.vector(rowSums(dens))
@@ -421,7 +428,7 @@ dinvgaussian <- function(x, mu, lambda, log=FALSE)
      NN <- max(length(x), length(mu), length(lambda))
      x <- rep(x, len=NN); mu <- rep(mu, len=NN)
      lambda <- rep(lambda, len=NN)
-     dens <- (lambda / (2*pi*x^3))^(1/2) *
+     dens <- (lambda / (2*pi*x^3))^0.5 *
           exp(-((lambda*(x - mu)^2) / (2*mu^2*x)))
      if(log == TRUE) dens <- log(dens + .Machine$double.xmin) #Prevent -Inf
      return(dens)
@@ -463,7 +470,7 @@ dinvwishart <- function(Sigma, nu, S, log=FALSE)
      gamprod <- 1
      for (i in 1:k) {gamprod <- gamprod * gamma((nu + 1 - i) / 2)}
      dens <- (2^(nu*k/2)*pi^(k*(k-1)/4)*gamprod)^(-1) * detS^(nu/2) *
-          detSigma^(-(nu+k+1)/2) * exp(-(1/2) * tr(S %*% invSigma))
+          detSigma^(-(nu+k+1)/2) * exp(-0.5 * tr(S %*% invSigma))
      if(log == TRUE) dens <- log(dens + .Machine$double.xmin) #Prevent -Inf
      return(dens)
      }
@@ -687,7 +694,7 @@ dmvc <- function(x, mu, S, log=FALSE)
      ss <- x - mu
      Omega <- as.inverse(S)
      z <- rowSums({ss %*% Omega} * ss)
-     dens <- as.vector(gamma(k/2) / (gamma(1/2) * 1^(k/2) *
+     dens <- as.vector(gamma(k/2) / (gamma(0.5) * 1^(k/2) *
           pi^(k/2) * sqrt(det(S)) * (1 + z)^((1+k)/2)))
      if(log == TRUE) dens <- log(dens + .Machine$double.xmin) #Prevent -Inf
      return(dens)
@@ -724,7 +731,7 @@ dmvcp <- function(x, mu, Omega, log=FALSE)
      ss <- x - mu
      z <- rowSums({ss %*% Omega} * ss)
      dens <- as.vector((gamma((1+k)/2) /
-          (gamma(1/2)*1^(k/2)*pi^(k/2))) * detOmega^(1/2) *
+          (gamma(0.5)*1^(k/2)*pi^(k/2))) * detOmega^0.5 *
           (1 + z)^(-(1+k)/2))
      if(log == TRUE) dens <- log(dens + .Machine$double.xmin) #Prevent -Inf
      return(dens)
@@ -778,7 +785,6 @@ dmvn <- function(x, mu, Sigma, log=FALSE)
      if(!is.positive.definite(Sigma))
           stop("Matrix Sigma is not positive-definite.")
      k <- nrow(Sigma)
-     detSigma <- det(Sigma)
      Omega <- as.inverse(Sigma)
      ss <- x - mu
      z <- rowSums({ss %*% Omega} * ss)
@@ -816,7 +822,7 @@ dmvnp <- function(x, mu, Omega, log=FALSE)
      detOmega <- det(Omega)
      ss <- x - mu
      z <- rowSums({ss %*% Omega} * ss)
-     dens <- as.vector((2*pi)^(-k/2) * detOmega^(1/2) * exp(-(1/2) * z))
+     dens <- as.vector((2*pi)^(-k/2) * detOmega^0.5 * exp(-0.5 * z))
      if(log == TRUE) dens <- log(dens + .Machine$double.xmin) #Prevent -Inf
      return(dens)
      }
@@ -869,7 +875,7 @@ dmvpe <- function(x=c(0,0), mu=c(0,0), Sigma=diag(2), kappa=1, log=FALSE)
      temp <- rowSums({ss %*% Sigma} * ss)
      dens <- ((k*gamma(k/2)) / (pi^(k/2) * sqrt(det(Sigma)) *
           gamma(1 + k/(2*kappa)) * 2^(1 + k/(2*kappa)))) *
-          exp(-(1/2)*temp)^kappa
+          exp(-0.5*temp)^kappa
      if(log == TRUE) dens <- log(dens + .Machine$double.xmin) #Prevent -Inf
      return(as.vector(dens))
      }
@@ -932,7 +938,7 @@ dmvtp <- function(x, mu, Omega, nu=Inf, log=FALSE)
      ss <- x - mu
      z <- rowSums({ss %*% Omega} * ss)
      dens <- as.vector((gamma((nu+k)/2) /
-          (gamma(nu/2)*nu^(k/2)*pi^(k/2))) * detOmega^(1/2) *
+          (gamma(nu/2)*nu^(k/2)*pi^(k/2))) * detOmega^0.5 *
           (1 + (1/nu) * z)^(-(nu+k)/2))
      if(log == TRUE) dens <- log(dens + .Machine$double.xmin) #Prevent -Inf
      return(dens)
@@ -1105,7 +1111,63 @@ rpe <- function(n, mu=0, sigma=1, kappa=2)
      }
 
 ###########################################################################
-# Skew-Laplace                                                            #
+# Skew Discrete Laplace Distribution                                      #
+###########################################################################
+
+dsdlaplace <- function(x, p, q, log=FALSE)
+     {
+     if(any(p < 0) || any(p > 1)) stop("p must be in [0,1].")
+     if(any(q < 0) || any(q > 1)) stop("q must be in [0,1].")
+     NN <- max(length(x), length(p), length(q))
+     x <- rep(x, len=NN); p <- rep(p, len=NN); q <- rep(q, len=NN)
+     dens <- ifelse(x >= 0, (1-p)*(1-q)/(1-p*q)*p^x,
+          (1-p)*(1-q)/(1-p*q)*q^abs(x))
+     if(log == TRUE) dens <- log(dens + .Machine$double.xmin) #Prevent -Inf
+     return(dens)
+     }
+psdlaplace <- function(x, p, q)
+     {
+     if(any(p < 0) || any(p > 1)) stop("p must be in [0,1].")
+     if(any(q < 0) || any(q > 1)) stop("q must be in [0,1].")
+     NN <- max(length(x), length(p), length(q))
+     x <- rep(x, len=NN); p <- rep(p, len=NN); q <- rep(q, len=NN)
+     pr <- ifelse(x >= 0, 1-(1-q)*p^(floor(x)+1)/(1-p*q),
+          (1-p)*q^(-floor(x))/(1-p*q))
+     return(pr)
+     }
+qsdlaplace <- function(prob, p, q)
+     {
+     if(any(prob < 0) || any(prob > 1)) stop("prob must be in [0,1].")
+     if(any(p < 0) || any(p > 1)) stop("p must be in [0,1].")
+     if(any(q < 0) || any(q > 1)) stop("q must be in [0,1].")
+     NN <- max(length(prob), length(p), length(q))
+     prob <- rep(prob, len=NN); p <- rep(p, len=NN); q <- rep(q, len=NN)
+     x <- numeric(NN)
+     for (i in 1:NN) {
+          k <- 0
+          if(prob[i] >= psdlaplace(k, p[i], q[i])) {
+               while(prob[i] >= psdlaplace(k, p[i], q[i])) {
+                    k <- k + 1}}
+          else if(prob[i] < psdlaplace(k, p[i], q[i])) {
+               while(prob[i] < psdlaplace(k, p[i], q[i])) {
+                    k <- k - 1}
+               k <- k + 1}
+          x[i] <- k
+          }
+     return(x)
+     }
+rsdlaplace <- function(n, p, q)
+     {
+     if(length(p) > 1) stop("p must have a length of 1.")
+     if(length(q) > 1) stop("q must have a length of 1.")
+     if((p < 0) || (p > 1)) stop("p must be in [0,1].")
+     if((q < 0) || (q > 1)) stop("q must be in [0,1].")
+     u <- runif(n)
+     return(qsdlaplace(u,p,q))
+     }
+
+###########################################################################
+# Skew-Laplace Distribution                                               #
 ###########################################################################
 
 dslaplace <- function(x, mu, alpha, beta, log=FALSE)
@@ -1169,6 +1231,16 @@ rslaplace <- function(n, mu, alpha, beta)
      x <- mult*y + mu
      return(x)
      }
+
+###########################################################################
+# Stick-Breaking Prior Distribution                                       #
+###########################################################################
+
+dStick <- function(theta, gamma, log=FALSE)
+  {
+  dens <- sum(dbeta(theta, 1, gamma, log=log))
+  return(dens)
+  }
 
 ###########################################################################
 # Student t Distribution (3-parameter)                                    #
@@ -1369,7 +1441,7 @@ dwishart <- function(Omega, nu, S, log=FALSE)
      gamprod <- 1
      for (i in 1:k) {gamprod <- gamprod * gamma((nu + 1 - i) / 2)}
      dens <- (2^(nu*k/2)*pi^(k*(k-1)/4)*gamprod)^(-1) * detS^(-nu/2) *
-          detOmega^((nu-k-1)/2) * exp(-(1/2) * tr(invS %*% Omega))
+          detOmega^((nu-k-1)/2) * exp(-0.5 * tr(invS %*% Omega))
      if(log == TRUE) dens <- log(dens + .Machine$double.xmin) #Prevent -Inf
      return(dens)
      }

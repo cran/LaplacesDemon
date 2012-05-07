@@ -6,7 +6,15 @@
   that has been applied as an MCMC diagnostic (Brooks et al, 2003), such
   as to the posterior samples from the \code{\link{LaplacesDemon}}
   function. The first and last halves of the chain are compared. This
-  test assumes IID, which is violated in the presence of autocorrelation.
+  test assumes IID, which is violated in the presence of
+  autocorrelation.
+
+  The \code{KS.Diagnostic} is a univariate diagnostic that is usually
+  applied to each marginal posterior distribution. A multivariate form
+  is not included. By chance alone due to multiple independent tests,
+  5\% of the marginal posterior distributions should appear
+  non-stationary when stationarity exists. Assessing multivariate 
+  convergence is difficult.
 }
 \usage{
 KS.Diagnostic(x)

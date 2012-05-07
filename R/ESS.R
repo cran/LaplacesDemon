@@ -18,13 +18,15 @@ ESS <- function(x)
           lm.out <- lm(x[, i] ~ z)
           if(identical(all.equal(sd(residuals(lm.out)), 0), TRUE)) {
                v0[i] <- 0
-               order[i] <- 0
-               }
+               order[i] <- 0}
           else {
-               ar.out <- ar(x[, i], aic=TRUE)
-               v0[i] <- ar.out$var.pred / {1 - sum(ar.out$ar)}^2
-               order[i] <- ar.out$order
-               }
+               test <- try(ar.out <- ar(x[,i], aic=TRUE), silent=TRUE)
+               if(class(test) == "try-error") {
+                    v0[i] <- 0
+                    order[i] <- 0}
+               else {
+                    v0[i] <- ar.out$var.pred / {1 - sum(ar.out$ar)}^2
+                    order[i] <- ar.out$order}}
           }
      spec <- list(spec=v0, order=order)
      spec <- spec$spec

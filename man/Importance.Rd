@@ -57,7 +57,7 @@ Importance(object, Model, Data, Categorical=FALSE, Discrep, d=0)
   model. As a default, the L-criterion is recommended for models with
   dependent variables that are not categorical, provided that
   sample size is small enough that it does not result in \code{Inf}, and
-  \code{Discrep="min(yhat[i,] < min(y)"} is recommended for models with
+  \code{Discrep="min(yhat[i,]) < min(y)"} is recommended for models with
   categorical dependent variables.
 
   With the L-criterion, variable importance has a positive relationship, 
@@ -79,7 +79,7 @@ Importance(object, Model, Data, Categorical=FALSE, Discrep, d=0)
   that each parameter's marginal posterior distribution is greater than
   zero, where an important parameter does not include zero in its
   probability interval. Parameter importance and variable importance
-  may disagree, and should both be studied.
+  may disagree, and both should be studied.
 
   The \code{Importance} function tends to indicate that a model fits the
   data better when variables are removed that have parameters with

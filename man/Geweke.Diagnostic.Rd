@@ -16,6 +16,13 @@
 
   The Z-score is calculated under the assumption that the two parts of
   the chain are asymptotically independent.
+
+  The \code{Geweke.Diagnostic} is a univariate diagnostic that is
+  usually applied to each marginal posterior distribution. A
+  multivariate form is not included. By chance alone due to multiple
+  independent tests, 5\% of the marginal posterior distributions should
+  appear non-stationary when stationarity exists. Assessing multivariate
+  convergence is difficult.
 }
 \usage{Geweke.Diagnostic(x)}
 \arguments{

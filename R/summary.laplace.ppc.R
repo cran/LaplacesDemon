@@ -51,8 +51,8 @@ summary.laplace.ppc <- function(object=NULL, Categorical=FALSE, Rows=NULL,
                     (Summ[,8] > 0.975), na.rm=TRUE),3)}
           if(!is.null(Discrep) && {Discrep == "Kurtosis"}) {
                kurtosis <- function(x) {  
-                    m4 <- mean((x-mean(x))^4) 
-                    kurt <- m4/(sd(x)^4)-3  
+                    m4 <- mean((x-mean(x, na.rm=TRUE))^4, na.rm=TRUE) 
+                    kurt <- m4/(sd(x, na.rm=TRUE)^4)-3  
                     return(kurt)}
                for (i in 1:length(y)) {Summ[i,8] <- round(kurtosis(yhat[i,]),3)}
                Discrepancy.Statistic <- round(mean(Summ[,8], na.rm=TRUE),3)}
@@ -60,10 +60,26 @@ summary.laplace.ppc <- function(object=NULL, Categorical=FALSE, Rows=NULL,
                Summ[,8] <- round(sqrt(apply(yhat,1,var) +
                     (y - apply(yhat,1,mean))^2),3)
                Discrepancy.Statistic <- round(sum(Summ[,8], na.rm=TRUE),3)}
+          if(!is.null(Discrep) && {Discrep == "MASE"}) {
+               Summ[,8] <- round(abs(rowMeans(y - yhat, na.rm=TRUE) /
+                    mean(abs(diff(y)), na.rm=TRUE)), 3)
+               Discrepancy.Statistic <- round(mean(Summ[,8], na.rm=TRUE),3)}
+          if(!is.null(Discrep) && {Discrep == "MSE"}) {
+               Summ[,8] <- round(rowMeans((y - yhat)^2, na.rm=TRUE),3)
+               Discrepancy.Statistic <- round(mean(Summ[,8], na.rm=TRUE),3)}
+          if(!is.null(Discrep) && {Discrep == "Quadratic Loss"}) {
+               Summ[,8] <- round(rowMeans((y - yhat)^2, na.rm=TRUE),3)
+               Discrepancy.Statistic <- round(mean(Summ[,8], na.rm=TRUE),3)}
+          if(!is.null(Discrep) && {Discrep == "Quadratic Utility"}) {
+               Summ[,8] <- round(rowMeans(-1*(y - yhat)^2, na.rm=TRUE),3)
+               Discrepancy.Statistic <- round(mean(Summ[,8], na.rm=TRUE),3)}
+          if(!is.null(Discrep) && {Discrep == "RMSE"}) {
+               Summ[,8] <- round(sqrt(rowMeans((y - yhat)^2, na.rm=TRUE)),3)
+               Discrepancy.Statistic <- round(mean(Summ[,8], na.rm=TRUE),3)}
           if(!is.null(Discrep) && {Discrep == "Skewness"}) {
                skewness <-  function(x) {
-                    m3 <- mean((x-mean(x))^3)
-                    skew <- m3/(sd(x)^3)
+                    m3 <- mean((x-mean(x, na.rm=TRUE))^3, na.rm=TRUE)
+                    skew <- m3/(sd(x, na.rm=TRUE)^3)
                     return(skew)}
                for (i in 1:length(y)) {Summ[i,8] <- round(skewness(yhat[i,]),3)}
                Discrepancy.Statistic <- round(mean(Summ[,8], na.rm=TRUE),3)}
@@ -83,7 +99,9 @@ summary.laplace.ppc <- function(object=NULL, Categorical=FALSE, Rows=NULL,
                for (i in 1:length(y)) {Summ[i,8] <- min(yhat[i,]) < min(y)}
                Discrepancy.Statistic <- round(mean(Summ[,8], na.rm=TRUE),3)}
           if(!is.null(Discrep) && {Discrep == "round(yhat[i,]) = d"}) {
-               for (i in 1:length(y)) {Summ[i,8] <- round(yhat[i,]) == d}
+               for (i in 1:length(y)) {
+                    Summ[i,8] <- round(mean(round(yhat[i,]) == d,
+                         na.rm=TRUE), 3)}
                Discrepancy.Statistic <- round(mean(Summ[,8], na.rm=TRUE),3)}
           if(!is.null(Discrep) && {Discrep == "sd(yhat[i,]) > sd(y)"}) {
                for (i in 1:length(y)) {Summ[i,8] <- sd(yhat[i,]) > sd(y)}

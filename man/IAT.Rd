@@ -11,6 +11,8 @@
   drawn, given a chain or Markov chain. Put another way, \code{IAT} is
   the number of correlated samples with the same variance-reducing power
   as one independent sample.
+
+  IAT is a univariate function. A multivariate form is not included.
 }
 \usage{
 IAT(x)
@@ -33,11 +35,11 @@ IAT(x)
   Error (\code{\link{MCSE}}).
 
   \code{IAT} and \code{\link{ESS}} are inversely related, though not
-  perfectly, because each is estimated a little differently. Given $N$
-  samples and taking autocorrelation into account, \code{\link{ESS}}
-  estimates a reduced number of $M$ samples. Conversely, \code{IAT}
-  estimates the number of autocorrelated samples, on average, required
-  to produce one independently drawn sample.
+  perfectly, because each is estimated a little differently. Given
+  \eqn{N}{N} samples and taking autocorrelation into account,
+  \code{\link{ESS}} estimates a reduced number of \eqn{M}{M} samples.
+  Conversely, \code{IAT} estimates the number of autocorrelated samples,
+  on average, required to produce one independently drawn sample.
   
   The \code{IAT} function is similar to the \code{IAT} function in the
   \code{Rtwalk} package of Christen and Fox (2010), which is currently

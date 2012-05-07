@@ -1,3 +1,22 @@
+2012-04-24 plot.demonoid.ppc and plot.laplace.ppc: Added Mardia plots
+2012-04-23 plot.demonoid.ppc and plot.laplace.ppc: Added Jarque-Bera plots
+2012-04-22 Added Levene.Test
+2012-04-21 plot.demonoid.ppc and plot.laplace.ppc: Added Residual Density plots
+2012-04-20 Distributions: Added Skew Discrete Laplace
+2012-04-19 Vignette Examples: Added Infinite Mixture Model
+2012-04-18 plot.demonoid.ppc and plot.laplace.ppc: Added DW plots
+2012-04-17 Vignette Examples: Added Exploratory Cluster Analysis (ECA)
+2012-04-17 Vignette Examples: Renamed Cluster Analysis to CCA
+2012-04-15 Stick: Added a truncated stick-breaking function for DPs
+2012-04-15 Distributions: Added dStick for stick-breaking
+2012-04-10 summary.demonoid.ppc: Added MASE, MSE, and Quadratic Loss
+2012-04-10 summary.demonoid.ppc: Added Quadratic Utility, and RMSE
+2012-04-10 summary.laplace.ppc: Added MASE, MSE, and Quadratic Loss
+2012-04-10 summary.laplace.ppc: Added Quadratic Utility, and RMSE
+2012-04-10 plot.demonoid.ppc and plot.laplace.ppc: Added ECDF plots
+2012-04-06 Vignette Examples: Added State Space Model (SSM), Local Linear Trend
+2012-04-06 Vignette Examples: Added State Space Model (SSM), Local Level
+2012-04-06 Vignette Examples: Changed DLM and Stochastic Volatility to SSMs
 2012-04-01 Added IAT
 2012-03-31 Vignette Examples: Added Stochastic Volatility
 2012-03-30 Vignette Examples: Updated DLM and DFA to include Dyn

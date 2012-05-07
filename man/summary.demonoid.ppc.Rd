@@ -23,13 +23,14 @@
     test. \code{Discrep} defaults to \code{NULL}. Valid character
     strings when \code{y} is continuous are: \code{"Chi-Square"},
     \code{"Chi-Square2 "}, \code{"Kurtosis"}, \code{"L-criterion"},
-    \code{"Skewness"}, \code{"max(yhat[i,]) > max(y)"},
-    \code{"mean(yhat[i,]) > mean(y)"}, \code{"mean(yhat[i,] > d)"},
-    \code{"mean(yhat[i,] > mean(y))"}, \code{"min(yhat[i,]) < min(y)"},
-    \code{"round(yhat[i,]) = d"}, and \code{"sd(yhat[i,]) >
-    sd(y)"}. Valid character strings when \code{y} is categorical are:
-    \code{"p(yhat[i,] != y[i])"}. Kurtosis and skewness are not
-    discrepancies, but are included here for convenience.}
+    \code{"MASE"}, \code{"MSE"}, \code{"Quadratic Loss"},
+    \code{"Quadratic Utility"}, \code{"RMSE"}, \code{"Skewness"},
+    \code{"max(yhat[i,]) > max(y)"}, \code{"mean(yhat[i,]) > mean(y)"},
+    \code{"mean(yhat[i,] > d)"}, \code{"mean(yhat[i,] > mean(y))"},
+    \code{"min(yhat[i,]) < min(y)"}, \code{"round(yhat[i,]) = d"}, and
+    \code{"sd(yhat[i,]) > sd(y)"}. Valid character strings when \code{y}
+    is categorical are: \code{"p(yhat[i,] != y[i])"}. Kurtosis and
+    skewness are not discrepancies, but are included here for convenience.}
   \item{d}{This is an optional integer to be used with the
     \code{Discrep} argument above, and it defaults to \code{d=0}.}
   \item{Quiet}{This logical argument defaults to \code{FALSE} and will
@@ -52,8 +53,8 @@
   When \eqn{\textbf{y}}{y} is continuous and known, this function
   estimates the predictive concordance between \eqn{\textbf{y}}{y} and
   \eqn{\textbf{y}^{rep}}{y[rep]} as per Gelfand (1996), and the
-  predictive quantile (PQ), which is the individual-level metric for
-  outlier detection used to calculate Gelfand's predictive concordance.
+  predictive quantile (PQ), which is for record-level outlier detection
+  used to calculate Gelfand's predictive concordance.
 
   When \eqn{\textbf{y}}{y} is categorical and known, this function
   estimates the record-level lift, which is
@@ -64,14 +65,106 @@
   A discrepancy measure is an approach to studying discrepancies between
   the model and data (Gelman et al., 1996).
 
-  When \code{Discrep="Chi-Square"}, the chi-square goodness-of-fit test
-  is implemented that is recommended by Gelman. For each record i=1:N,
-  this returns (y[i] - E(y[i]))^2 / var(yhat[i,]). When
-  \code{Discrep="Chi-Square2"}, the following is returned for each
-  record: Pr(chisq.rep[i,] > chisq.obs[i,]), where chisq.obs[i,] <-
+  The \code{"Chi-Square"} discrepancy measure is the chi-square
+  goodness-of-fit test implemented that is recommended by Gelman. For
+  each record i=1:N, this returns (y[i] - E(y[i]))^2 / var(yhat[i,]).
+
+  The \code{"Chi-Square2"} discrepancy measure returns the following for
+  each record: Pr(chisq.rep[i,] > chisq.obs[i,]), where chisq.obs[i,] <-
   (y[i] - E(y[i]))^2 / E(y[i]), and chisq.rep[i,] <- (yhat[i,] -
   E(yhat[i,]))^2 / E(yhat[i,]), and the overall discrepancy is the
   percent of records that were outside of the 95\% probability interval.
+
+  The \code{"Kurtosis"} discrepancy measure returns the kurtosis of
+  \eqn{\textbf{y}^{rep}}{y[rep]} for each record, and the discrepancy
+  statistic is the mean for all records. This does not measure
+  discrepancies between the model and data, and is useful for finding
+  kurtotic replicate distributions.
+
+  The \code{"L-criterion"} discrepancy measure of Laud and Ibrahim
+  (1995) provides the record-level combination of two components (see
+  below), and the discrepancy statistic is the sum, \code{L}, as well as
+  a calibration number, \code{S.L}.
+
+  The \code{"MASE"} (Mean Absolute Scaled Error) is a discrepancy
+  measure for the accuracy of time-series forecasts, estimated as
+  \code{(|y - yhat|) / mean(abs(diff(y)))}. The discrepancy statistic is
+  the mean of the record-level values.
+
+  The \code{"MSE"} (Mean Squared Error) discrepancy measure provides the
+  MSE for each record across all replicates, and the discrepancy
+  statistic is the mean of the record-level MSEs. MSE and quadratic loss
+  are identical.
+
+  The \code{"Quadratic Loss"} discrepancy measure provides the
+  mean quadratic loss for each record across all replicates, and the
+  discrepancy statistic is the mean of the record-level mean quadratic
+  losses. Quadratic loss and MSE are identical, and quadratic loss is
+  the negative of quadratic utility.
+
+  The \code{"Quadratic Utility"} discrepancy measure provides the
+  mean quadratic utility for each record across all replicates, and the
+  discrepancy statistic is the mean of the record-level mean quadratic
+  utilities. Quadratic utility is the negative of quadratic loss.
+
+  The \code{"RMSE"} (Root Mean Squared Error) discrepancy measure
+  provides the RMSE for each record across all replicates, and the
+  discrepancy statistic is the mean of the record-level RMSEs.
+
+  The \code{"Skewness"} discrepancy measure returns the skewness of
+  \eqn{\textbf{y}^{rep}}{y[rep]} for each record, and the discrepancy
+  statistic is the mean for all records. This does not measure
+  discrepancies between the model and data, and is useful for finding
+  skewed replicate distributions.
+
+  The \code{"max(yhat[i,]) > max(y)"} discrepancy measure returns a
+  record-level indicator when a record's maximum
+  \eqn{\textbf{y}^{rep}_i}{y[rep][i]} exceeds the maximum of
+  \eqn{\textbf{y}}{y}. The discrepancy statistic is the mean of the
+  record-level indicators, reporting the proportion of records with
+  replications that exceed the maximum of \eqn{\textbf{y}}{y}.
+  
+  The \code{"mean(yhat[i,]) > mean(y)"} discrepancy measure returns a
+  record-level indicator when the mean of a record's
+  \eqn{\textbf{y}^{rep}_i}{y[rep][i]} is greater than the mean of
+  \eqn{\textbf{y}}{y}. The discrepancy statistic is the mean of the
+  record-level indicators, reporting the proportion of records with
+  mean replications that exceed the mean of \eqn{\textbf{y}}{y}.
+  
+  The \code{"mean(yhat[i,] > d)"} discrepancy measure returns a
+  record-level proportion of \eqn{\textbf{y}^{rep}_i}{y[rep][i]} that
+  exceeds a specified value, \code{d}. The discrepancy statistic is the
+  mean of the record-level proportions.
+  
+  The \code{"mean(yhat[i,] > mean(y))"} discrepancy measure returns a
+  record-level proportion of \eqn{\textbf{y}^{rep}_i}{y[rep][i]} that
+  exceeds the mean of \eqn{\textbf{y}}{y}. The discrepancy statistic is
+  the mean of the record-level proportions.
+  
+  The \code{"min(yhat[i,]) < min(y)"} discrepancy measure returns a
+  record-level indicator when a record's minimum
+  \eqn{\textbf{y}^{rep}_i}{y[rep][i]} is less than the minimum of
+  \eqn{\textbf{y}}{y}. The discrepancy statistic is the mean of the
+  record-level indicators, reporting the proportion of records with
+  replications less than the minimum of \eqn{\textbf{y}}{y}.
+  
+  The \code{"round(yhat[i,]) = d"} discrepancy measure returns a
+  record-level proportion of \eqn{\textbf{y}^{rep}_i}{y[rep][i]} that,
+  when rounded, is equal to a specified discrete value, \code{d}. The
+  discrepancy statistic is the mean of the record-level proportions.
+  
+  The \code{"sd(yhat[i,]) > sd(y)"} discrepancy measure returns a
+  record-level indicator when the standard deviation of replicates is
+  larger than the standard deviation of all of \eqn{\textbf{y}}{y}. The
+  discrepancy statistic is the mean of the record-level indicators,
+  reporting the proportion of records with larger standard deviations
+  than \eqn{\textbf{y}}{y}.
+  
+  The \code{"p(yhat[i,] != y[i])"} discrepancy measure returns the
+  record-level probability that \eqn{\textbf{y}^{rep}_i}{y[rep][i]} is
+  not equal to \eqn{\textbf{y}}{y}. This is valid when
+  \eqn{\textbf{y}}{y} is categorical and \code{yhat} is the predicted
+  category. The probability is the proportion of replicates.
 }
 \value{
   This function returns a list with the following components:
@@ -85,15 +178,16 @@
     Concordance occurs only when \eqn{\textbf{y}}{y} is continuous.}
   \item{Mean Lift}{
     This is the mean of the record-level lifts, and occurs only when
-    \eqn{\textbf{y}}{y} is categorical.}
+    \eqn{\textbf{y}}{y} is specified as categorical with
+    \code{Categorical=TRUE}.}
   \item{Discrepancy.Statistic}{
     This is only reported if the \code{Discrep} argument receives a
     valid discrepancy measure as listed above. The \code{Discrep}
     applies to each record of \eqn{\textbf{y}}{y}, and the
     \code{Discrepancy.Statistic} reports the results of the discrepancy
     measure on the entire data set. For example, if
-    \code{Discrep="min(yhat[i,] < min(y)"}, then the overall result is the
-    proportion of records in which the minimum sample of yhat was less
+    \code{Discrep="min(yhat[i,]) < min(y)"}, then the overall result is
+    the proportion of records in which the minimum sample of yhat was less
     than the overall minimum \eqn{\textbf{y}}{y}. This is
     \code{Pr(min(yhat[i,]) < min(y) | y, Theta)}, where \code{Theta} is
     the parameter set.}
