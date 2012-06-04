@@ -86,7 +86,7 @@ parameter. A multivariate uniform occurs as
   Family of Distributions". Communications in Statistics, Part A - Theory
   and Methods [Split from: J(CommStat)], 31(12), p. 2167--2182.
 }
-\author{Byron Hall \email{laplacesdemon@statisticat.com}}
+\author{Byron Hall \email{statisticat@gmail.com}}
 \examples{
 library(LaplacesDemon)
 n <- 100

@@ -48,7 +48,8 @@
     convergence diagnostics (Flegal et al., 2008).
   \item ESS: The effective sample size (ESS) is considered satisfactory
     for each target distribution if it is at least 100, which is usually
-    enough to describe 95\% probability intervals. The \code{\link{ESS}}
+    enough to describe 95\% probability intervals (see
+  \code{\link{p.interval}} for more information). The \code{\link{ESS}}
     function is used.
   \item Stationarity: Each target distribution is considered
     satisfactory if it is estimated to be stationary with the
@@ -90,10 +91,11 @@
   Hall, B. (2012). "Laplace's Demon", STATISTICAT, LLC.
   URL=\url{http://www.statisticat.com/laplacesdemon.html}
 }
-\author{Byron Hall \email{laplacesdemon@statisticat.com}}
+\author{Byron Hall \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{ESS}},
   \code{\link{Geweke.Diagnostic}},
   \code{\link{LaplacesDemon}},
-  \code{\link{MCSE}}.
+  \code{\link{MCSE}},
+  \code{\link{p.interval}}.
 }

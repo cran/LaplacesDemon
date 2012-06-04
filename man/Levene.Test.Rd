@@ -63,9 +63,9 @@ Levene.Test(x, Method="U", G=NULL, Data=NULL)
   plot shows the test statistic W, both from the observed process
   (W.obs as a black density) and the replicated process (W.rep as a red
   line). The mean of W.obs is reported, along with its 95\% probability
-  interval, the probability \eqn{p(W^{obs} > W^{rep})}{p(W.obs >
-  W.rep)}, and the indicated results, either homoskedastic or
-  heteroskedastic.
+  interval (see \code{\link{p.interval}}), the probability
+  \eqn{p(W^{obs} > W^{rep})}{p(W.obs > W.rep)}, and the indicated
+  results, either homoskedastic or heteroskedastic.
 
   Each element of the returned vector is the probability
   \eqn{p(W^{obs} > W^{rep})}{p(W.obs > W.rep)}. When the probability
@@ -82,7 +82,7 @@ Levene.Test(x, Method="U", G=NULL, Data=NULL)
   (Eds.), Contributions to Probability and Statistics, p. 278--292.
   Stanford, CA: Stanford University Press.
 }
-\author{Byron Hall \email{laplacesdemon@statisticat.com}}
+\author{Byron Hall \email{statisticat@gmail.com}}
 \examples{
 #First, update the model with LaplaceApproximation or LaplacesDemon.
 #Then, use the predict function, creating, say, object Pred.
@@ -90,7 +90,8 @@ Levene.Test(x, Method="U", G=NULL, Data=NULL)
 #Levene.Test(Pred)
 }
 \seealso{
-  \code{\link{LaplaceApproximation}} and
-  \code{\link{LaplacesDemon}}
+  \code{\link{LaplaceApproximation}},
+  \code{\link{LaplacesDemon}}, and
+  \code{\link{p.interval}}.
 }
 \keyword{utility}

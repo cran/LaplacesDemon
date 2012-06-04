@@ -34,7 +34,8 @@ CSF <- function(x, name, method="Quantiles", quantiles=c(.025,.5,.975),
      if(method == "HPD") {
           Y <- matrix(0, length(x), 2)
           for (i in 1:length(x)) {
-               test <- try(as.vector(HPD(x[1:i])[1,]), silent=TRUE)
+               test <- try(as.vector(p.interval(x[1:i], HPD=TRUE)[1,]),
+                    silent=TRUE)
                if(is.numeric(test[1])) Y[i,] <- test}
           plot(x, type="l", col="gray", xlab="Sample Size",
                ylab="HPD (95%)")

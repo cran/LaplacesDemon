@@ -9,13 +9,13 @@ Welcome to LaplacesDemon, an R package for Bayesian inference.
   \tabular{ll}{
     Package: \tab LaplacesDemon\cr
     Type: \tab Package\cr
-    Version: \tab 12.05.07\cr
-    Date: \tab 2012-05-07\cr
+    Version: \tab 12.06.04\cr
+    Date: \tab 2012-06-04\cr
     License: \tab GPL-2\cr
   }
   The goal of LaplacesDemon, often referred to as Laplace's Demon, is to
   provide a complete and self-contained Bayesian environment within R.
-  For example, this package includes numerous MCMC algorithms, Laplace
+  For example, this package includes over a dozen MCMC algorithms, Laplace
   Approximation with multiple optimization algorithms, over 80 examples
   in the ``Examples'' vignette, dozens of additional probability
   distributions, numerous MCMC diagnostics, Bayes factors, posterior
@@ -39,5 +39,5 @@ Welcome to LaplacesDemon, an R package for Bayesian inference.
   Hall, B. (2012). "Laplace's Demon", STATISTICAT, LLC.
   URL=\url{http://www.statisticat.com/laplacesdemon.html}
 }
-\author{Byron Hall \email{laplacesdemon@statisticat.com}}
+\author{Byron Hall \email{statisticat@gmail.com}}
 \keyword{package}

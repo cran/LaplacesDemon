@@ -139,8 +139,8 @@ plot.demonoid.ppc <- function(x, Style=NULL, Data=NULL, Rows=NULL,
                abline(v=2, col="red")}
           }
      if(Style == "ECDF") {
-          if(PDF == TRUE) {pdf("PPC.Plots.ECDF.pdf")
-               par(mfrow=c(1,1))}
+          if(PDF == TRUE) pdf("PPC.Plots.ECDF.pdf")
+          par(mfrow=c(1,1))
           plot(ecdf(x$y[Rows]), verticals=TRUE, do.points=FALSE,
                main="Cumulative Fit",
                xlab="y (black) and yhat (red; gray)",

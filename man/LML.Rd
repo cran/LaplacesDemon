@@ -145,7 +145,7 @@ LML(Model=NULL, Data=NULL, Modes=NULL, theta=NULL, LL=NULL, method="NSIS")
   Inference by the Weighted Likelihood Bootstrap". Journal of the
   Royal Statistical Society, Series B 3, p. 3--48.
 }
-\author{Byron Hall \email{laplacesdemon@statisticat.com}}
+\author{Byron Hall \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{BayesFactor}},
   \code{\link{LaplaceApproximation}},

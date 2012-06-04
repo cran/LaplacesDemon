@@ -16,8 +16,8 @@ burnin(x, method="Geweke")
   \item{method}{This argument defaults to \code{"Geweke"}, in which case
     stationarity is estimated with the \code{\link{Geweke.Diagnostic}}
     function. Alternatively, the \code{\link{KS.Diagnostic}} function
-    may be used to estimate stationarity with the Kolmogorov-Smirnov
-    test.}
+    may be used when \code{method="KS"} to estimate stationarity with
+    the Kolmogorov-Smirnov test.}
 }
 \details{
   Burn-in is a colloquial term for the initial iterations in a Markov
@@ -55,7 +55,7 @@ burnin(x, method="Geweke")
   Hall, B. (2012). "Laplace's Demon", STATISTICAT, LLC.
   URL=\url{http://www.statisticat.com/laplacesdemon.html}
 }
-\author{Byron Hall \email{laplacesdemon@statisticat.com}}
+\author{Byron Hall \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{Geweke.Diagnostic}},
   \code{\link{LaplacesDemon}}.

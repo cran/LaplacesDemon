@@ -121,7 +121,7 @@ assuming one model is the true model.
   Posterior Simulation with the Laplace-Metropolis Estimator". Journal
   of the American Statistical Association, 92, p. 648--655.
 }
-\author{Byron Hall \email{laplacesdemon@statisticat.com}}
+\author{Byron Hall \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{LaplaceApproximation}},
   \code{\link{LaplacesDemon}},

@@ -99,7 +99,7 @@ elicit(n, cats, cat.names, show.plot=FALSE)
   66(336), p. 783--801.
 
   \url{http://www.statisticat.com/laplacesdemon.html}}
-\author{Byron Hall \email{laplacesdemon@statisticat.com}}
+\author{Byron Hall \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{de.Finetti.Game}},
   \code{\link{KLD}},

@@ -75,7 +75,7 @@ be used to test the residuals.
   \code{\link{plot.laplace.ppc}}.
 }
 \references{\url{http://www.statisticat.com/laplacesdemon.html}}
-\author{Byron Hall \email{laplacesdemon@statisticat.com}}
+\author{Byron Hall \email{statisticat@gmail.com}}
 \examples{
 library(LaplacesDemon)
 x <- dmvnp(c(1,2,3), c(0,1,2), diag(3))

@@ -30,7 +30,7 @@ is.laplace(x)
   whether or not the supplied object is of class \code{laplace}.
 }
 \references{\url{http://www.statisticat.com/laplacesdemon.html}}
-\author{Byron Hall \email{laplacesdemon@statisticat.com}}
+\author{Byron Hall \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{LaplaceApproximation}},
   \code{\link{LaplacesDemon}}.

@@ -80,7 +80,7 @@ multivariate normal distribution.
   Distributions". Communications in Statistics-Theory and Methods, 27(3),
   p. 589--600.
 }
-\author{Byron Hall \email{laplacesdemon@statisticat.com}}
+\author{Byron Hall \email{statisticat@gmail.com}}
 \examples{
 library(LaplacesDemon)
 n <- 100

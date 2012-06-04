@@ -44,7 +44,7 @@ The multivariate Polya distribution, named after George Polya (1887-1985), also 
   \code{\link{ddirichlet}},
   \code{\link{dmultinom}}.
 }
-\author{Byron Hall \email{laplacesdemon@statisticat.com}}
+\author{Byron Hall \email{statisticat@gmail.com}}
 \examples{
 library(LaplacesDemon)
 dmvpolya(x=1:3, alpha=1:3, log=TRUE)

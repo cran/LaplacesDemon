@@ -70,7 +70,7 @@ Stick(theta)
   Sethuraman, J. (1994). "A Constructive Definition of Dirichlet
   Priors". Statistica Sinica, 4, p. 639--650.
 }
-\author{Byron Hall \email{laplacesdemon@statisticat.com}}
+\author{Byron Hall \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{ddirichlet}},
   \code{\link{dmvpolya}}, and 

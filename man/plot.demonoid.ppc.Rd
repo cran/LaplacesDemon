@@ -305,7 +305,7 @@
   Mardia, K.V. (1970). "Measures of Multivariate Skewness and Kurtosis
   with Applications". Biometrika, 57(3), p. 519--530.
 }
-\author{Byron Hall \email{laplacesdemon@statisticat.com}}
+\author{Byron Hall \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{LaplacesDemon}},
   \code{\link{predict.demonoid}}.

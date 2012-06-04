@@ -58,7 +58,7 @@ PosteriorChecks(x, Parms)
     with the \code{\link{burnin}} function.}
 }
 \references{\url{http://www.statisticat.com/laplacesdemon.html}}
-\author{Byron Hall \email{laplacesdemon@statisticat.com}}
+\author{Byron Hall \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{burnin}},
   \code{\link{IAT}},

@@ -32,7 +32,7 @@ is.stationary(x)
      \code{\link{Geweke.Diagnostic}} function.
 }
 \references{\url{http://www.statisticat.com/laplacesdemon.html}}
-\author{Byron Hall \email{laplacesdemon@statisticat.com}}
+\author{Byron Hall \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{Geweke.Diagnostic}},
   \code{\link{LaplacesDemon}}.

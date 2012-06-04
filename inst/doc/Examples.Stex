@@ -32,7 +32,7 @@ STATISTICAT}
   Byron Hall\\
   STATISTICAT, LLC\\
   Farmington, CT\\
-  E-mail: \email{laplacesdemon@statisticat.com}\\
+  E-mail: \email{statisticat@gmail.com}\\
   URL: \url{http://www.statisticat.com/laplacesdemon.html}
 }
 
@@ -48,7 +48,7 @@ To conserve space, the examples are not worked out in detail, and only the minim
 
 Notation in this vignette follows these standards: Greek letters represent parameters, lower case letters represent indices, lower case bold face letters represent scalars or vectors, probability distributions are represented with calligraphic font, upper case letters represent index limits, and upper case bold face letters represent matrices.
 
-This vignette will grow over time as examples of more methods become included. Contributed examples are welcome. Please send contributed examples or discovered errors in a similar format in an email to \email{laplacesdemon@statisticat.com} for review and testing. All accepted contributions are, of course, credited.
+This vignette will grow over time as examples of more methods become included. Contributed examples are welcome. Please send contributed examples or discovered errors in a similar format in an email to \email{statisticat@gmail.com} for review and testing. All accepted contributions are, of course, credited.
 
 \begin{center} \Large{\textbf{Contents}} \end{center}
 \begin{itemize}

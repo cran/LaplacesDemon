@@ -51,7 +51,7 @@ Consort <- function(object=NULL)
           Stationarity <- TRUE}
      ### Check Diminishing Adaptation (If Adaptive)
      if(nrow(object$CovarDHis) > 1) {
-          Dim.Adapt <- as.vector(lm(rowMeans(diff(Fit$CovarDHis)) ~ c(1:nrow(diff(Fit$CovarDHis))))$coef[2]) <= 0
+          Dim.Adapt <- as.vector(lm(rowMeans(diff(object$CovarDHis)) ~ c(1:nrow(diff(object$CovarDHis))))$coef[2]) <= 0
           }
      else Dim.Adapt <- TRUE
      ### Suggested Values
@@ -158,6 +158,7 @@ Consort <- function(object=NULL)
           else if(object$Algorithm == "Random-Walk Metropolis") Alg <- "RWM"
           else if(object$Algorithm == "Sequential Adaptive Metropolis-within-Gibbs") Alg <- "SAMWG"
           else if(object$Algorithm == "Sequential Metropolis-within-Gibbs") Alg <- "SMWG"
+          else if(object$Algorithm == "t-walk") Alg <- "t-walk"
           else if(object$Algorithm == "Updating Sequential Adaptive Metropolis-within-Gibbs") Alg <- "USAMWG"
           else Alg <- "USMWG"
 
@@ -321,6 +322,16 @@ Consort <- function(object=NULL)
                cat("     Algorithm=\"SMWG\", ",
                     "Specs=list(Dyn=Dyn))\n\n", sep="")
                }
+          if(Alg == "t-walk") {
+               ### twalk
+               cat(oname, " <- LaplacesDemon(Model, Data=", dname,
+                    ", Initial.Values,\n", sep="")
+               cat("     Covar=NULL, Iterations=",
+                    Rec.Iterations, ", Status=", Rec.Status, ", ",
+                    "Thinning=", Rec.Thinning, ",\n", sep="")
+               cat("     Algorithm=\"twalk\", ",
+                    "Specs=list(n1=4, at=6, aw=1.5))\n\n", sep="")
+          }
           if((Alg == "USAMWG") | (Alg == "USMWG")) {
                ### USAMWG or USMWG
                cat("A Demonic Suggestion will not be made.\n\n")
@@ -330,4 +341,4 @@ Consort <- function(object=NULL)
      }
 
 #End
-#dyname <- as.vector(strsplit(as.character(object$Call), "=")[3][[1]])
+

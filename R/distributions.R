@@ -761,13 +761,13 @@ dmvl <- function(x, mu, Sigma, log=FALSE)
      }
 rmvl <- function(n, mu, Sigma)
      {
-     mu <- as.vector(mu)
      if(!is.matrix(Sigma)) Sigma <- matrix(Sigma)
      if(!is.positive.definite(Sigma))
           stop("Matrix Sigma is not positive-definite.")
-     e <- rexp(n, 1)
-     z <- rmvn(n, rep(0, length(mu)), Sigma)
-     x <- (e + sqrt(e)) * mu * z
+     mu <- matrix(mu, n, ncol(Sigma), byrow=TRUE)
+     e <- matrix(rexp(n, 1), n, ncol(mu))
+     z <- rmvn(n, rep(0, ncol(mu)), Sigma)
+     x <- e*mu + sqrt(e)*z
      return(x)
      }
 

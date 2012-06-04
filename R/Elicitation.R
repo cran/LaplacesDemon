@@ -7,6 +7,7 @@
 
 delicit <- function(theta, x, a=-Inf, b=Inf, log=FALSE)
      {
+     ### Initial Checks
      if(missing(theta)) stop("The theta argument is required.")
      if(missing(x)) stop("The x argument is required.")
      if(a >= b) stop("Lower bound a is not less than upper bound b.")
@@ -36,6 +37,7 @@ delicit <- function(theta, x, a=-Inf, b=Inf, log=FALSE)
           theta <- log((theta-a) / (b-theta))
           x <- log((x-a) / (b-x))
           }
+     ### Estimate Density
      kde <- density(x)
      dens <- approx(kde$x, kde$y, theta)$y
      if(log == TRUE) dens <- log(dens)
@@ -43,6 +45,7 @@ delicit <- function(theta, x, a=-Inf, b=Inf, log=FALSE)
      }
 elicit <- function(n, cats, cat.names, show.plot=FALSE)
      {
+     ### Initial Checks
      if(missing(n)) stop("The n argument is required.")
      if(missing(cats)) stop("The cats argument is required.")
      if(missing(cat.names)) stop("The cat.names argument is required.")

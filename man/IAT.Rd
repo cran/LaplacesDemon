@@ -54,10 +54,10 @@ IAT(x)
   Algorithm for Continuous Distributions (the t-walk)". Bayesian
   Analysis, 5(2), p. 263--282.
 
-  Hall, B. (2011). "Laplace's Demon", STATISTICAT, LLC.
+  Hall, B. (2012). "Laplace's Demon", STATISTICAT, LLC.
   URL=\url{http://www.statisticat.com/laplacesdemon.html}
 }
-\author{Byron Hall \email{laplacesdemon@statisticat.com}}
+\author{Byron Hall \email{statisticat@gmail.com}}
 \examples{
 theta <- rnorm(100)
 IAT(theta)

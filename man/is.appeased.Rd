@@ -34,7 +34,7 @@ is.appeased(x)
   \code{TRUE}.
 }
 \references{\url{http://www.statisticat.com/laplacesdemon.html}}
-\author{Byron Hall \email{laplacesdemon@statisticat.com}}
+\author{Byron Hall \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{Consort}},
   \code{\link{LaplacesDemon}}.

@@ -314,7 +314,7 @@ LaplaceApproximation(Model, parm, Data, Interval=1.0E-6,
   Functions". Journal of the American Statistical Association,
   84(407), p. 710--716.
 }
-\author{Byron Hall \email{laplacesdemon@statisticat.com}}
+\author{Byron Hall \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{BayesFactor}},
   \code{\link{LaplacesDemon}},
@@ -372,8 +372,12 @@ summary(Pred, Discrep="Chi-Square")
 plot(Pred, Style="Covariates", Data=MyData)
 plot(Pred, Style="Density", Rows=1:9)
 plot(Pred, Style="Fitted")
+plot(Pred, Style="Jarque-Bera")
 plot(Pred, Style="Predictive Quantiles")
+plot(Pred, Style="Residual Density")
 plot(Pred, Style="Residuals")
+Levene.Test(Pred)
+Importance(Fit, Model, MyData, Discrep="Chi-Square")
 #Fit$Covar is scaled (2.38^2/d) and submitted to LaplacesDemon as Covar.
 #Fit$Summary[,1] is submitted to LaplacesDemon as Initial.Values.
 #End

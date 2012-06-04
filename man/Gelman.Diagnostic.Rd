@@ -123,8 +123,9 @@
   is known, see above).
 
   This convergence diagnostic is based on the assumption that each
-  target distribution is normal. A Bayesian probability interval can be
-  constructed using a t-distribution with mean
+  target distribution is normal. A Bayesian probability interval (see
+  \code{\link{p.interval}}) can be constructed using a t-distribution
+  with mean
   
   \deqn{\widehat{\mu}=\mbox{Sample mean of all chains combined,}}{mu.hat
     = Sample mean of all chains combined,}
@@ -167,7 +168,8 @@
   \code{\link{GIV}},
   \code{\link{is.multimodal}},
   \code{\link{LaplacesDemon}},
-  \code{\link{MCSE}}.}
+  \code{\link{MCSE}},
+  \code{\link{p.interval}}.}
 \examples{
 #Examples
 ###After updating multiple chains (say, as Fit1 and Fit2), do:

@@ -79,7 +79,7 @@ freedom \eqn{\nu=1}{nu=1}, this is the multivariate Cauchy distribution.
   \code{rmvtp} generates random deviates.
 }
 \references{\url{http://www.statisticat.com/laplacesdemon.html}}
-\author{Byron Hall \email{laplacesdemon@statisticat.com}}
+\author{Byron Hall \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{dwishart}},
   \code{\link{dmvc}},

@@ -17,6 +17,9 @@
   \code{\link{LaplaceApproximation}} or \code{\link{LaplacesDemon}}, the
   constrained parameter should be updated back into the \code{parm}
   vector, so the algorithm knows it has been constrained.
+
+  This is unrelated to the probability interval (see
+  \code{\link{p.interval}}).
 }
 \usage{
 interval(x, a=-Inf, b=Inf)
@@ -35,11 +38,12 @@ interval(x, a=-Inf, b=Inf)
   constrained to the interval [\code{a},\code{b}].
 }
 \references{\url{http://www.statisticat.com/laplacesdemon.html}}
-\author{Byron Hall \email{laplacesdemon@statisticat.com}}
+\author{Byron Hall \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{dtrunc}},
   \code{\link{LaplaceApproximation}},
-  \code{\link{LaplacesDemon}}.
+  \code{\link{LaplacesDemon}},
+  \code{\link{p.interval}}.
 }
 \examples{
 #See the Examples vignette for numerous examples.

@@ -94,7 +94,7 @@ var2sd(var=1)
     \sqrt{\sigma^2}}{sigma = sqrt(sigma^2)}.}
 }
 \references{\url{http://www.statisticat.com/laplacesdemon.html}}
-\author{Byron Hall \email{laplacesdemon@statisticat.com}}
+\author{Byron Hall \email{statisticat@gmail.com}}
 \seealso{\code{\link{Cov2Cor}}}
 \examples{
 library(LaplacesDemon)

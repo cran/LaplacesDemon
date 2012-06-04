@@ -134,7 +134,7 @@ Model.Spec.Time(Model, Initial.Values, Data, n=1000)
   Roberts, G.O. and Rosenthal, J.S. (2009). "Examples of Adaptive
   MCMC". Computational Statistics and Data Analysis, 18, p. 349--367.
 }
-\author{Byron Hall \email{laplacesdemon@statisticat.com}}
+\author{Byron Hall \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{.C}},
   \code{\link{.Fortran}},

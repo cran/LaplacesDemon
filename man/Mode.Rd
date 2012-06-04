@@ -77,17 +77,18 @@ Modes(x, min.size=0.1)
   related topic is MAP or maximum \emph{a posteriori} estimation.
 
   Otherwise, the results of Bayesian inference tend to report the
-  posterior mean or median, along with probability intervals, rather
-  than posterior modes. In many types of models, such as mixture models,
-  the posterior may be multi-modal. In such a case, the usual
-  recommendation is to choose the highest mode if feasible and
-  possible. However, the highest mode may be uncharacteristic of the
-  majority of the posterior.
+  posterior mean or median, along with probability intervals (see
+  \code{\link{p.interval}}), rather than posterior modes. In many
+  types of models, such as mixture models, the posterior may be
+  multi-modal. In such a case, the usual recommendation is to choose
+  the highest mode if feasible and possible. However, the highest mode
+  may be uncharacteristic of the majority of the posterior.
 }
-\author{Byron Hall \email{laplacesdemon@statisticat.com}}
+\author{Byron Hall \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{LaplaceApproximation}},
-  \code{\link{LaplacesDemon}}.
+  \code{\link{LaplacesDemon}}, and
+  \code{\link{p.interval}}.
 }
 \examples{
 library(LaplacesDemon)

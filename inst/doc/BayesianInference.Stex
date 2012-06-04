@@ -31,7 +31,7 @@
  Byron Hall\\
  STATISTICAT, LLC\\
  Farmington, CT\\
- E-mail: \email{laplacesdemon@statisticat.com}\\
+ E-mail: \email{statisticat@gmail.com}\\
  URL: \url{http://www.statisticat.com/laplacesdemon.html}
 }
 
@@ -135,7 +135,7 @@ The denominator
 
 $$p(\textbf{y}) = \int p(\textbf{y} | \Theta)p(\Theta) d\Theta$$
 
-defines the ``marginal likelihood'' of $\textbf{y}$, or the ``prior predictive distribution'' of $\textbf{y}$, and may be set to an unknown constant $\textbf{c}$. The prior predictive distribution indicates what $\textbf{y}$ should look like, given the model, before $\textbf{y}$ has been observed. Only the set of prior probabilities and the model's likelihood function are used for the marginal likelihood of $\textbf{y}$. The presence of the marginal likelihood of $\textbf{y}$ normalizes the joint posterior distribution, $p(\Theta | \textbf{y})$, ensuring it is a proper distribution and integrates to one.
+defines the ``marginal likelihood'' of $\textbf{y}$, or the ``prior predictive distribution'' of $\textbf{y}$, and may be set to an unknown constant $\textbf{c}$. The prior predictive distribution\footnote{The predictive distribution was introduced by \citet{jeffreys61}.} indicates what $\textbf{y}$ should look like, given the model, before $\textbf{y}$ has been observed. Only the set of prior probabilities and the model's likelihood function are used for the marginal likelihood of $\textbf{y}$. The presence of the marginal likelihood of $\textbf{y}$ normalizes the joint posterior distribution, $p(\Theta | \textbf{y})$, ensuring it is a proper distribution and integrates to one.
 
 By replacing $p(\textbf{y})$ with $\textbf{c}$, which is short for a `constant of proportionality', the model-based formulation of Bayes' theorem becomes
 
@@ -159,7 +159,7 @@ In model-based Bayesian inference, Bayes' theorem is used to estimate the unnorm
 
 \section{Components of Bayesian Inference}
 
-The components of Bayesian inference are
+The components\footnote{In Bayesian decision theory, an additional component exists \citep[p. 53]{robert07}, the loss function, $\mathrm{L}(\Theta, \Delta)$.} of Bayesian inference are
 
 \begin{enumerate}
 \item $p(\Theta)$ is the set of prior distributions for parameter set $\Theta$, and uses probability as a means of quantifying uncertainty about $\Theta$ before taking the data into account.
@@ -201,7 +201,7 @@ where $\theta$ is normally-distributed according to a mean of 0 and a variance o
 
 \subsection{Proper and Improper Priors}
 
-It is important for the prior distribution to be proper. A prior distribution, $p(\theta)$, is improper when
+It is important for the prior distribution to be proper. A prior distribution, $p(\theta)$, is improper\footnote{Improper priors were introduced in \citet{jeffreys61}.} when
 
 $$\int p(\theta) d(\theta) = \infty$$
 
@@ -229,7 +229,7 @@ where $\Phi$ is a set of hyperprior distributions. By reading the equation from 
 
 \section{Conjugacy}
 
-When the posterior distribution $p(\Theta | \textbf{y})$ is in the same family as the prior probability distribution $p(\Theta)$, the prior and posterior are then called conjugate distributions, and the prior is called a conjugate prior for the likelihood. For example, the Gaussian family is conjugate to itself (or self-conjugate) with respect to a Gaussian likelihood function: if the likelihood function is Gaussian, then choosing a Gaussian prior for the mean will ensure that the posterior distribution is also Gaussian. All probability distributions in the exponential family have conjugate priors. See \citet{gelman04} for a catalog.
+When the posterior distribution $p(\Theta | \textbf{y})$ is in the same family as the prior probability distribution $p(\Theta)$, the prior and posterior are then called conjugate distributions, and the prior is called a conjugate prior for the likelihood\footnote{The conjugate prior approach was introduced in \citet{raiffa61}.}. For example, the Gaussian family is conjugate to itself (or self-conjugate) with respect to a Gaussian likelihood function: if the likelihood function is Gaussian, then choosing a Gaussian prior for the mean will ensure that the posterior distribution is also Gaussian. All probability distributions in the exponential family have conjugate priors. See \citet{gelman04} for a catalog.
 
 Although the gamma distribution is the conjugate prior distribution for the precision of a normal distribution \citep{spiegelhalter03}, 
 
@@ -375,7 +375,7 @@ or
 
 $$p(\textbf{y}^{new} | \textbf{y}) = \int p(\textbf{y}^{new} | \Theta)p(\Theta | \textbf{y}) d\Theta$$
 
-If $\textbf{y}$ has missing values, then the missing $\textbf{y}$s can be estimated with the posterior predictive distribution as $\textbf{y}^{new}$ from within the model. For the linear regression example, the integral for prediction is
+If $\textbf{y}$ has missing values, then the missing $\textbf{y}$s can be estimated with the posterior predictive distribution\footnote{The predictive distribution was introduced by \citet{jeffreys61}.} as $\textbf{y}^{new}$ from within the model. For the linear regression example, the integral for prediction is
 
 $$p(\textbf{y}^{new} | \textbf{y}) = \int p(\textbf{y}^{new} | \beta,\sigma^2)p(\beta,\sigma^2 | \textbf{y}) d\beta d\sigma^2$$
 
@@ -540,7 +540,9 @@ frequentist inference.
 \item Bayesian inference estimates a full probability model. Frequentist inference does not. There is no frequentist probability distribution associated with parameters or hypotheses.
 \item Bayesian inference estimates $p(\mathrm{hypothesis} | \mathrm{data})$. In contrast, frequentist inference estimates $p(\mathrm{data} | \mathrm{hypothesis})$. Even the term 'hypothesis testing' suggests it should be the hypothesis that is tested, given the data, not the other way around.
 \item Bayesian inference has an axiomatic foundation \citep{cox46} that is uncontested by frequentists. Therefore, Bayesian inference is coherent to a frequentist, but frequentist inference is incoherent to a Bayesian.
+\item Bayesian inference has a decision theoretic foundation \citep{bernardo00,robert07}. The purpose of most of statistical inference is to facilitate decision-making \citep[p. 51]{robert07}. The optimal decision is the Bayesian decision.
 \item Bayesian inference includes uncertainty in the probability model, yielding more realistic predictions. Frequentist inference does not include uncertainty of the parameter estimates, yielding less realistic predictions.
+\item Bayesian inference is consistent with much of philosophy of science regarding epistemology, where knowledge cannot be built entirely through experimentation, but requires prior knowledge \cite[p. 510]{robert07}. Elsewhere, it has been suggested that the best choice for philosophy of science is through Bayesian inference.
 \item Bayesian inference may use DIC to compare models with different methods including hierarchical models, where frequentist model fit statistics cannot compare different methods or hierarchical models.
 \item Bayesian inference obeys the likelihood principle. Frequentist inference, including Maximum Likelihood Estimation (MLE) and the General Method of Moments (GMM) or Generalized Estimating Equations (GEE), violates the likelihood principle. ``The likelihood principle, by itself, is not sufficient to build a method of inference but should be regarded as a minimum requirement of any viable form of inference. This is a controversial point of view for anyone familiar with modern econometrics literature. Much of this literature is devoted to methods that do not obey the likelihood principle...'' \citep[p. 15]{rossi05}.
 \item Bayesian inference uses observed data only. Frequentist inference uses both observed data and future data that is unobserved and hypothetical.
@@ -564,7 +566,7 @@ Following is a short list of advantages of frequentist inference over Bayesian i
 \item Frequentist models have much shorter run-times than Bayesian models via MCMC (though Laplace Approximation yields run-times that are almost as fast as the frequentist MLE). Simple models with small sample sizes may be similar, but complex models with larger sample sizes may be minutes (frequentist) vs. weeks (Bayesian via MCMC).
 \end{itemize}
 
-Please send an email to \email{laplacesdemon@statisticat.com} with any questions or concerns about this article.
+Please send an email to \email{statisticat@gmail.com} with any questions or concerns about this article.
 
 \bibliography{References.bib}
 

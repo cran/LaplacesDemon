@@ -63,7 +63,7 @@ such, KLD is the basis of reference priors (Berger, Bernardo, and Sun, 2009).
   Kullback, S. and Leibler, R.A. (1951). "On Information and
   Sufficiency". The Annals of Mathematical Statistics, 22(1), p. 79--86.
 }
-\author{Byron Hall \email{laplacesdemon@statisticat.com}}
+\author{Byron Hall \email{statisticat@gmail.com}}
 \examples{
 px <- dnorm(runif(100),0,1)
 py <- dnorm(runif(100),0.1,0.9)

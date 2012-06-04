@@ -1,3 +1,9 @@
+2012-06-03 LaplacesDemon: Added the t-walk algorithm
+2012-06-03 caterpillar.plot: Expanded to accept a generic matrix
+2012-06-02 p.interval: Added MM for multi-modal probability intervals
+2012-05-30 Added p.interval, which replaces HPD
+2012-05-29 rmvl: Fixed bug
+2012-05-08 Consort: Fixed object reference bug for diminishing adaptation
 2012-04-24 plot.demonoid.ppc and plot.laplace.ppc: Added Mardia plots
 2012-04-23 plot.demonoid.ppc and plot.laplace.ppc: Added Jarque-Bera plots
 2012-04-22 Added Levene.Test
@@ -20,7 +26,7 @@
 2012-04-01 Added IAT
 2012-03-31 Vignette Examples: Added Stochastic Volatility
 2012-03-30 Vignette Examples: Updated DLM and DFA to include Dyn
-2012-03-29 LaplacesDemon: Added 2 algorithms: USAMWG and USMWG for SSMs
+2012-03-29 : USAMWG and USMWG for SSMs
 2012-03-28 Vignette Examples: Added Spatial Autoregression (SAR)
 2012-03-27 LaplacesDemon: Added 2 algorithms: SAMWG and SMWG for SSMs
 2012-03-26 Vignette Examples: Added Hierarchical Bayesian

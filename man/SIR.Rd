@@ -68,7 +68,7 @@ SIR(Model, Data, mu, Sigma, n=1000)
   Hall, B. (2012). "Laplace's Demon", STATISTICAT, LLC.
   URL=\url{http://www.statisticat.com/laplacesdemon.html}
 }
-\author{Byron Hall \email{laplacesdemon@statisticat.com}}
+\author{Byron Hall \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{dmvn}} and 
   \code{\link{LaplaceApproximation}}.

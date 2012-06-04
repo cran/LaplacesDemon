@@ -112,9 +112,10 @@ LaplacesDemon(Model, Data, Initial.Values, Covar=NULL, Iterations=100000,
     length to the number of targets]. Dist (which can be t for
     t-distributed or N for normally-distributed), and \code{gamma}
     (which controls the decay of adaptation). The SAMWG and SMWG
-    algorithms require a T x K matrix Dyn of dynamic parameters. The
-    USAMWG and USMWG algorithms require \code{Begin} to indicate the
-    time-period at which to begin updating (filtering and predicting).}
+    algorithms require a \eqn{T \times K}{T x K} matrix Dyn of
+    dynamic parameters. The USAMWG and USMWG algorithms require
+    \code{Begin} to indicate the time-period at which to begin updating
+    (filtering and predicting).}
 }
 \details{
   \code{LaplacesDemon} offers numerous MCMC algorithms for numerical
@@ -131,6 +132,7 @@ LaplacesDemon(Model, Data, Initial.Values, Covar=NULL, Iterations=100000,
     \item Random-Walk Metropolis (RWM)
     \item Sequential Adaptive Metropolis-within-Gibbs (SAMWG)
     \item Sequential Metropolis-within-Gibbs (SMWG)
+    \item t-walk (twalk)
     \item Updating Sequential Adaptive Metropolis-within-Gibbs (USAMWG)
     \item Updating Sequential Metropolis-within-Gibbs (USMWG)
   }
@@ -287,6 +289,10 @@ LaplacesDemon(Model, Data, Initial.Values, Covar=NULL, Iterations=100000,
     This is the value of the \code{Thinning} argument.}
 }
 \references{
+  Christen, J.A. and Fox, C. (2010). "A General Purpose Sampling
+  Algorithm for Continuous Distributions (the t-walk)". Bayesian
+  Analysis, 5(2), p. 263--282.
+   
   Gelman, A., Carlin, J., Stern, H., and Rubin, D. (2004). "Bayesian
   Data Analysis, Texts in Statistical Science, 2nd ed.". Chapman and
   Hall, London.
@@ -323,7 +329,7 @@ LaplacesDemon(Model, Data, Initial.Values, Covar=NULL, Iterations=100000,
   Vihola, M. (2011). "Robust Adaptive Metropolis Algorithm with Coerced
   Acceptance Rate". Statistics and Computing. Springer, Netherlands.
 }
-\author{Byron Hall \email{laplacesdemon@statisticat.com}}
+\author{Byron Hall \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{as.initial.values}},
   \code{\link{as.parm.names}},
@@ -380,10 +386,10 @@ Initial.Values <- GIV(Model, MyData)
 # Examples of MCMC Algorithms                                             #
 ###########################################################################
 
-##########################  Adaptive Metropolis  ##########################
+###################  Adaptive Metropolis-within-Gibbs  ####################
 Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
      Covar=NULL, Iterations=1000, Status=100, Thinning=1,
-     Algorithm="AM", Specs=list(Adaptive=500, Periodicity=10))
+     Algorithm="AMWG", Specs=list(Periodicity=50))
 Fit
 print(Fit)
 Consort(Fit)
@@ -395,19 +401,24 @@ Pred <- predict(Fit, Model, MyData)
 summary(Pred, Discrep="Chi-Square")
 plot(Pred, Style="Covariates", Data=MyData)
 plot(Pred, Style="Density", Rows=1:9)
+plot(Pred, Style="ECDF")
 plot(Pred, Style="Fitted")
+plot(Pred, Style="Jarque-Bera")
 plot(Pred, Style="Predictive Quantiles")
+plot(Pred, Style="Residual Density")
 plot(Pred, Style="Residuals")
+Levene.Test(Pred)
+Importance(Fit, Model, MyData, Discrep="Chi-Square")
+
+##########################  Adaptive Metropolis  ##########################
+Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
+     Covar=NULL, Iterations=1000, Status=100, Thinning=1,
+     Algorithm="AM", Specs=list(Adaptive=500, Periodicity=10))
 
 ######################  Adaptive-Mixture Metropolis  ######################
 Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
      Covar=NULL, Iterations=1000, Status=100, Thinning=1,
      Algorithm="AMM", Specs=list(Adaptive=500, Periodicity=10, w=0.05))
-
-###################  Adaptive Metropolis-within-Gibbs  ####################
-Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
-     Covar=NULL, Iterations=1000, Status=100, Thinning=1,
-     Algorithm="AMWG", Specs=list(Periodicity=50))
 
 #################  Delayed Rejection Adaptive Metropolis  #################
 Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
@@ -447,6 +458,11 @@ Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
 #     Covar=NULL, Iterations=1000, Status=100, Thinning=1,
 #     Algorithm="SMWG", Specs=list(Dyn=Dyn))
 
+###############################  t-walk  #################################
+Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
+     Covar=NULL, Iterations=1000, Status=100, Thinning=1,
+     Algorithm="twalk", Specs=list(n1=4, at=6, aw=1.5))
+
 ##########  Updating Sequential Adaptive Metropolis-within-Gibbs  #########
 #NOTE: The USAMWG algorithm is only for state-space model updating
 #Fit <- LaplacesDemon(Model, MyData, Initial.Values, 
@@ -466,5 +482,5 @@ Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
   Adaptive, Adaptive MCMC, AM, AMM, AMWG, Bayesian Inference,
   Delayed Rejection, DRAM, DRM, Gibbs, Laplace Approximation,
   LaplacesDemon, Laplace's Demon, Markov chain Monte Carlo, MCMC,
-  Metropolis, MWG, RAM, Random Walk, Random-Walk, Robust, RWM
+  Metropolis, MWG, RAM, Random Walk, Random-Walk, Robust, RWM, twalk
 }

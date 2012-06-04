@@ -38,7 +38,7 @@ parameters can be interpreted as odds ratios.
   and \code{loglog} returns \code{x}.
 }
 \references{\url{http://www.statisticat.com/laplacesdemon.html}}
-\author{Byron Hall \email{laplacesdemon@statisticat.com}}
+\author{Byron Hall \email{statisticat@gmail.com}}
 \seealso{\code{\link{LaplacesDemon}}}
 \examples{
 x <- -5:5

@@ -28,7 +28,7 @@ joint.density.plot(x, y, Title=NULL, contour=TRUE, color=FALSE)
   univariate density plots.
 }
 \references{\url{http://www.statisticat.com/laplacesdemon.html}}
-\author{Byron Hall \email{laplacesdemon@statisticat.com}}
+\author{Byron Hall \email{statisticat@gmail.com}}
 \seealso{\code{\link{LaplacesDemon}}}
 \examples{
 X <- rmvn(1000, runif(2), diag(2))

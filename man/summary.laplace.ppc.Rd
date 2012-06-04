@@ -75,7 +75,8 @@
   each record: Pr(chisq.rep[i,] > chisq.obs[i,]), where chisq.obs[i,] <-
   (y[i] - E(y[i]))^2 / E(y[i]), and chisq.rep[i,] <- (yhat[i,] -
   E(yhat[i,]))^2 / E(yhat[i,]), and the overall discrepancy is the
-  percent of records that were outside of the 95\% probability interval.
+  percent of records that were outside of the 95\% probability interval
+  (see \code{\link{p.interval}}).
 
   The \code{"Kurtosis"} discrepancy measure returns the kurtosis of
   \eqn{\textbf{y}^{rep}}{y[rep]} for each record, and the discrepancy
@@ -172,13 +173,12 @@
   This function returns a list with the following components:
   \item{Concordance}{
     This is the percentage of the records of y that are within the 
-    95\% probability interval of \eqn{\textbf{y}^{rep}}{y[rep]}. A
-    probability interval is also called a credible interval. Gelfand's
-    suggested goal is to achieve 95\% predictive concordance. Lower
-    percentages indicate too many outliers and a poor fit of the model
-    to the data, and higher percentages may suggest
-    overfitting. Concordance occurs only when \eqn{\textbf{y}}{y} is
-    continuous.}
+    95\% probability interval (see \code{\link{p.interval}}) of
+    \eqn{\textbf{y}^{rep}}{y[rep]}. Gelfand's suggested goal is to
+    achieve 95\% predictive concordance. Lower percentages indicate too
+    many outliers and a poor fit of the model to the data, and higher
+    percentages may suggest overfitting. Concordance occurs only when
+    \eqn{\textbf{y}}{y} is continuous.}
   \item{Mean Lift}{
     This is the mean of the record-level lifts, and occurs only when
     \eqn{\textbf{y}}{y} is specified as categorical with
@@ -249,7 +249,7 @@
   Laud, P.W. and Ibrahim, J.G. (1995). "Posterior Model Selection".
   Journal of the Royal Statistical Society, B 57, p. 247--262.
 }
-\author{Byron Hall \email{laplacesdemon@statisticat.com}}
+\author{Byron Hall \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{LaplaceApproximation}},
   \code{\link{predict.laplace}}.

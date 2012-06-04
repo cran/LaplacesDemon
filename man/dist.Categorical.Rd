@@ -47,7 +47,7 @@ Dirichlet distribution.
   \code{rcat} generates random deviates.
 }
 \references{\url{http://www.statisticat.com/laplacesdemon.html}}
-\author{Byron Hall \email{laplacesdemon@statisticat.com}}
+\author{Byron Hall \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{as.indicator.matrix}},
   \code{\link{ddirichlet}},

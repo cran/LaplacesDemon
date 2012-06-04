@@ -36,7 +36,8 @@ CSF(x, name, method="Quantiles", quantiles=c(0.025,0.500,0.975), output=FALSE)
   \item{quantiles}{This optional argument applies only when
     \code{method="Quantiles"}, in which case this vector indicates the
     probabilities that will be observed. It defaults to the median and
-    95\% probability interval bounds.}
+    95\% probability interval bounds (see \code{\link{p.interval}} for
+    more information).}
   \item{output}{Logical. If \code{output=TRUE}, then the results of the
     measure over the course of the cumulative samples will be output as
     an object, either a vector or matrix, depending on the \code{method}
@@ -54,7 +55,7 @@ CSF(x, name, method="Quantiles", quantiles=c(0.025,0.500,0.975), output=FALSE)
 
   When \code{method="HPD"}, the Highest Posterior Density (HPD) interval
   is observed as a function of the cumulative samples of \code{x}. For
-  more information, see the \code{\link{HPD}} function.
+  more information, see the \code{\link{p.interval}} function.
 
   When \code{method="is.stationary"}, stationarity is logically
   tested and the result is observed as a function of the cumulative
@@ -107,16 +108,16 @@ CSF(x, name, method="Quantiles", quantiles=c(0.025,0.500,0.975), output=FALSE)
   Cusum Path Plots: A Simple Diagnostic Idea''. Statistics and
   Computing, 8(3), p. 275--286. 
 }
-\author{Byron Hall \email{laplacesdemon@statisticat.com}}
+\author{Byron Hall \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{ESS}},
   \code{\link{Geweke.Diagnostic}},
-  \code{\link{HPD}},
   \code{\link{is.stationary}},
   \code{\link{LaplacesDemon}},
   \code{\link{MCSE}},
   \code{\link{Mode}},
-  \code{\link{Modes}}.
+  \code{\link{Modes}},
+  \code{\link{p.interval}}.
 }
 \examples{
 #Commented-out because of run-time for package builds

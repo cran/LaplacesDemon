@@ -78,8 +78,9 @@ Importance(object, Model, Data, Categorical=FALSE, Discrep, d=0)
   function calculates parameter importance, which is the probability
   that each parameter's marginal posterior distribution is greater than
   zero, where an important parameter does not include zero in its
-  probability interval. Parameter importance and variable importance
-  may disagree, and both should be studied.
+  probability interval (see \code{\link{p.interval}}). Parameter
+  importance and variable importance may disagree, and both should be
+  studied.
 
   The \code{Importance} function tends to indicate that a model fits the
   data better when variables are removed that have parameters with
@@ -105,9 +106,10 @@ Importance(object, Model, Data, Categorical=FALSE, Discrep, d=0)
   checks.
 }
 \references{\url{http://www.statisticat.com/laplacesdemon.html}}
-\author{Byron Hall \email{laplacesdemon@statisticat.com}}
+\author{Byron Hall \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{PosteriorChecks}},
+  \code{\link{p.interval}},
   \code{\link{predict.demonoid}},
   \code{\link{predict.laplace}},
   \code{\link{summary.demonoid.ppc}},

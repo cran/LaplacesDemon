@@ -53,7 +53,7 @@ LaplacesDemon <- function(Model, Data, Initial.Values, Covar=NULL,
           cat("'Thinning' has been changed to ", Thinning, ".\n",
                sep="")}
      if(Algorithm %in% c("AM","AMM","AMWG","DRAM","DRM","MWG","RAM",
-          "RWM","SAMWG","SMWG","USAMWG","USMWG")) {
+          "RWM","SAMWG","SMWG","twalk","USAMWG","USMWG")) {
           if(Algorithm == "AM") {
                Algorithm <- "Adaptive Metropolis"
                if(missing(Specs)) stop("The Specs argument is required.")
@@ -186,6 +186,37 @@ LaplacesDemon <- function(Model, Data, Initial.Values, Covar=NULL,
                if(all(Specs[["Dyn"]] == Specs[[1]])) Dyn <- Specs[[1]]
                else stop("Dyn was misspecified.")
                if(!is.matrix(Dyn)) Dyn <- as.matrix(Dyn)}
+          if(Algorithm == "twalk") {
+               Algorithm <- "t-walk"
+               if(missing(Specs)) stop("The Specs argument is required.")
+               if(length(Specs) != 3) stop("The Specs argument is incorrect.")
+               Adaptive <- 2
+               DR <- 0
+               if(Specs[["n1"]] == Specs[[1]]) {
+                    n1 <- Specs[[1]]
+                    if(n1 < 1) {
+                         cat("n1 must be at least 1. Changed to 4.\n")
+                         n1 <- 4}}
+               else {
+                    n1 <- 4
+                    cat("n1 was misspecified and changed to 4.\n")}
+               if(Specs[["at"]] == Specs[[2]]) {
+                    at <- Specs[[2]]
+                    if(at <= 0) {
+                         cat("at must be positive. Changed to 6.\n")
+                         at <- 6}}
+               else {
+                    at <- 6
+                    cat("at was misspecified and changed to 6.\n")}
+               if(Specs[["aw"]] == Specs[[3]]) {
+                    aw <- Specs[[3]]
+                    if(aw <= 0) {
+                         cat("aw must be positive. Changed to 1.5.\n")
+                         at <- 1.5}}
+               else {
+                    aw <- 1.5
+                    cat("aw was misspecified and changed to 1.5.\n")}
+               Periodicity <- 1}
           if(Algorithm == "USAMWG") {
                Algorithm <- "Updating Sequential Adaptive Metropolis-within-Gibbs"
                if(missing(Specs)) stop("The Specs argument is required.")
@@ -355,6 +386,11 @@ LaplacesDemon <- function(Model, Data, Initial.Values, Covar=NULL,
                Periodicity, Status, Thinning, Acceptance, Dev, DiagCovar,
                Iden.Mat, LIV, Mon, Mo0, post, ScaleF, thinned, tuning,
                VarCov, parm.names=Data$parm.names, Dyn)}
+     else if(Algorithm == "t-walk") {
+          mcmc.out <- twalk(Model, Data, Adaptive, DR, Iterations,
+               Periodicity, Status, Thinning, Acceptance, Dev, DiagCovar,
+               Iden.Mat, LIV, Mon, Mo0, post, ScaleF, thinned, tuning,
+               VarCov, n1=n1, at=at, aw=aw)}
      else if(Algorithm == "Updating Sequential Adaptive Metropolis-within-Gibbs") {
           mcmc.out <- USAMWG(Model, Data, Adaptive, DR, Iterations,
                Periodicity, Status, Thinning, Acceptance, Dev, DiagCovar,
@@ -1251,6 +1287,312 @@ SMWG <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
           Mon=Mon,
           thinned=thinned,
           VarCov=VarCov)
+     return(out)
+     }
+twalk <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
+     Status, Thinning, Acceptance, Dev, DiagCovar, Iden.Mat, LIV, Mon,
+     Mo0, post, ScaleF, thinned, tuning, VarCov, n1, at, aw)
+     {
+     Obj <- function(x) {return(Model(x, Data)[[1]]*-1)}
+     Supp <- function(x) {return(all.equal(x, Model(x, Data)[[5]]))}
+     IntProd <- function(x) {return(sum(x*x))}
+     DotProd <- function(x, y) {return(sum(x*y))}
+     Simh1 <- function(dim, pphi, x, xp, beta)
+          {
+          phi <- runif(dim) < pphi
+          rt <- NULL
+          for (i in 1:dim)
+               if(phi[i])
+                    rt <- append(rt, xp[i] + beta*(xp[i] - x[i]))
+               else
+                    rt <- append(rt, x[i])
+          return(list(rt=rt, nphi=sum(phi)))
+          }
+     Simfbeta <- function(at)
+          {
+          if(runif(1) < (at-1)/(2*at))
+               return(exp(1/(at + 1)*log(runif(1))))
+          else
+               return(exp(1/(1 - at)*log(runif(1))))
+          }
+     Simh2 <- function(dim, pphi, aw, x, xp)
+          {
+          u <- runif(dim)
+          phi <- runif(dim) < pphi
+          z <- (aw/(1+aw))*(aw*u^2 + 2*u -1)
+          z <- z*phi
+          return(list(rt=x + (x - xp)*z, nphi=sum(phi)))
+          }
+     Simh3 <- function(dim, pphi, x, xp)
+          {
+          phi <- runif(dim) < pphi
+          sigma <- max(phi*abs(xp - x))
+          x + sigma*rnorm(dim)*phi
+          return(list(rt=x + sigma*rnorm(dim)*phi, nphi=sum(phi),
+               sigma=sigma))
+          }
+     G3U <- function(nphi, sigma, h, x, xp)
+          {
+          if(nphi > 0)
+               return((nphi/2)*log(2*pi) + nphi*log(sigma) +
+                    0.5*IntProd(h - xp)/(sigma^2))
+          else
+               return(0) 
+          }
+     Simh4 <- function(dim, pphi, x, xp)
+          {
+          phi <- runif(dim) < pphi
+          sigma <- max(phi*abs(xp - x))/3
+          rt <- NULL
+          for (i in 1:dim)
+               if(phi[i])
+                    rt <- append(rt, xp[i] + sigma*rnorm(1))
+               else
+                    rt <- append(rt, x[i])
+          return(list(rt=rt, nphi=sum(phi), sigma=sigma))
+          }
+     G4U <- function(nphi, sigma, h, x, xp)
+          {
+          if(nphi > 0)
+               return((nphi/2)*log(2*pi) + nphi*log(sigma) +
+                    0.5*IntProd((h - x))/(sigma^2))
+          else
+               return(0)
+          }
+     OneMove <- function(dim, Obj, Supp, x, U, xp, Up, at=at, aw=aw,
+          pphi=pphi, F1=0.4918, F2=0.9836, F3=0.9918)
+          {
+          ker <- runif(1) ### Choose a kernel
+          if(ker < F1) {
+               ### Kernel h1: traverse	
+               dir <- runif(1) 
+               funh <- 1
+               if((0 <= dir) && (dir < 0.5)) {	
+                    beta <- Simfbeta(at)
+                    tmp <- Simh1(dim, pphi, xp, x, beta)
+                    yp <- tmp$rt
+                    nphi <- tmp$nphi
+                    y  <- x
+                    propU <- U
+                    if(Supp(yp)) {
+                         propUp <- Obj(yp)
+                         ### The proposal is symmetric
+                         if(nphi == 0)
+                              A <- 1 ### Nothing moved
+                         else
+                              A <- exp((U - propU) + (Up - propUp) +  (nphi-2)*log(beta))}
+                    else {
+                         propUp <- NULL
+                         A <- 0  ### Out of support, not accepted
+                         }
+                    }
+               if((0.5 <= dir) && (dir < 1.0)) {
+                    beta <- Simfbeta(at)
+                    tmp <- Simh1(dim, pphi, x, xp, beta)
+                    y <- tmp$rt
+                    nphi <- tmp$nphi
+                    yp  <- xp
+                    propUp <- Up
+                    if(Supp(y)) {
+                         propU <- Obj(y)
+                         ### The proposal is symmetric
+                         if(nphi == 0)
+                              A <- 1 ### Nothing moved
+                         else
+                              A <- exp((U - propU) + (Up - propUp) +  (nphi-2)*log(beta))}
+                    else {
+                         propU <- NULL
+                         A <- 0  ### Out of support, not accepted
+                         }
+                    }
+               }
+          if((F1 <= ker) && (ker < F2)) {
+               ### Kernel h2: walk
+               dir <- runif(1)
+               funh <- 2
+               if((0 <= dir) && (dir < 0.5)) {
+                    ### x as pivot
+                    tmp <- Simh2(dim, pphi, aw, xp, x)
+                    yp <- tmp$rt
+                    nphi <- tmp$nphi
+                    y  <- x
+                    propU <- U
+                    if((Supp(yp)) && (all(abs(yp - y) > 0))) {
+                         propUp <- Obj(yp)
+                         A <- exp((U - propU) + (Up - propUp))}
+                    else {
+                         propUp <- NULL
+                         A <- 0  ### Out of support, not accepted
+                         }
+                    }
+               if((0.5 <= dir) && (dir < 1.0)) {
+                    ### xp as pivot
+                    tmp <- Simh2(dim, pphi, aw, x, xp)
+                    y <- tmp$rt
+                    nphi <- tmp$nphi
+                    yp  <- xp
+                    propUp <- Up
+                    if((Supp(y)) && (all(abs(yp - y) > 0))) {
+                         propU <- Obj(y)
+                         A <- exp((U - propU) + (Up - propUp))}
+                    else {
+                         propU <- NULL
+                         A <- 0  ### Out of support, not accepted
+                         }
+                    }
+               }
+          if((F2 <= ker) && (ker < F3)) {
+               ### Kernel h3: blow
+               dir <- runif(1)
+               funh <- 3
+               if((0 <= dir) && (dir < 0.5)) {
+                    ### x as pivot
+                    tmp <- Simh3(dim, pphi, xp, x)
+                    yp <- tmp$rt
+                    nphi <- tmp$nphi
+                    sigma <- tmp$sigma
+                    y  <- x
+                    propU <- U
+                    if((Supp(yp)) && all(yp != x)) {
+                         propUp <- Obj(yp)
+                         W1 <- G3U(nphi, sigma,  yp, xp,  x)
+                         W2 <- G3U(nphi, sigma,  xp, yp,  x)
+                         A <- exp((U - propU) + (Up - propUp) +  (W1 - W2))}
+                    else {
+                         propUp <- NULL
+                         A <- 0  ### Out of support, not accepted
+                         }
+                    }
+               if((0.5 <= dir) && (dir < 1.0)) {
+                    ### xp as pivot
+                    tmp <- Simh3(dim, pphi, x, xp)
+                    y <- tmp$rt
+                    nphi <- tmp$nphi
+                    sigma <- tmp$sigma
+                    yp  <- xp
+                    propUp <- Up
+                    if((Supp(y)) && all(y != xp)) {
+                         propU <- Obj(y)
+                         W1 <- G3U(nphi, sigma,   y,  x, xp)
+                         W2 <- G3U(nphi, sigma,   x,  y, xp)
+                         A <- exp((U - propU) + (Up - propUp) +  (W1 - W2))}
+                    else {
+                         propU <- NULL
+                         A <- 0  ### Out of support, not accepted
+                         }
+                    }
+               }
+          if(F3 <= ker) {
+               ## Kernel h4: hop
+               dir <- runif(1)
+               funh <- 4
+               if((0 <= dir) && (dir < 0.5)) {
+                    ### x as pivot
+                    tmp <- Simh4(dim, pphi, xp, x)
+                    yp <- tmp$rt
+                    nphi <- tmp$nphi
+                    sigma <- tmp$sigma
+                    y  <- x
+                    propU <- U
+                    if((Supp(yp)) && all(yp != x)) {
+                         propUp <- Obj(yp)
+                         W1 <- G4U(nphi, sigma,  yp, xp,  x)
+                         W2 <- G4U(nphi, sigma,  xp, yp,  x)
+                         A <- exp((U - propU) + (Up - propUp) +  (W1 - W2))}
+                    else {
+                         propUp <- NULL
+                         A <- 0  ### Out of support, not accepted
+                         }
+                    }
+               if((0.5 <= dir) && (dir < 1.0)) {
+                    ### xp as pivot
+                    tmp <- Simh4(dim, pphi, x, xp)
+                    y <- tmp$rt
+                    nphi <- tmp$nphi
+                    sigma <- tmp$sigma
+                    yp  <- xp
+                    propUp <- Up
+                    if((Supp(y)) && all(y != xp)) {
+                         propU <- Obj(y)
+                         W1 <- G4U(nphi, sigma,   y,  x, xp)
+                         W2 <- G4U(nphi, sigma,   x,  y, xp)
+                         A <- exp((U - propU) + (Up - propUp) +  (W1 - W2))}
+                    else {
+                         propU <- NULL
+                         A <- 0  ### Out of support, not accepted
+                         }
+                    }
+               }
+          if(is.nan(A)) {
+               #### Debugging
+               cat("twalk: Error in evaluating the objective:")
+               cat( funh, "DU=", (U - propU), "DUp=", (Up - propUp),
+                    "DW=", (W1 - W2), "A=", A, "\n", y, "\n", yp, "\n")
+               cat("U=", U, "propU=", propU, "Up=", Up, "propUp", propUp)}
+          return(list(y=y, propU=propU, yp=yp, propUp=propUp, A=A,
+               funh=funh, nphi=nphi))
+          }
+     Runtwalk <- function(Iterations, dim, Obj, Supp, x0, xp0, 
+          pphi, at, aw, F1=0.4918, F2=F1+0.4918, F3=F2+0.0082, Model,
+          Data, Status, Thinning, Acceptance, Dev, Mon, Mo0, post, thinned)
+          {
+          x <- x0
+          xp <- xp0
+          if(Supp(x) && Supp(xp)) {
+               U <- Obj(x)
+               Up <- Obj(xp)
+               }
+          else {
+               cat(paste("Initial values out of support,\n  x=", x,"\n xp=", xp))
+               Iterations <- 0}
+          if(any(abs(x0 - xp0) <= 0)) {
+               cat("\nBoth sets of initial values are not unique.")
+               Iterations <- 0}
+          Acceptance <- 0
+          for (iter in 1:Iterations) {
+               ### Print Status
+               if(iter %% Status == 0) {cat("Iteration: ", iter,
+                    ",   Proposal: Subset Multivariate\n", sep="")}
+               ### Store Current Posterior
+               if(iter > 1) post[iter,] <- post[iter-1,]
+               ### Save Thinned Samples
+               if(iter %% Thinning == 0) {
+                    thinned <- rbind(thinned, post[iter,])
+                    Dev <- rbind(Dev, Mo0[[2]])
+                    Mon <- rbind(Mon, Mo0[[3]])}
+               ### Propose New Parameter Values
+               move <- OneMove(dim=dim, Obj=Obj, Supp=Supp, x, U, xp, Up,
+                    at=at, aw=aw, pphi=pphi, F1=F1, F2=F2, F3=F3)
+               ### Log-Posterior of the proposed state
+               Mo1 <- Model(x, Data)
+               ### Accept/Reject
+               if(runif(1) < move$A) {
+                    Mo0 <- Mo1
+                    post[iter,] <- Mo1[[5]]
+                    Acceptance <- Acceptance + 1 #move$nphi/dim
+                    if(iter %% Thinning == 0) {
+                         Dev[nrow(Dev),] <- Mo1[[2]]
+                         Mon[nrow(Mon),] <- Mo1[[3]]}
+                    x <- move$y
+                    U <- move$propU
+                    xp <- move$yp
+                    Up <- move$propUp
+                    }
+               }
+          out <- list(Acceptance=Acceptance,
+               Dev=Dev,
+               DiagCovar=DiagCovar,
+               Mon=Mon,
+               thinned=thinned,
+               VarCov=VarCov)
+          return(out)
+          }
+     out <- Runtwalk(Iterations=Iterations, dim=LIV, Obj=Obj, Supp=Supp,
+          x0=post[1,], xp0=GIV(Model, Data), pphi=n1/LIV, at=6, aw=1.5,
+          Model=Model, Data=Data, Status=Status, Thinning=Thinning,
+          Acceptance=Acceptance, Dev=Dev, Mon=Mon, Mo0=Mo0, post=post,
+          thinned=thinned)
+     ### Output
      return(out)
      }
 USAMWG <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
