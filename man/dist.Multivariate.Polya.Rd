@@ -39,14 +39,14 @@ The multivariate Polya distribution, named after George Polya (1887-1985), also 
 \value{
   \code{dmvpolya} gives the density.
 }
+\author{Byron Hall \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{dcat}},
-  \code{\link{ddirichlet}},
+  \code{\link{ddirichlet}}, and
   \code{\link{dmultinom}}.
 }
-\author{Byron Hall \email{statisticat@gmail.com}}
 \examples{
 library(LaplacesDemon)
 dmvpolya(x=1:3, alpha=1:3, log=TRUE)
 }
-\keyword{distribution}
+\keyword{Distribution}

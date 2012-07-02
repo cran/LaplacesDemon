@@ -10,6 +10,8 @@ plot.demonoid <- function(x, BurnIn=1, Data=NULL, PDF=FALSE,
      {
      ### Initial Checks
      if(missing(x)) stop("The x argument is required.")
+     if(class(x) != "demonoid")
+          stop("x must be of class demonoid.")
      if(is.null(Data)) stop("The Data argument is NULL.")
      if(BurnIn >= nrow(x$Posterior1)) BurnIn <- 1
      ### Selecting Parms
@@ -29,10 +31,8 @@ plot.demonoid <- function(x, BurnIn=1, Data=NULL, PDF=FALSE,
                     keepcols <- c(keepcols,
                          grep(Parms[i], colnames(x$Posterior1)))}}
           Posterior <- as.matrix(x$Posterior1[,keepcols])
-          colnames(Posterior) <- colnames(x$Posterior1)[keepcols]
-          }
-     if(PDF == TRUE)
-          {
+          colnames(Posterior) <- colnames(x$Posterior1)[keepcols]}
+     if(PDF == TRUE) {
           pdf("LaplacesDemon.Plots.pdf")
           par(mfrow=c(3,3))
           }

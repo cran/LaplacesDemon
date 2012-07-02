@@ -60,7 +60,7 @@ univariate Cauchy distribution.
   \code{\link{dcauchy}},
   \code{\link{dinvwishart}},
   \code{\link{dmvcp}},
-  \code{\link{dmvt}},
+  \code{\link{dmvt}}, and
   \code{\link{dmvtp}}.
 }
 \examples{
@@ -77,6 +77,6 @@ X <- X[rowSums((X >= quantile(X, probs=0.025)) &
      (X <= quantile(X, probs=0.975)))==2,]
 joint.density.plot(X[,1], X[,2], color=TRUE)
 }
-\keyword{distribution}
+\keyword{Distribution}
 
 

@@ -10,7 +10,8 @@ plot.importance <- function(x, ...)
      {
      ### Initial Checks
      if(missing(x)) stop("The x argument is required.")
-     if(class(x) != "importance") stop("x must be of class importance.")
+     if(!identical(class(x), "importance"))
+          stop("x must be of class importance.")
      dotchart(x[,3], main="Variable Importance", xlab="L-criterion",
           pch=20)
      }

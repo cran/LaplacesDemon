@@ -82,7 +82,7 @@ inference.
   \code{\link{dlaplace}},
   \code{\link{dmvl}},
   \code{\link{dnorm}},
-  \code{\link{dnormp}},
+  \code{\link{dnormp}}, and
   \code{\link{dnormv}}.
 }
 \examples{
@@ -102,4 +102,4 @@ legend(2, 0.9, expression(paste(mu==0, ", ", tau==0.5),
      paste(mu==0, ", ", tau==1), paste(mu==0, ", ", tau==2)),
      lty=c(1,1,1), col=c("red","green","blue"))
 }
-\keyword{distribution}
+\keyword{Distribution}

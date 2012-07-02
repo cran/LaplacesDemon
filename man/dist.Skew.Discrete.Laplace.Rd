@@ -73,16 +73,16 @@ These functions are similar to those in the \code{DiscreteLaplace} package.
   \code{qslaplace} gives the quantile function, and
   \code{rslaplace} generates random deviates.
 }
+\references{
+  Kozubowski, T.J. and Inusah, S. (2006). "A Skew Laplace Distribution
+  on Integers". AISM, 58, p. 555--571.
+}
 \seealso{
   \code{\link{dalaplace}},
   \code{\link{dexp}},
   \code{\link{dlaplace}},
-  \code{\link{dlaplacep}},
+  \code{\link{dlaplacep}}, and
   \code{\link{dslaplace}}.
-}
-\references{
-  Kozubowski, T.J. and Inusah, S. (2006). "A Skew Laplace Distribution
-  on Integers". AISM, 58, p. 555--571.
 }
 \examples{
 library(LaplacesDemon)
@@ -102,4 +102,4 @@ x <- rsdlaplace(5,0.5,0.5)
           paste(p==0.9, ", ", q==0.1)),
           lty=c(1,1,1), col=c("red","green","blue"))
 }
-\keyword{distribution}
+\keyword{Distribution}

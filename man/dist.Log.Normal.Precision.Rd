@@ -60,7 +60,7 @@ log-normal distribution with the mean and standard deviation. These
 functions provide the precision parameterization for convenience and
 familiarity.
 
-An uninformative distribution is obtained in the limit as
+A flat distribution is obtained in the limit as
 \eqn{\tau \rightarrow 0}{tau -> 0}.
 
 These functions are similar to those in \code{base R}.
@@ -76,7 +76,7 @@ These functions are similar to those in \code{base R}.
 \seealso{
   \code{\link{dnorm}},
   \code{\link{dnormp}},
-  \code{\link{dnormv}},
+  \code{\link{dnormv}}, and
   \code{\link{prec2var}}.
 }
 \examples{
@@ -96,4 +96,4 @@ legend(2, 0.9, expression(paste(mu==0, ", ", tau==0.1),
      paste(mu==0, ", ", tau==1), paste(mu==0, ", ", tau==5)),
      lty=c(1,1,1), col=c("red","green","blue"))
 }
-\keyword{distribution}
+\keyword{Distribution}

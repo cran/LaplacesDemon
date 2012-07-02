@@ -13,7 +13,7 @@ PosteriorChecks <- function(x, Parms=NULL)
      {
      ### Initial Checks
      if(missing(x)) stop("The x argument is required.")
-     if((class(x) != "demonoid") & (class(x) != "laplace"))
+     if(!identical(class(x), "demonoid") & !identical(class(x), "laplace"))
           stop("An object of class demonoid or laplace is required.")
      #Kurtosis and Skewness Functions
      kurtosis <- function(x) {  
@@ -25,7 +25,7 @@ PosteriorChecks <- function(x, Parms=NULL)
           skew <- m3/(sd(x)^3)
           return(skew)}
      ### class demonoid
-     if(class(x) == "demonoid") {
+     if(identical(class(x), "demonoid")) {
           ### Posterior and Monitors
           if(is.matrix(x$Posterior2) == FALSE) {
                post <- cbind(x$Posterior1, x$Monitor)
@@ -70,7 +70,7 @@ PosteriorChecks <- function(x, Parms=NULL)
           options(warn=0)
           }
      ### class laplace
-     if(class(x) == "laplace") {
+     if(identical(class(x), "laplace")) {
           ### Posterior
           if(any(is.na(x$Posterior)))
                stop("Posterior samples do not exist.")

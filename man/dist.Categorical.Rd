@@ -50,7 +50,7 @@ Dirichlet distribution.
 \author{Byron Hall \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{as.indicator.matrix}},
-  \code{\link{ddirichlet}},
+  \code{\link{ddirichlet}}, and
   \code{\link{dmultinom}}.
 }
 \examples{
@@ -58,4 +58,4 @@ library(LaplacesDemon)
 dcat(x=1, p=c(0.3,0.3,0.4))
 rcat(n=10, p=c(0.1,0.3,0.6))
 }
-\keyword{distribution}
+\keyword{Distribution}

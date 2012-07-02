@@ -18,11 +18,11 @@
 BayesTheorem(PrA, PrBA)
 }
 \arguments{
-\item{PrA}{This required argument is the prior probability of \eqn{A},
-  or \eqn{\Pr(A)}{Pr(A)}.}
-\item{PrBA}{This required argument is the conditional probability of
-  \eqn{B} given \eqn{A} or \eqn{\Pr(B | A)}{Pr(B | A)}, and is known as
-  the data, evidence, or likelihood.}
+  \item{PrA}{This required argument is the prior probability of \eqn{A},
+    or \eqn{\Pr(A)}{Pr(A)}.}
+  \item{PrBA}{This required argument is the conditional probability of
+    \eqn{B} given \eqn{A} or \eqn{\Pr(B | A)}{Pr(B | A)}, and is known
+    as the data, evidence, or likelihood.}
 }
 \value{
   The \code{BayesTheorem} function returns the conditional probability
@@ -129,8 +129,8 @@ BayesTheorem(PrA, PrBA)
 }
 \author{Byron Hall \email{statisticat@gmail.com}}
 \seealso{
-   \code{\link{LaplaceApproximation}},
-   \code{\link{LaplacesDemon}}
+  \code{\link{LaplaceApproximation}} and
+  \code{\link{LaplacesDemon}}
 }
 \examples{
 # Pr(Hell|Consort) =
@@ -138,5 +138,6 @@ PrA <- c(0.75,0.25)
 PrBA <- c(6/9, 5/7)
 BayesTheorem(PrA, PrBA)
 }
-\keyword{Bayesian, probability}
+\keyword{Bayesian}
+\keyword{Probability}
 

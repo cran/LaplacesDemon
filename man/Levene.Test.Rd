@@ -62,8 +62,8 @@ Levene.Test(x, Method="U", G=NULL, Data=NULL)
   One plot is produced per univariate application of Levene's test. Each
   plot shows the test statistic W, both from the observed process
   (W.obs as a black density) and the replicated process (W.rep as a red
-  line). The mean of W.obs is reported, along with its 95\% probability
-  interval (see \code{\link{p.interval}}), the probability
+  line). The mean of W.obs is reported, along with its 95\% quantile-based
+  probability interval (see \code{\link{p.interval}}), the probability
   \eqn{p(W^{obs} > W^{rep})}{p(W.obs > W.rep)}, and the indicated
   results, either homoskedastic or heteroskedastic.
 
@@ -83,15 +83,16 @@ Levene.Test(x, Method="U", G=NULL, Data=NULL)
   Stanford, CA: Stanford University Press.
 }
 \author{Byron Hall \email{statisticat@gmail.com}}
+\seealso{
+  \code{\link{LaplaceApproximation}},
+  \code{\link{LaplacesDemon}}, and
+  \code{\link{p.interval}}.
+}
 \examples{
 #First, update the model with LaplaceApproximation or LaplacesDemon.
 #Then, use the predict function, creating, say, object Pred.
 #Finally:
 #Levene.Test(Pred)
 }
-\seealso{
-  \code{\link{LaplaceApproximation}},
-  \code{\link{LaplacesDemon}}, and
-  \code{\link{p.interval}}.
-}
-\keyword{utility}
+\keyword{Homoskedasticity}
+\keyword{Utility}

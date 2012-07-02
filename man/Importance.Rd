@@ -2,18 +2,18 @@
 \alias{Importance}
 \title{Variable Importance}
 \description{
-The \code{Importance} function considers variable importance (or
-predictor importance) to be the effect that the variable has on
-replicates \eqn{\textbf{y}^{rep}}{y^rep} (or
-\eqn{\textbf{Y}^{rep}}{Y^rep}) when the variable is removed
-from the model by setting it equal to zero. Here, variable
-importance is considered in terms of the comparison of posterior
-predictive checks. This may be considered to be a form of sensitivity
-analysis, and can be useful for model revision, variable selection, and
-model interpretation.
+  The \code{Importance} function considers variable importance (or
+  predictor importance) to be the effect that the variable has on
+  replicates \eqn{\textbf{y}^{rep}}{y^rep} (or
+  \eqn{\textbf{Y}^{rep}}{Y^rep}) when the variable is removed from the
+  model by setting it equal to zero. Here, variable importance is
+  considered in terms of the comparison of posterior predictive
+  checks. This may be considered to be a form of sensitivity analysis,
+  and can be useful for model revision, variable selection, and model
+  interpretation.
 
-Currently, this function only tests the variable importance of design
-matrix \eqn{\textbf{X}}{X}.
+  Currently, this function only tests the variable importance of design
+  matrix \eqn{\textbf{X}}{X}.
 }
 \usage{
 Importance(object, Model, Data, Categorical=FALSE, Discrep, d=0)
@@ -53,19 +53,24 @@ Importance(object, Model, Data, Categorical=FALSE, Discrep, d=0)
   \eqn{\textbf{X}}{X} being set to zero and effectively removed. The
   results show the impact of sequentially removing each predictor.
 
-  The criteria for variable importance may differ from model to
+  The criterion for variable importance may differ from model to
   model. As a default, the L-criterion is recommended for models with
   dependent variables that are not categorical, provided that
-  sample size is small enough that it does not result in \code{Inf}, and
-  \code{Discrep="min(yhat[i,]) < min(y)"} is recommended for models with
-  categorical dependent variables.
+  sample size is small enough that it does not result in
+  \code{Inf}. For more information on the L-criterion, see the
+  accompanying vignette entitled "Bayesian Inference".
 
   With the L-criterion, variable importance has a positive relationship, 
   such that larger values indicate a more important variable, because
   removing that variable resulted in a worse fit to the data, for
-  example. Also, \code{S.L} may be helpful in interpreting the extent of
-  a change in fit. Variable importance has a negative relationship with
-  Mean.Lift.
+  example. Ibrahim recommended considering the model with the lowest
+  L-criterion, say as \eqn{L_1}{L[1]}, and the model with the closest
+  L-criterion, say as \eqn{L_2}{L[2]}, and creating a comparison score
+  as \eqn{\phi = (L_2-L_1)/S_L}{phi = (L[2]-L[1])/S[L]}, where
+  \code{S.L} is from the \eqn{L_1}{L[1]} model. If the comparison score,
+  \eqn{\phi}{phi} is less than 2, then \eqn{L_2}{L[2]} is within 2
+  standard deviations of \eqn{L_1}{L[1]}, and is the recommended cut-off
+  for model choice.
 
   The \code{Importance} function may indicate that a model fits the data
   better with a variable removed. In which case, the user may
@@ -95,24 +100,32 @@ Importance(object, Model, Data, Categorical=FALSE, Discrep, d=0)
 
   The information provided by the \code{Importance} function may be used
   for model revision, or reporting the relative importance of variables.
+
+  The \code{\link{plot.importance}} function is available to plot the
+  output of the \code{Importance} function according to the L-criterion.
 }
 \value{
-  \code{Importance} returns a matrix with a number of rows equal to the
-  number of columns in design matrix \eqn{\textbf{X}}{X} + 1 (including
-  the full model), and 3 columns, which are Concordance (or Mean.Lift if
-  categorical), Discrep, and L-criterion. Each row represents a model
-  with a predictor in \eqn{\textbf{X}}{X} removed (except for the first
-  row, which is the full model), and the resulting posterior predictive
-  checks.
+  \code{Importance} returns an object of class \code{importance}, which
+  is a matrix with a number of rows equal to the number of columns in
+  design matrix \eqn{\textbf{X}}{X} + 1 (including the full model), and
+  3 columns, which are Concordance (or Mean.Lift if categorical),
+  Discrep, and L-criterion. Each row represents a model with a predictor
+  in \eqn{\textbf{X}}{X} removed (except for the first row, which is the
+  full model), and the resulting posterior predictive checks. For
+  non-categorical dependent variables, an attribute is returned with the
+  object, and the attribute is a vector of \code{S.L}, the calibration
+  number of the L-criterion.
 }
 \references{\url{http://www.statisticat.com/laplacesdemon.html}}
 \author{Byron Hall \email{statisticat@gmail.com}}
 \seealso{
+  \code{\link{is.importance}},
+  \code{\link{plot.importance}},
   \code{\link{PosteriorChecks}},
   \code{\link{p.interval}},
   \code{\link{predict.demonoid}},
   \code{\link{predict.laplace}},
-  \code{\link{summary.demonoid.ppc}},
+  \code{\link{summary.demonoid.ppc}}, and
   \code{\link{summary.laplace.ppc}}.
 }
 \examples{
@@ -121,4 +134,4 @@ Importance(object, Model, Data, Categorical=FALSE, Discrep, d=0)
 #Then
 #Importance(Fit, Model, MyData, Discrep="Chi-Square")
 }
-\keyword{posterior predictive check}
+\keyword{Posterior Predictive Checks}

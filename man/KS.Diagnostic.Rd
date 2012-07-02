@@ -53,7 +53,7 @@ KS.Diagnostic(x)
 \author{Byron Hall \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{is.stationary}},
-  \code{\link{ks.test}},
+  \code{\link{ks.test}}, and
   \code{\link{LaplacesDemon}}.
 }
 \examples{
@@ -61,4 +61,5 @@ library(LaplacesDemon)
 x <- rnorm(1000)
 KS.Diagnostic(x)
 }
-\keyword{diagnostic}
+\keyword{Diagnostic}
+\keyword{MCMC}

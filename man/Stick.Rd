@@ -76,4 +76,6 @@ Stick(theta)
   \code{\link{dmvpolya}}, and 
   \code{\link{dStick}}.
 }
-\keyword{subjective probability, utility}
+\keyword{Stick-Breaking Process}
+\keyword{Truncated Stick-Breaking Process}
+\keyword{Utility}

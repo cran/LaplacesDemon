@@ -20,8 +20,8 @@ ESS <- function(x)
                v0[i] <- 0
                order[i] <- 0}
           else {
-               test <- try(ar.out <- ar(x[,i], aic=TRUE), silent=TRUE)
-               if(class(test) == "try-error") {
+               ar.out <- try(ar(x[,i], aic=TRUE), silent=TRUE)
+               if(inherits(ar.out, "try-error")) {
                     v0[i] <- 0
                     order[i] <- 0}
                else {

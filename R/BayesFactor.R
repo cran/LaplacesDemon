@@ -11,9 +11,11 @@ BayesFactor <- function(x)
      if(missing(x)) stop("x is required.")
      Model.num <- length(x)
      for (i in 1:Model.num) {
-          if({class(x[[i]]) != "demonoid"} & {class(x[[i]]) != "laplace"})
-            stop("x is not of class demonoid or laplace.")
-          if({class(x[[i]]) == "laplace"} && {x[[i]]$Converged == FALSE}) { 
+          if(!identical(class(x[[i]]), "demonoid") &
+               !identical(class(x[[i]]), "laplace"))
+               stop("x is not of class demonoid or laplace.")
+          if(identical(class(x[[i]]), "laplace") &
+               identical(x[[i]]$Converged, FALSE)) { 
                stop("LaplaceApproximation() did not converge in ",
                     "M[",i,"].\n", sep="")}
           if(is.na(x[[i]]$LML))

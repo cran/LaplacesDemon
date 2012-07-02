@@ -15,10 +15,9 @@ LaplaceApproximation <- function(Model, parm, Data, Interval=1.0E-6,
      ##########################  Initial Checks  ##########################
      time1 <- proc.time()
      LA.call <- match.call()
-     if(missing(Model))
-          stop("Model is a required argument.")
-     if(missing(Data))
-          stop("Data is a required argument.")
+     if(missing(Model)) stop("Model is a required argument.")
+     if(!is.function(Model)) stop("Model must be a function.")
+     if(missing(Data)) stop("Data is a required argument.")
      if(missing(parm)) {
           cat("Initial values were not supplied, and\n")
           cat("have been set to zero prior to LaplaceApproximation().\n")
@@ -68,6 +67,8 @@ LaplaceApproximation <- function(Model, parm, Data, Interval=1.0E-6,
      ###########################  Preparation  ############################
      ### Attempt prior to starting...
      m.old <- Model(parm, Data)
+     if(!is.list(m.old)) stop("Model must return a list.")
+     if(length(m.old) != 5) stop("Model must return five components.")
      if(length(m.old[[1]]) > 1) stop("Multiple joint posteriors exist!")
      if(!identical(length(parm), length(m.old[[5]])))
           stop("The number of initial values and parameters differs.")
@@ -110,9 +111,8 @@ LaplaceApproximation <- function(Model, parm, Data, Interval=1.0E-6,
      rownames(post) <- 1:{nrow(post)}
      ########################  Covariance Matirx  #########################
      Approx.Hessian <- Hessian(Model, parm.new, Data)
-     Inverse.test <- try(VarCov.t <- -as.inverse(Approx.Hessian),
-          silent=TRUE)
-     if(class(Inverse.test) != "try-error") {
+     Inverse.test <- try(-as.inverse(Approx.Hessian), silent=TRUE)
+     if(!inherits(Inverse.test, "try-error")) {
           VarCov <- Inverse.test
           diag(VarCov) <- ifelse(diag(VarCov) <= 0,
                .Machine$double.eps, diag(VarCov))}

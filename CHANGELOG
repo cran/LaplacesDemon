@@ -1,3 +1,30 @@
+2012-06-30 Added is.proper
+2012-06-29 Vignette Bayesian Inference: Added WIP and Reference Prior sections
+2012-06-28 Vignette Examples: Fixed bug with MNL, used K, not J
+2012-06-27 Added LPL.interval
+2012-06-26 Added logadd
+2012-06-25 joint.density.plot: Added Trace argument
+2012-06-24 plot.demonoid.ppc, plot.laplace.ppc: Residuals now look caterpillarish
+2012-06-23 Vignette Tutorial: Changed to t-walk, added HPC section
+2012-06-22 Added read.matrix
+2012-06-21 Added is.data and is.model
+2012-06-20 Added Thin
+2012-06-19 AMWG, SAMWG, USAMWG: Sped up by replacing ifelse with which
+2012-06-18 LaplacesDemon: Added 3 algorithms: AHMC, HMC, and THMC
+2012-06-17 Added Juxtapose, is.juxtapose, and plot.juxtapose
+2012-06-16 Added is.bayesfactor, is.importance, and is.ppc
+2012-06-15 Added LaplacesDemon.RAM to estimate MB in required RAM
+2012-06-14 plot.demonoid.ppc, plot.laplace.ppc: Fixed bug with Jarque-Bera
+2012-06-13 Fixed bug with twalk regarding secondary parameter vector
+2012-06-12 Vignette Examples: Moved Initial Values AFTER the Model
+2012-06-11 caterpillar.plot: Added plot for class demonoid.hpc
+2012-06-10 GIV: Fixed bug when model function causes an error
+2012-06-09 LaplacesDemon: Sped up twalk by reducing Model calls
+2012-06-08 keywords: redid as index entries
+2012-06-07 LaplacesDemon: Fixed bug with twalk, so Adaptive = Iter. + 1
+2012-06-06 Added plot.demonoid.hpc
+2012-06-05 Added LaplacesDemon.hpc for high performance computing
+2012-06-04 Email Address: Changed back to statisticat@gmail.com
 2012-06-03 LaplacesDemon: Added the t-walk algorithm
 2012-06-03 caterpillar.plot: Expanded to accept a generic matrix
 2012-06-02 p.interval: Added MM for multi-modal probability intervals

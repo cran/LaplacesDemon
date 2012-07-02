@@ -30,7 +30,35 @@ PosteriorChecks(x, Parms)
     meta-characters, though these are acceptable: ".", "[", and "]".}
 }
 \details{\code{PosteriorChecks} is a supplemental function that returns
-  a list with two components.}
+  a list with two components. Following is a summary of popular uses of
+  the \code{PosteriorChecks} function.
+
+  First (and only for MCMC users), the user may be considering the
+  current MCMC algorithm versus others. In this case, the
+  \code{PosteriorChecks} function is often used to find the two MCMC
+  chains with the highest \code{\link{IAT}}, and these chains are
+  studied for non-randomness with a joint trace plot, via the
+  \code{\link{joint.density.plot}} function.
+
+  After a user is convinced of the applicability of the current MCMC
+  algorithm, and that the chains have converged, \code{PosteriorChecks}
+  is often used to identify multimodal marginal posterior distributions
+  for further study or model re-specification.
+
+  Although many marginal posterior distributions appear normally
+  distributed, there is no such assumption. Nonetheless, a marginal
+  posterior distribution tends to be distributed the same as its prior
+  distribution. If a parameter has a prior specified with a Laplace
+  distribution, then the marginal posterior distribution tends also to
+  be Laplace-distributed. In the common case of normality, kurtosis
+  and sknewness may be used to identify discrepancies between the prior
+  and posterior, and perhaps this should be called a `prior-posterior
+  check'.
+
+  Lastly, parameter importance may be considered, in which case it is
+  recommended to be considered simultaneously with variable importance
+  from the \code{\link{Importance}} function.
+}
 \value{
   \code{PosteriorChecks} returns an object of class
   \code{posteriorchecks} that is a list with the following components:
@@ -61,11 +89,14 @@ PosteriorChecks(x, Parms)
 \author{Byron Hall \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{burnin}},
+  \code{\link{joint.density.plot}},
   \code{\link{IAT}},
   \code{\link{Importance}},
   \code{\link{LaplaceApproximation}},
-  \code{\link{LaplacesDemon}},
+  \code{\link{LaplacesDemon}}, and
   \code{\link{Modes}}.
 }
 \examples{### See the LaplacesDemon function for an example.}
-\keyword{posterior, check}
+\keyword{Diagnostic}
+\keyword{MCMC}
+\keyword{Utility}

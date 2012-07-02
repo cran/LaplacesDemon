@@ -7,11 +7,12 @@
   Monte Carlo samples, usually regarding the expectation of posterior
   samples, \eqn{\mathrm{E}(\theta)}{E(theta)}, from Markov chain Monte
   Carlo (MCMC) algorithms, such as with the \code{\link{LaplacesDemon}}
-  function. MCSE approaches zero as the number of independent posterior
-  samples approaches infinity. MCSE is essentially a standard deviation
-  around the posterior mean of the samples,
-  \eqn{\mathrm{E}(\theta)}{E(theta)}, due to uncertainty associated with
-  using an MCMC algorithm, or Monte Carlo methods in general.
+  or \code{\link{LaplacesDemon.hpc}} functions. MCSE approaches zero as
+  the number of independent posterior samples approaches infinity. MCSE
+  is essentially a standard deviation around the posterior mean of the
+  samples, \eqn{\mathrm{E}(\theta)}{E(theta)}, due to uncertainty
+  associated with using an MCMC algorithm, or Monte Carlo methods in
+  general.
 
   The acceptable size of the MCSE depends on the acceptable uncertainty
   associated around the marginal posterior mean,
@@ -24,11 +25,11 @@
   stopping rule (Flegal et al., 2008).
 
   In Laplace's Demon, MCSE is part of the posterior summaries because it
-  is easy to estimate, and \code{\link{LaplacesDemon}} prefers to
-  continue updating until each MCSE is less than 6.27\% of its
-  associated marginal posterior standard deviation (for more information
-  on this stopping rule, see the \code{\link{Consort}} function), since
-  MCSE has been demonstrated to be an excellent stopping rule.
+  is easy to estimate, and Laplace's Demon prefers to continue updating
+  until each MCSE is less than 6.27\% of its associated marginal
+  posterior standard deviation (for more information on this stopping
+  rule, see the \code{\link{Consort}} function), since MCSE has been
+  demonstrated to be an excellent stopping rule.
 
   Acceptable error may be specified, if known, in the \code{MCSS}
   (Monte Carlo Sample Size) function to estimate the required number of
@@ -119,7 +120,8 @@ MCSS(x, a)
 \seealso{
   \code{\link{Consort}},
   \code{\link{ESS}},
-  \code{\link{LaplacesDemon}}.
+  \code{\link{LaplacesDemon}}, and
+  \code{\link{LaplacesDemon.hpc}}.
 }
 \examples{
 library(LaplacesDemon)
@@ -129,4 +131,7 @@ MCSE(x, method="batch.means")
 MCSE(x, method="sample.variance")
 MCSS(x, a=0.01)
 }
-\keyword{mcse, utility}
+\keyword{Diagnostic}
+\keyword{MCMC}
+\keyword{MCSE}
+\keyword{Utility}

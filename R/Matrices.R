@@ -21,8 +21,7 @@ as.inverse <- function(x)
      tol <- .Machine$double.eps
      options(show.error.messages=FALSE)
      xinv <- try(solve(x))
-     if(class(xinv) == "try-error")
-          {
+     if(inherits(xinv, "try-error")) {
           k <- nrow(x)
           eigs <- eigen(x, symmetric=TRUE)
           if(min(eigs$values) < tol) {
@@ -267,6 +266,37 @@ is.symmetric.matrix <- function(x) {return(sum(x == t(x)) == (nrow(x)^2))}
 lower.triangle <- function(x, diag=FALSE)
      {
      return(x[lower.tri(x, diag=diag)])
+     }
+read.matrix <- function(file, header=FALSE, sep="", skip=0, na.rm=FALSE) 
+     {
+     row.lens <- count.fields(file, sep=sep, skip=skip)
+     if(any(row.lens != row.lens[1])) 
+          stop("The number of columns is not constant.")
+     if(header) {
+          nrows <- length(row.lens) - 1
+          ncols <- row.lens[2]
+          col.names <- scan(file, what="", sep=sep, nlines=1, 
+            quiet=TRUE, skip=skip)
+          x <- scan(file, sep=sep, skip=skip + 1, quiet=TRUE)}
+     else {
+          nrows <- length(row.lens)
+          ncols <- row.lens[1]
+          x <- scan(file, sep=sep, skip=skip, quiet=TRUE)
+          col.names <- NULL}
+     x <- as.double(x)
+     if(ncols > 1) {
+          dim(x) <- c(ncols, nrows)
+          x <- t(x)
+          colnames(x) <- col.names}
+     else if(ncols == 1) x <- as.vector(x)
+     else stop("The number of columns is wrong.")
+     num.mis <- sum(is.na(x))
+     if(num.mis > 0) {
+          cat("\n", num.mis, "missing value(s) found.")
+          cat("\n", sum(complete.cases(x)),
+               "row(s) found with missing values.")}
+     if(na.rm == TRUE) x <- x[complete.cases(x),]
+     return(x)
      }
 tr <- function(x) {return(sum(diag(x)))}
 upper.triangle <- function(x, diag=FALSE)

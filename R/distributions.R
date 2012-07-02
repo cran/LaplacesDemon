@@ -212,13 +212,13 @@ ddirichlet <- function(x, alpha, log=FALSE)
     if(is.data.frame(x)) x <- matrix(x)
     else x <- t(x)
     if(!is.matrix(alpha))
-         {alpha <- matrix(alpha, ncol=length(alpha), nrow=nrow(x),
-              byrow=TRUE)}
+         alpha <- matrix(alpha, ncol=length(alpha), nrow=nrow(x),
+              byrow=TRUE)
     if(!identical(dim(x), dim(alpha)))
          stop("The dimensions of x and alpha differ.")
     dens <- vector(length=nrow(x))
     for (i in 1:nrow(x)) {dens[i] <- dirichlet1(x[i,], alpha[i,])}
-    dens[apply(x, 1, function(z) any(z <0 | z > 1))] <- 0
+    dens[apply(x, 1, function(z) any(z < 0 | z > 1))] <- 0
     dens[apply(x, 1, function(z) all.equal(sum(z), 1) != TRUE)] <- 0
     if(log == TRUE) dens <- log(dens + .Machine$double.xmin) #Prevent -Inf
     return(dens)

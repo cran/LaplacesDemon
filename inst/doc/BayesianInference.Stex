@@ -173,49 +173,84 @@ In Bayesian inference, a prior probability distribution, often called simply the
 
 When applying Bayes' theorem, the prior is multiplied by the likelihood function and then normalized to estimate the posterior probability distribution, which is the conditional distribution of $\Theta$ given the data.
 
+Prior probability distributions have traditionally belonged to one of two categories: informative priors and uninformative priors. Here, four categories of priors are presented according to information\footnote{`Information' is used loosely here to describe either the prior information from personal beliefs or informational-theoretic content.} and the goal in the use of the prior. The four categories are informative, weakly informative, least informative, and uninformative.
+
 \subsection{Informative Priors}
 
 When prior information is available about $\theta$, it should be included in the prior distribution of $\theta$. For example, if the present model form is similar to a previous model form, and the present model is intended to be an updated version based on more current data, then the posterior distribution of $\theta$ from the previous model may be used as the prior distribution of $\theta$ for the present model.
 
-In this way, each version of a model is not starting from scratch, based only on the present data, but the cumulative effects of all data, past and present, can be taken into account. If the present data is very similar to the previous data, then the precision of the posterior distribution increases when including more and more information from previous models. If the present data differs considerably, then the posterior distribution of $\theta$ may be in the tails of the prior distribution for $\theta$, so the prior distribution contributes less density in its tails. Moreover, the prior distribution affects the posterior distribution.
+In this way, each version of a model is not starting from scratch, based only on the present data, but the cumulative effects of all data, past and present, can be taken into account. The power prior, introduced with \citet{ibrahim00}, is a class of informative prior distribution that takes previous data and results into account. If the present data is very similar to the previous data, then the precision of the posterior distribution increases when including more and more information from previous models. If the present data differs considerably, then the posterior distribution of $\theta$ may be in the tails of the prior distribution for $\theta$, so the prior distribution contributes less density in its tails. Moreover, the prior distribution affects the posterior distribution.
 
-Sometimes informative prior information is not simply ready to be used, such as when it resides in another person, such as an expert. In this case, their personal beliefs about the probability of the event must be elicited into the form of a proper probability density function. This process is called prior elicitation.
+Sometimes informative prior information is not simply ready to be used, such as when it resides in another person, as in an expert. In this case, their personal beliefs about the probability of the event must be elicited into the form of a proper probability density function. This process is called prior elicitation.
 
-\subsection{Uninformative Priors}
+\subsection{Weakly Informative Priors}
 
-When prior information is unavailable about $\theta$, which is more common, an uninformative prior distribution could be used, or the prior distribution could in turn be estimated from hyperprior distributions in a hierarchical context.
+Weakly Informative Prior (WIP) distributions use prior information for regularization and stabilization, providing enough prior information to prevent results that contradict our knowledge or problems such as an algorithmic failure to explore the state-space. Another goal is for WIPs to use less prior information than is actually available. A WIP should provide some of the benefit of prior information while avoiding some of the risk from using information that doesn't exist. WIPs are the most common priors in practice, and are favored by subjective Bayesians.
 
-Uninformative prior distributions (also called diffuse, minimal, non-informative, objective, reference, uniform, or vague priors\footnote{These terms are not all equivalent. For example, `reference priors' are proposed, and are quite different from typical vague priors \citep{bernardo00}. With reference priors, the idea is to maximize the expected Kullback-Leibler divergence of the posterior distribution relative to the prior. This maximizes the expected posterior information about $\textbf{y}$ when the prior density is $p(\textbf{y})$. In some sense, $p(\textbf{y})$ is the `least informative' prior about $\textbf{y}$. Reference priors are often the objective prior of choice in multivariate problems, since other rules (e.g., Jeffreys' rule) may result in priors with problematic behavior.}) attempt to minimize the impact of the selection of the prior distribution. The rationale for using uninformative prior distributions is often said to be 'to let the data speak for themselves'. The epitome of uninformative prior distributions is the unbounded, uniform distribution, often called a flat prior, such as
+Selecting a WIP can be tricky. WIP distributions should change with the sample size, because a model should have enough prior information to learn from the data, but the prior information must also be weak enough to learn from the data.
 
-$$\theta \sim \mathcal{U}(-\infty, \infty)$$
-
-where $\theta$ is uniformly-distributed from negative infinity to positive infinity. Although this allows the posterior distribution to be affected soley by the data with no impact from prior information, this should generally be avoided because the posterior distribution is improper, meaning it will not integrate to one, because the integral of the assumed $p(\theta)$ is infinity, which violates the assumption that the probabilities sum to one.
-
-Reverend Thomas Bayes (1702-1761) was the first to use inverse probability \citep{bayes63}, and used a flat prior for his billiard example so that all possible values of $\theta$ are equally likely \textit{a priori} \citep[p. 34-36]{gelman04}. Pierre-Simon Laplace (1749-1827) also used the flat prior to estimate the proportion of female births in a population, and for all estimation problems presented or justified as a reasonable expression of ignorance. Laplace's use of this prior distribution was later referred to as the 'principle of insufficient reason', and is now called the flat prior \citep[p. 39]{gelman04}.
-
-There is often at least some information about $\theta$ to include in a prior distribution of $\theta$, such as $\theta$ must be positive, or $\theta$ must be less than some limit. It is popular, for good reasons, to center and scale all continuous predictors \citep{gelman08}. Although centering and scaling predictors is not discussed here, it should be obvious that the potential range of the posterior distribution of $\theta$ for a centered and scaled predictor should be small. A popular, uninformative prior distribution for a centered and scaled predictor may be
+Following is an example of a WIP in practice. It is popular, for good reasons, to center and scale all continuous predictors \citep{gelman08}. Although centering and scaling predictors is not discussed here, it should be obvious that the potential range of the posterior distribution of $\theta$ for a centered and scaled predictor should be small. A popular WIP for a centered and scaled predictor may be
 
 $$\theta \sim \mathcal{N}(0, 10000)$$
 
-where $\theta$ is normally-distributed according to a mean of 0 and a variance of 10,000, which is equivalent to a standard deviation of 100, or precision of 1.0E-4. In this case, the density for $\theta$ is nearly flat. Nonetheless, the fact that it is not perfectly flat yields good properties for numerical approximation algorithms. In both Bayesian and frequentist inference, it is possible for numerical approximation algorithms to become stuck in regions of flat density, which become more common as sample size decreases or model complexity increases. Numerical approximation algorithms in frequentist inference function as though a completely flat, uninformative prior were used, so numerical approximation algorithms in frequentist inference become stuck more frequently than numerical approximation algorithms in Bayesian inference. Prior distributions that are not completely flat provide enough information for the numerical approximation algorithm to continue to explore the target density, the posterior distribution.
+where $\theta$ is normally-distributed according to a mean of 0 and a variance of 10,000, which is equivalent to a standard deviation of 100, or precision of 1.0E-4. In this case, the density for $\theta$ is nearly flat. Nonetheless, the fact that it is not perfectly flat yields good properties for numerical approximation algorithms. In both Bayesian and frequentist inference, it is possible for numerical approximation algorithms to become stuck in regions of flat density, which become more common as sample size decreases or model complexity increases. Numerical approximation algorithms in frequentist inference function as though a flat prior were used, so numerical approximation algorithms in frequentist inference become stuck more frequently than numerical approximation algorithms in Bayesian inference. Prior distributions that are not completely flat provide enough information for the numerical approximation algorithm to continue to explore the target density, the posterior distribution.
+
+A popular objective Bayeisan criticism against WIPs is that there is no precise, mathematical form to derive the optimal WIP for a given model and data.
+
+\subsubsection{Vague Priors}
+A vague prior, also called a diffuse prior\footnote{Some sources refer to diffuse priors as flat priors.}, is difficult to define, after considering WIPs. The first formal move from vague to weakly informative priors is \citet{lambert05}. After conjugate priors were introduced \citep{raiffa61}, most applied modeling has used vague priors, considered as approximately uninformative priors. Typically, a vague prior was a conjugate prior with a large scale parameter. However, vague priors can pose problems when the sample size is small. Most problems with vague priors and small sample size are associated with scale, rather than location, parameters. The problem can be particularly acute in random-effects models, and the term random-effects is used rather loosely here to imply exchangeable, hierarchical, and multilevel structures.
+
+\subsection{Least Informative Priors}
+
+The term `Least Informative Priors', or LIPs, is used here to describe a class of prior in which the goal is to minimize the amount of subjective information content, and to use a prior that is determined solely by the model and observed data. The rationale for using LIPs is often said to be `to let the data speak for themselves'. LIPS are favored by objective Bayesians.
+
+\subsubsection{Flat Priors}
+
+The flat prior was historically the first attempt at an uninformative prior. The unbounded, uniform distribution, often called a flat prior, is
+
+$$\theta \sim \mathcal{U}(-\infty, \infty)$$
+
+where $\theta$ is uniformly-distributed from negative infinity to positive infinity. Although this seems to allow the posterior distribution to be affected soley by the data with no impact from prior information, this should generally be avoided because this probability distribution is improper, meaning it will not integrate to one since the integral of the assumed $p(\theta)$ is infinity (which violates the assumption that the probabilities sum to one). This may cause the posterior to be improper, which invalidates the model.
+
+Reverend Thomas Bayes (1702-1761) was the first to use inverse probability \citep{bayes63}, and used a flat prior for his billiard example so that all possible values of $\theta$ are equally likely \textit{a priori} \citep[p. 34-36]{gelman04}. Pierre-Simon Laplace (1749-1827) also used the flat prior to estimate the proportion of female births in a population, and for all estimation problems presented or justified as a reasonable expression of ignorance. Laplace's use of this prior distribution was later referred to as the `principle of indifference' or `principle of insufficient reason', and is now called the flat prior \citep[p. 39]{gelman04}. Laplace was aware that it was not truly uninformative, and used it as a LIP.
+
+Another problem with the flat prior is that it is not invariant to transformation. For example, a flat prior on a standard deviation parameter is not also flat for its variance or precision.
+
+\subsubsection{Jeffreys Prior}
+
+Jeffreys prior, also called Jeffreys rule, was introduced in an attempt to establish a least informative prior that is invariant to transformations \citep{jeffreys61}. Jeffreys prior works well for a single parameter, but multi-parameter situations may have inappropriate aspects accumulate across dimensions to detrimental effect.
+
+\subsubsection{MAXENT}
+
+A MAXENT prior, proposed by \citet{jaynes68}, is a prior probability distribution that is selected among other candidate distributions as the prior of choice when it has the maximum entropy (MAXENT) in the considered set, given constraints on the candidate set. More entropy is associated with less information, and the least informative prior is preferred as a MAXENT prior. The principle of minimum cross-entropy generalizes MAXENT priors from mere selection to updating the prior given constraints while seeking the maximum, possible entropy.
+
+\subsubsection{Reference Priors}
+
+Introduced by \citet{bernardo79}, reference priors do not express personal beliefs. Instead, reference priors allow the data to dominate the prior and posterior \citep{berger09}. Reference priors are estimated by maximizing the expected intrinsic discrepancy between the posterior distribution and prior distribution. This maximizes the expected posterior information about $\textbf{y}$ when the prior density is $p(\textbf{y})$. In some sense, $p(\textbf{y})$ is the `least informative' prior about $\textbf{y}$ \citep{bernardo05b}. Reference priors are often the objective prior of choice in multivariate problems, since other rules (e.g., Jeffreys' rule) may result in priors with problematic behavior. When reference priors are used, the analysis is called reference analysis, and the posterior is called the reference posterior.
+
+Subjective Bayesian criticisms of reference priors is that the concepts of regularization and stabilization are not taken into account, results that contradict knowledge are not prevented, a numerical approximation algorithm may become stuck in low-probability or flat regions, and it may not be desirable to let the data speak fully.
+
+\subsection{Uninformative Priors}
+
+Traditionally, most of the above descriptions of prior distributions were categorized as uninformative priors. However, uninformative priors do not truly exist \citep{irony97}, and all priors are informative in some way. Traditionally, there have been many names associated with uninformative priors, including diffuse, minimal, non-informative, objective, reference, uniform, vague, and perhaps weakly informative.
 
 \subsection{Proper and Improper Priors}
 
 It is important for the prior distribution to be proper. A prior distribution, $p(\theta)$, is improper\footnote{Improper priors were introduced in \citet{jeffreys61}.} when
 
-$$\int p(\theta) d(\theta) = \infty$$
+$$\int p(\theta) d\theta = \infty$$
 
 As noted previously, an unbounded uniform prior distribution is an improper prior distribution because $p(\theta) \propto 1$, for $-\infty < \theta < \infty$. An improper prior distribution can cause an improper posterior distribution. When the posterior distribution is improper, inferences are invalid, it is non-integrable, and Bayes factors cannot be used (though there are exceptions).
 
-To determine the propriety of a posterior distribution, the marginal likelihood must be finite for all $\textbf{y}$. Again, the marginal likelihood is
+To determine the propriety of a joint posterior distribution, the marginal likelihood must be finite for all $\textbf{y}$. Again, the marginal likelihood is
 
-$$p(\textbf{y}) = \int p(\textbf{y} | \Theta) p(\Theta) d(\Theta)$$
+$$p(\textbf{y}) = \int p(\textbf{y} | \Theta) p(\Theta) d\Theta$$
 
 Although improper prior distributions can be used, it is good practice to avoid them.
 
 \section{Hierarchical Bayes}
 
-Prior distributions may be estimated within the model via hyperprior distributions, which are usually uninformative and nearly flat. Using hyperprior distributions to estimate prior distributions is known as hierarchical Bayes. In theory, this process could continue further, using hyper-hyperprior distributions to estimate the hyperprior distributions. Estimating priors through hyperpriors, and from the data, is a method to elicit the optimal prior distributions. One of many natural uses for hierarchical Bayes is multilevel modeling.
+Prior distributions may be estimated within the model via hyperprior distributions, which are usually vague and nearly flat. Using hyperprior distributions to estimate prior distributions is known as hierarchical Bayes. In theory, this process could continue further, using hyper-hyperprior distributions to estimate the hyperprior distributions. Estimating priors through hyperpriors, and from the data, is a method to elicit the optimal prior distributions. One of many natural uses for hierarchical Bayes is multilevel modeling.
 
 Recall that the unnormalized joint posterior distribution (equation \ref{jointposterior}) is proportional to the likelihood times the prior distribution
 
@@ -235,7 +270,7 @@ Although the gamma distribution is the conjugate prior distribution for the prec
 
 $$\tau \sim \mathcal{G}(0.001, 0.001),$$
 
-better properties for scale parameters are yielded with the non-conjugate, proper, half-Cauchy\footnote{The half-t distribution is another option.} distribution, with a general recommendation of scale=25 for an uninformative scale parameter \citep{gelman06}, 
+better properties for scale parameters are yielded with the non-conjugate, proper, half-Cauchy\footnote{The half-t distribution is another option.} distribution, with a general recommendation of scale=25 for a weakly informative scale parameter \citep{gelman06}, 
 
 $$\sigma \sim \mathcal{HC}(25)$$
 $$\tau = \sigma^{-2}$$
@@ -444,7 +479,7 @@ The effect of model fitting, pD or pV, can be thought of as the number of `uncon
 
 Model complexity, pD or pV, should be positive. Although pV must be positive since it is related to variance, it is possible for pD to be negative, which indicates one or more problems: log-likelihood is non-concave, a conflict between the prior and the data, or that the posterior mean is a poor estimator (such as with a bimodal posterior).
 
-The sum of both the mean model-level deviance and the model complexity (pD or pV) is the Deviance Information Criterion (DIC), a model fit statistic
+The sum of both the mean model-level deviance and the model complexity (pD or pV) is the Deviance Information Criterion (DIC), a model fit statistic that is also an estimate of the expected loss, with deviance as a loss function. DIC is
 
 $$\mathrm{DIC} = \bar{D} + \mathrm{pV}$$
 
@@ -520,7 +555,7 @@ $$\mathrm{PQ}_i = p(\textbf{y}^{rep}_i > \textbf{y}_i)$$
 and is somewhat similar to the Bayesian p-value. The percentage of $\textbf{y}_i$s that are not outliers is called the `Predictive Concordance'. \citet{gelfand96} suggests the goal is to attempt to achieve 95\% predictive concordance. In the case of, say 80\% predictive concordance, the discrepancy between the model and data is undesirable because the model does not fit the data well and many outliers have resulted. On the other hand, if the predictive concordance is too high, say 100\%, then overfitting may have occurred, and it may be worth considering a more parsimonious model. Kernel density plots of each $\textbf{y}^{rep}_i$ distribution are useful in this case with the actual $\textbf{y}_i$ included as a vertical bar to show its position.
 
 \subsection{L-criterion}
-\citet{laud95} introduced the L-criterion as one of three posterior predictive checks for model and variable selection. The L-criterion is a posterior predictive check that is widely applicable and easy to apply. It is a sum of two components: one involves the predictive variance and the other includes the accuracy of the means of the predictive distribution. The L-criterion measures model performance with a combination of how close its predictions are to the observed data and variability of the predictions. Better models have smaller values of L. L is measured in the same units as the response variable, and measures how close the data vector $\textbf{y}$ is to the predictive distribution. In addition to the value of L, there is a value for $S_L$, which is the calibration number of L, and is useful in determining how much of a decrease is necessary between models to be noteworthy. The L-criterion is
+\citet{laud95} introduced the L-criterion as one of three posterior predictive checks for model, variable, and transformation selection. The L-criterion is a posterior predictive check that is widely applicable and easy to apply. It is a sum of two components: one involves the predictive variance and the other includes the accuracy of the means of the predictive distribution. The L-criterion measures model performance with a combination of how close its predictions are to the observed data and variability of the predictions. Better models have smaller values of L. L is measured in the same units as the response variable, and measures how close the data vector $\textbf{y}$ is to the predictive distribution. In addition to the value of L, there is a value for $S_L$, which is the calibration number of L, and is useful in determining how much of a decrease is necessary between models to be noteworthy. The L-criterion is
 
 $$\mathrm{L} = \sum^N_{i=1} \sqrt{\mathrm{var}(\textbf{y}^{rep}_{i,1:T}) + (\textbf{y}_i - \frac{\sum^T_{t=1} \textbf{y}^{rep}_{i,t}}{T})^2},$$
 
@@ -547,7 +582,7 @@ frequentist inference.
 \item Bayesian inference obeys the likelihood principle. Frequentist inference, including Maximum Likelihood Estimation (MLE) and the General Method of Moments (GMM) or Generalized Estimating Equations (GEE), violates the likelihood principle. ``The likelihood principle, by itself, is not sufficient to build a method of inference but should be regarded as a minimum requirement of any viable form of inference. This is a controversial point of view for anyone familiar with modern econometrics literature. Much of this literature is devoted to methods that do not obey the likelihood principle...'' \citep[p. 15]{rossi05}.
 \item Bayesian inference uses observed data only. Frequentist inference uses both observed data and future data that is unobserved and hypothetical.
 \item Bayesian inference uses prior distributions, so more information is used and 95\% probability intervals of posterior distributions should be narrower than 95\% confidence intervals of frequentist point-estimates.
-\item Bayesian inference uses probability intervals to state the probability that $\theta$ is between two points. Frequentist inference uses confidence intervals, which must be interpreted with probability of zero or one that $\theta$ is in the region, and the frequentist never knows whether it is or is not, but can only say that if 100 repeated samples were drawn in the future, that it would be in the region for 95 samples.
+\item Bayesian inference uses probability intervals (quantile-based, highest posterior density, or preferably lowest posterior loss) to state the probability that $\theta$ is between two points. Frequentist inference uses confidence intervals, which must be interpreted with probability of zero or one that $\theta$ is in the region, and the frequentist never knows whether it is or is not, but can only say that if 100 repeated samples were drawn in the future, that it would be in the region for 95 samples.
 \item Bayesian inference via MCMC algorithms allows more complicated models that frequentists are unable to estimate.
 \item Bayesian inference via MCMC has a theoretic guarantee than the MCMC algorithm will converge if run long enough. Frequentist inference with Maximum Likelihood Estimation (MLE) has no guarantee of convergence.
 \item Bayesian inference via MCMC is unbiased with respect to sample size and can accommodate any sample size no matter how small. Frequentist inference becomes more biased as sample size decreases from infinity, and is often wildly biased with small samples, so minimum sample size is an issue. Conversely, frequentist inference with large sample sizes biases p-values to indicate that insignificant effects are significant.
@@ -566,8 +601,8 @@ Following is a short list of advantages of frequentist inference over Bayesian i
 \item Frequentist models have much shorter run-times than Bayesian models via MCMC (though Laplace Approximation yields run-times that are almost as fast as the frequentist MLE). Simple models with small sample sizes may be similar, but complex models with larger sample sizes may be minutes (frequentist) vs. weeks (Bayesian via MCMC).
 \end{itemize}
 
-Please send an email to \email{statisticat@gmail.com} with any questions or concerns about this article.
+As they say, it pays to go Bayes. Please send an email to \email{statisticat@gmail.com} with any questions or concerns about this article.
 
-\bibliography{References.bib}
+\bibliography{References}
 
 \end{document}

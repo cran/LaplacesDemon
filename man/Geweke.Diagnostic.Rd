@@ -26,8 +26,8 @@
 }
 \usage{Geweke.Diagnostic(x)}
 \arguments{
-  \item{x}{
-    This required argument is a vector or matrix of posterior samples.}
+  \item{x}{This required argument is a vector or matrix of posterior
+    samples.}
 }
 \details{
   The \code{Geweke.Diagnostic} is one of the criteria in the
@@ -56,7 +56,7 @@
   URL=\url{http://www.statisticat.com/laplacesdemon.html}
 }
 \seealso{
-  \code{\link{Consort}}
+  \code{\link{Consort}} and
   \code{\link{LaplacesDemon}}.
 }
 \examples{
@@ -64,4 +64,7 @@ library(LaplacesDemon)
 Geweke.Diagnostic(rnorm(100))
 Geweke.Diagnostic(matrix(rnorm(100),10,10))
 }
-\keyword{diagnostic, stationarity, utility}
+\keyword{Diagnostic}
+\keyword{MCMC}
+\keyword{Stationarity}
+\keyword{Utility}

@@ -10,21 +10,22 @@
 CenterScale <- function(x, Binary="none", Inverse=FALSE, mu, sigma, Range,
      Min)
      {
-     if(Inverse == FALSE) {
+     if(identical(Inverse, FALSE)) {
           ### Initial Checks
           if(!is.numeric(x)){
                x <- as.numeric(factor(x))
                x.obs <- x[is.finite(x)]}
           x.obs <- x[is.finite(x)]
           ### Binary Variables
-          if(length(unique(x.obs)) == 2){
-               if(Binary == "none"){
+          if(identical(length(unique(x.obs)), 2)){
+               if(identical(Binary, "none")){
                     return((x-min(x.obs)) / (max(x.obs)-min(x.obs)))}
-               else if(Binary == "center") {return(x-mean(x.obs))}
-               else if(Binary == "center0") {
+               else if(identical(Binary, "center")) {
+                    return(x-mean(x.obs))}
+               else if(identical(Binary, "center0")) {
                     x <- (x-min(x.obs)) / (max(x.obs)-min(x.obs))
                     return(x-0.5)}
-               else if(Binary == "centerscale") {
+               else if(identical(Binary, "centerscale")) {
                     return({x-mean(x.obs)} / {2*sd(x.obs)})}
                }
           ### Continuous Variables
@@ -36,11 +37,14 @@ CenterScale <- function(x, Binary="none", Inverse=FALSE, mu, sigma, Range,
                x.obs <- x[is.finite(x)]}
           x.obs <- x[is.finite(x)]
           ### Binary Variables
-          if(length(unique(x.obs)) == 2){
-               if(Binary == "none") {return(x * Range + Min)}
-               else if(Binary == "center") {return(x + mu)}
-               else if(Binary == "center0") {return(x * Range + Min)}
-               else if(Binary == "centerscale") {
+          if(identical(length(unique(x.obs)), 2)){
+               if(identical(Binary, "none")) {
+                    return(x * Range + Min)}
+               else if(identical(Binary, "center")) {
+                    return(x + mu)}
+               else if(identical(Binary, "center0")) {
+                    return(x * Range + Min)}
+               else if(identical(Binary, "centerscale")) {
                     return(x * (2*sigma) + mu)}
                }
           ### Continuous Variables

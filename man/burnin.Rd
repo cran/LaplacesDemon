@@ -57,7 +57,7 @@ burnin(x, method="Geweke")
 }
 \author{Byron Hall \email{statisticat@gmail.com}}
 \seealso{
-  \code{\link{Geweke.Diagnostic}},
+  \code{\link{Geweke.Diagnostic}} and
   \code{\link{LaplacesDemon}}.
 }
 \examples{
@@ -65,4 +65,6 @@ library(LaplacesDemon)
 x <- rnorm(1000)
 burnin(x)
 }
-\keyword{diagnostic, stationarity, utility}
+\keyword{Diagnostic}
+\keyword{Stationarity}
+\keyword{Utility}

@@ -74,7 +74,7 @@ which must be positive-definite.
   \code{\link{dcauchy}},
   \code{\link{dmvc}},
   \code{\link{dmvt}},
-  \code{\link{dmvtp}},
+  \code{\link{dmvtp}}, and
   \code{\link{dwishart}}.
 }
 \examples{
@@ -91,6 +91,6 @@ X <- X[rowSums((X >= quantile(X, probs=0.025)) &
      (X <= quantile(X, probs=0.975)))==2,]
 joint.density.plot(X[,1], X[,2], color=TRUE)
 }
-\keyword{distribution}
+\keyword{Distribution}
 
 

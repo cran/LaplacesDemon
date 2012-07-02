@@ -9,7 +9,8 @@
 is.appeased <- function(x)
      {
      appeased <- FALSE
-     if(class(x) != "demonoid") stop("x must be of class demonoid.")
+     if(!identical(class(x), "demonoid"))
+          stop("x must be of class demonoid.")
      captive <- capture.output(Consort(x))
      z <- grep("has been appeased", captive)
      if(length(z) > 0) appeased <- TRUE

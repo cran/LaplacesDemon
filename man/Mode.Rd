@@ -8,11 +8,11 @@
 \alias{Modes}
 \title{The Mode(s) of a Vector}
 \description{
-The mode is a measure of central tendency. It is the value that occurs
-most frequently, or in a continuous probability distribution, it is the
-value with the most density. A distribution may have no modes (such as
-in a uniform distribution when no value occurs more frequently than any
-other), or one or more modes.
+  The mode is a measure of central tendency. It is the value that occurs
+  most frequently, or in a continuous probability distribution, it is
+  the value with the most density. A distribution may have no modes
+  (such as in a uniform distribution when no value occurs more
+  frequently than any other), or one or more modes.
 }
 \usage{
 is.amodal(x, min.size=0.1)
@@ -78,16 +78,17 @@ Modes(x, min.size=0.1)
 
   Otherwise, the results of Bayesian inference tend to report the
   posterior mean or median, along with probability intervals (see
-  \code{\link{p.interval}}), rather than posterior modes. In many
-  types of models, such as mixture models, the posterior may be
-  multi-modal. In such a case, the usual recommendation is to choose
-  the highest mode if feasible and possible. However, the highest mode
-  may be uncharacteristic of the majority of the posterior.
+  \code{\link{p.interval}} and \code{\link{LPL.interval}}), rather than
+  posterior modes. In many types of models, such as mixture models, the
+  posterior may be multimodal. In such a case, the usual recommendation
+  is to choose the highest mode if feasible and possible. However, the
+  highest mode may be uncharacteristic of the majority of the posterior.
 }
 \author{Byron Hall \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{LaplaceApproximation}},
-  \code{\link{LaplacesDemon}}, and
+  \code{\link{LaplacesDemon}},
+  \code{\link{LPL.interval}}, and
   \code{\link{p.interval}}.
 }
 \examples{
@@ -108,4 +109,5 @@ is.multimodal(x)
 is.trimodal(x)
 is.unimodal(x)
 }
-\keyword{mode, utility}
+\keyword{Mode}
+\keyword{Utility}

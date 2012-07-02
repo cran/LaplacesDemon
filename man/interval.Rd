@@ -19,7 +19,7 @@
   vector, so the algorithm knows it has been constrained.
 
   This is unrelated to the probability interval (see
-  \code{\link{p.interval}}).
+  \code{\link{p.interval}} and \code{\link{LPL.interval}}).
 }
 \usage{
 interval(x, a=-Inf, b=Inf)
@@ -43,6 +43,7 @@ interval(x, a=-Inf, b=Inf)
   \code{\link{dtrunc}},
   \code{\link{LaplaceApproximation}},
   \code{\link{LaplacesDemon}},
+  \code{\link{LPL.interval}}, and
   \code{\link{p.interval}}.
 }
 \examples{
@@ -53,4 +54,4 @@ interval(x,0,1)
 X <- matrix(runif(25,-2,2),5,5)
 interval(X,-1,1)
 }
-\keyword{utility}
+\keyword{Utility}

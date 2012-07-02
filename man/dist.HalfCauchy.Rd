@@ -39,7 +39,8 @@ rhalfcauchy(n, scale=25)
 }
 
 The half-Cauchy distribution with scale \eqn{\alpha=25}{alpha=25} is a
-recommended, default, uninformative prior distribution for a scale parameter.
+recommended, default, weakly informative prior distribution for a scale
+parameter.
 }
 \value{
   \code{dhalfcauchy} gives the density,
@@ -70,4 +71,4 @@ lines(x, dhalfcauchy(x,10), type="l", col="blue")
 legend(2, 0.9, expression(alpha==1, alpha==5, alpha==10),
      lty=c(1,1,1), col=c("red","green","blue"))
 }
-\keyword{distribution}
+\keyword{Distribution}

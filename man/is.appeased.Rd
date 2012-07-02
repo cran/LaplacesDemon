@@ -11,20 +11,20 @@
 is.appeased(x)
 }
 \arguments{
-    \item{x}{This is an object of class \code{demonoid}.}
+  \item{x}{This is an object of class \code{demonoid}.}
 }
 \details{
-    After updating a model with the \code{\link{LaplacesDemon}}
-    function, an output object is created. The output object is of class
-    \code{demonoid}. The object may be passed to the
-    \code{\link{Consort}} function, which will apply several criteria
-    regarding the potential convergence of its Markov chains. If all
-    criteria are met, then Laplace's Demon is appeased. Otherwise,
-    Laplace's Demon suggests R code to be copy/pasted and executed. The
-    \code{\link{Consort}} function prints a large amount of information
-    to the screen. The \code{is.appeased} function may be applied as an
-    alternative, though it only informs the user as to whether or not
-    Laplace's Demon was appeased, as \code{TRUE} or \code{FALSE}.
+  After updating a model with the \code{\link{LaplacesDemon}} function,
+  an output object is created. The output object is of class
+  \code{demonoid}. The object may be passed to the \code{\link{Consort}}
+  function, which will apply several criteria regarding the potential
+  convergence of its Markov chains. If all criteria are met, then
+  Laplace's Demon is appeased. Otherwise, Laplace's Demon suggests R
+  code to be copy/pasted and executed. The \code{\link{Consort}}
+  function prints a large amount of information to the screen. The
+  \code{is.appeased} function may be applied as an alternative, though
+  it only informs the user as to whether or not Laplace's Demon was
+  appeased, as \code{TRUE} or \code{FALSE}.
 }
 \value{
   The \code{is.appeased} function returns a logical value indicating
@@ -36,7 +36,8 @@ is.appeased(x)
 \references{\url{http://www.statisticat.com/laplacesdemon.html}}
 \author{Byron Hall \email{statisticat@gmail.com}}
 \seealso{
-  \code{\link{Consort}},
+  \code{\link{Consort}} and
   \code{\link{LaplacesDemon}}.
 }
-\keyword{diagnostic, utility}
+\keyword{Diagnostic}
+\keyword{Utility}

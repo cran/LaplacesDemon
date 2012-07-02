@@ -9,6 +9,8 @@ plot.laplace <- function(x, Data=NULL, PDF=FALSE, Parms=NULL, ...)
      {
      ### Initial Checks
      if(missing(x)) stop("The x argument is required.")
+     if(class(x) != "laplace")
+          stop("x must be of class laplace.")
      if(is.null(Data)) stop("The Data argument is NULL.")
      if(any(is.na(x$History))) stop("There is no history to plot.")
      ### Selecting Parms

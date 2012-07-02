@@ -17,7 +17,7 @@ as.parm.names <- function(x, uppertri=NULL) {
      ### Length of parm.names
      totlen <- 0
      for (i in 1:parm.length) {
-          ### Scalar, Vector, or Non-Upper-Triangular Matrix or Aray
+          ### Scalar, Vector, or Non-Upper-Triangular Matrix or Array
           if(uppertri[i] == 0) {
                xlen <- length(as.vector(x[[i]]))
                totlen <- totlen + xlen

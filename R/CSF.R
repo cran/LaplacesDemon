@@ -16,14 +16,14 @@ CSF <- function(x, name, method="Quantiles", quantiles=c(.025,.5,.975),
           y <- rep(0, length(x))
           for (i in 1:length(x)) {
                test <- try(ESS(x[1:i]), silent=TRUE)
-               if(is.numeric(test)) y[i] <- test}
+               if(!inherits(test, "try-error")) y[i] <- test}
           plot(y, type="l", xlab="Cumulative Sample", ylab="ESS")
           if(output == TRUE) return(y)}
      if(method == "Geweke.Diagnostic") {
           y <- rep(0, length(x))
           for (i in 1:length(x)) {
                test <- try(Geweke.Diagnostic(x[1:i]), silent=TRUE)
-               if(is.numeric(test)) y[i] <- test}
+               if(!inherits(test, "try-error")) y[i] <- test}
           par(mfrow=c(2,1))
           plot(1:length(x), x, type="l", xlab="Iterations", ylab=name)
           panel.smooth(1:length(x), x, pch="")
@@ -36,7 +36,7 @@ CSF <- function(x, name, method="Quantiles", quantiles=c(.025,.5,.975),
           for (i in 1:length(x)) {
                test <- try(as.vector(p.interval(x[1:i], HPD=TRUE)[1,]),
                     silent=TRUE)
-               if(is.numeric(test[1])) Y[i,] <- test}
+               if(!inherits(test, "try-error")) Y[i,] <- test}
           plot(x, type="l", col="gray", xlab="Sample Size",
                ylab="HPD (95%)")
           for (i in 1:2) lines(Y[,i], col="black")
@@ -45,7 +45,7 @@ CSF <- function(x, name, method="Quantiles", quantiles=c(.025,.5,.975),
           y <- rep(FALSE, length(x))
           for (i in 1:length(x)) {
                test <- try(is.stationary(x[1:i]), silent=TRUE)
-               if(is.logical(test)) y[i] <- test}
+               if(!inherits(test, "try-error")) y[i] <- test}
           par(mfrow=c(2,1))
           plot(1:length(x), x, type="l", xlab="Iterations", ylab=name)
           panel.smooth(1:length(x), x, pch="")
@@ -60,7 +60,7 @@ CSF <- function(x, name, method="Quantiles", quantiles=c(.025,.5,.975),
           y <- rep(0, length(x))
           for (i in 1:length(x)) {
                test <- try(kurtosis(x[1:i]), silent=TRUE)
-               if(is.numeric(test)) y[i] <- test}
+               if(!inherits(test, "try-error")) y[i] <- test}
           par(mfrow=c(2,1))
           plot(1:length(x), x, type="l", xlab="Iterations", ylab=name)
           panel.smooth(1:length(x), x, pch="")
@@ -70,7 +70,7 @@ CSF <- function(x, name, method="Quantiles", quantiles=c(.025,.5,.975),
           y <- rep(1, length(x))
           for (i in 1:length(x)) {
                test <- try(MCSE(x[1:i]), silent=TRUE)
-               if(is.numeric(test)) y[i] <- test}
+               if(!inherits(test, "try-error")) y[i] <- test}
           y <- ifelse(is.finite(y), y, 1)
           y <- ifelse(y > 1, 1, y)
           plot(y, type="l", xlab="Cumulative Sample", ylab="MCSE")
@@ -79,7 +79,7 @@ CSF <- function(x, name, method="Quantiles", quantiles=c(.025,.5,.975),
           y <- rep(1, length(x))
           for (i in 1:length(x)) {
                test <- try(MCSE(x[1:i], method="batch.means"), silent=TRUE)
-               if(is.numeric(test)) y[i] <- test}
+               if(!inherits(test, "try-error")) y[i] <- test}
           y <- ifelse(is.finite(y), y, 1)
           y <- ifelse(y > 1, 1, y)
           plot(y, type="l", xlab="Cumulative Sample", ylab="MCSE")
@@ -89,7 +89,7 @@ CSF <- function(x, name, method="Quantiles", quantiles=c(.025,.5,.975),
           for (i in 1:length(x)) {
                test <- try(MCSE(x[1:i], method="sample.variance"),
                     silent=TRUE)
-               if(is.numeric(test)) y[i] <- test}
+               if(!inherits(test, "try-error")) y[i] <- test}
           y <- ifelse(is.finite(y), y, 1)
           y <- ifelse(y > 1, 1, y)
           plot(y, type="l", xlab="Cumulative Sample", ylab="MCSE")
@@ -98,7 +98,7 @@ CSF <- function(x, name, method="Quantiles", quantiles=c(.025,.5,.975),
           y <- rep(0, length(x))
           for (i in 1:length(x)) {
                test <- try(mean(x[1:i]), silent=TRUE)
-               if(is.numeric(test)) y[i] <- test}
+               if(!inherits(test, "try-error")) y[i] <- test}
           par(mfrow=c(2,1))
           plot(1:length(x), x, type="l", xlab="Iterations", ylab=name)
           panel.smooth(1:length(x), x, pch="")
@@ -108,7 +108,7 @@ CSF <- function(x, name, method="Quantiles", quantiles=c(.025,.5,.975),
           y <- rep(0, length(x))
           for (i in 1:length(x)) {
                test <- try(Mode(x[1:i]), silent=TRUE)
-               if(is.numeric(test)) y[i] <- test[1]}
+               if(!inherits(test, "try-error")) y[i] <- test[1]}
           par(mfrow=c(2,1))
           plot(1:length(x), x, type="l", xlab="Iterations", ylab=name)
           panel.smooth(1:length(x), x, pch="")
@@ -118,7 +118,7 @@ CSF <- function(x, name, method="Quantiles", quantiles=c(.025,.5,.975),
           y <- rep(1, length(x))
           for (i in 1:length(x)) {
                test <- try(Modes(x[1:i]), silent=TRUE)
-               if(is.numeric(test[[1]])) y[i] <- length(test$modes)}
+               if(!inherits(test, "try-error")) y[i] <- length(test$modes)}
           par(mfrow=c(2,1))
           plot(1:length(x), x, type="l", xlab="Iterations", ylab=name)
           panel.smooth(1:length(x), x, pch="")
@@ -128,7 +128,7 @@ CSF <- function(x, name, method="Quantiles", quantiles=c(.025,.5,.975),
           y <- rep(0, length(x))
           for (i in 1:length(x)) {
                test <- try(var(x[1:i]), silent=TRUE)
-               if(is.numeric(test)) y[i] <- 1 / test}
+               if(!inherits(test, "try-error")) y[i] <- 1 / test}
           par(mfrow=c(2,1))
           plot(1:length(x), x, type="l", xlab="Iterations", ylab=name)
           panel.smooth(1:length(x), x, pch="")
@@ -138,7 +138,7 @@ CSF <- function(x, name, method="Quantiles", quantiles=c(.025,.5,.975),
           Y <- matrix(0, length(x), length(quantiles))
           for (i in 1:length(x)) {
                test <- try(quantile(x[1:i], probs=quantiles), silent=TRUE)
-               if(is.numeric(test[1])) Y[i,] <- test}
+               if(!inherits(test, "try-error")) Y[i,] <- test}
           plot(x, type="l", col="gray", xlab="Sample Size", ylab="Quantiles")
           for (i in 1:ncol(Y)) lines(Y[,i], col="black")
           if(output == TRUE) return(Y)}
@@ -150,7 +150,7 @@ CSF <- function(x, name, method="Quantiles", quantiles=c(.025,.5,.975),
           y <- rep(0, length(x))
           for (i in 1:length(x)) {
                test <- try(skewness(x[1:i]), silent=TRUE)
-               if(is.numeric(test)) y[i] <- test}
+               if(!inherits(test, "try-error")) y[i] <- test}
           par(mfrow=c(2,1))
           plot(1:length(x), x, type="l", xlab="Iterations", ylab=name)
           panel.smooth(1:length(x), x, pch="")

@@ -81,4 +81,4 @@ lines(x, dpareto(x,1), type="l", col="blue")
 legend(2, 0.9, expression(alpha==0.1, alpha==0.5, alpha==1),
      lty=c(1,1,1), col=c("red","green","blue"))
 }
-\keyword{distribution}
+\keyword{Distribution}

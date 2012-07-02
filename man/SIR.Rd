@@ -73,4 +73,6 @@ SIR(Model, Data, mu, Sigma, n=1000)
   \code{\link{dmvn}} and 
   \code{\link{LaplaceApproximation}}.
 }
-\keyword{utility}
+\keyword{Sampling Importance Resampling}
+\keyword{Sequential Importance Resampling}
+\keyword{Utility}

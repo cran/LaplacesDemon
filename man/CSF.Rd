@@ -102,7 +102,8 @@ CSF(x, name, method="Quantiles", quantiles=c(0.025,0.500,0.975), output=FALSE)
   the cumulative samples of \code{x}.
 }
 \references{
-  \url{http://www.statisticat.com/laplacesdemon.html}
+  Hall, B. (2012). "Bayesian Inference", STATISTICAT, LLC.
+  URL=\url{http://www.statisticat.com/laplacesdemon.html}
 
   Yu, B. and Myckland, P. (1997). ``Looking at Markov Samplers through
   Cusum Path Plots: A Simple Diagnostic Idea''. Statistics and
@@ -116,7 +117,7 @@ CSF(x, name, method="Quantiles", quantiles=c(0.025,0.500,0.975), output=FALSE)
   \code{\link{LaplacesDemon}},
   \code{\link{MCSE}},
   \code{\link{Mode}},
-  \code{\link{Modes}},
+  \code{\link{Modes}}, and
   \code{\link{p.interval}}.
 }
 \examples{
@@ -138,4 +139,7 @@ CSF(x, name, method="Quantiles", quantiles=c(0.025,0.500,0.975), output=FALSE)
 #CSF(x, method="Quantiles")
 #CSF(x, method="Skewness")
 }
-\keyword{diagnostic, utility}
+\keyword{Diagnostic}
+\keyword{MCMC}
+\keyword{Plot}
+\keyword{Utility}

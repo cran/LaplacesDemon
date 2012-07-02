@@ -64,16 +64,6 @@ multivariate normal distribution.
   \code{dmvl} gives the density, and
   \code{rmvl} generates random deviates.
 }
-\seealso{
-  \code{\link{dlaplace}},
-  \code{\link{dmvn}},
-  \code{\link{dmvnp}},
-  \code{\link{dmvpe}},
-  \code{\link{dmvt}},
-  \code{\link{dnorm}},
-  \code{\link{dnormp}},
-  \code{\link{dnormv}}.
-}
 \references{
   Gomez, E., Gomez-Villegas, M.A., and Marin, J.M. (1998). "A
   Multivariate Generalization of the Power Exponential Family of
@@ -81,6 +71,16 @@ multivariate normal distribution.
   p. 589--600.
 }
 \author{Byron Hall \email{statisticat@gmail.com}}
+\seealso{
+  \code{\link{dlaplace}},
+  \code{\link{dmvn}},
+  \code{\link{dmvnp}},
+  \code{\link{dmvpe}},
+  \code{\link{dmvt}},
+  \code{\link{dnorm}},
+  \code{\link{dnormp}}, and
+  \code{\link{dnormv}}.
+}
 \examples{
 library(LaplacesDemon)
 n <- 100
@@ -90,4 +90,4 @@ mu <- matrix(runif(n*k),n,k)
 Sigma <- diag(k)
 dmvl(x, mu, Sigma)
 }
-\keyword{distribution}
+\keyword{Distribution}

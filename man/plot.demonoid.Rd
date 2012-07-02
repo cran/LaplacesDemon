@@ -1,16 +1,22 @@
 \name{plot.demonoid}
 \alias{plot.demonoid}
-\title{Plot samples from the output of \code{\link{LaplacesDemon}}}
+\alias{plot.demonoid.hpc}
+\title{Plot samples from the output of Laplace's Demon}
 \description{
   This may be used to plot, or save plots of, samples in an object of
-  class \code{demonoid}. Plots include a trace plot, density plot, 
-  autocorrelation or ACF plot, and if an adaptive algorithm was used,
-  the absolute difference in the proposal variance across adaptations.
+  class \code{demonoid} or \code{demonoid.hpc}. Plots include a trace
+  plot, density plot, autocorrelation or ACF plot, and if an adaptive
+  algorithm was used, the absolute difference in the proposal variance
+  across adaptations.
 }
-\usage{\method{plot}{demonoid}(x, BurnIn=1, Data, PDF=FALSE, Parms, \dots)}
+\usage{
+\method{plot}{demonoid}(x, BurnIn=1, Data, PDF=FALSE, Parms, \dots)
+\method{plot}{demonoid.hpc}(x, BurnIn=1, Data, PDF=FALSE, Parms, \dots)
+}
 \arguments{
   \item{x}{
-    This required argument is an object of class \code{demonoid}.}
+    This required argument is an object of class \code{demonoid} or
+    \code{demonoid.hpc}.}
   \item{BurnIn}{
     This argument requires a positive integer that indicates a number of
     iterations to discard as burn-in for the purposes of plotting.}
@@ -83,6 +89,7 @@
 \author{Byron Hall \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{ESS}},
-  \code{\link{LaplacesDemon}}.}
+  \code{\link{LaplacesDemon}}, and
+  \code{\link{LaplacesDemon.hpc}}.}
 \examples{### See the LaplacesDemon function for an example.}
-\keyword{plot}
+\keyword{Plot}

@@ -64,4 +64,4 @@ library(LaplacesDemon)
 dbern(1, 0.7)
 rbern(10, 0.5)
 }
-\keyword{distribution}
+\keyword{Distribution}

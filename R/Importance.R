@@ -39,7 +39,9 @@ Importance <- function(object, Model, Data, Categorical=FALSE, Discrep,
           if(Categorical == FALSE) out[i+1,1] <- round(Summ$Concordance, 3)
           else out[i+1,1] <- round(Summ$Mean.Lift, 3)
           out[i+1,2] <- Summ$Discrepancy.Statistic
-          if(Categorical == FALSE) out[i+1,3] <- Summ$L.criterion
+          if(Categorical == FALSE) {
+               out[i+1,3] <- Summ$L.criterion
+               S.L <- c(S.L, Summ$S.L)}
           }
      if(Categorical == FALSE) cat("\n\nS.L:", S.L)
      colnames(out) <- c("Concordance", "Discrep", "L-criterion")

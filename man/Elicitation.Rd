@@ -3,12 +3,13 @@
 \alias{elicit}
 \title{Prior Elicitation}
 \description{
-Prior elicitation is the act of inducing personal opinion to be
-expressed by the probabilities the person associates with an event
-(Savage, 1971). The \code{elicit} function elicits personal opinion and
-the \code{delicit} function estimates probability density to be used
-with model specification in the \code{\link{LaplaceApproximation}} or
-\code{\link{LaplacesDemon}} functions.
+  Prior elicitation is the act of inducing personal opinion to be
+  expressed by the probabilities the person associates with an event
+  (Savage, 1971). The \code{elicit} function elicits personal opinion
+  and the \code{delicit} function estimates probability density to be
+  used with model specification in the
+  \code{\link{LaplaceApproximation}} or \code{\link{LaplacesDemon}}
+  functions.
 }
 \usage{
 delicit(theta, x, a=-Inf, b=Inf, log=FALSE)
@@ -97,13 +98,12 @@ elicit(n, cats, cat.names, show.plot=FALSE)
   Savage, L.J. (1971). "Elicitation of Personal Probabilities and
   Expectations". Journal of the American Statistical Association,
   66(336), p. 783--801.
-
-  \url{http://www.statisticat.com/laplacesdemon.html}}
+}
 \author{Byron Hall \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{de.Finetti.Game}},
   \code{\link{KLD}},
-  \code{\link{LaplaceApproximation}},
+  \code{\link{LaplaceApproximation}}, and
   \code{\link{LaplacesDemon}}.
 }
 \examples{
@@ -113,4 +113,8 @@ theta <- seq(from=-5,to=15,by=.1)
 plot(theta, delicit(theta,x), type="l", xlab=expression(theta),
      ylab=expression("p(" * theta * ")"))
 }
-\keyword{prior, subjective probability, utility}
+\keyword{Elicitation}
+\keyword{Personal Probability}
+\keyword{Prior}
+\keyword{Subjective Probability}
+\keyword{Utility}

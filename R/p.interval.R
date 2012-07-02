@@ -9,7 +9,8 @@
 # of class demonoid or laplace.                                           #
 ###########################################################################
 
-p.interval <- function(obj, HPD=TRUE, MM=TRUE, prob=0.95, ...)
+p.interval <- function(obj, HPD=TRUE, MM=TRUE, prob=0.95, plot=FALSE,
+     PDF=FALSE, ...)
      {
      ### Initial Checks
      if(missing(obj)) stop("The obj argument is required.")
@@ -21,7 +22,7 @@ p.interval <- function(obj, HPD=TRUE, MM=TRUE, prob=0.95, ...)
           stop("The prob argument must be a scalar.")
      if((prob <= 0) | (prob >= 1))
           stop("The prob argument must be in the interval (0,1).")
-     if(class(obj) == "demonoid") {
+     if(identical(class(obj), "demonoid")) {
           thin <- obj$Rec.BurnIn.Thinned
           n <- nrow(obj$Posterior1)
           if(thin < nrow(obj$Posterior1))
@@ -32,7 +33,7 @@ p.interval <- function(obj, HPD=TRUE, MM=TRUE, prob=0.95, ...)
                colnames(obj$Monitor))
           obj <- x
           }
-     else if(class(obj) == "laplace") {
+     else if(identical(class(obj), "laplace")) {
           if(any(is.na(obj$Posterior)))
                stop("Posterior samples do not exist in obj.")
           obj <- obj$Posterior
@@ -83,6 +84,29 @@ p.interval <- function(obj, HPD=TRUE, MM=TRUE, prob=0.95, ...)
                          ints <- paste(ints,round(vals[i,m],3),")",sep="")}
                     cat("\nColumn", m, "multimodal intervals:", ints, "\n")}
                }
+          }
+     if(plot == TRUE) {
+          if(PDF == TRUE) {
+               pdf("P.Interval.Plots.pdf")
+               par(mfrow=c(1,1))}
+          else par(mfrow=c(1,1), ask=TRUE)
+          for (i in 1:ncol(obj)) {
+               kde <- kde.low <- kde.high <- density(obj[,i])
+               kde.low$x <- kde$x[kde$x < ans[i,1]]
+               kde.low$y <- kde$y[which(kde$x < ans[i,1])]
+               kde.high$x <- kde$x[kde$x > ans[i,2]]
+               kde.high$y <- kde$y[which(kde$x > ans[i,2])]
+               plot(kde, xlab="Value", main=colnames(obj)[i])
+               polygon(kde, col="black", border="black")
+               polygon(c(min(kde.low$x), kde.low$x, max(kde.low$x)),
+                    c(min(kde.low$y), kde.low$y, min(kde.low$y)),
+                    col="gray", border="gray")
+               polygon(c(min(kde.high$x), kde.high$x, max(kde.high$x)),
+                    c(min(kde.high$y), kde.high$y, min(kde.high$y)),
+                    col="gray", border="gray")
+               abline(v=0, col="red", lty=2)
+               }
+          if(PDF == TRUE) dev.off()
           }
      return(ans)
      }

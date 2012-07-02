@@ -12,6 +12,7 @@
 \alias{is.square.matrix}
 \alias{is.symmetric.matrix}
 \alias{lower.triangle}
+\alias{read.matrix}
 \alias{tr}
 \alias{upper.triangle}
 \title{Matrix Utility Functions}
@@ -32,6 +33,7 @@ is.symmetric.matrix(x)
 Cov2Cor(Sigma)
 Hessian(Model, parm, Data)
 lower.triangle(x, diag=FALSE)
+read.matrix(file, header=FALSE, sep="", skip=0, na.rm=FALSE)
 tr(x)
 upper.triangle(x, diag=FALSE)
 }
@@ -47,10 +49,10 @@ upper.triangle(x, diag=FALSE)
   \item{diag}{Logical. If \code{TRUE}, then the elements in the main
     diagonal are also returned.}
   \item{Sigma}{This is a covariance matrix, \eqn{\Sigma}{Sigma}, and may
-    be entered as either a matrix or vector.}
+    be entered either as a matrix or vector.}
   \item{Model}{This is a model specification function. For more
     information, see \code{\link{LaplacesDemon}}.}
-  \item{parm}{This is the parameter list passed to the model
+  \item{parm}{This is a vector of parameters passed to the model
     specification.}
   \item{Data}{This is the list of data passed to the model
     specification. For more information, see \code{\link{LaplacesDemon}}.}
@@ -62,6 +64,22 @@ upper.triangle(x, diag=FALSE)
     example. Be aware that a global variable, \code{LaplacesDemonMatrix}, is
     created so \code{as.parm.matrix} can keep track of changes from
     iteration to iteration.}
+  \item{file}{This is the name of the file from which the data will be
+    imported or read.}
+  \item{header}{Logical. When \code{TRUE}, the first row of the file
+    must contain names of the columns, and will be converted to the
+    column names of the numeric matrix. When \code{FALSE}, the first row
+    of the file contains data, not column names.}
+  \item{sep}{This argument indicates a character with which it will
+    separate fields when creating column vectors. For example, a
+    read a comma-separated file (.csv), use \code{sep=","}.}
+  \item{skip}{This is the number of rows to skip before beginning to
+    read data.}
+  \item{na.rm}{Logical. When \code{TRUE}, rows with missing values are
+    removed from the matrix after it is read. Rather than removing
+    missing values, the user may consider imputing missing values inside
+    the model. Examples of imputation may be found in the accompanying
+    "Examples" vignette.}
 }
 \details{
   The \code{as.indicator.matrix} function creates an indicator matrix
@@ -178,6 +196,18 @@ upper.triangle(x, diag=FALSE)
   triangular elements of a matrix, and the diagonal is included when
   \code{diag=TRUE}.
 
+  The \code{read.matrix} function is provided here as one of many
+  convenient ways to read a numeric matrix into R. The most common
+  method of storing data in R is the data frame, because it is
+  versatile. For example, a data frame may contain character, factor,
+  and numeric variables together. For iterative estimation, common in
+  Bayesian inference, the data frame is much slower than the numeric
+  matrix. For this reason, the Laplace's Demon package does not use data
+  frames, and has not traditionally accepted character or factor
+  data. This function is similar to the \code{read.matrix} function in
+  the tseries package, with the addition of the \code{na.rm}
+  argument. The \code{read.matrix} function returns a numeric matrix.
+
   The \code{tr} function returns the trace of a matrix. The trace of a
   matrix is the sum of the elements in the main diagonal of a square
   matrix. For example, the trace of a \eqn{k \times k}{k x k} matrix
@@ -206,7 +236,10 @@ upper.triangle(x, diag=FALSE)
   \code{\link{LaplacesDemon}},
   \code{\link{lower.tri}},
   \code{\link{Prec2Cov}}
-  \code{\link{solve}},
+  \code{\link{solve}}, and
   \code{\link{upper.tri}}.
 }
-\keyword{utility}
+\keyword{Array}
+\keyword{Math}
+\keyword{Matrix}
+\keyword{Utility}

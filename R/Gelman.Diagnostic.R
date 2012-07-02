@@ -89,7 +89,7 @@ Gelman.Diagnostic <- function (x, confidence=0.95, transform=FALSE)
      R2.upper <- R2.fixed + qf((1 + confidence)/2, B.df, W.df) * R2.random
      psrf <- cbind(sqrt(df.adj * R2.estimate), sqrt(df.adj * R2.upper))
      dimnames(psrf) <- list(xnames, c("Point Est.", "Upper C.I."))
-     out <- list(psrf=psrf, mpsrf=mpsrf)
+     out <- list(PSRF=psrf, MPSRF=mpsrf)
      return(out)
      }
 

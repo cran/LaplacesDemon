@@ -14,17 +14,17 @@ is.stationary <- function(x)
        options(warn=-1)
        test <- try(as.vector(Geweke.Diagnostic(x)), silent=TRUE)
        options(warn=0)
-       if((class(test) != "try-error") & (test > -2) & (test < 2))
+       if(!inherits(test, "try-error") & (test > -2) & (test < 2))
             stationary <- TRUE}
   else if(is.matrix(x)) {
        options(warn=-1)
        test <- try(as.vector(Geweke.Diagnostic(x)), silent=TRUE)
        options(warn=0)
-       if(all(is.numeric(test)) & all(test > -2) & all(test < 2))
+       if(!inherits(test, "try-error") & all(test > -2) & all(test < 2))
             stationary <- TRUE}
-  else if(class(x) == "demonoid") {
+  else if(identical(class(x), "demonoid")) {
        if(x$Rec.BurnIn.Thinned < nrow(x$Posterior1)) stationary <- TRUE}
-  else if(class(x) == "laplace") {
+  else if(identical(class(x), "laplace")) {
        warning("x is an object of class laplace.")
        stationary <- TRUE}
   else warning("x is an unrecognized object.")

@@ -38,10 +38,10 @@ SIR <- function(Model, Data, mu, Sigma, n=1000)
      probs <- w / sum(w)
      ### Resampling
      options(warn=-1)
-     test <- try(indices <- sample(1:n, size=n, replace=TRUE,
-          prob=probs), silent=TRUE)
+     indices <- try(sample(1:n, size=n, replace=TRUE, prob=probs),
+          silent=TRUE)
      options(warn=0)
-     if(class(test) == "try-error") indices <- 1:n
+     if(inherits(indices, "try-error")) indices <- 1:n
      if(k > 1) theta <- theta[indices,]
      else theta <- theta[indices]
      return(theta)

@@ -41,9 +41,9 @@ rhalfnorm(n, scale=sqrt(pi/2))
   \item Mode: \eqn{mode(\theta) = 0}{mode(theta) = 0}
 }
 
-The half-normal distribution is recommended as an uninformative prior
+The half-normal distribution is recommended as a weakly informative prior
 distribution for a scale parameter that may be useful as an alternative
-to the half-Cauchy, half-t, and gamma.
+to the half-Cauchy, half-t, or vague gamma.
 }
 \value{
   \code{dhalfnorm} gives the density,
@@ -53,7 +53,7 @@ to the half-Cauchy, half-t, and gamma.
 }
 \seealso{
   \code{\link{dnorm}},
-  \code{\link{dnormp}},
+  \code{\link{dnormp}}, and
   \code{\link{dnormv}}.
 }
 \examples{
@@ -72,4 +72,4 @@ lines(x, dhalfnorm(x,1), type="l", col="blue")
 legend(2, 0.9, expression(sigma==0.1, sigma==0.5, sigma==1),
      lty=c(1,1,1), col=c("red","green","blue"))
 }
-\keyword{distribution}
+\keyword{Distribution}

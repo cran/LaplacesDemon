@@ -70,9 +70,10 @@ distributions.
 A very common special case is the symmetric Dirichlet distribution,
 where all of the elements in parameter vector \eqn{\alpha}{alpha} have
 the same value. Symmetric Dirichlet distributions are often used as 
-uninformative Dirichlet prior distributions, so that one component is not
-favored over another. The single value that is entered into all elements
-of \eqn{\alpha}{alpha} is called the concentration parameter.
+vague or weakly informative Dirichlet prior distributions, so that one
+component is not favored over another. The single value that is entered
+into all elements of \eqn{\alpha}{alpha} is called the concentration
+parameter.
 
 These functions are similar to those in the \code{MCMCpack} package.
 }
@@ -83,7 +84,7 @@ These functions are similar to those in the \code{MCMCpack} package.
 \seealso{
   \code{\link{dbeta}},
   \code{\link{dcat}},
-  \code{\link{dmvpolya}},
+  \code{\link{dmvpolya}}, and
   \code{\link{dmultinom}}.
 }
 \examples{
@@ -91,4 +92,4 @@ library(LaplacesDemon)
 x <- ddirichlet(c(.1,.3,.6), c(1,1,1))
 x <- rdirichlet(10, c(1,1,1))
 }
-\keyword{distribution}
+\keyword{Distribution}

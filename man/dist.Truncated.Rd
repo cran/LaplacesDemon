@@ -37,11 +37,12 @@ vartrunc(spec, a=-Inf, b=Inf, ...)
   from a priori restricting the domain of some other probability
   distribution. More than merely preventing values outside of truncated
   bounds, a proper truncated distribution integrates to one within the
-  truncated bounds. In contrast to a truncated distribution, a censored
-  distribution occurs when the probability distribution is still allowed
-  outside of a pre-specified range. Here, distributions are truncated to
-  the interval \eqn{[a,b]}, such as \eqn{p(\theta) \in [a,b]}{p(theta)
-    in [a,b]}.
+  truncated bounds. For more information on propriety, see
+  \code{\link{is.proper}}. In contrast to a truncated distribution, a
+  censored distribution occurs when the probability distribution is
+  still allowed outside of a pre-specified range. Here, distributions
+  are truncated to the interval \eqn{[a,b]}, such as \eqn{p(\theta) \in
+  [a,b]}{p(theta) in [a,b]}.
 
   In \code{LaplaceApproximation} or \code{LaplacesDemon}, \code{dtrunc}
   is often used in conjunction with the \code{interval} function to
@@ -55,19 +56,20 @@ vartrunc(spec, a=-Inf, b=Inf, ...)
   \code{rtrunc} generates random deviates, and
   \code{vartrunc} gives the variance of the truncated distribution.
 }
-\seealso{
-  \code{\link{interval}},
-  \code{\link{LaplaceApproximation}},
-  \code{\link{LaplacesDemon}}.
-}
 \references{
   Nadarajah, S. and Kotz, S. (2006). "R Programs for Computing Truncated
   Distributions". Journal of Statistical Software, 16, Code Snippet 2,
   p. 1--8.
+}
+\seealso{
+  \code{\link{interval}},
+  \code{\link{is.proper}},
+  \code{\link{LaplaceApproximation}}, and
+  \code{\link{LaplacesDemon}}.
 }
 \examples{
 library(LaplacesDemon)
 x <- seq(-3, 3, by = 0.1)
 y <- dtrunc(x, "norm", a=-0.5, b=0.5, mean=0, sd=2)
 }
-\keyword{distribution}
+\keyword{Distribution}

@@ -16,80 +16,73 @@ LaplaceApproximation(Model, parm, Data, Interval=1.0E-6,
      Stop.Tolerance=1.0E-5)
 }
 \arguments{
-  \item{Model}{
-    This required argument receives the model from a user-defined
-    function. The user-defined function is where the model is
-    specified. \code{LaplaceApproximation} passes two arguments to the
-    model function, \code{parms} and \code{Data}. For more information,
-    see the \code{\link{LaplacesDemon}} function and ``LaplacesDemon
-    Tutorial'' vignette.}
-  \item{parm}{
-    This argument requires a vector of initial values equal in length to
-    the number of parameters. \code{LaplaceApproximation} will attempt
-    to optimize these initial values for the parameters, where the
-    optimized values are the posterior modes, for later use with the
+  \item{Model}{This required argument receives the model from a
+    user-defined function. The user-defined function is where the model
+    is specified. \code{LaplaceApproximation} passes two arguments to
+    the model function, \code{parms} and \code{Data}. For more
+    information, see the \code{\link{LaplacesDemon}} function and
+    ``LaplacesDemon Tutorial'' vignette.}
+  \item{parm}{This argument requires a vector of initial values equal in
+    length to the number of parameters. \code{LaplaceApproximation} will
+    attempt to optimize these initial values for the parameters, where
+    the optimized values are the posterior modes, for later use with the
     \code{\link{LaplacesDemon}} function. The \code{\link{GIV}} function
     may be used to randomly generate initial values.}
-  \item{Data}{
-    This required argument accepts a list of data. The list of data must
-    include \code{mon.names} which contains monitored variable names,
-    and \code{parm.names} which contains parameter
+  \item{Data}{This required argument accepts a list of data. The list of
+    data must include \code{mon.names} which contains monitored variable
+    names, and \code{parm.names} which contains parameter
     names. \code{LaplaceApproximation} must be able to determine the
     sample size of the data, and will look for a scalar sample size
     variable \code{n} or \code{N}. If not found, it will look for
     variable \code{y} or \code{Y}, and attempt to take its number of
     rows as sample size. \code{LaplaceApproximation} needs to determine
     sample size due to the asymptotic nature of this method.}
-  \item{Interval}{
-    This argument receives an interval for estimating approximate
-    gradients. The logarithm of the unnormalized joint posterior density
-    of the Bayesian model is evaluated at +/- 1/2 of this
-    interval. \code{Interval} defaults to 1.0E-6.}
-  \item{Iterations}{
-    This argument accepts an integer that determines the number of
-    iterations that \code{LaplaceApproximation} will attempt to maximize
-    the logarithm of the unnormalized joint posterior density.
-    \code{Iterations} defaults to 100. \code{LaplaceApproximation} will
-    stop before this number of iterations if the tolerance is less than
-    or equal to the \code{Stop.Tolerance} criterion. The required
-    amount of computer memory increases with \code{Iterations}. If
-    computer memory is exceeded, then all will be lost.}
-  \item{Method}{
-    This optional argument specifies the method used for Laplace
-    Approximation. The default method is \code{LBFGS}. Options include
-    \code{AGA} for adaptive gradient ascent and \code{Rprop} for
+  \item{Interval}{This argument receives an interval for estimating
+    approximate gradients. The logarithm of the unnormalized joint
+    posterior density of the Bayesian model is evaluated at +/- 1/2 of
+    this interval. \code{Interval} defaults to 1.0E-6.}
+  \item{Iterations}{This argument accepts an integer that determines the
+    number of iterations that \code{LaplaceApproximation} will attempt
+    to maximize the logarithm of the unnormalized joint posterior
+    density. \code{Iterations} defaults to 100.
+    \code{LaplaceApproximation} will stop before this number of
+    iterations if the tolerance is less than or equal to the
+    \code{Stop.Tolerance} criterion. The required amount of computer
+    memory increases with \code{Iterations}. If computer memory is
+    exceeded, then all will be lost.}
+  \item{Method}{This optional argument specifies the method used for
+    Laplace Approximation. The default method is \code{LBFGS}. Options
+    include \code{AGA} for adaptive gradient ascent and \code{Rprop} for
     resilient backpropagation. The previous default, \code{CG}
     (conjugate gradient), has been deprecated.}
-  \item{Samples}{
-    This argument indicates the number of posterior samples to be taken
-    with sampling importance resampling via the \code{\link{SIR}}
-    function, which occurs only when \code{sir=TRUE}. Note that the
-    number of samples should increase with the number and
-    intercorrelations of the parameters.}
-  \item{sir}{
-    This logical argument indicates whether or not sampling importance
-    resampling is conducted via the \code{\link{SIR}} function to draw
-    independent posterior samples. This argument defaults to
-    \code{TRUE}. Even when \code{TRUE}, posterior samples are drawn only
-    when \code{LaplaceApproximation} has converged. Posterior samples
-    are required for many other functions, including \code{plot.laplace}
-    and \code{predict.laplace}. The only time that it is advantageous for
-    \code{sir=FALSE} is when \code{LaplaceApproximation} is used to help
-    the initial values for \code{LaplacesDemon}, and it is unnecessary
-    for time to be spent on sampling.}
-  \item{Stop.Tolerance}{
-    This argument accepts any positive number and defaults to 1.0E-5. At
-    each iteration, the square root of the sum of the squared
-    differences of the logarithm of the unnormalized joint posterior
-    density is calculated. If this result is less than or equal to the
-    value of \code{Stop.Tolerance}, then \code{LaplaceApproximation} has
-    converged to the user-specified tolerance and will terminate at the
-    end of the current iteration.}
+  \item{Samples}{This argument indicates the number of posterior samples
+    to be taken with sampling importance resampling via the
+    \code{\link{SIR}} function, which occurs only when
+    \code{sir=TRUE}. Note that the number of samples should increase
+    with the number and intercorrelations of the parameters.}
+  \item{sir}{This logical argument indicates whether or not sampling
+    importance resampling is conducted via the \code{\link{SIR}}
+    function to draw independent posterior samples. This argument
+    defaults to \code{TRUE}. Even when \code{TRUE}, posterior samples
+    are drawn only when \code{LaplaceApproximation} has
+    converged. Posterior samples are required for many other functions,
+    including \code{plot.laplace} and \code{predict.laplace}. The only
+    time that it is advantageous for \code{sir=FALSE} is when
+    \code{LaplaceApproximation} is used to help the initial values for
+    \code{LaplacesDemon}, and it is unnecessary for time to be spent on
+    sampling.}
+  \item{Stop.Tolerance}{This argument accepts any positive number and
+    defaults to 1.0E-5. At each iteration, the square root of the sum of
+    the squared differences of the logarithm of the unnormalized joint
+    posterior density is calculated. If this result is less than or
+    equal to the value of \code{Stop.Tolerance}, then
+    \code{LaplaceApproximation} has converged to the user-specified
+    tolerance and will terminate at the end of the current iteration.}
 }
 \details{
   The Laplace Approximation or Laplace Method is a family of asymptotic
   techniques used to approximate integrals. Laplace's method seems to
-  accurately approximate uni-modal posterior moments and marginal
+  accurately approximate unimodal posterior moments and marginal
   posterior distributions in many cases. Since it is not applicable in
   all cases, it is recommended here that Laplace Approximation is used
   cautiously in its own right, or preferably, it is used before MCMC.
@@ -188,38 +181,34 @@ LaplaceApproximation(Model, parm, Data, Interval=1.0E-6,
 \value{
   \code{LaplaceApproximation} returns an object of class \code{laplace}
   that is a list with the following components:
-  \item{Call}{
-    This is the matched call of \code{LaplaceApproximation}.}
-  \item{Converged}{
-    This is a logical indicator of whether or not
+  \item{Call}{This is the matched call of \code{LaplaceApproximation}.}
+  \item{Converged}{This is a logical indicator of whether or not
     \code{LaplaceApproximation} converged within the specified
     \code{Iterations} according to the supplied \code{Stop.Tolerance}
     criterion. Convergence does not indicate that the global maximum has
     been found, but only that the tolerance was less than or equal to
     the \code{Stop.Tolerance} criterion.}
-  \item{Covar}{
-    This covariance matrix is the negative inverse of an approximate
-    Hessian matrix. If an error is encountered in attempting to solve
-    the matrix inversion, then an identity matrix is returned. The
-    \code{Covar} matrix may be scaled and input into the \code{Covar}
-    argument of the \code{\link{LaplacesDemon}} function for further
-    MCMC estimation, or the diagonal of this matrix may be used to
-    represent the posterior variance of the parameters, provided the
-    algorithm converged and matrix inversion was successful. To scale
-    this matrix for use with Laplace's Demon, multiply it by
+  \item{Covar}{This covariance matrix is the negative inverse of an
+    approximate Hessian matrix. If an error is encountered in attempting
+    to solve the matrix inversion, then an identity matrix is
+    returned. The \code{Covar} matrix may be scaled and input into the
+    \code{Covar} argument of the \code{\link{LaplacesDemon}} function
+    for further MCMC estimation, or the diagonal of this matrix may be
+    used to represent the posterior variance of the parameters, provided
+    the algorithm converged and matrix inversion was successful. To
+    scale this matrix for use with Laplace's Demon, multiply it by
     \eqn{2.38^2/d}, where \eqn{d} is the number of initial values.}
-  \item{Deviance}{
-    This is a vector of the iterative history of the deviance in the
-    \code{LaplaceApproximation} function, as it sought convergence.}
-  \item{History}{
-    This is a matrix of the iterative history of the parameters in the
-    \code{LaplaceApproximation} function, as it sought convergence.}
-  \item{Initial.Values}{
-    This is the vector of initial values that was originally given to
-    \code{LaplaceApproximation} in the \code{parm} argument.}
-  \item{LML}{
-    This is an approximation of the logarithm of the marginal likelihood
-    of the data (see the \code{\link{LML}} function for more
+  \item{Deviance}{This is a vector of the iterative history of the
+    deviance in the \code{LaplaceApproximation} function, as it sought
+    convergence.}
+  \item{History}{This is a matrix of the iterative history of the
+    parameters in the \code{LaplaceApproximation} function, as it sought
+    convergence.}
+  \item{Initial.Values}{This is the vector of initial values that was
+    originally given to \code{LaplaceApproximation} in the \code{parm}
+    argument.}
+  \item{LML}{This is an approximation of the logarithm of the marginal
+    likelihood of the data (see the \code{\link{LML}} function for more
     information). When the model has converged and \code{sir=TRUE}, the
     NSIS method is used. When the model has converged and
     \code{sir=FALSE}, the LME2 (one of the Laplace-Metropolis Estimator
@@ -232,43 +221,34 @@ LaplaceApproximation(Model, parm, Data, Interval=1.0E-6,
     number of parameters (p. 778). The LME is inappropriate with
     hierarchical models. However \code{LML} is estimated, it is useful
     for comparing multiple models with the \code{BayesFactor} function.}
-  \item{LP.Final}{
-    This reports the final scalar value for the logarithm of the
-    unnormalized joint posterior density.}
-  \item{LP.Initial}{
-    This reports the initial scalar value for the logarithm of the
-    unnormalized joint posterior density.}
-  \item{Minutes}{
-    This is the number of minutes that \code{LaplaceApproximation} was
-    running, and this includes the initial checks as well as drawing
-    posterior samples and creating summaries.}
-  \item{Monitor}{
-    When \code{sir=TRUE}, a number of independent posterior samples
-    equal to \code{Samples} is taken, and the draws are stored here as a
-    matrix. The rows of the matrix are the samples, and the columns are
-    the monitored variables.}
-  \item{Posterior}{
-    When \code{sir=TRUE}, a number of independent posterior samples
-    equal to \code{Samples} is taken, and the draws are stored here as a
-    matrix. The rows of the matrix are the samples, and the columns are
-    the parameters.}
-  \item{Step.Size.Final}{
-    This is the final, scalar \code{Step.Size} value at the end of the
-    \code{LaplaceApproximation} algorithm.}
-  \item{Step.Size.Initial}{
-    This is the initial, scalar \code{Step.Size}.}
-  \item{Summary}{
-    This is a summary matrix. Rows are parameters. The following columns
-    are included: Mode, SD (Standard Deviation), LB (Lower Bound), and
-    UB (Upper Bound). The bounds constitute a 95\% probability
+  \item{LP.Final}{This reports the final scalar value for the logarithm
+    of the unnormalized joint posterior density.}
+  \item{LP.Initial}{This reports the initial scalar value for the
+    logarithm of the unnormalized joint posterior density.}
+  \item{Minutes}{This is the number of minutes that
+    \code{LaplaceApproximation} was running, and this includes the
+    initial checks as well as drawing posterior samples and creating
+    summaries.}
+  \item{Monitor}{ When \code{sir=TRUE}, a number of independent
+    posterior samples equal to \code{Samples} is taken, and the draws
+    are stored here as a matrix. The rows of the matrix are the samples,
+    and the columns are the monitored variables.}
+  \item{Posterior}{When \code{sir=TRUE}, a number of independent
+    posterior samples equal to \code{Samples} is taken, and the draws
+    are stored here as a matrix. The rows of the matrix are the samples,
+    and the columns are the parameters.}
+  \item{Step.Size.Final}{This is the final, scalar \code{Step.Size}
+    value at the end of the \code{LaplaceApproximation} algorithm.}
+  \item{Step.Size.Initial}{This is the initial, scalar \code{Step.Size}.}
+  \item{Summary}{This is a summary matrix. Rows are parameters. The
+    following columns are included: Mode, SD (Standard Deviation), LB
+    (Lower Bound), and UB (Upper Bound). The bounds constitute a 95\% probability
     interval.}
-  \item{Tolerance.Final}{
-    This is the last \code{Tolerance} of the \code{LaplaceApproxiation}
-    algorithm. It is calculated as the square root of the sum of the
-    squared differences between a new and current vector of
-    parameters.}
-  \item{Tolerance.Stop}{
-    This is the \code{Stop.Tolerance} criterion.}
+  \item{Tolerance.Final}{This is the last \code{Tolerance} of the
+    \code{LaplaceApproxiation} algorithm. It is calculated as the square
+    root of the sum of the squared differences between a new and current
+    vector of parameters.}
+  \item{Tolerance.Stop}{This is the \code{Stop.Tolerance} criterion.}
 }
 \references{
   Azevedo-Filho, A. and Shachter, R. (1994). "Laplace's Method
@@ -320,7 +300,7 @@ LaplaceApproximation(Model, parm, Data, Interval=1.0E-6,
   \code{\link{LaplacesDemon}},
   \code{\link{GIV}},
   \code{\link{LML}},
-  \code{\link{optim}},
+  \code{\link{optim}}, and
   \code{\link{SIR}}.
 }
 \examples{
@@ -330,9 +310,9 @@ library(LaplacesDemon)
 
 ##############################  Demon Data  ###############################
 data(demonsnacks)
-J <- 6
 y <- log(demonsnacks$Calories)
-X <- cbind(1, as.matrix(demonsnacks[,c(1,3:6)]))
+X <- cbind(1, as.matrix(demonsnacks[,c(7,8,10)]))
+J <- ncol(X)
 for (j in 2:J) {X[,j] <- CenterScale(X[,j])}
 mon.names <- c("sigma","mu[1]")
 parm.names <- as.parm.names(list(beta=rep(0,J), log.sigma=0))
@@ -382,8 +362,9 @@ Importance(Fit, Model, MyData, Discrep="Chi-Square")
 #Fit$Summary[,1] is submitted to LaplacesDemon as Initial.Values.
 #End
 }
-\keyword{
-  Adaptive, Bayesian Inference, Gradient Ascent, Initial Values, Laplace
-     Approximation, LaplaceApproximation, LaplacesDemon, Laplace's
-     Demon, Optimization, Resilient Backpropagation
-}
+\keyword{Adaptive}
+\keyword{Bayesian Inference}
+\keyword{Gradient Ascent}
+\keyword{Initial Values}
+\keyword{Optimization}
+\keyword{Resilient Backpropagation}

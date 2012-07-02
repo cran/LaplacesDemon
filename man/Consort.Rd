@@ -7,13 +7,12 @@
 }
 \usage{Consort(object)}
 \arguments{
-     \item{object}{
-     This required argument is an object of class \code{demonoid}.
-     }
+  \item{object}{This required argument is an object of class
+    \code{demonoid}.}
 }
 \details{
-  First, \code{Consort} calls \code{print.demonoid}, which prints most of
-  the components to the screen from the supplied object of class
+  First, \code{Consort} calls \code{print.demonoid}, which prints most
+  of the components to the screen from the supplied object of class
   \code{demonoid}.
 
   Second, Laplace's Demon considers a combination of five conditions
@@ -49,8 +48,8 @@
   \item ESS: The effective sample size (ESS) is considered satisfactory
     for each target distribution if it is at least 100, which is usually
     enough to describe 95\% probability intervals (see
-  \code{\link{p.interval}} for more information). The \code{\link{ESS}}
-    function is used.
+    \code{\link{p.interval}} and \code{\link{LPL.interval}} for more
+    information). The \code{\link{ESS}} function is used.
   \item Stationarity: Each target distribution is considered
     satisfactory if it is estimated to be stationary with the
     \code{\link{Geweke.Diagnostic}} function.
@@ -66,9 +65,7 @@
 
   If all five conditions are satisfactory, then Laplace's Demon is
   appeased. Otherwise, Laplace's Demon will suggest and supply R
-  code that is ready to be copy/pasted and executed. Suggestions are
-  limited to a million iterations, though the user is free to exceed
-  this limit, which is best exceeded in complicated models.
+  code that is ready to be copy/pasted and executed.
 
   To visualize the MCSE-based stopping rule, run the following code:
 
@@ -80,8 +77,22 @@
   The black vertical lines show the standard error, and the red vertical
   lines show the 95\% interval.
 
+  If the user has an object of class \code{demonoid.hpc}, the
+  \code{Consort} function may be still be applied, but a particular
+  chain in the object must be specified as a component in a list. For
+  example, with an object called \code{Fit} and a goal of consorting
+  over the second chain, the code would be: \code{Consort(Fit[[2]])}.
+
   The Demonic Suggestion is usually very helpful, but should not be
-  followed blindly. Do not let it replace critical thinking.
+  followed blindly. Do not let it replace critical thinking. For
+  example, \code{Consort} may find that diminishing adaptation is unmet,
+  and recommend a different algorithm. However, the user may be
+  convinced that the current algorithm is best, and believe instead that
+  MCMC found a local solution, and is leaving it to find the global
+  solution, in which case adaptations may increase again. If this is
+  true, then it may be best to ignore the newly suggested algorithm, and
+  continue with the current algorithm. The suggested code may be
+  helpful, but it is merely a suggestion.
 }
 \references{
   Flegal, J.M., Haran, M., and Jones, G.L. (2008). "Markov chain Monte
@@ -96,6 +107,9 @@
   \code{\link{ESS}},
   \code{\link{Geweke.Diagnostic}},
   \code{\link{LaplacesDemon}},
-  \code{\link{MCSE}},
+  \code{\link{LaplacesDemon.hpc}},
+  \code{\link{LPL.interval}},
+  \code{\link{MCSE}}, and
   \code{\link{p.interval}}.
 }
+\keyword{Laplace's Demon}

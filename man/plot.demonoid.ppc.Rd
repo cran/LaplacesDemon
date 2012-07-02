@@ -225,21 +225,21 @@
   densities are desired to be seen row-wise.
 
   \code{Residuals} plots compare y with its residuals. The probability
-  interval is plotted as a line in gray. This plot is appropriate when y
+  interval is plotted as a line. This plot is appropriate when y
   is univariate.
 
   \code{Residuals, Multivariate, C} requires \code{Data} to be
   specified, and also requires that variable \code{Y} exist in the data
   set with exactly that name. These are plots of each column-wise
-  vector of residuals. The probability interval is plotted as a line in
-  gray. This plot is appropriate when Y is multivariate, not
+  vector of residuals. The probability interval is plotted as a
+  line. This plot is appropriate when Y is multivariate, not
   categorical, and the residuals are desired to be seen column-wise.
 
   \code{Residuals, Multivariate, R} requires \code{Data} to be
   specified, and also requires that variable \code{Y} exist in the data
   set with exactly that name. These are plots of each row-wise
-  vector of residuals. The probability interval is plotted as a line in
-  gray. This plot is appropriate when Y is multivariate, not
+  vector of residuals. The probability interval is plotted as a
+  line. This plot is appropriate when Y is multivariate, not
   categorical, and the residuals are desired to be seen row-wise.
   
   \code{Space-Time by Space} requires \code{Data} to be specified, and
@@ -307,8 +307,8 @@
 }
 \author{Byron Hall \email{statisticat@gmail.com}}
 \seealso{
-  \code{\link{LaplacesDemon}},
+  \code{\link{LaplacesDemon}} and
   \code{\link{predict.demonoid}}.
 }
 \examples{### See the LaplacesDemon function for an example.}
-\keyword{plot}
+\keyword{Plot}

@@ -45,4 +45,6 @@ de.Finetti.Game(width)
 \seealso{
   \code{\link{elicit}}
 }
-\keyword{subjective probability, utility}
+\keyword{Personal Probability}
+\keyword{Subjective Probability}
+\keyword{Utility}

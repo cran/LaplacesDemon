@@ -86,6 +86,7 @@ These functions are similar to those in the \code{VGAM} package.
   \code{\link{dnorm}},
   \code{\link{dnormp}},
   \code{\link{dnormv}},
+  \code{\link{dsdlaplace}}, and
   \code{\link{dslaplace}}.
 }
 \examples{
@@ -105,4 +106,4 @@ legend(2, 0.9, expression(paste(mu==0, ", ", lambda==0.5),
      paste(mu==0, ", ", lambda==1), paste(mu==0, ", ", lambda==2)),
      lty=c(1,1,1), col=c("red","green","blue"))
 }
-\keyword{distribution}
+\keyword{Distribution}

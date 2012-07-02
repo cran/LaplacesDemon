@@ -2,46 +2,48 @@
 \alias{BayesFactor}
 \title{Bayes Factor}
 \description{
-This function calculates Bayes factors for two or more fitted objects
-of class \code{demonoid} or  \code{laplace} that were estimated
-respectively with the \code{\link{LaplacesDemon}} or
-\code{\link{LaplaceApproximation}} functions, and indicates the
-strength of evidence in favor of the hypothesis (that each model,
-\eqn{\mathcal{M}_i}{M[i]}, is better than another model,
-\eqn{\mathcal{M}_j}{M[j]}).
+  This function calculates Bayes factors for two or more fitted objects
+  of class \code{demonoid} or  \code{laplace} that were estimated
+  respectively with the \code{\link{LaplacesDemon}} or
+  \code{\link{LaplaceApproximation}} functions, and indicates the
+  strength of evidence in favor of the hypothesis (that each model,
+  \eqn{\mathcal{M}_i}{M[i]}, is better than another model,
+  \eqn{\mathcal{M}_j}{M[j]}).
 }
 \usage{
 BayesFactor(x)
 }
 \arguments{
-    \item{x}{This is a list of two or more fitted objects of class
-    \code{demonoid} or \code{laplace}. The components are named in order
+  \item{x}{This is a list of two or more fitted objects of class
+    \code{demonoid} or \code{laplace}. The components are named in order 
     beginning with model 1, \code{M1}, and \eqn{k} models are usually
-    represented as \eqn{\mathcal{M}_1,\dots,\mathcal{M}_k}{M[1],...,M[k]}.}
+    represented as
+    \eqn{\mathcal{M}_1,\dots,\mathcal{M}_k}{M[1],...,M[k]}.}
 }
 \details{
-Introduced by Harold Jeffreys, a 'Bayes factor' is a Bayesian
-alternative to frequentist hypothesis testing that is most often used
-for the comparison of multiple models by hypothesis testing, usually
-to determine which model better fits the data (Jeffreys, 1961). Bayes
-factors are notoriously difficult to compute, and the Bayes factor is
-only defined when the marginal density of \code{y} under each model is
-proper. However, the Bayes factor is easy to approximate with the
-Laplace-Metropolis estimator (Lewis and Raftery, 1997), and is
-estimated this way in both the \code{\link{LaplaceApproximation}} and
-\code{\link{LaplacesDemon}} functions.
+  Introduced by Harold Jeffreys, a 'Bayes factor' is a Bayesian
+  alternative to frequentist hypothesis testing that is most often used
+  for the comparison of multiple models by hypothesis testing, usually
+  to determine which model better fits the data (Jeffreys, 1961). Bayes
+  factors are notoriously difficult to compute, and the Bayes factor is
+  only defined when the marginal density of \eqn{\textbf{y}}{y} under
+  each model is proper (see \code{\link{is.proper}}). However, the Bayes
+  factor is easy to approximate with the Laplace-Metropolis estimator
+  (Lewis and Raftery, 1997), and is estimated this way in both the
+  \code{\link{LaplaceApproximation}} and \code{\link{LaplacesDemon}}
+  functions.
 
-Hypothesis testing with Bayes factors is more robust than frequentist
-hypothesis testing, since the Bayesian form avoids model selection bias,
-evaluates evidence in favor of the null hypothesis, includes model
-uncertainty, and allows non-nested models to be compared (though of
-course the model must have the same dependent variable). Also,
-frequentist significance tests become biased in favor of rejecting the
-null hypothesis with sufficiently large sample size.
+  Hypothesis testing with Bayes factors is more robust than frequentist
+  hypothesis testing, since the Bayesian form avoids model selection
+  bias, evaluates evidence in favor of the null hypothesis, includes
+  model uncertainty, and allows non-nested models to be compared (though
+  of course the model must have the same dependent variable). Also,
+  frequentist significance tests become biased in favor of rejecting the
+  null hypothesis with sufficiently large sample size.
 
-The Bayes factor for comparing two models may be approximated as the
-ratio of the marginal likelihood of the data in model 1 and model
-2. Formally, the Bayes factor in this case is
+  The Bayes factor for comparing two models may be approximated as the
+  ratio of the marginal likelihood of the data in model 1 and model
+  2. Formally, the Bayes factor in this case is
 
 \deqn{B =
   \frac{p(\textbf{y}|\mathcal{M}_1)}{p(\textbf{y}|\mathcal{M}_2)} =
@@ -86,22 +88,19 @@ context of MCMC). Kass et al. (1995) asserts this can be done without
 assuming one model is the true model.
 }
 \value{
-     \code{BayesFactor} returns an object of class \code{bayesfactor}
-     that is a list with the following components:
-     \item{B}{This is a matrix of Bayes factors.}
-     \item{Hypothesis}{
-          This is the hypothesis, and is stated as 'row > column',
-	  indicating that the model associated with the row of an
-	  element in matrix \code{B} is greater than the model
-	  associated with the column of that element.
-	  }
-     \item{Strength.of.Evidence}{
-          This is the strength of evidence in favor of the hypothesis.
-          }
-     \item{Posterior.Probability}{
-          This is a vector of the posterior probability of each model,
-          given flat priors.
-	  }
+  \code{BayesFactor} returns an object of class \code{bayesfactor} that
+  is a list with the following components:
+  \item{B}{This is a matrix of Bayes factors.}
+  \item{Hypothesis}{
+    This is the hypothesis, and is stated as 'row > column', indicating
+    that the model associated with the row of an element in matrix
+    \code{B} is greater than the model associated with the column of
+    that element.}
+  \item{Strength.of.Evidence}{
+    This is the strength of evidence in favor of the hypothesis.}
+  \item{Posterior.Probability}{
+    This is a vector of the posterior probability of each model, given
+    flat priors.}
 }
 \references{
   Gelman, A., Carlin, J., Stern, H., and Rubin, D. (2004). "Bayesian
@@ -123,10 +122,12 @@ assuming one model is the true model.
 }
 \author{Byron Hall \email{statisticat@gmail.com}}
 \seealso{
+  \code{\link{is.bayesfactor}},
+  \code{\link{is.proper}},
   \code{\link{LaplaceApproximation}},
   \code{\link{LaplacesDemon}},
   \code{\link{LML}}
-  \code{\link{predict.demonoid}},
+  \code{\link{predict.demonoid}}, and
   \code{\link{predict.laplace}}.
 }
 \examples{
@@ -196,4 +197,6 @@ Fit2
 Model.list <- list(M1=Fit1, M2=Fit2)
 BayesFactor(Model.list)
 }
-\keyword{Bayes factor, hypothesis testing, model selection}
+\keyword{Bayes Factor}
+\keyword{Hypothesis Testing}
+\keyword{Model Selection}

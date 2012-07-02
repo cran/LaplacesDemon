@@ -50,14 +50,14 @@ to zero), the inverse-Gaussian distribution becomes similar to a normal
 because it is not the inverse of a Gaussian distribution, which is
 obvious from the fact that \eqn{\theta}{theta} must be positive.
 }
-\seealso{
-  \code{\link{dnorm}},
-  \code{\link{dnormp}},
-  \code{\link{dnormv}}.
-}
 \value{
   \code{dinvgaussian} gives the density and
   \code{rinvgaussian} generates random deviates.
+}
+\seealso{
+  \code{\link{dnorm}},
+  \code{\link{dnormp}}, and
+  \code{\link{dnormv}}.
 }
 \examples{
 library(LaplacesDemon)
@@ -74,5 +74,5 @@ legend(2, 0.9, expression(paste(mu==1, ", ", sigma==0.5),
      paste(mu==1, ", ", sigma==1), paste(mu==1, ", ", sigma==5)),
      lty=c(1,1,1), col=c("red","green","blue"))
 }
-\keyword{distribution}
+\keyword{Distribution}
 

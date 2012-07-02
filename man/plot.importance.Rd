@@ -25,4 +25,4 @@
 \author{Byron Hall \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{Importance}}}
-\keyword{plot}
+\keyword{Plot}

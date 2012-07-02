@@ -13,21 +13,35 @@ GIV <- function(Model, Data, n=1000)
      if(is.null(Data$parm.names)) stop("parm.names missing in Data.")
      LIV <- length(Data$parm.names)
      high <- 100; low <- -100
-     a <- Model(rep(low, LIV), Data)[[5]]
-     b <- Model(rep(high, LIV), Data)[[5]]
-     ab.range <- b - a
-     ab.mu <- a + ab.range / 2
-     ab.mu <- ifelse({a == 0} & {b == high}, 10, ab.mu)
-     Scale <- 1 / ab.range
-     Scale <- ifelse(ab.range == 0, 0, Scale)
-     iv <- rep(NA, LIV)
-     for (i in 1:n) {
-          IV <- rnorm(LIV, ab.mu, ab.range * Scale)
-          M <- Model(IV, Data)
-          if(is.finite(M[[1]]) & is.finite(M[[2]])) {
-               iv <- IV; break}
-          Scale <- Scale + ab.range / n / 2}
-     if(any(is.na(iv))) 
+     a <- try(Model(rep(low, LIV), Data)[[5]], silent=TRUE)
+     b <- try(Model(rep(high, LIV), Data)[[5]], silent=TRUE)
+     if(inherits(a, "try-error") | inherits(b, "try-error")) {
+          for (i in 1:n) {
+               IV <- rnorm(LIV, runif(1,-100,100), runif(1,0.1,1000))
+               M <- try(Model(IV, Data), silent=TRUE)
+               if(!inherits(M, "try-error") & is.finite(M[[1]]) &
+                    is.finite(M[[2]]) & 
+                    identical(as.vector(M[[5]]), IV)) {
+                    iv <- IV; break}
+               }
+          }
+     else {
+          ab.range <- b - a
+          ab.mu <- a + ab.range / 2
+          ab.mu <- ifelse({a == 0} & {b == high}, 10, ab.mu)
+          Scale <- 1 / ab.range
+          Scale <- ifelse(ab.range == 0, 0, Scale)
+          iv <- rep(NA, LIV)
+          for (i in 1:n) {
+               IV <- rnorm(LIV, ab.mu, ab.range * Scale)
+               M <- try(Model(IV, Data), silent=TRUE)
+               if(!inherits(M, "try-error") & is.finite(M[[1]]) &
+                    is.finite(M[[2]]) & 
+                    identical(as.vector(M[[5]]), IV)) {
+                    iv <- IV; break}
+               Scale <- Scale + ab.range / n / 2}
+     }
+     if((i == n) | any(is.na(iv)))
           cat("\nWARNING: Acceptable initial values were not generated.")
      return(iv)
      }

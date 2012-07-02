@@ -5,7 +5,7 @@
 \description{
   Gelman and Rubin (1992) proposed a general approach to monitoring
   convergence of MCMC output in which \eqn{m > 1} parallel chains are
-  run with initial values that are overdispersed relative to each
+  updated with initial values that are overdispersed relative to each
   target distribution, which must be normally distributed. Convergence
   is diagnosed when the chains have `forgotten' their initial values,
   and the output from all chains is indistinguishable. The
@@ -15,12 +15,15 @@
   non-convergence.
 
   This diagnostic is popular as a stopping rule, though it requires
-  parallel chains. As an alternative, the popular single-chain stopping
-  rule is based on \code{\link{MCSE}}.
+  parallel chains. The \code{\link{LaplacesDemon.hpc}} function is an
+  extension of \code{\link{LaplacesDemon}} to enable parallel chains.
+  As an alternative, the popular single-chain stopping rule is based on
+  \code{\link{MCSE}}.
 }
 \arguments{
-  \item{x}{This required argument is a list of multiple objects of
-    class \code{demonoid}, and the number of components in the list
+  \item{x}{This required argument accepts an object of class
+    \code{demonoid.hpc}, or a list of multiple objects of class
+    \code{demonoid}, where the number of components in the list 
     is the number of chains.}
   \item{confidence}{This is the coverage probability of the confidence
     interval for the potential scale reduction factor (PSRF).}
@@ -36,27 +39,29 @@
   
   \item{PSRF}{This is a list containing the point-estimates of the
     potential scale reduction factor (labelled \code{Point Est.}) and
-    the associated upper confidence limits (labelled \code{Upper
-      C.I.}).}
+    the associated upper confidence limits (labelled \code{Upper C.I.}).}
   \item{MPSRF}{This is the point-estimate of the multivariate potential
     scale reduction factor.}
 }
 \details{
   To use the \code{Gelman.Diagnostic} function, the user must first have
   multiple MCMC chains for the same model, and three chains is usually
-  sufficient. Although the \code{\link{LaplacesDemon}} function does not
+  sufficient. The easiest way to obtain multiple chains is with the
+  \code{\link{LaplacesDemon.hpc}} function.
+
+  Although the \code{\link{LaplacesDemon}} function does not
   simultaneously update multiple MCMC chains, it is easy enough to
   obtain multiple chains, and if the computer has multiple processors
-  (which is common), then multiple chains may be obtained
-  simultaneously as follows. The model file may be opened in separate,
-  concurrent R sessions, and it is recommended that a maximum number
-  of sessions is equal to the number of processors, minus one. Each
-  session constitutes its own chain, and the code is identical, except
-  the initial values should be randomized with the \code{\link{GIV}}
-  function so the chains begin in different places. The resulting
-  object of class \code{demonoid} for each chain is saved, all objects
-  are read into one session, put into a list, and passed to the
-  \code{Gelman.Diagnostic} function.
+  (which is common), then multiple chains may be obtained simultaneously
+  as follows. The model file may be opened in separate, concurrent R
+  sessions, and it is recommended that a maximum number of sessions is
+  equal to the number of processors, minus one. Each session constitutes
+  its own chain, and the code is identical, except the initial values
+  should be randomized with the \code{\link{GIV}} function so the chains
+  begin in different places. The resulting object of class
+  \code{demonoid} for each chain is saved, all objects are read into one
+  session, put into a list, and passed to the \code{Gelman.Diagnostic}
+  function.
 
   Initial values must be overdispersed with respect to each target
   distribution, though these distributions are unknown in the
@@ -64,7 +69,11 @@
   on overdispersion with respect to the target distribution, the user
   should consider using MCMC twice, first to estimate the target
   distributions, and secondly to overdisperse initial values with
-  respect to them. This may help identify multimodal target distributions.
+  respect to them. This may help identify multimodal target
+  distributions. If multiple modes are found, it remain possible that
+  more modes exist. When multiple modes are found, and if chains are
+  combined with the \code{\link{Combine}} function, each mode is
+  probably not represented in a proportion correct to the distribution.
     
   The `potential scale reduction factor' (PSRF) is an estimated factor
   by which the scale of the current distribution for the target
@@ -93,7 +102,7 @@
   simulation is needed. If a PSRF is close to 1, then the associated
   chains are likely to have converged to one target distribution. A
   large PSRF (perhaps generally when a PSRF > 1.2) indicates convergence
-  failure, and can indicate the presence of a multi-modal marginal
+  failure, and can indicate the presence of a multimodal marginal
   posterior distribution in which different chains may have converged
   to different local modes (see \code{\link{is.multimodal}}), or the
   need to update the associated chains longer, because burn-in (see
@@ -165,15 +174,19 @@
   using Multiple Sequences". Statistical Science, 7, p. 457--511.
 }
 \seealso{
+  \code{\link{Combine}},
   \code{\link{GIV}},
   \code{\link{is.multimodal}},
   \code{\link{LaplacesDemon}},
-  \code{\link{MCSE}},
+  \code{\link{LaplacesDemon.hpc}},
+  \code{\link{MCSE}}, and
   \code{\link{p.interval}}.}
 \examples{
 #Examples
-###After updating multiple chains (say, as Fit1 and Fit2), do:
-#Fit <- list(Fit1, Fit2)
+###After updating multiple chains with LaplacesDemon.hpc, do:
 #Gelman.Diagnostic(Fit)
 }
-\keyword{MCMC, diagnostic}
+\keyword{Diagnostic}
+\keyword{MCMC}
+\keyword{Multiple Chains}
+\keyword{Parallel Chains}

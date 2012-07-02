@@ -34,20 +34,31 @@ GIV(Model, Data, n=1000)
   multiple chains (such as for later use with the
   \code{Gelman.Diagnostic}) for dispersed starting locations.
 
-  In \code{GIV}, initial values are constrained to the interval
-  [-100,100]. This is done to prevent numeric overflows with parameters
-  that are exponentiated within the model specification function. First,
-  \code{GIV} passes the upper and lower bounds of this interval to the
-  model, and any changed parameters are noted. Initial values are
-  randomly generated with a normal proposal and a small variance at the
-  center of the returned range of each parameter. As \code{GIV} fails to
-  find acceptable initial values, the algorithm iterates toward its
-  maximum number of iterations, \code{n}. In each iteration, the
-  variance increases for the proposal.
+  In \code{GIV}, initial values are attempted to be constrained to the
+  interval \eqn{[-100,100]}. This is done to prevent numeric overflows
+  with parameters that are exponentiated within the model specification
+  function. First, \code{GIV} passes the upper and lower bounds of this
+  interval to the model, and any changed parameters are noted.
+
+  At this point, it is hoped that a non-finite posterior is not
+  found. If found, then the remainder of the process is random and
+  without the previous bounds. This can be particularly problematic in
+  the case of, say, initial values that are the elements of a matrix
+  that must be positive-definite, especially with large matrices. If a
+  random solution is not found, then \code{GIV} will fail.
+  
+  If the posterior is finite, then initial values are randomly generated
+  with a normal proposal and a small variance at the center of the
+  returned range of each parameter. As \code{GIV} fails to find
+  acceptable initial values, the algorithm iterates toward its maximum
+  number of iterations, \code{n}. In each iteration, the variance
+  increases for the proposal.
   
   Initial values are considered acceptable only when the first two
   returned components of \code{Model} (which are \code{LP} and
-  \code{Dev}) are finite.
+  \code{Dev}) are finite, and when initial values do not change through
+  constraints, as returned in the fifth component of the list:
+  \code{parm}.
 
   If \code{GIV} fails to return acceptable initial values, then it is
   best to study the model specification function. When the model is
@@ -76,7 +87,7 @@ GIV(Model, Data, n=1000)
 \seealso{
   \code{\link{as.initial.values}},
   \code{\link{Gelman.Diagnostic}},
-  \code{\link{LaplaceApproximation}},
+  \code{\link{LaplaceApproximation}}, and
   \code{\link{LaplacesDemon}}.
 }
 \examples{
@@ -115,4 +126,5 @@ Model <- function(parm, Data)
 ########################  Generate Initial Values  ########################
 Initial.Values <- GIV(Model, MyData)
 }
-\keyword{utility}
+\keyword{Initial Values}
+\keyword{Utility}

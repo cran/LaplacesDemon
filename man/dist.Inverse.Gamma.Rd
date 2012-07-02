@@ -40,9 +40,10 @@ rinvgamma(n, shape=1, scale=1)
 }
 
 The inverse-gamma is the conjugate prior distribution for the normal
-or Gaussian variance. The density is always finite; its integral is
-finite if \eqn{\alpha > 0}{alpha > 0}. An uninformative distribution is
-obtained as \eqn{\alpha, \beta \rightarrow 0}{alpha, beta -> 0}.
+or Gaussian variance, and has been traditionally specified as a vague
+prior in that application. The density is always finite; its integral is
+finite if \eqn{\alpha > 0}{alpha > 0}. Prior information decreases as
+\eqn{\alpha, \beta \rightarrow 0}{alpha, beta -> 0}.
 
 These functions are similar to those in the \code{MCMCpack} package.
 }
@@ -54,7 +55,7 @@ These functions are similar to those in the \code{MCMCpack} package.
 \seealso{
   \code{\link{dgamma}},
   \code{\link{dnorm}},
-  \code{\link{dnormp}},
+  \code{\link{dnormp}}, and
   \code{\link{dnormv}}.
 }
 \examples{
@@ -72,5 +73,5 @@ legend(2, 0.9, expression(paste(alpha==1, ", ", beta==1),
      paste(alpha==1, ", ", beta==0.6), paste(alpha==0.6, ", ", beta==1)),
      lty=c(1,1,1), col=c("red","green","blue"))
 }
-\keyword{distribution}
+\keyword{Distribution}
 

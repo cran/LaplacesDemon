@@ -48,4 +48,4 @@
 \author{Byron Hall \email{statisticat@gmail.com}}
 \seealso{\code{\link{LaplaceApproximation}}}
 \examples{### See the LaplaceApproximation function for an example.}
-\keyword{plot}
+\keyword{Plot}

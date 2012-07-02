@@ -10,6 +10,13 @@
   \item{x}{An object of class \code{demonoid} is required.}
   \item{\dots}{Additional arguments are unused.}
 }
+\details{
+  If the user has an object of class \code{demonoid.hpc}, then the
+  \code{print} function may still be used by specifying the chain as a
+  component in a list, such as printing the second chain with
+  \code{print(Fit[[2]])} when the \code{demonoid.hpc} object is named
+  \code{Fit}, for example.
+}
 \references{
   Hall, B. (2012). "Laplace's Demon", STATISTICAT, LLC.
   URL=\url{http://www.statisticat.com/laplacesdemon.html}
@@ -17,7 +24,8 @@
 \author{Byron Hall \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{Consort}},
-  \code{\link{LaplacesDemon}}.
+  \code{\link{LaplacesDemon}}, and
+  \code{\link{LaplacesDemon.hpc}}.
 }
 \examples{### See the LaplacesDemon function for an example.}
 \keyword{print}

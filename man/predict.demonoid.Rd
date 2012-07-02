@@ -61,4 +61,5 @@
 \seealso{
   \code{\link{LaplacesDemon}}
 }
-\keyword{posterior predictive check, predict}
+\keyword{Posterior Predictive Checks}
+\keyword{Predict}

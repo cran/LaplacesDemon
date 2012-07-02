@@ -63,7 +63,7 @@ is finite when \eqn{\nu ge k + 1}{nu >= k + 1}, which is recommended.
 The degrees of freedom, \eqn{\nu}{nu}, is equivalent to specifying a
 prior sample size, indicating the confidence in \eqn{\textbf{S}}{S},
 where \eqn{\textbf{S}}{S} is a prior guess at the order of covariance
-matrix \eqn{\Sigma}{Sigma}. An uninformative prior distribution is
+matrix \eqn{\Sigma}{Sigma}. A flat prior distribution is
 obtained as \eqn{\nu \rightarrow 0}{nu -> 0}.
 
 The Wishart prior lacks flexibility, having only one parameter,
@@ -87,13 +87,6 @@ These functions are parameterized as per Gelman et al. (2004).
   \code{dwishart} gives the density and
   \code{rwishart} generates random deviates.
 }
-\seealso{
-  \code{\link{dchisq}},
-  \code{\link{dinvwishart}},
-  \code{\link{dgamma}},
-  \code{\link{dmvn}},
-  \code{\link{Prec2Cov}}.
-}
 \references{
   Barnard, J., McCulloch, R., and Meng, X. (2000). "Modeling Covariance
   Matrices in Terms of Standard Deviations and Correlations, with
@@ -115,9 +108,16 @@ These functions are parameterized as per Gelman et al. (2004).
   Samples from a Normal Multivariate Population". Biometrika, 20A (1-2),
   p. 32--52.
 }
+\seealso{
+  \code{\link{dchisq}},
+  \code{\link{dinvwishart}},
+  \code{\link{dgamma}},
+  \code{\link{dmvn}}, and
+  \code{\link{Prec2Cov}}.
+}
 \examples{
 library(LaplacesDemon)
 x <- dwishart(matrix(c(2,-.3,-.3,4),2,2), 3, matrix(c(1,.1,.1,1),2,2))
 x <- rwishart(3, matrix(c(1,.1,.1,1),2,2))
 }
-\keyword{distribution}
+\keyword{Distribution}

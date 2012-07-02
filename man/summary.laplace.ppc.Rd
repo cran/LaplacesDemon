@@ -68,15 +68,15 @@
   the model and data (Gelman et al., 1996).
 
   The \code{"Chi-Square"} discrepancy measure is the chi-square
-  goodness-of-fit test implemented that is recommended by Gelman. For
-  each record i=1:N, this returns (y[i] - E(y[i]))^2 / var(yhat[i,]).
+  goodness-of-fit test that is recommended by Gelman. For each record
+  i=1:N, this returns (y[i] - E(y[i]))^2 / var(yhat[i,]).
 
   The \code{"Chi-Square2"} discrepancy measure returns the following for
   each record: Pr(chisq.rep[i,] > chisq.obs[i,]), where chisq.obs[i,] <-
   (y[i] - E(y[i]))^2 / E(y[i]), and chisq.rep[i,] <- (yhat[i,] -
   E(yhat[i,]))^2 / E(yhat[i,]), and the overall discrepancy is the
-  percent of records that were outside of the 95\% probability interval
-  (see \code{\link{p.interval}}).
+  percent of records that were outside of the 95\% quantile-based
+  probability interval (see \code{\link{p.interval}}).
 
   The \code{"Kurtosis"} discrepancy measure returns the kurtosis of
   \eqn{\textbf{y}^{rep}}{y[rep]} for each record, and the discrepancy
@@ -87,7 +87,9 @@
   The \code{"L-criterion"} discrepancy measure of Laud and Ibrahim
   (1995) provides the record-level combination of two components (see
   below), and the discrepancy statistic is the sum, \code{L}, as well as
-  a calibration number, \code{S.L}.
+  a calibration number, \code{S.L}. For more information on the
+  L-criterion, see the accompanying vignette entitled "Bayesian
+  Inference".
 
   The \code{"MASE"} (Mean Absolute Scaled Error) is a discrepancy
   measure for the accuracy of time-series forecasts, estimated as
@@ -173,12 +175,12 @@
   This function returns a list with the following components:
   \item{Concordance}{
     This is the percentage of the records of y that are within the 
-    95\% probability interval (see \code{\link{p.interval}}) of
-    \eqn{\textbf{y}^{rep}}{y[rep]}. Gelfand's suggested goal is to
-    achieve 95\% predictive concordance. Lower percentages indicate too
-    many outliers and a poor fit of the model to the data, and higher
-    percentages may suggest overfitting. Concordance occurs only when
-    \eqn{\textbf{y}}{y} is continuous.}
+    95\% quantile-based probability interval (see
+    \code{\link{p.interval}}) of \eqn{\textbf{y}^{rep}}{y[rep]}.
+    Gelfand's suggested goal is to achieve 95\% predictive concordance.
+    Lower percentages indicate too many outliers and a poor fit of the
+    model to the data, and higher percentages may suggest overfitting.
+    Concordance occurs only when \eqn{\textbf{y}}{y} is continuous.}
   \item{Mean Lift}{
     This is the mean of the record-level lifts, and occurs only when
     \eqn{\textbf{y}}{y} is specified as categorical with
@@ -246,13 +248,24 @@
   Hall, B. (2012), "Laplace's Demon", STATISTICAT, LLC.
   URL=\url{http://www.statisticat.com/laplacesdemon.html}
 
-  Laud, P.W. and Ibrahim, J.G. (1995). "Posterior Model Selection".
+  Laud, P.W. and Ibrahim, J.G. (1995). "Predictive Model Selection".
   Journal of the Royal Statistical Society, B 57, p. 247--262.
 }
 \author{Byron Hall \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{LaplaceApproximation}},
-  \code{\link{predict.laplace}}.
+  \code{\link{predict.laplace}}, and
+  \code{\link{p.interval}}.
 }
 \examples{### See the LaplaceApproximation function for an example.}
-\keyword{posterior predictive check, summary}
+\keyword{Chi-Square}
+\keyword{Kurtosis}
+\keyword{L-criterion}
+\keyword{MASE}
+\keyword{MSE}
+\keyword{Posterior Predictive Checks}
+\keyword{Quadratic Loss}
+\keyword{Quadratic Utility}
+\keyword{RMSE}
+\keyword{Skewness}
+\keyword{summary}

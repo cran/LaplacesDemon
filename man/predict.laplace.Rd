@@ -78,4 +78,5 @@
   \code{\link{LaplaceApproximation}},
   \code{\link{SIR}}.
 }
-\keyword{posterior predictive check, predict}
+\keyword{Posterior Predictive Checks}
+\keyword{Predict}

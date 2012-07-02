@@ -27,9 +27,8 @@ LML <- function(Model=NULL, Data=NULL, Modes=NULL, theta=NULL, LL=NULL,
           cat("\nApproximating LML should take just over",
                round(timeest), "minutes.\n")
           Approx.Hessian <- Hessian(Model, Modes, Data)
-          Inverse.test <- try(VarCov.t <- -as.inverse(Approx.Hessian),
-               silent=TRUE)
-          if(class(Inverse.test) != "try-error") {
+          Inverse.test <- try(-as.inverse(Approx.Hessian), silent=TRUE)
+          if(!inherits(Inverse.test, "try-error")) {
                VarCov <- Inverse.test
                diag(VarCov) <- ifelse(diag(VarCov) <= 0,
                     .Machine$double.eps, diag(VarCov))}
@@ -41,10 +40,9 @@ LML <- function(Model=NULL, Data=NULL, Modes=NULL, theta=NULL, LL=NULL,
           ### Logarithm of the Marginal Likelihood
           LML <- NA
           options(warn=-1)
-          LML.test <- try(LML0 <- parm.len/2 * log(2*pi) +
-               0.5*log(det(VarCov)) +
+          LML.test <- try(parm.len/2 * log(2*pi) + 0.5*log(det(VarCov)) +
                as.vector(Model(Modes, Data)[[1]]), silent=TRUE)
-          if(is.finite(LML.test[1])) LML <- LML.test[1]
+          if(!inherits(LML.test, "try-error")) LML <- LML.test[1]
           options(warn=0)
           ### Output
           LML.out <- list(LML=LML, VarCov=VarCov)
@@ -79,13 +77,12 @@ LML <- function(Model=NULL, Data=NULL, Modes=NULL, theta=NULL, LL=NULL,
                list(mean=coefs[1], gradient=coefs[1 + seq_along(pars)],
                     Hessian=(Hess + t(Hess)))
                }
-          Koschal.test <- try(Approx.Hessian <- KoschalHess(Modes,
+          Koschal.test <- try(KoschalHess(Modes,
                function(x) Model(x, Data)[[1]])$Hessian, silent=TRUE)
-          if(class(Koschal.test) != "try-error")
+          if(!inherits(Koschal.test, "try-error"))
                Approx.Hessian <- Koschal.test
-          Inverse.test <- try(VarCov.t <- -as.inverse(Approx.Hessian),
-               silent=TRUE)
-          if(class(Inverse.test) != "try-error") {
+          Inverse.test <- try(-as.inverse(Approx.Hessian), silent=TRUE)
+          if(!inherits(Inverse.test, "try-error")) {
                VarCov <- Inverse.test
                diag(VarCov) <- ifelse(diag(VarCov) <= 0,
                     .Machine$double.eps, diag(VarCov))}
@@ -97,10 +94,9 @@ LML <- function(Model=NULL, Data=NULL, Modes=NULL, theta=NULL, LL=NULL,
           ### Logarithm of the Marginal Likelihood
           LML <- NA
           options(warn=-1)
-          LML.test <- try(LML0 <- parm.len/2 * log(2*pi) +
-               0.5*log(det(VarCov)) +
+          LML.test <- try(parm.len/2 * log(2*pi) + 0.5*log(det(VarCov)) +
                as.vector(Model(Modes, Data)[[1]]), silent=TRUE)
-          if(is.finite(LML.test[1])) LML <- LML.test[1]
+          if(!inherits(LML.test, "try-error")) LML <- LML.test[1]
           options(warn=0)
           ### Output
           LML.out <- list(LML=LML, VarCov=VarCov)
@@ -194,11 +190,11 @@ LML <- function(Model=NULL, Data=NULL, Modes=NULL, theta=NULL, LL=NULL,
                     return(.Coverage(theta.width, hist) - opt.prob)
                     }
                options(warn=-1)
-               solve.test <- try(solve.out <- uniroot(F, lower=small.dist,
+               solve.test <- try(uniroot(F, lower=small.dist,
                     upper=big.dist, tol=min(.05, 2/nrow(theta.width))),
                     silent=TRUE)
                options(warn=0)
-               if(class(solve.test) != "try-error") return(solve.out$root)
+               if(!inherits(solve.test, "try-error")) return(solve.test$root)
                else return(1)
                }
           .GetLimits <- function(hist)

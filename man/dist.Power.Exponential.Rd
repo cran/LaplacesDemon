@@ -78,15 +78,6 @@ These functions are similar to those in the \code{normalp} package.
   \code{qpe} gives the quantile function, and
   \code{rpe} generates random deviates.
 }
-\seealso{
-  \code{\link{dlaplace}},
-  \code{\link{dlaplacep}},
-  \code{\link{dmvpe}},
-  \code{\link{dnorm}},
-  \code{\link{dnormp}},
-  \code{\link{dnormv}},
-  \code{\link{dunif}}.
-}
 \references{
   Lunetta, G. (1963). "Di una Generalizzazione dello Schema della Curva
   Normale". Annali della Facolt`a di Economia e Commercio di Palermo, 17,
@@ -94,6 +85,15 @@ These functions are similar to those in the \code{normalp} package.
 
   Subbotin, M.T. (1923). "On the Law of Frequency of Errors".
   Matematicheskii Sbornik, 31, p. 296--301.
+}
+\seealso{
+  \code{\link{dlaplace}},
+  \code{\link{dlaplacep}},
+  \code{\link{dmvpe}},
+  \code{\link{dnorm}},
+  \code{\link{dnormp}},
+  \code{\link{dnormv}}, and
+  \code{\link{dunif}}.
 }
 \examples{
 library(LaplacesDemon)
@@ -113,4 +113,4 @@ legend(1.5, 0.9, expression(paste(mu==0, ", ", sigma==1, ", ", kappa==0.1),
      paste(mu==0, ", ", sigma==1, ", ", kappa==5)),
      lty=c(1,1,1), col=c("red","green","blue"))
 }
-\keyword{distribution}
+\keyword{Distribution}

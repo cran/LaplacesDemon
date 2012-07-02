@@ -47,11 +47,6 @@ processes (TDPs).
 \value{
   \code{dStick} gives the density.
 }
-\seealso{
-  \code{\link{ddirichlet}},
-  \code{\link{dmvpolya}},
-  \code{\link{Stick}}.
-}
 \references{
   Ishwaran, H. and James, L. (2001). "Gibbs Sampling Methods for Stick
   Breaking Priors". Journal of the American Statistical Association,
@@ -60,8 +55,13 @@ processes (TDPs).
   Sethuraman, J. (1994). "A Constructive Definition of Dirichlet
   Priors". Statistica Sinica, 4, p. 639--650.
 }
+\seealso{
+  \code{\link{ddirichlet}},
+  \code{\link{dmvpolya}}, and
+  \code{\link{Stick}}.
+}
 \examples{
 library(LaplacesDemon)
 dStick(runif(4), 0.1)
 }
-\keyword{distribution}
+\keyword{Distribution}

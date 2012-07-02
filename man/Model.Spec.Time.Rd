@@ -142,7 +142,7 @@ Model.Spec.Time(Model, Initial.Values, Data, n=1000)
   \code{\link{grep}},
   \code{\link{LaplaceApproximation}},
   \code{\link{LaplacesDemon}},
-  \code{\link{max.col}},
+  \code{\link{max.col}}, and
   \code{\link{system.time}}.
 }
-\keyword{utility}
+\keyword{Utility}

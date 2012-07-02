@@ -44,13 +44,14 @@ rhalft(n, scale=25, nu=1)
 }
 
 The half-t distribution is derived from the Student t distribution, and
-is useful as an uninformative prior distribution for a scale
+is useful as a weakly informative prior distribution for a scale
 parameter. It is more adaptable than the default recommended
 half-Cauchy, though it may also be more difficult to estimate due to its
 additional degrees of freedom parameter, \eqn{\nu}{nu}. When
 \eqn{\nu=1}{nu=1}, the density is proportional to a proper half-Cauchy
 distribution. When \eqn{\nu=-1}{nu=-1}, the density becomes an improper,
-uniform prior distribution.
+uniform prior distribution. For more information on propriety, see
+\code{is.proper}.
 }
 \value{
   \code{dhalft} gives the density,
@@ -62,7 +63,8 @@ uniform prior distribution.
   \code{\link{dhalfcauchy}},
   \code{\link{dst}},
   \code{\link{dt}},
-  \code{\link{dunif}}.
+  \code{\link{dunif}}, and
+  \code{\link{is.proper}}.
 }
 \examples{
 library(LaplacesDemon)
@@ -81,4 +83,4 @@ legend(2, 0.9, expression(paste(alpha==1, ", ", nu==-1),
      paste(alpha==1, ", ", nu==0.5), paste(alpha==1, ", ", nu==500)),
      lty=c(1,1,1), col=c("red","green","blue"))
 }
-\keyword{distribution}
+\keyword{Distribution}

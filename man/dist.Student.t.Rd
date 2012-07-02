@@ -93,7 +93,7 @@ These functions are similar to those in the \code{gamlss.dist} package.
   \code{\link{dnorm}},
   \code{\link{dnormp}},
   \code{\link{dnormv}},
-  \code{\link{dstp}},
+  \code{\link{dstp}}, and
   \code{\link{dt}}.
 }
 \examples{
@@ -114,4 +114,4 @@ legend(1, 0.9, expression(paste(mu==0, ", ", sigma==1, ", ", nu==0.5),
      paste(mu==0, ", ", sigma==1, ", ", nu==10)),
      lty=c(1,1,1), col=c("red","green","blue"))
 }
-\keyword{distribution}
+\keyword{Distribution}

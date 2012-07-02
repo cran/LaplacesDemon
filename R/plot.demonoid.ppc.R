@@ -245,7 +245,7 @@ plot.demonoid.ppc <- function(x, Style=NULL, Data=NULL, Rows=NULL,
           N <- nrow(epsilon.obs)
           for (s in 1:ncol(epsilon.obs)) {
                epsilon.rep[,s] <- rnorm(N, mean(epsilon.obs[,s],
-                    na.rm=TRUE), sd(epsilon.obs[,s]))
+                    na.rm=TRUE), sd(epsilon.obs[,s], na.rm=TRUE))
                K.obs <- kurtosis(epsilon.obs[,s])
                S.obs <- skewness(epsilon.obs[,s])
                K.rep <- kurtosis(epsilon.rep[,s])
@@ -293,7 +293,7 @@ plot.demonoid.ppc <- function(x, Style=NULL, Data=NULL, Rows=NULL,
                for (s in 1:ncol(epsilon.obs)) {
                     e.obs <- matrix(epsilon.obs[,s], M, J)
                     e.rep <- rnorm(M, mean(e.obs[,j], na.rm=TRUE),
-                         sd(e.obs[,j]))
+                         sd(e.obs[,j], na.rm=TRUE))
                     K.obs <- kurtosis(e.obs[,j])
                     S.obs <- skewness(e.obs[,j])
                     K.rep <- kurtosis(e.rep)
@@ -463,8 +463,9 @@ plot.demonoid.ppc <- function(x, Style=NULL, Data=NULL, Rows=NULL,
                     max(epsilon.summary[,Rows], na.rm=TRUE)),
                xlab="y", ylab=expression(epsilon))
           lines(rep(0, ncol(epsilon.summary[,Rows])), col="red")
-          lines(epsilon.summary[1,Rows], pch=16, cex=0.75, col="gray")
-          lines(epsilon.summary[3,Rows], pch=16, cex=0.75, col="gray")
+          for (i in Rows) {
+               lines(c(i,i), c(epsilon.summary[1,Rows[i]],
+                    epsilon.summary[3,Rows[i]]), col="black")}
           }
      if(Style == "Residuals, Multivariate, C") {
           if(PDF == TRUE) {pdf("PPC.Plots.Residuals.pdf")
@@ -486,8 +487,9 @@ plot.demonoid.ppc <- function(x, Style=NULL, Data=NULL, Rows=NULL,
                          max(epsilon.975[,i], na.rm=TRUE)),
                     xlab=paste("Y[,", i, "]", sep=""), ylab=expression(epsilon))
                lines(rep(0, nrow(epsilon.500)), col="red")
-               lines(epsilon.025[,i], pch=16, cex=0.75, col="gray")
-               lines(epsilon.975[,i], pch=16, cex=0.75, col="gray")
+               for (j in 1:nrow(Data$Y)) {
+                    lines(c(j,j), c(epsilon.025[j,i],
+                         epsilon.975[j,i]), col="black")}
                }
           }
      if(Style == "Residuals, Multivariate, R") {
@@ -510,8 +512,9 @@ plot.demonoid.ppc <- function(x, Style=NULL, Data=NULL, Rows=NULL,
                          max(epsilon.975[i,], na.rm=TRUE)),
                     xlab=paste("Y[", i, ",]", sep=""), ylab=expression(epsilon))
                lines(rep(0, ncol(epsilon.500)), col="red")
-               lines(epsilon.025[i,], pch=16, cex=0.75, col="gray")
-               lines(epsilon.975[i,], pch=16, cex=0.75, col="gray")
+               for (j in 1:ncol(Data$Y)) {
+                    lines(c(j,j), c(epsilon.025[i,j],
+                         epsilon.975[i,j]), col="black")}
                }
           }
      if(Style == "Space-Time by Space") {

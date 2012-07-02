@@ -65,16 +65,6 @@ parameter. A multivariate uniform occurs as
 \value{
   \code{dmvpe} gives the density.
 }
-\seealso{
-  \code{\link{dlaplace}},
-  \code{\link{dmvl}},
-  \code{\link{dmvn}},
-  \code{\link{dmvnp}},
-  \code{\link{dnorm}},
-  \code{\link{dnormp}},
-  \code{\link{dnormv}},
-  \code{\link{dpe}}.
-}
 \references{
   Gomez, E., Gomez-Villegas, M.A., and Marin, J.M. (1998). "A
   Multivariate Generalization of the Power Exponential Family of
@@ -87,6 +77,16 @@ parameter. A multivariate uniform occurs as
   and Methods [Split from: J(CommStat)], 31(12), p. 2167--2182.
 }
 \author{Byron Hall \email{statisticat@gmail.com}}
+\seealso{
+  \code{\link{dlaplace}},
+  \code{\link{dmvl}},
+  \code{\link{dmvn}},
+  \code{\link{dmvnp}},
+  \code{\link{dnorm}},
+  \code{\link{dnormp}},
+  \code{\link{dnormv}}, and
+  \code{\link{dpe}}.
+}
 \examples{
 library(LaplacesDemon)
 n <- 100
@@ -96,4 +96,4 @@ mu <- matrix(runif(n*k),n,k)
 Sigma <- diag(k)
 dmvpe(x, mu, Sigma, kappa=1)
 }
-\keyword{distribution}
+\keyword{Distribution}

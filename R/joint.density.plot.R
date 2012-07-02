@@ -7,7 +7,8 @@
 # MASS package.                                                           #
 ###########################################################################
 
-joint.density.plot <- function(x, y, Title=NULL, contour=TRUE, color=FALSE)
+joint.density.plot <- function(x, y, Title=NULL, contour=TRUE, color=FALSE,
+     Trace=NULL)
      {
      ### Initial Checks
      xname <- deparse(substitute(x))
@@ -53,6 +54,15 @@ joint.density.plot <- function(x, y, Title=NULL, contour=TRUE, color=FALSE)
           image(dd, main=Title, xlab=xname, ylab=yname, col=topo.colors(200))
           }
      if(contour == TRUE) {contour(dd, nlevels=10, add=TRUE)}
+     if(!is.null(Trace)) {
+          if(length(Trace) != 2) stop("Trace requires 2 elements.")
+          if(Trace[1] >= Trace[2])
+             stop("Trace[1] not smaller than Trace[2].")
+          if(Trace[1] < 1) stop("Trace[1] < 1.")
+          if(Trace[2] > length(x)) stop("Trace[2] > length(x).")
+          lines(x[Trace[1]:Trace[2]], y[Trace[1]:Trace[2]])
+          points(x[Trace[1]], y[Trace[1]], cex=0.5, col="red")
+          }
      }
 
 #End

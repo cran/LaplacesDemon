@@ -72,7 +72,7 @@ Although the normal distribution is very common, it often does not fit
 data as well as more robust alternatives with fatter tails, such as the
 Laplace or Student t distribution.
 
-An uninformative distribution is obtained in the limit as
+A flat distribution is obtained in the limit as
 \eqn{\tau \rightarrow 0}{tau -> 0}.
 
 For models where the dependent variable, y, is specified to be
@@ -97,7 +97,7 @@ These functions are similar to those in \code{base R}.
   \code{\link{prec2var}},
   \code{\link{dst}},
   \code{\link{dt}},
-  \code{\link{plot.demonoid.ppc}},
+  \code{\link{plot.demonoid.ppc}}, and
   \code{\link{plot.laplace.ppc}}.
 }
 \examples{
@@ -117,4 +117,4 @@ legend(2, 0.9, expression(paste(mu==0, ", ", tau==0.5),
      paste(mu==0, ", ", tau==1), paste(mu==0, ", ", tau==5)),
      lty=c(1,1,1), col=c("red","green","blue"))
 }
-\keyword{distribution}
+\keyword{Distribution}

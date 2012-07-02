@@ -65,21 +65,21 @@ be used to test the residuals.
   \code{dmvnp} gives the density and 
   \code{rmvnp} generates random deviates.
 }
+\references{\url{http://www.statisticat.com/laplacesdemon.html}}
+\author{Byron Hall \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{dwishart}},
   \code{\link{dmvn}},
   \code{\link{dnorm}},
   \code{\link{dnormp}},
   \code{\link{dnormv}},
-  \code{\link{plot.demonoid.ppc}},
+  \code{\link{plot.demonoid.ppc}}, and
   \code{\link{plot.laplace.ppc}}.
 }
-\references{\url{http://www.statisticat.com/laplacesdemon.html}}
-\author{Byron Hall \email{statisticat@gmail.com}}
 \examples{
 library(LaplacesDemon)
 x <- dmvnp(c(1,2,3), c(0,1,2), diag(3))
 X <- rmvnp(1000, c(0,1,2), diag(3))
 joint.density.plot(X[,1], X[,2], color=TRUE)
 }
-\keyword{distribution}
+\keyword{Distribution}

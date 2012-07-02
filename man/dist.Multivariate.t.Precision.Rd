@@ -86,7 +86,7 @@ freedom \eqn{\nu=1}{nu=1}, this is the multivariate Cauchy distribution.
   \code{\link{dmvcp}},
   \code{\link{dmvt}},
   \code{\link{dst}},
-  \code{\link{dstp}},
+  \code{\link{dstp}}, and
   \code{\link{dt}}.
 }
 \examples{
@@ -101,6 +101,6 @@ f <- dmvtp(cbind(x,y,z), mu, Omega, nu)
 X <- rmvtp(1000, c(0,1,2), diag(3), 5)
 joint.density.plot(X[,1], X[,2], color=TRUE)
 }
-\keyword{distribution}
+\keyword{Distribution}
 
 

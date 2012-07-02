@@ -91,4 +91,4 @@ legend(5, 0.9, expression(paste(mu==0, ", ", lambda==1, ", ", kappa==0.5),
      paste(mu==0, ", ", lambda==1, ", ", kappa==5)),
      lty=c(1,1,1), col=c("red","green","blue"))
 }
-\keyword{distribution}
+\keyword{Distribution}

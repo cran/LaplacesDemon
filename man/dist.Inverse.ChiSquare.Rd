@@ -73,4 +73,4 @@ legend(3, 0.9, expression(paste(nu==0.5, ", ", lambda==1),
      paste(nu==1, ", ", lambda==1), paste(nu==5, ", ", lambda==1)),
      lty=c(1,1,1), col=c("red","green","blue"))
 }
-\keyword{distribution}
+\keyword{Distribution}

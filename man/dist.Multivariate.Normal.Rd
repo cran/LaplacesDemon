@@ -65,7 +65,7 @@ be used to test the residuals.
   \code{\link{dnorm}},
   \code{\link{dnormp}},
   \code{\link{dnormv}},
-  \code{\link{plot.demonoid.ppc}},
+  \code{\link{plot.demonoid.ppc}}, and
   \code{\link{plot.laplace.ppc}}.
 }
 \examples{
@@ -74,4 +74,4 @@ x <- dmvn(c(1,2,3), c(0,1,2), diag(3))
 X <- rmvn(1000, c(0,1,2), diag(3))
 joint.density.plot(X[,1], X[,2], color=TRUE)
 }
-\keyword{distribution}
+\keyword{Distribution}

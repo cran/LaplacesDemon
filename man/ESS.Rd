@@ -14,8 +14,8 @@
 }
 \usage{ESS(x)}
 \arguments{
-  \item{x}{
-    This required argument is a vector or matrix of posterior samples.}
+  \item{x}{This required argument is a vector or matrix of posterior
+    samples.}
 }
 \details{
   Effective Sample Size (ESS) was recommended by Radford Neal in the
@@ -74,4 +74,5 @@
   \code{\link{IAT}},
   \code{\link{LaplacesDemon}}.
 }
-\keyword{mcmc, diagnostic}
+\keyword{Diagnostic}
+\keyword{MCMC}

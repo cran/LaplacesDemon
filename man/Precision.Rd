@@ -27,7 +27,7 @@
   to estimate \eqn{\sigma^2}{sigma^2} with an inverse-gamma distribution
   as a conjugate prior. Today, conjugacy is usually considered to be
   merely a convenience, and in this example, a non-conjugate half-Cauchy
-  prior distribution is recommended for an uninformative prior
+  prior distribution is recommended as a weakly informative prior
   distribution for scale parameters.
 }
 \usage{
@@ -107,4 +107,4 @@ sd2var(01.4142)
 var2prec(2)
 var2sd(2)
 }
-\keyword{covariance, precision, standard deviation, variance}
+\keyword{Utility}

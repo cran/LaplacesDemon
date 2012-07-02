@@ -72,10 +72,6 @@ These functions are parameterized as per Gelman et al. (2004).
   \code{dinvwishart} gives the density and
   \code{rinvwishart} generates random deviates.
 }
-\seealso{
-  \code{\link{dmvn}},
-  \code{\link{dwishart}}.
-}
 \references{
   Barnard, J., McCulloch, R., and Meng, X. (2000). "Modeling Covariance
   Matrices in Terms of Standard Deviations and Correlations, with
@@ -97,9 +93,13 @@ These functions are parameterized as per Gelman et al. (2004).
   Samples from a Normal Multivariate Population". Biometrika, 20A (1-2),
   p. 32--52.
 }
+\seealso{
+  \code{\link{dmvn}}, and
+  \code{\link{dwishart}}.
+}
 \examples{
 library(LaplacesDemon)
 x <- dinvwishart(matrix(c(2,-.3,-.3,4),2,2), 3, matrix(c(1,.1,.1,1),2,2))
 x <- rinvwishart(3, matrix(c(1,.1,.1,1),2,2))
 }
-\keyword{distribution}
+\keyword{Distribution}

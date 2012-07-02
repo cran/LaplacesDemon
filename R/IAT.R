@@ -16,10 +16,9 @@ IAT <- function(x)
      mu <- mean(dt)
      s2 <- var(dt)
      ### The maximum lag is half the sample size
-     maxlag <- max( 3, floor(n/2))
+     maxlag <- max(3, floor(n/2))
      #### The gammas are sums of two consecutive autocovariances
-     Ga <- rep(0,2) # two consecutive gammas
-     lg <- 0
+     Ga <- rep(0,2)
      Ga[1] <- s2
      lg <- 1
      Ga[1] <- Ga[1] + sum((dt[1:(n-lg)]-mu)*(dt[(lg+1):n]-mu)) / n
@@ -32,7 +31,7 @@ IAT <- function(x)
      ### RULE: while Gamma stays positive and decreasing
      while ((Ga[2] > 0.0) & (Ga[2] < Ga[1])) {
           m <- m + 1
-          if (2*m + 1 > maxlag) {
+          if(2*m + 1 > maxlag) {
                cat("Not enough data, maxlag=", maxlag, "\n")
                break}
           Ga[1] <- Ga[2]

@@ -78,7 +78,7 @@ which must be positive-definite. When degrees of freedom
   \code{\link{dmvcp}},
   \code{\link{dmvtp}},
   \code{\link{dst}},
-  \code{\link{dstp}},
+  \code{\link{dstp}}, and
   \code{\link{dt}}.
 }
 \examples{
@@ -93,6 +93,6 @@ f <- dmvt(cbind(x,y,z), mu, Sigma, df)
 X <- rmvt(1000, c(0,1,2), diag(3), 5)
 joint.density.plot(X[,1], X[,2], color=TRUE)
 }
-\keyword{distribution}
+\keyword{Distribution}
 
 

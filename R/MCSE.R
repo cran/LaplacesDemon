@@ -14,7 +14,7 @@ MCSE <- function(x, method="IMPS", batch.size="sqrt", warn=FALSE)
      if(missing(x)) stop("The x argument is required.")
      if(method == "sample.variance") {
           ess <- try(ESS(x), silent=TRUE)
-          if(is.character(ess)) ess <- length(x)
+          if(inherits(ess, "try-error")) ess <- length(x)
           se <- sd(x) / sqrt(ess)
           return(se)}
      else if(method == "batch.means") {
@@ -48,8 +48,9 @@ MCSE <- function(x, method="IMPS", batch.size="sqrt", warn=FALSE)
           m <- 1
           currgamma <- gammaAC[1]
           k <- 1
-          while ((k < length(gammaAC)) && (gammaAC[k+1] > 0) && (gammaAC[k] >= gammaAC[k+1]))
-               k <- k +1
+          while ((k < length(gammaAC)) && (gammaAC[k+1] > 0) &&
+               (gammaAC[k] >= gammaAC[k+1]))
+               k <- k + 1
           if({k == length(gammaAC)} & {warn == TRUE})
                warning("May need to compute more autocovariances for IMPS.")
           options(warn=-1)

@@ -74,15 +74,16 @@ These functions are similar to those in the \code{HyperbolicDist} package.
   \code{qslaplace} gives the quantile function, and
   \code{rslaplace} generates random deviates.
 }
-\seealso{
-  \code{\link{dalaplace}},
-  \code{\link{dexp}},
-  \code{\link{dlaplace}},
-  \code{\link{dlaplacep}}.
-}
 \references{
   Fieller, N.J., Flenley, E.C., and Olbricht, W. (1992). "Statistics of
   Particle Size Data". Applied Statistics, 41, p. 127--146.
+}
+\seealso{
+  \code{\link{dalaplace}},
+  \code{\link{dexp}},
+  \code{\link{dlaplace}}, 
+  \code{\link{dlaplacep}}, and
+  \code{\link{dsdlaplace}}.
 }
 \examples{
 library(LaplacesDemon)
@@ -102,4 +103,4 @@ legend(1.5, 0.9, expression(paste(mu==0, ", ", alpha==1, ", ", beta==1),
      paste(mu==0, ", ", alpha==2, ", ", beta==0.5)),
      lty=c(1,1,1), col=c("red","green","blue"))
 }
-\keyword{distribution}
+\keyword{Distribution}

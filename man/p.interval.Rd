@@ -6,7 +6,7 @@
   samples.
 }
 \usage{
-p.interval(obj, HPD=TRUE, MM=TRUE, prob=0.95, \dots)
+p.interval(obj, HPD=TRUE, MM=TRUE, prob=0.95, plot=FALSE, PDF=FALSE, \dots)
 }
 \arguments{
   \item{obj}{This can be either a vector or matrix of posterior samples,
@@ -20,14 +20,23 @@ p.interval(obj, HPD=TRUE, MM=TRUE, prob=0.95, \dots)
     returned. When \code{FALSE}, one or more quantile-based probability
     intervals is returned.}
   \item{MM}{Logical. This argument defaults to \code{TRUE}, in which
-    case each column vector is checked for multi-modality, and if found,
-    the multi-modal form of a Highest Posterior Density (HPD) interval is
+    case each column vector is checked for multimodality, and if found,
+    the multimodal form of a Highest Posterior Density (HPD) interval is
     additionally estimated, even when \code{HPD=FALSE}.}
   \item{prob}{This is a numeric scalar in the interval (0,1) giving the
     target probability interval, and defaults to 0.95, representing a
     95\% probability interval. A 95\% probability interval, for example,
     is an interval that contains 95\% of a posterior probability
     distribution.}
+  \item{plot}{Logical. When \code{plot=TRUE}, each kernel density is
+    plotted and shaded black, and the area under the curve outside the
+    probability interval is shaded gray. A vertical, red, dotted line is
+    added at zero. The \code{plot} argument defaults to
+    \code{FALSE}. All plots treat the distribution as if it were
+    unimodal (see below).}
+  \item{PDF}{Logical. When \code{PDF=TRUE}, and only when
+    \code{plot=TRUE}, plots are saved as a .pdf file in the working
+    directory.}
   \item{\dots}{Additional arguments are unused.}
 }
 \details{
@@ -39,9 +48,11 @@ p.interval(obj, HPD=TRUE, MM=TRUE, prob=0.95, \dots)
   area within the probability interval.
 
   The \code{p.interval} function may return different probability
-  intervals: a quantile-based probability interval, a uni-modal
-  Highest Posterior Density (HPD) interval, and multi-modal HPD
-  intervals.
+  intervals: a quantile-based probability interval, a unimodal
+  Highest Posterior Density (HPD) interval, and multimodal HPD
+  intervals. Another type of probability interval is the Lowest
+  Posterior Loss (LPL) interval, which is calculated with the
+  \code{\link{LPL.interval}} function.
 
   The quantile-based probability interval is used most commonly,
   possibly because it is simple, the fastest to calculate, invariant
@@ -56,55 +67,78 @@ p.interval(obj, HPD=TRUE, MM=TRUE, prob=0.95, \dots)
   
   The HPD (highest posterior density) interval is identical to
   the quantile-based probability interval when the posterior probability
-  distribution is uni-modal and symmetric. Otherwise, the HPD interval
+  distribution is unimodal and symmetric. Otherwise, the HPD interval
   is the smallest interval, because it is estimated as the interval
   that contains the highest posterior density. Unlike the quantile-based
   probability interval, the HPD interval could be one-tailed or
-  two-tailed, whichever is more appropriate.
+  two-tailed, whichever is more appropriate. However, unlike the
+  quantile-based interval, the HPD interval is not invariant to
+  reparameterization (Bernardo, 2005).
 
-  The uni-modal HPD interval is estimated from the empirical CDF of the
+  The unimodal HPD interval is estimated from the empirical CDF of the
   sample for each parameter (or deviance or monitored variable) as the
   shortest interval for which the difference in the ECDF values of the
   end-points is the user-specified probability width. This assumes the
-  distribution is not severely multi-modal.
+  distribution is not severely multimodal.
 
   As an example, imagine an exponential posterior distribution. A
   quantile-based probability interval would report the highest density
   region near zero to be outside of its interval. In contrast, the
-  uni-modal HPD interval is recommended for such skewed posterior
+  unimodal HPD interval is recommended for such skewed posterior
   distributions.
 
   When \code{MM=TRUE}, the \code{\link{is.multimodal}} function is
-  applied to each column vector after the uni-modal interval (either
-  quantile-based or HPD) is estimated. If multi-modality is found, then
-  multi-modal HPD intervals are estimated with kernel density and
-  printed to the screen as a character string. The original uni-modal
+  applied to each column vector after the unimodal interval (either
+  quantile-based or HPD) is estimated. If multimodality is found, then
+  multimodal HPD intervals are estimated with kernel density and
+  printed to the screen as a character string. The original unimodal
   intervals are returned in the output matrix, because the matrix is
   constrained to have a uniform number of columns per row, and because
-  multi-modal HPD intervals may be disjoint.
+  multimodal HPD intervals may be disjoint.
 
-  Disjoint multi-modal HPD intervals have multiple intervals for one
+  Disjoint multimodal HPD intervals have multiple intervals for one
   posterior probability distribution. An example may be when there is a
   bimodal, Gaussian distribution with means -10 and 10, variances of 1
   and 1, and a 95\% probability interval is specified. In this case,
   there is not enough density between these two distant modes to have
   one probability interval.
+
+  The user should also consider \code{\link{LPL.interval}}, since it is
+  invariant to reparameterization like the quantile-based probability
+  interval, but could be one- or two-tailed, whichever is more
+  appropriate, like the HPD interval.
 }
 \value{
   A matrix is returned with rows corresponding to the parameters (or
   deviance or monitored variables), and columns \code{"Lower"} and
-  \code{"Upper"}. The elements of the matrix are the uni-modal
+  \code{"Upper"}. The elements of the matrix are the unimodal
   probability intervals. The attribute \code{"Probability"} is the
-  user-selected probability width. If \code{MM=TRUE} and multi-modal
-  posterior distributions are found, then multi-modal HPD intervals are
+  user-selected probability width. If \code{MM=TRUE} and multimodal
+  posterior distributions are found, then multimodal HPD intervals are
   printed to the screen in a character string.
 }
+\references{
+  Bernardo, J.M. (2005). "Intrinsic Credible Regions: An Objective
+  Bayesian Approach to Interval Estimation". Sociedad de Estadistica e
+  Investigacion Operativa, 14, 2, p. 317--384.
+
+  Hall, B. (2012). "Laplace's Demon", STATISTICAT, LLC.
+  URL=\url{http://www.statisticat.com/laplacesdemon.html}
+}
+\seealso{
+  \code{\link{is.multimodal}}, 
+  \code{\link{LaplacesDemon}}, and
+  \code{\link{LPL.interval}}.}
 \examples{
 #First, update the model with the LaplacesDemon function.
 #Then
 #p.interval(Fit, HPD=TRUE, MM=TRUE, prob=0.95)
 }
-\seealso{
-  \code{\link{is.multimodal}} and
-  \code{\link{LaplacesDemon}}.}
-\keyword{HPD, HPDI, credible interval, probability interval}
+\keyword{Credible Interval}
+\keyword{Credible Region}
+\keyword{Credible Set}
+\keyword{HPD}
+\keyword{HPDI}
+\keyword{Probability Interval}
+\keyword{Probability Region}
+\keyword{Probability Set}

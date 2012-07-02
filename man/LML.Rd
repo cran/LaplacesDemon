@@ -2,31 +2,32 @@
 \alias{LML}
 \title{Logarithm of the Marginal Likelihood}
 \description{
-This function approximates the logarithm of the marginal likelihood (LML),
-where the marginal likelihood is also called the integrated likelihood
-or the prior predictive distribution of \eqn{\textbf{y}}{y} in Bayesian
-inference. The marginal likelihood is
+  This function approximates the logarithm of the marginal likelihood
+  (LML), where the marginal likelihood is also called the integrated
+  likelihood or the prior predictive distribution of \eqn{\textbf{y}}{y}
+  in Bayesian inference. The marginal likelihood is
 
-\deqn{p(\textbf{y}) = \int p(\textbf{y} | \Theta)p(\Theta) d\Theta}{p(y)
-= integral p(y | Theta)p(Theta) d Theta}
+  \deqn{p(\textbf{y}) = \int p(\textbf{y} | \Theta)p(\Theta) d\Theta}{p(y)
+    = integral p(y | Theta)p(Theta) d Theta}
 
-The prior predictive distribution indicates what \eqn{\textbf{y}}{y} 
-should look like, given the model, before \eqn{\textbf{y}}{y} has been
-observed. The presence of the marginal likelihood of \eqn{\textbf{y}}{y}
-normalizes the joint posterior distribution,
-\eqn{p(\Theta|\textbf{y})}{p(Theta|y)}, ensuring it is a proper
-distribution and integrates to one. The marginal likelihood is the
-denominator of Bayes' theorem, and is often omitted, serving as a
-constant of proportionality. Several methods of approximation are
-available.
+  The prior predictive distribution indicates what \eqn{\textbf{y}}{y}
+  should look like, given the model, before \eqn{\textbf{y}}{y} has been
+  observed. The presence of the marginal likelihood of
+  \eqn{\textbf{y}}{y} normalizes the joint posterior distribution,
+  \eqn{p(\Theta|\textbf{y})}{p(Theta|y)}, ensuring it is a proper
+  distribution and integrates to one (see \code{\link{is.proper}}). The
+  marginal likelihood is the denominator of Bayes' theorem, and is often
+  omitted, serving as a constant of proportionality. Several methods of
+  approximation are available.
 }
 \usage{
 LML(Model=NULL, Data=NULL, Modes=NULL, theta=NULL, LL=NULL, method="NSIS")
 }
 \arguments{
   \item{Model}{This is the model specification for the model that was
-    updated either in \code{\link{LaplaceApproximation}} or
-    \code{\link{LaplacesDemon}}. This argument does not need to be
+    updated either in \code{\link{LaplaceApproximation}},
+    \code{\link{LaplacesDemon}}, or
+    \code{\link{LaplacesDemon.hpc}}. This argument does not need to be
     specified for the \code{HME} or \code{NSIS} methods.}
   \item{Data}{This is the list of data passed to the model
     specification. This argument does not need to be specified for the
@@ -48,14 +49,15 @@ LML(Model=NULL, Data=NULL, Modes=NULL, theta=NULL, LL=NULL, method="NSIS")
     self-normalized importance sampling (NSIS).}
 }
 \details{
-  Generally, a user of \code{\link{LaplaceApproximation}} or
-  \code{\link{LaplacesDemon}} does not need to use the \code{LML}
-  function, because these methods already include it. However,
-  \code{LML} may be called by the user, should the user desire to
-  estimate the logarithm of the marginal likelihood with a different
-  method, or with non-stationary chains. The \code{\link{LaplacesDemon}}
-  function only calls \code{LML} when all parameters are stationary, and
-  only with non-adaptive algorithms (DRM, MWG, or RWM).
+  Generally, a user of \code{\link{LaplaceApproximation}},
+  \code{\link{LaplacesDemon}}, or \code{\link{LaplacesDemon.hpc}} does
+  not need to use the \code{LML} function, because these methods already
+  include it. However, \code{LML} may be called by the user, should the
+  user desire to estimate the logarithm of the marginal likelihood with
+  a different method, or with non-stationary chains. The
+  \code{\link{LaplacesDemon}} and \code{\link{LaplacesDemon.hpc}}
+  functions only call \code{LML} when all parameters are stationary, and
+  only with non-adaptive algorithms (DRM, MWG, RWM, t-walk, or SMG).
 
   The \code{HME} method, where HME stands for harmonic mean estimator,
   of Newton-Raftery (1994) is the easiest, and therefore fastest,
@@ -90,8 +92,8 @@ LML(Model=NULL, Data=NULL, Modes=NULL, theta=NULL, LL=NULL, method="NSIS")
   function in the \code{MargLikArrogance} package. After \code{HME},
   this is the fastest method available here. The
   \code{\link{LaplaceApproximation}} function uses \code{NSIS} when it
-  has converged and \code{sir=TRUE}. The \code{\link{LaplacesDemon}}
-  function uses \code{NSIS}.
+  has converged and \code{sir=TRUE}. The \code{\link{LaplacesDemon}} and
+  \code{\link{LaplacesDemon.hpc}} functions use \code{NSIS}.
 
   The Laplace-Metropolis Estimator (LME) is the logarithmic form of
   equation 4 in Lewis and Raftery (1997). In a non-hierarchical model,
@@ -120,7 +122,8 @@ LML(Model=NULL, Data=NULL, Modes=NULL, theta=NULL, LL=NULL, method="NSIS")
     reason, several methods are provided. The marginal likelihood is
     useful when comparing models, such as with Bayes factors in the
     \code{\link{BayesFactor}} function. When the method fails, \code{NA}
-    is returned.}
+    is returned, and it is most likely that the joint posterior is
+  improper (see \code{\link{is.proper}}).}
   \item{VarCov}{
     This is a variance-covariance matrix, and is the negative inverse of
     the Hessian matrix, if estimated. The \code{HME} and \code{NSIS}
@@ -148,8 +151,10 @@ LML(Model=NULL, Data=NULL, Modes=NULL, theta=NULL, LL=NULL, method="NSIS")
 \author{Byron Hall \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{BayesFactor}},
+  \code{\link{is.proper}},
   \code{\link{LaplaceApproximation}},
-  \code{\link{LaplacesDemon}}.
+  \code{\link{LaplacesDemon}}, and
+  \code{\link{LaplacesDemon.hpc}}.
 }
 \examples{
 ### If a model object were created and called Fit, then:
@@ -172,4 +177,9 @@ LML(Model=NULL, Data=NULL, Modes=NULL, theta=NULL, LL=NULL, method="NSIS")
 ### Applying LME2 to an object of class laplace
 #LML(Model, MyData, Modes=Fit$Summary1[,1], method="LME2")
 }
-\keyword{marginal likelihood}
+\keyword{Harmonic Mean Estimator}
+\keyword{Integrated Likelihood}
+\keyword{Laplace-Metropolis Estimator}
+\keyword{Marginal Likelihood}
+\keyword{Nonparametric Self-Normalized Importance Sampling}
+\keyword{Prior Predictive Distribution}
