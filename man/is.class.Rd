@@ -3,10 +3,13 @@
 \alias{is.demonoid}
 \alias{is.demonoid.hpc}
 \alias{is.demonoid.ppc}
+\alias{is.demonoid.val}
 \alias{is.importance}
 \alias{is.juxtapose}
 \alias{is.laplace}
 \alias{is.laplace.ppc}
+\alias{is.pmc}
+\alias{is.pmc.ppc}
 \title{Logical Check of Classes}
 \description{
   These functions each provide a logical test of the class of an object.
@@ -16,10 +19,13 @@ is.bayesfactor(x)
 is.demonoid(x)
 is.demonoid.hpc(x)
 is.demonoid.ppc(x)
+is.demonoid.val(x)
 is.importance(x)
 is.juxtapose(x)
 is.laplace(x)
 is.laplace.ppc(x)
+is.pmc(x)
+is.pmc.ppc(x)
 }
 \arguments{
   \item{x}{This is an object that will be subjected to a logical test of
@@ -60,6 +66,9 @@ is.laplace.ppc(x)
   The \code{is.demonoid.ppc} function returns a logical value indicating
   whether or not the supplied object is of class \code{demonoid.ppc}.
 
+  The \code{is.demonoid.val} function returns a logical value indicating
+  whether or not the supplied object is of class \code{demonoid.val}.
+
   The \code{is.importance} function returns a logical value indicating
   whether or not the supplied object is of class \code{importance}.
 
@@ -68,6 +77,12 @@ is.laplace.ppc(x)
 
   The \code{is.laplace.ppc} function returns a logical value indicating
   whether or not the supplied object is of class \code{laplace.ppc}.
+
+  The \code{is.pmc} function returns a logical value indicating
+  whether or not the supplied object is of class \code{pmc}.
+
+  The \code{is.pmc.ppc} function returns a logical value indicating
+  whether or not the supplied object is of class \code{pmc.ppc}.
 }
 \references{\url{http://www.statisticat.com/laplacesdemon.html}}
 \author{Byron Hall \email{statisticat@gmail.com}}
@@ -79,7 +94,10 @@ is.laplace.ppc(x)
   \code{\link{LaplaceApproximation}},
   \code{\link{LaplacesDemon}},
   \code{\link{LaplacesDemon.hpc}},
-  \code{\link{predict.demonoid}}, and
-  \code{\link{predict.laplace}}.
+  \code{\link{PMC}},
+  \code{\link{predict.demonoid}},
+  \code{\link{predict.laplace}},
+  \code{\link{predict.pmc}}, and
+  \code{\link{Validate}}.
 }
 \keyword{Utility}

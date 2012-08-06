@@ -12,23 +12,24 @@ dmvt(x, mu, S, df=Inf, log=FALSE)
 rmvt(n=1, mu, S, df=Inf)
 }
 \arguments{
-  \item{x}{This is either a vector of length \eqn{k} or a matrix with 
-       a number of columns, \eqn{k}, equal to the number of columns in
-       scale matrix \eqn{\textbf{S}}{S}.}
+  \item{x}{This is either a vector of length \eqn{k} or a matrix with
+    a number of columns, \eqn{k}, equal to the number of columns in
+    scale matrix \eqn{\textbf{S}}{S}.}
   \item{n}{This is the number of random draws.}
-  \item{mu}{This is a numeric vector representing the location parameter,
-       \eqn{\mu}{mu} (the mean vector), of the multivariate distribution
-       (equal to the expected value when \code{df > 1}, otherwise
-       represented as \eqn{\nu > 1}{nu > 1}). It must be of length
-       \eqn{k}, as defined above.}
+  \item{mu}{This is a numeric vector or matrix representing the location
+    parameter,\eqn{\mu}{mu} (the mean vector), of the multivariate
+    distribution (equal to the expected value when \code{df > 1},
+    otherwise represented as \eqn{\nu > 1}{nu > 1}). When a vector, it
+    must be of length \eqn{k}, or must have \eqn{k} columns as a matrix,
+    as defined above.}
   \item{S}{This is a \eqn{k \times k}{k x k} positive-definite scale
-       matrix \eqn{\textbf{S}}{S}, such that \code{S*df/(df-2)} is the
-       variance-covariance matrix when \code{df > 2}. A vector of
-       length 1 is also allowed (in this case, \eqn{k=1} is set).}
+    matrix \eqn{\textbf{S}}{S}, such that \code{S*df/(df-2)} is the
+    variance-covariance matrix when \code{df > 2}. A vector of
+    length 1 is also allowed (in this case, \eqn{k=1} is set).}
   \item{df}{This is the degrees of freedom, and is often represented
-       with \eqn{\nu}{nu}.}
+    with \eqn{\nu}{nu}.}
   \item{log}{Logical. If \code{log=TRUE}, then the logarithm of the
-       density is returned.}
+    density is returned.}
 }
 \details{
   \itemize{
@@ -46,9 +47,9 @@ rmvt(n=1, mu, S, df=Inf)
     \Sigma, \nu)}{p(theta) = t[k](theta | mu, Sigma, nu)}
   \item Parameter 1: location vector \eqn{\mu}{mu}
   \item Parameter 2: positive-definite \eqn{k \times k}{k x k} scale
-  matrix \eqn{\Sigma}{Sigma}
+    matrix \eqn{\Sigma}{Sigma}
   \item Parameter 3: degrees of freedom \eqn{\nu > 0}{nu > 0} (df in the
-  functions)
+    functions)
   \item Mean: \eqn{E(\theta) = \mu}{E(theta) = mu}, for \eqn{\nu > 1}{nu
     > 1}, otherwise undefined
   \item Variance: \eqn{var(\theta) = \frac{\nu}{\nu - 2}
@@ -87,10 +88,10 @@ x <- seq(-2,4,length=21)
 y <- 2*x+10
 z <- x+cos(y) 
 mu <- c(1,12,2)
-Sigma <- matrix(c(1,2,0,2,5,0.5,0,0.5,3), 3, 3)
+S <- matrix(c(1,2,0,2,5,0.5,0,0.5,3), 3, 3)
 df <- 4
-f <- dmvt(cbind(x,y,z), mu, Sigma, df)
-X <- rmvt(1000, c(0,1,2), diag(3), 5)
+f <- dmvt(cbind(x,y,z), mu, S, df)
+X <- rmvt(1000, c(0,1,2), S, 5)
 joint.density.plot(X[,1], X[,2], color=TRUE)
 }
 \keyword{Distribution}

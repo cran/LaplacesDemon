@@ -3,21 +3,21 @@
 \title{Bayes Factor}
 \description{
   This function calculates Bayes factors for two or more fitted objects
-  of class \code{demonoid} or  \code{laplace} that were estimated
-  respectively with the \code{\link{LaplacesDemon}} or
-  \code{\link{LaplaceApproximation}} functions, and indicates the
-  strength of evidence in favor of the hypothesis (that each model,
-  \eqn{\mathcal{M}_i}{M[i]}, is better than another model,
-  \eqn{\mathcal{M}_j}{M[j]}).
+  of class \code{demonoid}, \code{laplace}, or \code{pmc} that were
+  estimated respectively with the \code{\link{LaplacesDemon}}, 
+  \code{\link{LaplaceApproximation}}, or \code{\link{PMC}} functions,
+  and indicates the strength of evidence in favor of the hypothesis
+  (that each model, \eqn{\mathcal{M}_i}{M[i]}, is better than another
+  model, \eqn{\mathcal{M}_j}{M[j]}).
 }
 \usage{
 BayesFactor(x)
 }
 \arguments{
   \item{x}{This is a list of two or more fitted objects of class
-    \code{demonoid} or \code{laplace}. The components are named in order 
-    beginning with model 1, \code{M1}, and \eqn{k} models are usually
-    represented as
+    \code{demonoid}, \code{laplace}, or \code{pmc}. The components are
+    named in order beginning with model 1, \code{M1}, and \eqn{k} models
+    are usually represented as
     \eqn{\mathcal{M}_1,\dots,\mathcal{M}_k}{M[1],...,M[k]}.}
 }
 \details{
@@ -29,9 +29,9 @@ BayesFactor(x)
   only defined when the marginal density of \eqn{\textbf{y}}{y} under
   each model is proper (see \code{\link{is.proper}}). However, the Bayes
   factor is easy to approximate with the Laplace-Metropolis estimator
-  (Lewis and Raftery, 1997), and is estimated this way in both the
-  \code{\link{LaplaceApproximation}} and \code{\link{LaplacesDemon}}
-  functions.
+  (Lewis and Raftery, 1997) and other methods of approximating the
+  logarithm of the marginal likelihood (for more information, see
+  \code{\link{LML}}).
 
   Hypothesis testing with Bayes factors is more robust than frequentist
   hypothesis testing, since the Bayesian form avoids model selection
@@ -56,14 +56,15 @@ BayesFactor(x)
 where \eqn{p(\textbf{y}|\mathcal{M}_1)}{p(y|M_1)} is the marginal
 likelihood of the data in model 1.
 
-The \code{\link{LaplaceApproximation}} and \code{\link{LaplacesDemon}}
-functions each return the \code{\link{LML}}, the approximate logarithm
-of the marginal likelihood of the data, in each fitted object of class
-\code{laplace} and \code{demonoid}. The \code{BayesFactor} function
-calculates matrix \code{B}, a matrix of Bayes factors, where each
-element of matrix \code{B} is a comparison of two models. Each Bayes
-factor is calculated as the exponentiated difference of \code{LML} of
-model 1 (\eqn{\mathcal{M}_1}{M[1]}) and \code{LML} of model 2
+The \code{\link{LaplaceApproximation}}, \code{\link{LaplacesDemon}}, and
+\code{\link{PMC}} functions each return the \code{\link{LML}}, the
+approximate logarithm of the marginal likelihood of the data, in each
+fitted object of class \code{laplace}, \code{demonoid}, or
+\code{pmc}. The \code{BayesFactor} function calculates matrix \code{B},
+a matrix of Bayes factors, where each element of matrix \code{B} is a
+comparison of two models. Each Bayes factor is calculated as the
+exponentiated difference of \code{LML} of model 1
+(\eqn{\mathcal{M}_1}{M[1]}) and \code{LML} of model 2
 (\eqn{\mathcal{M}_2}{M[2]}), and the hypothesis for each element of
 matrix \code{B} is that the model associated with the row is greater
 than the model associated with the column. For example, element
@@ -83,9 +84,10 @@ of them being true. Gelman prefers approaches that measure the
 distance of the data to each of the approximate models (Gelman et al.,
 2004, p. 180), such as with posterior predictive checks (see the
 \code{\link{predict.laplace}} function in the context of Laplace
-Approximation, or the \code{\link{predict.demonoid}} function in the
-context of MCMC). Kass et al. (1995) asserts this can be done without
-assuming one model is the true model.
+Approximation, \code{\link{predict.demonoid}} function in the
+context of MCMC, or \code{\link{predict.pmc}} function in the context of
+PMC). Kass et al. (1995) asserts this can be done without assuming one
+model is the true model.
 }
 \value{
   \code{BayesFactor} returns an object of class \code{bayesfactor} that
@@ -126,9 +128,11 @@ assuming one model is the true model.
   \code{\link{is.proper}},
   \code{\link{LaplaceApproximation}},
   \code{\link{LaplacesDemon}},
-  \code{\link{LML}}
-  \code{\link{predict.demonoid}}, and
-  \code{\link{predict.laplace}}.
+  \code{\link{LML}},
+  \code{\link{PMC}},
+  \code{\link{predict.demonoid}},
+  \code{\link{predict.laplace}}, and
+  \code{\link{predict.pmc}}.
 }
 \examples{
 # The following example fits a model as Fit1, then adds a predictor, and
@@ -145,10 +149,10 @@ X <- cbind(1, as.matrix(demonsnacks[,7]))
 X[,2] <- CenterScale(X[,2])
 mon.names <- c("LP","sigma")
 parm.names <- as.parm.names(list(beta=rep(0,J), log.sigma=0))
-MyData <- list(J=J, X=X, mon.names=mon.names, parm.names=parm.names, y=y)
-
-############################  Initial Values  #############################
-Initial.Values <- c(rep(0,J), log(1))
+PGF <- function(Data) return(c(rnormv(Data$J,0,1000),
+     log(rhalfcauchy(1,25))))
+MyData <- list(J=J, PGF=PGF, X=X, mon.names=mon.names,
+     parm.names=parm.names, y=y)
 
 ##########################  Model Specification  ##########################
 Model <- function(parm, Data)
@@ -164,10 +168,13 @@ Model <- function(parm, Data)
      LL <- sum(dnorm(Data$y, mu, sigma, log=TRUE))
      ### Log-Posterior
      LP <- LL + beta.prior + sigma.prior
-     Modelout <- list(LP=LP, Dev=-2*LL, Monitor=c(LP,sigma), yhat=mu,
-          parm=parm)
+     Modelout <- list(LP=LP, Dev=-2*LL, Monitor=c(LP,sigma),
+          yhat=rnorm(length(mu), mu, sigma), parm=parm)
      return(Modelout)
      }
+
+############################  Initial Values  #############################
+Initial.Values <- GIV(Model, MyData, PGF=TRUE)
 
 ########################  Laplace Approximation  ##########################
 Fit1 <- LaplaceApproximation(Model, Initial.Values, Data=MyData,
@@ -183,10 +190,13 @@ X[,2] <- CenterScale(X[,2])
 X[,3] <- CenterScale(X[,3])
 mon.names <- c("sigma","mu[1]")
 parm.names <- as.parm.names(list(beta=rep(0,J), log.sigma=0))
-MyData <- list(J=J, X=X, mon.names=mon.names, parm.names=parm.names, y=y)
+PGF <- function(Data) return(c(rnormv(Data$J,0,1000),
+     log(rhalfcauchy(1,25))))
+MyData <- list(J=J, PGF=PGF, X=X, mon.names=mon.names,
+     parm.names=parm.names, y=y)
 
 ############################  Initial Values  #############################
-Initial.Values <- c(rep(0,J), log(1))
+Initial.Values <- GIV(Model, MyData, PGF=TRUE)
 
 ########################  Laplace Approximation  ##########################
 Fit2 <- LaplaceApproximation(Model, Initial.Values, Data=MyData,

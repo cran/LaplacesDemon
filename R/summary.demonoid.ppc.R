@@ -11,6 +11,7 @@ summary.demonoid.ppc <- function(object=NULL, Categorical=FALSE, Rows=NULL,
      if(is.null(object)) stop("The object argument is NULL.")
      y <- object$y
      yhat <- object$yhat
+     Deviance <- object$Deviance
      if(is.null(Rows)) Rows <- 1:length(y)
      if(any(Rows > length(y)) || any(Rows <= 0)) {
           warning("Invalid Rows argument; All rows included.")
@@ -24,10 +25,13 @@ summary.demonoid.ppc <- function(object=NULL, Categorical=FALSE, Rows=NULL,
           Summ[,3] <- round(apply(yhat, 1, sd),3)
           for (i in 1:length(y))
                {
-               Summ[i,4] <- round(quantile(yhat[i,], probs=0.025),3)
-               Summ[i,5] <- round(quantile(yhat[i,], probs=0.500),3)
-               Summ[i,6] <- round(quantile(yhat[i,], probs=0.975),3)
-               Summ[i,7] <- round(mean(yhat[i,] >= y[i]),3)
+               Summ[i,4] <- round(quantile(yhat[i,], probs=0.025,
+                    na.rm=TRUE),3)
+               Summ[i,5] <- round(quantile(yhat[i,], probs=0.500,
+                    na.rm=TRUE),3)
+               Summ[i,6] <- round(quantile(yhat[i,], probs=0.975,
+                    na.rm=TRUE),3)
+               Summ[i,7] <- round(mean(yhat[i,] >= y[i], na.rm=TRUE),3)
                }
           ### Discrepancy Statistics
           Concordance <- 1 - mean({{Summ[,7] < 0.025} | {Summ[,7] > 0.975}},
@@ -35,22 +39,23 @@ summary.demonoid.ppc <- function(object=NULL, Categorical=FALSE, Rows=NULL,
           if(identical(yhat,y)) Concordance <- 1
           Discrepancy.Statistic <- 0
           if(!is.null(Discrep) && {Discrep == "Chi-Square"}) {
-               Summ[,8] <- round((y - apply(yhat,1,mean))^2 /
+               Summ[,8] <- round((y - rowMeans(yhat))^2 /
                     apply(yhat,1,var),3)
                Discrepancy.Statistic <- round(sum(Summ[,8], na.rm=TRUE),3)}
           if(!is.null(Discrep) && {Discrep == "Chi-Square2"}) {
                chisq.obs <- chisq.rep <- yhat
-               E.y <- E.yrep <- rowMeans(yhat)
+               E.y <- E.yrep <- rowMeans(yhat, na.rm=TRUE)
                for (i in 1:nrow(yhat)) {
                     chisq.obs[i,] <- (y[i] - E.y[i])^2 / E.y[i]
                     chisq.rep[i,] <- (yhat[i,] - E.yrep[i])^2 / E.yrep[i]
                     }
-               Summ[,8] <- round(rowMeans(chisq.rep > chisq.obs),3)
+               Summ[,8] <- round(rowMeans(chisq.rep > chisq.obs,
+                    na.rm=TRUE),3)
                Discrepancy.Statistic <- round(mean((Summ[,8] < 0.025) |
                     (Summ[,8] > 0.975), na.rm=TRUE),3)}
           if(!is.null(Discrep) && {Discrep == "DW"}) {
                Summ[,8] <- round((rowMeans(y - yhat, na.rm=TRUE) -
-                    c(0, diff(rowMeans(y - yhat))))^2 /
+                    c(0, diff(rowMeans(y - yhat, na.rm=TRUE))))^2 /
                     rowMeans(y - yhat, na.rm=TRUE)^2, 3)
                Discrepancy.Statistic <- round(sum(Summ[,8], na.rm=TRUE), 3)}
           if(!is.null(Discrep) && {Discrep == "Kurtosis"}) {
@@ -62,7 +67,7 @@ summary.demonoid.ppc <- function(object=NULL, Categorical=FALSE, Rows=NULL,
                Discrepancy.Statistic <- round(mean(Summ[,8], na.rm=TRUE),3)}
           if(!is.null(Discrep) && {Discrep == "L.criterion"}) {
                Summ[,8] <- round(sqrt(apply(yhat,1,var) +
-                    (y - apply(yhat,1,mean))^2),3)
+                    (y - rowMeans(yhat))^2),3)
                Discrepancy.Statistic <- round(sum(Summ[,8], na.rm=TRUE),3)}
           if(!is.null(Discrep) && {Discrep == "MASE"}) {
                Summ[,8] <- round(abs(rowMeans(y - yhat, na.rm=TRUE) /
@@ -71,6 +76,10 @@ summary.demonoid.ppc <- function(object=NULL, Categorical=FALSE, Rows=NULL,
           if(!is.null(Discrep) && {Discrep == "MSE"}) {
                Summ[,8] <- round(rowMeans((y - yhat)^2, na.rm=TRUE),3)
                Discrepancy.Statistic <- round(mean(Summ[,8], na.rm=TRUE),3)}
+          if(!is.null(Discrep) && {Discrep == "PPL"}) {
+               Summ[,8] <- round(apply(yhat,1,var) + (d/(d+1)) *
+                    (rowMeans(yhat) - y)^2,3)
+               Discrepancy.Statistic <- round(sum(Summ[,8], na.rm=TRUE),3)}
           if(!is.null(Discrep) && {Discrep == "Quadratic Loss"}) {
                Summ[,8] <- round(rowMeans((y - yhat)^2, na.rm=TRUE),3)
                Discrepancy.Statistic <- round(mean(Summ[,8], na.rm=TRUE),3)}
@@ -110,15 +119,23 @@ summary.demonoid.ppc <- function(object=NULL, Categorical=FALSE, Rows=NULL,
           if(!is.null(Discrep) && {Discrep == "sd(yhat[i,]) > sd(y)"}) {
                for (i in 1:length(y)) {Summ[i,8] <- sd(yhat[i,]) > sd(y)}
                Discrepancy.Statistic <- round(mean(Summ[,8], na.rm=TRUE),3)}
-          L <- sqrt(apply(yhat,1,var) + (y - apply(yhat,1,mean))^2)
+          Dbar <- round(mean(Deviance, na.rm=TRUE),3)
+          pD <- round(var(Deviance, na.rm=TRUE)/2, 3)
+          BPIC <- Dbar + 2*pD
+          bpic <- matrix(c(Dbar, pD, BPIC), 1, 3)
+          colnames(bpic) <- c("Dbar","pD","BPIC"); rownames(bpic) <- ""
+          L <- sqrt(apply(yhat,1,var) + (y - rowMeans(yhat))^2)
           S.L <- round(sd(L, na.rm=TRUE),3); L <- round(sum(L, na.rm=TRUE),3)
           ### Create Output
-          Summ.out <- list(Concordance=Concordance,
+          Summ.out <- list(BPIC=bpic,
+               Concordance=Concordance,
                Discrepancy.Statistic=round(Discrepancy.Statistic,5),
                L.criterion=L,
                S.L=S.L,
                Summary=Summ[Rows,])
           if(Quiet == FALSE) {
+               cat("Bayesian Predictive Information Criterion:\n")
+               print(bpic)
                cat("Concordance: ", Concordance, "\n")
                cat("Discrepancy Statistic: ",
                     round(Discrepancy.Statistic,5), "\n")
@@ -155,11 +172,19 @@ summary.demonoid.ppc <- function(object=NULL, Categorical=FALSE, Rows=NULL,
                     Summ[i, grep(Summ[i,1],names(catcounts))+1]}
                Discrepancy.Statistic <- round(mean(Summ[,ncol(Summ)],
                     na.rm=TRUE),3)}
+          Dbar <- round(mean(Deviance, na.rm=TRUE),3)
+          pD <- round(var(Deviance, na.rm=TRUE)/2, 3)
+          BPIC <- Dbar + 2*pD
+          bpic <- matrix(c(Dbar, pD, BPIC), 1, 3)
+          colnames(bpic) <- c("Dbar","pD","BPIC"); rownames(bpic) <- ""
           ### Create Output
-          Summ.out <- list(Mean.Lift=Mean.Lift,
+          Summ.out <- list(BPIC=bpic,
+               Mean.Lift=Mean.Lift,
                Discrepancy.Statistic=round(Discrepancy.Statistic,5),
                Summary=Summ[Rows,])
           if(Quiet == FALSE) {
+               cat("Bayesian Predictive Information Criterion:\n")
+               print(bpic)
                cat("Mean Lift: ", Mean.Lift, "\n")
                cat("Discrepancy Statistic: ",
                     round(Discrepancy.Statistic,5), "\n")

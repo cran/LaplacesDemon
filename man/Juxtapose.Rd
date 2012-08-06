@@ -51,8 +51,8 @@ Juxtapose(x)
   class \code{demonoid} should be renamed. An example follows.
 
   Suppose a user considers three candidate algorithms for their model:
-  AMM, AMWG, and twalk. The user updates each model, saving the model
-  that used the AMM algorithm as, say, \code{Fit1}, the AMWG model as
+  AMWG, NUTS, and twalk. The user updates each model, saving the model
+  that used the AMWG algorithm as, say, \code{Fit1}, the NUTS model as
   \code{Fit2}, and the twalk model as \code{Fit3}.
 
   Next, the output model objects are put in a list and passed to the
@@ -115,8 +115,9 @@ Juxtapose(x)
   evaluations, parameters, and time should all correlate well, but time
   may enlighten a user as to expected run-time given the model just
   studied, even though the real data set will most likely be larger than
-  the simulated data used initially. For an alternative approach, see
-  Thompson (2010).
+  the simulated data used initially. NUTS is an example of a sampler in
+  which the number of evaluations varies per iteration. For an
+  alternative approach, see Thompson (2010).
 
   The \code{Juxtapose} function also adjusts \code{ISM} by
   \code{prop.stat}, the proportion of the iterations in which all chains
@@ -162,7 +163,7 @@ Juxtapose(x)
 }
 \examples{
 ### Update three demonoid objects, each from different MCMC algorithms.
-### Suppose Fit1 was updated with AMM, Fit2 with AMWG, and
+### Suppose Fit1 was updated with AMWG, Fit2 with NUTS, and
 ### Fit3 with twalk. Then, compare the inefficiencies:
 #Juxt <- Juxtapose(list(Fit1=Fit1, Fit2=Fit2, Fit3=Fit3)); Juxt
 #plot(Juxt, Style="ISM")

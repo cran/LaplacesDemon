@@ -12,7 +12,8 @@ rdirichlet(n, alpha)
 }
 \arguments{
   \item{x}{This is a vector containing a single deviate or matrix
-    containing one random deviate per row.}
+    containing one random deviate per row. Each vector, or matrix row,
+    must sum to 1.}
   \item{n}{This is the number of random deviates to generate.}
   \item{alpha}{This is a vector or matrix of shape parameters.}
   \item{log}{Logical. If \code{log=TRUE}, then the logarithm of the

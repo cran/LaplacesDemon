@@ -59,7 +59,7 @@
     This is a \eqn{N \times S}{N x S} matrix, where \eqn{N} is the
     number of records of \eqn{\textbf{y}}{y} and \eqn{S} is the number of 
     posterior samples.}
-  \item{deviance}{
+  \item{Deviance}{
     This is a vector of length \eqn{S}, where \eqn{S} is the number of
     independent posterior samples. Samples are obtained with the
     sampling importance resampling algorithm, \code{\link{SIR}}.}

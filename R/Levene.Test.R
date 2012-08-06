@@ -9,8 +9,9 @@ Levene.Test <- function(x, Method="U", G=NULL, Data=NULL)
      {
      ### Initial Checks
      if(missing(x)) stop("The x argument is required.")
-     if({class(x) != "demonoid.ppc"} & {class(x) != "laplace.ppc"})
-          stop("x is not of class demonoid.ppc or laplace.ppc.")
+     if({class(x) != "demonoid.ppc"} & {class(x) != "laplace.ppc"} &
+        {class(x) != "pmc.ppc"})
+          stop("x is not of class demonoid.ppc, laplace.ppc, or pmc.ppc.")
      if({Method == "C"} & is.null(Data))
           stop("Data is required for Method C.")
      if({Method == "R"} & is.null(Data))

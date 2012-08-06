@@ -32,30 +32,30 @@ LaplacesDemon <- function(Model, Data, Initial.Values, Covar=NULL,
           cat("WARNING: Initial Values were not supplied.\n")
           Initial.Values <- rep(0, length(Data$parm.names))}
      if(!identical(length(Initial.Values), length(Data$parm.names))) {
-          cat("WARNING: The length of Initial Values differed from ",
+          cat("WARNING: The length of Initial Values differed from",
                "Data$parm.names.\n")
           Initial.Values <- rep(0, length(Data$parm.names))}
      if(any(!is.finite(Initial.Values))) {
           cat("WARNING: Initial Values contain non-finite values.\n")
           Initial.Values <- rep(0, length(Data$parm.names))}
-     Iterations <- round(Iterations)
+     Iterations <- round(abs(Iterations))
      if(Iterations < 11) {
           Iterations <- 11
           cat("'Iterations' has been changed to ", Iterations, ".\n",
                sep="")}
-     Status <- round(Status)
+     Status <- round(abs(Status))
      if({Status < 1} || {Status > Iterations}) {
           Status <- Iterations
           cat("'Status' has been changed to ", Status, ".\n",
                sep="")}
-     Thinning <- round(Thinning)
+     Thinning <- round(abs(Thinning))
      if({Thinning < 1} || {Thinning > Iterations}) {
           Thinning <- 1
           cat("'Thinning' has been changed to ", Thinning, ".\n",
                sep="")}
      if(Algorithm %in% c("AHMC","AM","AMM","AMWG","DRAM","DRM",
-          "Experimental","HMC","MWG","RAM","RWM","SAMWG","SMWG","THMC",
-          "twalk","USAMWG","USMWG")) {
+          "Experimental","HMC","HMCDA","MWG","NUTS","RAM","RWM","SAMWG",
+          "SMWG","THMC","twalk","USAMWG","USMWG")) {
           if(Algorithm == "AHMC") {
                Algorithm <- "Adaptive Hamiltonian Monte Carlo"
                if(missing(Specs)) stop("The Specs argument is required.")
@@ -157,6 +157,42 @@ LaplacesDemon <- function(Model, Data, Initial.Values, Covar=NULL,
                Adaptive <- Iterations + 1
                DR <- 1
                Periodicity <- Iterations + 1}
+          if(Algorithm == "HMCDA") {
+               Algorithm <- "Hamiltonian Monte Carlo with Dual-Averaging"
+               if(missing(Specs)) stop("The Specs argument is required.")
+               if(length(Specs) != 5) stop("The Specs argument is incorrect.")
+               if(Specs[["A"]] == Specs[[1]])
+                    A <- min(round(abs(Specs[[1]])), Iterations)
+               if(Specs[["delta"]] == Specs[[2]])
+                    delta <- max(min(abs(Specs[[2]]), 1), 1/Iterations)
+               if(is.null(Specs[[3]]) |
+                    {all(Specs[["epsilon"]] == Specs[[3]])}) {
+                    if(is.null(Specs[[3]])) epsilon <- NULL
+                    else epsilon <- abs(Specs[[3]][1])}
+               if(Specs[["Lmax"]] == Specs[[4]]) 
+                    Lmax <- abs(Specs[[4]])
+               if(Specs[["lambda"]] == Specs[[5]]) {
+                    lambda <- abs(Specs[[5]])
+                    if(!is.null(epsilon))
+                         if(lambda < epsilon) lambda <- epsilon}
+               Adaptive <- Iterations + 1
+               DR <- 1
+               Periodicity <- Iterations + 1}
+          if(Algorithm == "NUTS") {
+               Algorithm <- "No-U-Turn Sampler"
+               if(missing(Specs)) stop("The Specs argument is required.")
+               if(length(Specs) != 3) stop("The Specs argument is incorrect.")
+               if(Specs[["A"]] == Specs[[1]])
+                    A <- max(min(round(abs(Specs[[1]])), Iterations),1)
+               if(Specs[["delta"]] == Specs[[2]])
+                    delta <- max(min(abs(Specs[[2]]), 1), 1/Iterations)
+               if(is.null(Specs[[3]]) |
+                    {all(Specs[["epsilon"]] == Specs[[3]])}) {
+                    if(is.null(Specs[[3]])) epsilon <- NULL
+                    else epsilon <- abs(Specs[[3]][1])}
+               Adaptive <- Iterations + 1
+               DR <- 1
+               Periodicity <- Iterations + 1}
           if(Algorithm == "RAM") {
                Algorithm <- "Robust Adaptive Metropolis"
                if(missing(Specs)) stop("The Specs argument is required.")
@@ -234,9 +270,9 @@ LaplacesDemon <- function(Model, Data, Initial.Values, Covar=NULL,
                          cat("\nLength of epsilon is incorrect.\n")
                          epsilon <- rep(epsilon[1], length(Initial.Values))}
                if(Specs[["L"]] == Specs[[2]]) L <- abs(round(Specs[[2]]))
-               if(L < 1) {
-                    cat("\nL has been increased to its minimum: 1.\n")
-                    L <- 1}
+               if(L < 2) {
+                    cat("\nL has been increased to its minimum: 2.\n")
+                    L <- 2}
                Adaptive <- Iterations + 1
                DR <- 1
                Periodicity <- 1
@@ -253,23 +289,27 @@ LaplacesDemon <- function(Model, Data, Initial.Values, Covar=NULL,
                DR <- 0
                if(is.null(Specs[[1]]) | all(Specs[["SIV"]] == Specs[[1]])) {
                     if(is.null(Specs[[1]])) {
-                         SIV <- NULL
-                         }
+                         cat("\nGenerating SIV...\n")
+                         if(!is.null(Data$PGF))
+                              SIV <- GIV(Model, Data, PGF=TRUE)
+                         else SIV <- GIV(Model, Data)}
                     else SIV <- Specs[[1]]
-                    if(!identical(length(SIV), length(Initial.Values)))
+                    if(!identical(length(SIV), length(Initial.Values))) {
                          cat("\nGenerating SIV due to length mismatch.\n")
-                         SIV <- GIV(Model, Data)
-                    }
+                         if(!is.null(Data$PGF))
+                              SIV <- GIV(Model, Data, PGF=TRUE)
+                         else SIV <- GIV(Model, Data)}}
                else {
                     cat("\nSIV was misspecified. Generating values now.\n")
-                    SIV <- GIV(Model, Data)}
+                    if(!is.null(Data$PGF))
+                         SIV <- GIV(Model, Data, PGF=TRUE)
+                    else SIV <- GIV(Model, Data)}
                Mo2 <- Model(SIV, Data)
                if(!is.finite(Mo2[[1]]))
                     stop("SIV results in a non-finite posterior.")
                if(!is.finite(Mo2[[2]]))
                     stop("SIV results in a non-finite deviance.")
-               if(!identical(SIV, as.vector(Mo2[[5]])))
-                    stop("GIV failed to find a suitable SIV.")
+               SIV <- Mo2[[5]]
                rm(Mo2)
                if(Specs[["n1"]] == Specs[[2]]) {
                     n1 <- Specs[[2]]
@@ -342,8 +382,8 @@ LaplacesDemon <- function(Model, Data, Initial.Values, Covar=NULL,
      if(!is.list(Mo0)) stop("Model must return a list.")
      if(length(Mo0) != 5) stop("Model must return five components.")
      if(length(Mo0[[1]]) > 1) stop("Multiple joint posteriors exist!")
-     if(!identical(length(Mo0[[3]]), length(Data$mon.names))) {
-          stop("Length of mon.names differs from length of monitors.")}
+     if(!identical(length(Mo0[[3]]), length(Data$mon.names)))
+          stop("Length of mon.names differs from length of monitors.")
      as.character.function <- function(x, ... )
           {
           fname <- deparse(substitute(x))
@@ -366,7 +406,9 @@ LaplacesDemon <- function(Model, Data, Initial.Values, Covar=NULL,
      Acceptance <- 0
      if(!is.finite(Mo0[[1]])) {
           cat("Generating initial values due to a non-finite posterior.\n")
-          Initial.Values <- GIV(Model, Data)
+          if(!is.null(Data$PGF))
+               Initial.Values <- GIV(Model, Data, PGF=TRUE)
+          else Initial.Values <- GIV(Model, Data)
           Mo0 <- Model(Initial.Values, Data)
           }
      if(is.infinite(Mo0[[1]])) stop("The posterior is infinite!")
@@ -380,6 +422,10 @@ LaplacesDemon <- function(Model, Data, Initial.Values, Covar=NULL,
           stop("Monitored variable(s) have an infinite value!")
      if(any(is.nan(Mo0[[3]])))
           stop("Monitored variable(s) include a value that is not a number!")
+     if(Algorithm == "t-walk") {
+          Mo0 <- Model(Initial.Values, Data)
+          if(any(Mo0[[5]] == SIV))
+              stop("Initial.Values and SIV not unique after model update.")}
      ######################  Laplace Approximation  #######################
      ### Sample Size of Data
      if(!is.null(Data$n)) if(length(Data$n) == 1) N <- Data$n
@@ -454,11 +500,21 @@ LaplacesDemon <- function(Model, Data, Initial.Values, Covar=NULL,
                Periodicity, Status, Thinning, Acceptance, Dev, DiagCovar,
                Iden.Mat, LIV, Mon, Mo0, post, ScaleF, thinned, tuning,
                VarCov, epsilon, L)}
+     else if(Algorithm == "Hamiltonian Monte Carlo with Dual-Averaging") {
+          mcmc.out <- HMCDA(Model, Data, Adaptive, DR, Iterations,
+               Periodicity, Status, Thinning, Acceptance, Dev, DiagCovar,
+               Iden.Mat, LIV, Mon, Mo0, post, ScaleF, thinned, tuning,
+               VarCov, A, delta, epsilon, Lmax, lambda)}
      else if(Algorithm == "Metropolis-within-Gibbs") {
           mcmc.out <- MWG(Model, Data, Adaptive, DR, Iterations,
                Periodicity, Status, Thinning, Acceptance, Dev, DiagCovar,
                Iden.Mat, LIV, Mon, Mo0, post, ScaleF, thinned, tuning,
                VarCov)}
+     else if(Algorithm == "No-U-Turn Sampler") {
+          mcmc.out <- NUTS(Model, Data, Adaptive, DR, Iterations,
+               Periodicity, Status, Thinning, Acceptance, Dev, DiagCovar,
+               Iden.Mat, LIV, Mon, Mo0, post, ScaleF, thinned, tuning,
+               VarCov, A, delta, epsilon)}
      else if(Algorithm == "Robust Adaptive Metropolis") {
           mcmc.out <- RAM(Model, Data, Adaptive, DR, Iterations,
                Periodicity, Status, Thinning, Acceptance, Dev, DiagCovar,
@@ -512,6 +568,7 @@ LaplacesDemon <- function(Model, Data, Initial.Values, Covar=NULL,
      thinned <- matrix(thinned[-1,], nrow(thinned)-1, ncol(thinned))
      Dev <- matrix(Dev[-1,], nrow(Dev)-1, 1)
      Mon <- matrix(Mon[-1,], nrow(Mon)-1, ncol(Mon))
+     colnames(VarCov) <- rownames(VarCov) <- Data$parm.names
      ### Warnings (After Updating)
      if(any(Acceptance == 0))
           cat("\nWARNING: All proposals were rejected.\n")
@@ -667,7 +724,8 @@ LaplacesDemon <- function(Model, Data, Initial.Values, Covar=NULL,
      LML <- list(LML=NA, VarCov=NA)
      if(({Algorithm == "Delayed Rejection Metropolis"} |
           {Algorithm == "Hamiltonian Monte Carlo"} | 
-          {Algorithm == "Metropolis-within-Gibbs"} | 
+          {Algorithm == "Metropolis-within-Gibbs"} |
+          {Algorithm == "No-U-Turn Sampler"} | 
           {Algorithm == "Random-Walk Metropolis"} |
           {Algorithm == "Sequential Metropolis-within-Gibbs"} |
           {Algorithm == "Tempered Hamiltonian Monte Carlo"} | 
@@ -760,6 +818,7 @@ AHMC <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
           H1 <- -Mo1[[1]] + kinetic1
           delta <- H1 - H0
           alpha <- min(1, exp(-delta))
+          if(!is.finite(alpha)) alpha <- 0
           if(runif(1) < alpha) {
                Mo0 <- Mo1
                post[iter,] <- Mo1[[5]]
@@ -1226,6 +1285,7 @@ HMC <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
           H1 <- -Mo1[[1]] + kinetic1
           delta <- H1 - H0
           alpha <- min(1, exp(-delta))
+          if(!is.finite(alpha)) alpha <- 0
           if(runif(1) < alpha) {
                Mo0 <- Mo1
                post[iter,] <- Mo1[[5]]
@@ -1241,6 +1301,130 @@ HMC <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
      out <- list(Acceptance=Acceptance,
           Dev=Dev,
           DiagCovar=matrix(epsilon, 1, LIV),
+          Mon=Mon,
+          thinned=thinned,
+          VarCov=VarCov)
+     return(out)
+     }
+HMCDA <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
+     Status, Thinning, Acceptance, Dev, DiagCovar, Iden.Mat, LIV, Mon,
+     Mo0, post, ScaleF, thinned, tuning, VarCov, A, delta, epsilon, Lmax,
+     lambda)
+     {
+     leapfrog <- function(theta, r, grad, epsilon, Model, Data)
+          {
+          rprime <- r + 0.5 * epsilon * grad
+          thetaprime <-  theta + epsilon * rprime
+          Mo1 <- Model(thetaprime, Data)
+          thetaprime <- Mo1[[5]]
+          gradprime <- partial(Model, thetaprime, Data)
+          rprime <- rprime + 0.5 * epsilon * gradprime
+          out <- list(thetaprime=thetaprime,
+               rprime=rprime,
+               gradprime=gradprime,
+               Mo1=Mo1)
+          return(out)
+          }
+     find.reasonable.epsilon <- function(theta0, grad0, Mo0, Model, Data)
+          {
+          cat("\nFinding a reasonable initial value for epsilon...")
+          epsilon <- 1
+          r0 <- runif(length(theta0))
+          ### Figure out which direction to move epsilon
+          leap <- leapfrog(theta0, r0, grad0, epsilon, Model, Data)
+          acceptprob <- exp(leap$Mo1[[1]] - Mo0[[1]] - 0.5 *
+               (as.vector(leap$rprime %*% leap$rprime) -
+               as.vector(r0 %*% r0)))
+          a <- 2 * (acceptprob > 0.5) - 1
+          ### Keep moving epsilon in that direction until acceptprob
+          ### crosses 0.5
+          while (acceptprob^a > 2^(-a)) {
+               epsilon <- epsilon * 2^a
+               leap <- leapfrog(theta0, r0, grad0, epsilon, Model, Data)
+               acceptprob <- exp(leap$Mo1[[1]] - Mo0[[1]] - 0.5 *
+                    (as.vector(leap$rprime %*% leap$rprime) -
+                    as.vector(r0 %*% r0)))
+               }
+          cat("\nepsilon: ", round(max(epsilon,0.001),5), "\n\n", sep="")
+          return(epsilon)
+          }
+     gr0 <- partial(Model, post[1,], Data)
+     if(is.null(epsilon))
+          epsilon <- find.reasonable.epsilon(post[1,], gr0, Mo0, Model,
+               Data)
+     DiagCovar[1,] <- epsilon
+     L <- max(1, round(lambda / epsilon))
+     L <- min(L, Lmax)
+     ### Dual-Averaging Parameters
+     epsilonbar <- 1
+     gamma <- 0.05
+     Hbar <- 0
+     kappa <- 0.75
+     mu <- log(10*epsilon)
+     t0 <- 10
+     ### Begin HMCDA
+     for (iter in 1:Iterations) {
+          ### Current Posterior
+          if(iter > 1) post[iter,] <- post[iter-1,]
+          ### Save Thinned Samples
+          if(iter %% Thinning == 0) {
+               thinned <- rbind(thinned, post[iter,])
+               Dev <- rbind(Dev, Mo0[[2]])
+               Mon <- rbind(Mon, Mo0[[3]])}
+          ### Propose new parameter values
+          prop <- post[iter,]
+          momentum1 <- momentum0 <- runif(LIV)
+          joint <- Mo0[[1]] - 0.5 * as.vector(momentum0 %*% momentum0)
+          L <- max(1, round(lambda / epsilon))
+          L <- min(L, Lmax)
+          gr1 <- gr0
+          Mo0.1 <- Mo0
+          ### Print Status
+          if(iter %% Status == 0) cat("Iteration: ", iter,
+               ",   Proposal: Multivariate,   L: ", L, "\n", sep="")
+          ### Leapfrog Function
+          for (l in 1:L) {
+               momentum1 <- momentum1 + 0.5 * epsilon * gr1
+               prop <- prop + epsilon * momentum1
+               Mo1 <- Model(prop, Data)
+               if(any(Mo0.1[[5]] == Mo1[[5]])) {
+                    nomove <- which(Mo0.1[[5]] == Mo1[[5]])
+                    momentum1[nomove] <- -momentum1[nomove]
+                    prop[nomove] <- prop[nomove] + momentum1[nomove]
+                    Mo1 <- Model(prop, Data)}
+               Mo0.1 <- Mo1
+               prop <- Mo1[[5]]
+               gr1 <- partial(Model, prop, Data)
+               momentum1 <- momentum1 + epsilon * gr1}
+          ### Accept/Reject
+          alpha <- min(1,
+               exp(prop - 0.5 * as.vector(momentum1 %*% momentum1) - joint))
+          if(!is.finite(alpha)) alpha <- 0
+          if(runif(1) < alpha) {
+               Mo0 <- Mo1
+               post[iter,] <- Mo1[[5]]
+               gr0 <- gr1
+               Acceptance <- Acceptance + 1
+               if(iter %% Thinning == 0) {
+                    Dev[nrow(Dev),] <- Mo1[[2]]
+                    Mon[nrow(Mon),] <- Mo1[[3]]}
+               }
+          ### Adaptation
+          if(iter > 1) {
+               eta <- 1 / (iter - 1 + t0)
+               Hbar <- (1 - eta) * Hbar + eta * (delta - alpha)
+               if(iter <= A) {
+                    epsilon <- exp(mu - sqrt(iter-1)/gamma * Hbar)
+                    eta <- (iter-1)^-kappa
+                    epsilonbar <- exp((1 - eta) * log(epsilonbar) +
+                         eta * log(epsilon))
+                    DiagCovar <- rbind(DiagCovar, epsilon)}
+               else epsilon <- epsilonbar}
+          }
+     ### Output
+     out <- list(Acceptance=Acceptance,
+          Dev=Dev,
+          DiagCovar=DiagCovar,
           Mon=Mon,
           thinned=thinned,
           VarCov=VarCov)
@@ -1285,6 +1469,271 @@ MWG <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
           }
      ### Output
      out <- list(Acceptance=mean(as.vector(Acceptance)),
+          Dev=Dev,
+          DiagCovar=DiagCovar,
+          Mon=Mon,
+          thinned=thinned,
+          VarCov=VarCov)
+     return(out)
+     }
+NUTS <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
+     Status, Thinning, Acceptance, Dev, DiagCovar, Iden.Mat, LIV, Mon,
+     Mo0, post, ScaleF, thinned, tuning, VarCov, A, delta, epsilon)
+     {
+     leapfrog <- function(theta, r, grad, epsilon, Model, Data)
+          {
+          rprime <- r + 0.5 * epsilon * grad
+          thetaprime <-  theta + epsilon * rprime
+          Mo1 <- Model(thetaprime, Data)
+          thetaprime <- Mo1[[5]]
+          gradprime <- partial(Model, thetaprime, Data)
+          rprime <- rprime + 0.5 * epsilon * gradprime
+          out <- list(thetaprime=thetaprime,
+               rprime=rprime,
+               gradprime=gradprime,
+               Mo1=Mo1)
+          return(out)
+          }
+     stop.criterion <- function(thetaminus, thetaplus, rminus, rplus)
+          {
+          thetavec <- thetaplus - thetaminus
+          criterion <- (thetavec %*% rminus >= 0) &&
+               (thetavec %*% rplus >= 0)
+          return(criterion)
+          }
+     build.tree <- function(theta, r, grad, logu, v, j, epsilon, joint0)
+          {
+          if(j == 0) {
+               ### Base case: Take a single leapfrog step in direction v
+               leap <- leapfrog(theta, r, grad, v*epsilon, Model, Data)
+               rprime <- leap$rprime
+               thetaprime <- leap$thetaprime
+               Mo1 <- leap$Mo1
+               gradprime <- leap$gradprime
+               joint <- Mo1[[1]] - 0.5 * as.vector(rprime %*% rprime)
+               ### Is the new point in the slice?
+               nprime <- logu < joint
+               ### Is the simulation wildly inaccurate?
+               sprime <- logu - 1000 < joint
+               # Set the return values---minus=plus for all things here,
+               # since the "tree" is of depth 0.
+               thetaminus <- thetaprime
+               thetaplus <- thetaprime
+               rminus <- rprime
+               rplus <- rprime
+               gradminus <- gradprime
+               gradplus <- gradprime
+               ### Compute the acceptance probability
+               alphaprime <- min(1, exp(Mo1[[1]] - 0.5 *
+                    as.vector(rprime %*% rprime) - joint0))
+               nalphaprime <- 1}
+          else {
+               # Recursion: Implicitly build the height j-1 left and
+               # right subtrees
+               tree <- build.tree(theta, r, grad, logu, v, j-1, epsilon,
+                    joint0)
+               thetaminus <- tree$thetaminus
+               rminus <- tree$rminus
+               gradminus <- tree$gradminus
+               thetaplus <- tree$thetaplus
+               rplus <- tree$rplus
+               gradplus <- tree$gradplus
+               thetaprime <- tree$thetaprime
+               gradprime <- tree$gradprime
+               Mo1 <- tree$Mo1
+               nprime <- tree$nprime
+               sprime <- tree$sprime
+               alphaprime <- tree$alphaprime
+               nalphaprime <- tree$nalphaprime
+               ### If the first subtree stopping criterion is met, then stop
+               if(sprime == 1) {
+                    if(v == -1) {
+                         tree <- build.tree(thetaminus, rminus, gradminus,
+                              logu, v, j-1, epsilon, joint0)
+                         thetaminus <- tree$thetaminus
+                         rminus <- tree$rminus
+                         gradminus <- tree$gradminus
+                         thetaprime2 <- tree$thetaprime
+                         gradprime2 <- tree$gradprime
+                         Mo12 <- tree$Mo1
+                         nprime2 <- tree$nprime
+                         sprime2 <- tree$sprime
+                         alphaprime2 <- tree$alphaprime
+                         nalphaprime2 <- tree$nalphaprime
+                         }
+                    else {
+                         tree <- build.tree(thetaplus, rplus, gradplus,
+                              logu, v, j-1, epsilon, joint0)
+                         thetaplus <- tree$thetaplus
+                         rplus <- tree$rplus
+                         gradplus <- tree$gradplus
+                         thetaprime2 <- tree$thetaprime
+                         gradprime2 <- tree$gradprime
+                         Mo12 <- tree$Mo1
+                         nprime2 <- tree$nprime
+                         sprime2 <- tree$sprime
+                         alphaprime2 <- tree$alphaprime
+                         nalphaprime2 <- tree$nalphaprime
+                         }
+                    ### Choose a subtree to propagate a sample up from
+                    temp <- nprime2 / (nprime + nprime2)
+                    if(!is.finite(temp)) temp <- 0
+                    if(runif(1) < temp) {
+                         thetaprime <- thetaprime2
+                         gradprime <- gradprime2
+                         Mo1 <- Mo12}
+                    ### Update the number of valid points
+                    nprime <- nprime + nprime2
+                    ### Update the stopping criterion
+                    sprime <- sprime && sprime2 &&
+                         stop.criterion(thetaminus, thetaplus, rminus,
+                              rplus)
+                    ### Update acceptance probability statistics
+                    alphaprime <- alphaprime + alphaprime2
+                    nalphaprime <- nalphaprime + nalphaprime2}}
+          out <- list(thetaminus=thetaminus,
+               rminus=rminus,
+               gradminus=gradminus,
+               thetaplus=thetaplus,
+               rplus=rplus,
+               gradplus=gradplus,
+               thetaprime=thetaprime,
+               gradprime=gradprime,
+               Mo1=Mo1,
+               nprime=nprime,
+               sprime=sprime,
+               alphaprime=alphaprime,
+               nalphaprime=nalphaprime)
+          return(out)
+          }
+     find.reasonable.epsilon <- function(theta0, grad0, Mo0, Model, Data)
+          {
+          cat("\nFinding a reasonable initial value for epsilon...")
+          epsilon <- 1
+          r0 <- runif(length(theta0))
+          ### Figure out which direction to move epsilon
+          leap <- leapfrog(theta0, r0, grad0, epsilon, Model, Data)
+          acceptprob <- exp(leap$Mo1[[1]] - Mo0[[1]] - 0.5 *
+               (as.vector(leap$rprime %*% leap$rprime) -
+               as.vector(r0 %*% r0)))
+          a <- 2 * (acceptprob > 0.5) - 1
+          ### Keep moving epsilon in that direction until acceptprob
+          ### crosses 0.5
+          while (acceptprob^a > 2^(-a)) {
+               epsilon <- epsilon * 2^a
+               leap <- leapfrog(theta0, r0, grad0, epsilon, Model, Data)
+               acceptprob <- exp(leap$Mo1[[1]] - Mo0[[1]] - 0.5 *
+                    (as.vector(leap$rprime %*% leap$rprime) -
+                    as.vector(r0 %*% r0)))
+               }
+          cat("\nepsilon: ", round(max(epsilon,0.001),5), "\n\n", sep="")
+          return(epsilon)
+          }
+     Count <- 0
+     evals <- 0
+     grad <- partial(Model, post[1,], Data)
+     if(is.null(epsilon))
+          epsilon <- find.reasonable.epsilon(post[1,], grad, Mo0, Model,
+               Data)
+     DiagCovar[1,] <- epsilon
+     ### Dual-Averaging Parameters
+     epsilonbar <- 1
+     gamma <- 0.05
+     Hbar <- 0
+     kappa <- 0.75
+     mu <- log(10*epsilon)
+     t0 <- 10
+     ### Begin NUTS
+     for (iter in 2:Iterations) {
+          ### Print Status
+          if(iter %% Status == 0) cat("Iteration: ", iter,
+               ",   Proposal: Multivariate\n", sep="")
+          ### Current Posterior
+          if(iter > 1) post[iter,] <- post[iter-1,]
+          ### Save Thinned Samples
+          if(iter %% Thinning == 0 & {iter > A | A >= Iterations}) {
+               thinned <- rbind(thinned, post[iter,])
+               Dev <- rbind(Dev, Mo0[[2]])
+               Mon <- rbind(Mon, Mo0[[3]])}
+          prop <- post[iter,]
+          r0 <- runif(LIV) ### r0 is momenta
+          ### Joint log-probability of theta and momenta r
+          joint <- Mo0[[1]] - 0.5 * as.vector(r0 %*% r0)
+          ### Resample u ~ U([0, exp(joint)])
+          logu <- joint - rexp(1)
+          ### Initialize Tree
+          thetaminus <- prop
+          thetaplus <- prop
+          rminus <- r0
+          rplus <- r0
+          gradminus <- grad
+          gradplus <- grad
+          j <- 0 ### Initial height j=0
+          n <- 1 ### Initially, the only valid point is the initial point
+          s <- 1 ### Loop until s == 0
+          while (s == 1) {
+               ### Choose a direction: -1=backwards, 1=forwards.
+               v <- 2*(runif(1) < 0.5) - 1
+               ### Double the size of the tree.
+               if(v == -1) {
+                    tree <- build.tree(thetaminus, rminus, gradminus,
+                         logu, v, j, epsilon, joint)
+                    thetaminus <- tree$thetaminus
+                    rminus <- tree$rminus
+                    gradminus <- tree$gradminus
+                    thetaprime <- tree$thetaprime
+                    gradprime <- tree$gradprime
+                    Mo1 <- tree$Mo1
+                    nprime <- tree$nprime
+                    sprime <- tree$sprime
+                    alpha <- tree$alphaprime
+                    nalpha <- tree$nalphaprime}
+               else {
+                    tree <- build.tree(thetaplus, rplus, gradplus, logu,
+                         v, j, epsilon, joint)
+                    thetaplus <- tree$thetaplus
+                    rplus <- tree$rplus
+                    gradplus <- tree$gradplus
+                    thetaprime <- tree$thetaprime
+                    gradprime <- tree$gradprime
+                    Mo1 <- tree$Mo1
+                    nprime <- tree$nprime
+                    sprime <- tree$sprime
+                    alpha <- tree$alphaprime
+                    nalpha <- tree$nalphaprime}
+               ### Accept/Reject
+               Count <- Count + 1
+               if((sprime == 1) && (runif(1) < nprime/n)) {
+                      post[iter,] <- thetaprime
+                      Mo0 <- Mo1
+                      grad <- gradprime
+                      Acceptance <- Acceptance + 1
+                      if(iter %% Thinning == 0 &
+                           {iter > A | A >= Iterations}) {
+                           #Acceptance <- Acceptance + 1
+                           Dev[nrow(Dev),] <- Mo1[[2]]
+                           Mon[nrow(Mon),] <- Mo1[[3]]}}
+               ### Update number of observed valid points
+               n <- n + nprime
+               ### Decide if it is time to stop
+               s <- sprime &&
+                    stop.criterion(thetaminus, thetaplus, rminus, rplus)
+               ### Increment depth
+               j <- j + 1}
+          ### Adaptation of epsilon
+          eta <- 1 / (iter - 1 + t0)
+          Hbar <- (1 - eta) * Hbar + eta * (delta - alpha / nalpha)
+          if(iter <= A) {
+               epsilon <- exp(mu - sqrt(iter-1)/gamma * Hbar)
+               eta <- (iter-1)^-kappa
+               epsilonbar <- exp((1 - eta) * log(epsilonbar) +
+                    eta * log(epsilon))
+               DiagCovar <- rbind(DiagCovar, epsilon)}
+          else epsilon <- epsilonbar
+          }
+     Acceptance <- round(Acceptance / Count * Iterations)
+     ### Output
+     out <- list(Acceptance=Acceptance,
           Dev=Dev,
           DiagCovar=DiagCovar,
           Mon=Mon,
@@ -1590,6 +2039,7 @@ THMC <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
           H1 <- -Mo1[[1]] + kinetic1
           delta <- H1 - H0
           alpha <- min(1, exp(-delta))
+          if(!is.finite(alpha)) alpha <- 0
           if(runif(1) < alpha) {
                Mo0 <- Mo1
                post[iter,] <- Mo1[[5]]

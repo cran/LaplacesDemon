@@ -49,7 +49,7 @@ LaplacesDemon.RAM(Model, Data, Iterations, Thinning)
   The computer operating system uses RAM, as does any other software
   running at the moment. R is currently using RAM, and other functions
   in the \code{LaplacesDemon} package, and any other package that is
-  currently activated, is using RAM. There are numerous small objects
+  currently activated, are using RAM. There are numerous small objects
   that are not included in the returned list, that use RAM. For example,
   there may be a scalar called \code{alpha} for the acceptance
   probability, etc.
@@ -89,6 +89,10 @@ LaplacesDemon.RAM(Model, Data, Iterations, Thinning)
     the \eqn{N \times J}{N x J} matrix \code{Posterior1}, where \eqn{N}
     is the number of thinned samples and \eqn{J} is the number of
     initial values or parameters.}
+  \item{Summary1}{This is the estimated size in MB of RAM required for
+    the summary table of unthinned posterior samples of parameters,
+    deviance, and monitored variables. If the chains are stationary,
+    then a second table, Summary2, is also created.}
   \item{Total}{This is the estimated size in MB of RAM required in total
     to update one chain in \code{\link{LaplacesDemon}} for a given model
     and data, and for a number of iterations and specified thinning.}

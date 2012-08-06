@@ -97,31 +97,8 @@ LaplacesDemon.hpc(Model, Data, Initial.Values, Covar=NULL,
   \item{Specs}{This argument defaults to \code{NULL}, and accepts a list
     of specifications for the MCMC algorithm declared in the
     \code{Algorithm} argument. The specifications associated with each
-    algorithm may be seen below in the examples. The \code{Adaptive}
-    argument specifies at which iteration an adaptive algorithm begins
-    to adapt, except for the AMWG algorithm, which begins to adapt
-    immediately. Other adaptive algorithms depend on the sample
-    covariance matrix of past iterations, and should begin later,
-    depending on the size and complexity of the sample covariance
-    matrix. The \code{Periodicity} argument specifies how often the
-    adaptive algorithm should adapt. For example, if
-    \code{Periodicity=10}, then the algorithm adapts every 10th
-    iteration. A higher \code{Periodicity} is associated with an
-    algorithm that runs faster, because it does not have to calculate
-    adaptation as often, though the algorithm adapts less often to the
-    target distributions, so it is a trade-off. It is recommended to use
-    the lowest value that runs fast enough to suit the user, or provide
-    sufficient adaptation. The AMM algorithm also requires weight
-    \code{w}. The RAM algorithm also requires \code{alpha.star} [the
-    desired acceptance rate(s), which can be a scalar or a vector equal
-    in length to the number of targets]. Dist (which can be t for
-    t-distributed or N for normally-distributed), and \code{gamma}
-    (which controls the decay of adaptation). The SAMWG and SMWG
-    algorithms require a \eqn{T \times K}{T x K} matrix Dyn of dynamic
-    parameters. The twalk algorithm requires \code{n1}, \code{at}, and
-    \code{aw}. The USAMWG and USMWG algorithms require \code{Begin} to 
-    indicate the time-period at which to begin updating (filtering and
-    predicting).}
+    algorithm may be seen below in the examples, and are described in
+    the details section below.}
   \item{Chains}{This argument is required only for
     \code{LaplacesDemon.hpc}, and indicates the number of parallel
     chains.}
@@ -153,7 +130,9 @@ LaplacesDemon.hpc(Model, Data, Initial.Values, Covar=NULL,
     \item Delayed Rejection Adaptive Metropolis (DRAM)
     \item Delayed Rejection Metropolis (DRM)
     \item Hamiltonian Monte Carlo (HMC)
+    \item Hamiltonian Monte Carlo with Dual-Averaging (HMCDA)
     \item Metropolis-within-Gibbs (MWG)
+    \item No-U-Turn Sampler (NUTS)
     \item Robust Adaptive Metropolis (RAM)
     \item Random-Walk Metropolis (RWM)
     \item Sequential Adaptive Metropolis-within-Gibbs (SAMWG)
@@ -167,7 +146,97 @@ LaplacesDemon.hpc(Model, Data, Initial.Values, Covar=NULL,
   It is a goal for the documentation in the \pkg{LaplacesDemon} to be
   extensive. However, details of MCMC algorithms are best explored in
   the "LaplacesDemon Tutorial" vignette, and additional information on
-  MCMC may be found in the vignette entitled "Bayesian Inference".
+  MCMC may be found in the vignette entitled "Bayesian
+  Inference". Algorithm specifications (\code{Specs}) are listed below:
+
+  \itemize{
+    \item \code{A} is the number of initial, adaptive iterations to be
+    discarded as burn-in, and is used in HMCDA and NUTS.
+    \item \code{Adaptive} is the iteration in which adaptation begins,
+    and is used in AM, AMM, and DRAM. These algorithms adapt according
+    to an observed covariance matrix, and should sample before beginning
+    to adapt.
+    \item \code{alpha.star} is the desired acceptance rate(s) in RAM, and
+    may be a scalar or a vector equal in length to the number of
+    targets. The recommended value is \code{alpha.star=0.234}.
+    \item \code{at} affects the traverse move in twalk. \code{at=6} is
+    recommended. It helps when some parameters are highly correlated,
+    and the correlation structure may change through the
+    state-space. The traverse move is associated with an acceptance rate
+    that decreases as the number of parameters increases, and is the
+    reason that \code{n1} is used to select a subset of parameters each
+    iteration. If adjusted, it is recommended to stay in the interval
+    [2,10].
+    \item \code{aw} affects the walk move in twalk, and \code{aw=1.5} is
+    recommended. If adjusted, it is recommended to stay in the
+    interval [0.3,2].
+    \item \code{Begin} indicates the time-period in which to begin
+    updating (filtering or predicting) in the USAMWG and USMWG
+    algorithms.
+    \item \code{delta} is the target acceptance rate in HMCDA and
+    NUTS. The recommended value is 0.65 in HMCDA and 0.6 in NUTS.
+    \item \code{Dist} is the proposal distribution in RAM, and may
+    either be \code{Dist="t"} for t-distributed or \code{Dist="N"} for
+    normally-distributed.
+    \item \code{Dyn} is a \eqn{T \times K}{T x K} matrix of dynamic
+    parameters, where \eqn{T} is the number of time-periods and \eqn{K}
+    is the number of dynamic parameters. \code{Dyn} is used by SAMWG,
+    SMWG, USAMWG, and USMWG. Non-dynamic parameters are updated first in
+    each sampler iteration, then dynamic parameters are updated in a
+    random order in each time-period, and sequentially by time-period.
+    \item \code{epsilon} is the step-size in AHMC, HMC, HMCDA, NUTS, and
+    THMC. It is a vector equal in length to the number of parameters in
+    AHMC, HMC, and THMC, and is a scalar in HMCDA and NUTS. When
+    \code{epsilon=NULL} in HMCDA or NUTS (only), a reasonable initial
+    value is found.
+    \item \code{Fit} is an object of class \code{demonoid} in the USAMWG
+    and USMWG algorithms. Posterior samples before the time-period
+    specified in the \code{Begin} argument are not updated, and are used
+    instead from \code{Fit}.
+    \item \code{gamma} controls the decay of adaptation in RAM. It is in
+    the interval (0.5,1], and 0.66 is recommended.
+    \item \code{L} is a scalar number of leapfrog steps in AHMC, HMC, and
+    THMC. When \code{L=1}, the algorithm reduces to Langevin Monte Carlo
+    (LMC).
+    \item \code{lambda} is a scalar trajectory length in HMCDA.
+    \item \code{Lmax} is a scalar maximum for \code{L} (see above) in
+    HMCDA.
+    \item \code{n1} affects the size of the subset of each set of points
+    to adjust, and is used in twalk. It relates to the number of
+    parameters, and \code{n1=4} is recommended. If adjusted, it is
+    recommended to stay in the interval [2,20].
+    \item \code{Periodicity} specifies how often in iterations the
+    adaptive algorithm should adapt, and is used by AHMC, AM, AMM, AMWG,
+    DRAM, RAM, SAMWG, and USAMWG. If \code{Periodicity=10}, then the
+    algorithm adapts every 10th iteration. A higher \code{Periodicity}
+    is associated with an algorithm that runs faster, because it does
+    not have to calculate adaptation as often, though the algorithm
+    adapts less often to the target distributions, so it is a
+    trade-off. It is recommended to use the lowest value that runs fast
+    enough to suit the user, or provide sufficient adaptation.
+    \item \code{SIV} stands for secondary initial values and is used by
+    twalk. \code{SIV} must be the same length as \code{Initial.Values},
+    and each element of these two vectors must be unique from each
+    other, both before and after being passed to the \code{Model}
+    function. \code{SIV} defaults to \code{NULL}, in which case values
+    are generated with \code{\link{GIV}}.
+    \item \code{Temperature} is used in the THMC algorithm to heat up
+    the momentum in the first half of the leapfrog steps, and then cool
+    down the momentum in the last half. \code{Temperature} must be
+    positive. When greater than 1, THMC should explore more diffuse
+    distributions, and may be helpful with multimodal distributions.
+    \item \code{w} is a mixture weight for the AMM algorithm. It is in
+    the interval (0,1], and is recommended to use \code{w=0.05}, as per
+    Roberts and Rosenthal (2009). the The two mixture components are
+    adaptive multivariate and static/symmetric univariate proposals. The
+    mixture is determined at each iteration with mixture weight
+    \code{w}. A higher value of \code{w} is associated with more
+    static/symmetric univariate proposals, and a lower \code{w} is
+    associated with more adaptive multivariate proposals. AMM will be
+    unable to include the multivariate mixture component until it has
+    accumulated some history, and models with more parameters will take
+    longer to be able to use adaptive multivariate proposals.
+  }
 }
 \value{
   \code{LaplacesDemon} returns an object of class \code{demonoid}, and
@@ -327,6 +396,10 @@ LaplacesDemon.hpc(Model, Data, Initial.Values, Covar=NULL,
   Haario, H., Saksman, E., and Tamminen, J. (2001). "An Adaptive
   Metropolis Algorithm". Bernoulli, 7, p. 223-242.
 
+  Hoffman, M.D. and Gelman. A. (2012). "The No-U-Turn Sampler: Adaptively
+  Setting Path Lengths in Hamiltonian Monte Carlo". Journal of Machine
+  Learning Research, p. 1--30.
+
   Kass, R.E. and Raftery, A.E. (1995). "Bayes Factors". Journal of the
   American Statistical Association, 90(430), p. 773--795.
 
@@ -363,6 +436,7 @@ LaplacesDemon.hpc(Model, Data, Initial.Values, Covar=NULL,
   \code{\link{is.data}},
   \code{\link{is.model}},
   \code{\link{LaplaceApproximation}},
+  \code{\link{LaplacesDemon.RAM}},
   \code{\link{LML}}, and
   \code{\link{MCSE}}.
 }
@@ -379,7 +453,10 @@ J <- ncol(X)
 for (j in 2:J) {X[,j] <- CenterScale(X[,j])}
 mon.names <- c("LP","sigma")
 parm.names <- as.parm.names(list(beta=rep(0,J), log.sigma=0))
-MyData <- list(J=J, X=X, mon.names=mon.names, parm.names=parm.names, y=y)
+PGF <- function(Data) return(c(rnormv(Data$J,0,1000),
+     log(rhalfcauchy(1,25))))
+MyData <- list(J=J, PGF=PGF, X=X, mon.names=mon.names,
+     parm.names=parm.names, y=y)
 
 ##########################  Model Specification  ##########################
 Model <- function(parm, Data)
@@ -395,15 +472,15 @@ Model <- function(parm, Data)
      LL <- sum(dnorm(Data$y, mu, sigma, log=TRUE))
      ### Log-Posterior
      LP <- LL + beta.prior + sigma.prior
-     Modelout <- list(LP=LP, Dev=-2*LL, Monitor=c(LP,sigma), yhat=mu,
-          parm=parm)
+     Modelout <- list(LP=LP, Dev=-2*LL, Monitor=c(LP,sigma),
+          yhat=rnorm(length(mu), mu, sigma), parm=parm)
      return(Modelout)
      }
 
 set.seed(666)
 
 ############################  Initial Values  #############################
-Initial.Values <- GIV(Model, MyData)
+Initial.Values <- GIV(Model, MyData, PGF=TRUE)
 
 ###########################################################################
 # Examples of MCMC Algorithms                                             #
@@ -436,7 +513,7 @@ Importance(Fit, Model, MyData, Discrep="Chi-Square")
 ##################  Adaptive Hamiltonian Monte Carlo  #####################
 Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
      Covar=NULL, Iterations=1000, Status=100, Thinning=1,
-     Algorithm="AHMC", Specs=list(epsilon=rep(0.2, length(Initial.Values)),
+     Algorithm="AHMC", Specs=list(epsilon=rep(0.02, length(Initial.Values)),
      L=2, Periodicity=10))
 
 ##########################  Adaptive Metropolis  ##########################
@@ -462,13 +539,24 @@ Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
 #######################  Hamiltonian Monte Carlo  #########################
 Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
      Covar=NULL, Iterations=1000, Status=100, Thinning=1,
-     Algorithm="HMC", Specs=list(epsilon=rep(0.2, length(Initial.Values)),
+     Algorithm="HMC", Specs=list(epsilon=rep(0.02, length(Initial.Values)),
      L=2))
+
+#############  Hamiltonian Monte Carlo with Dual-Averaging  ###############
+Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
+     Covar=NULL, Iterations=1000, Status=100, Thinning=1,
+     Algorithm="HMCDA", Specs=list(A=500, delta=0.65, epsilon=NULL,
+     Lmax=1000, lambda=0.1))
 
 #######################  Metropolis-within-Gibbs  #########################
 Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
      Covar=NULL, Iterations=1000, Status=100, Thinning=1,
      Algorithm="MWG", Specs=NULL)
+
+##########################  No-U-Turn Sampler  ############################
+Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
+     Covar=NULL, Iterations=100, Status=10, Thinning=1,
+     Algorithm="NUTS", Specs=list(A=50, delta=0.6, epsilon=NULL))
 
 ######################  Robust Adaptive Metropolis  #######################
 Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
@@ -531,6 +619,7 @@ Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
 \keyword{MCMC}
 \keyword{Metropolis-within-Gibbs}
 \keyword{Multiple Chains}
+\keyword{No-U-Turn Sampler}
 \keyword{Optimization}
 \keyword{Parallel Chains}
 \keyword{Robust Adaptive Metropolis}

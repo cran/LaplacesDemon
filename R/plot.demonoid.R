@@ -52,7 +52,7 @@ plot.demonoid <- function(x, BurnIn=1, Data=NULL, PDF=FALSE,
                col="black", border="black")
           abline(v=0, col="red", lty=2)
           ### Only plot an ACF if there's > 1 unique values
-          if(length(unique(Posterior[BurnIn:x$Thinned.Samples,j])) > 1) {
+          if(!is.constant(Posterior[BurnIn:x$Thinned.Samples,j])) {
                z <- acf(Posterior[BurnIn:x$Thinned.Samples,j], plot=FALSE)
                se <- 1/sqrt(length(Posterior[BurnIn:x$Thinned.Samples,j]))
                plot(z$lag, z$acf, ylim=c(min(z$acf,-2*se),1), type="h",
@@ -76,7 +76,7 @@ plot.demonoid <- function(x, BurnIn=1, Data=NULL, PDF=FALSE,
                border="black")
      abline(v=0, col="red", lty=2)
      ### Only plot an ACF if there's > 1 unique values
-     if(length(unique(x$Deviance[BurnIn:length(x$Deviance)])) > 1) {
+     if(!is.constant(x$Deviance[BurnIn:length(x$Deviance)])) {
           z <- acf(x$Deviance[BurnIn:length(x$Deviance)], plot=FALSE)
           se <- 1/sqrt(length(x$Deviance[BurnIn:length(x$Deviance)]))
           plot(z$lag, z$acf, ylim=c(min(z$acf,-2*se),1), type="h",
@@ -102,7 +102,7 @@ plot.demonoid <- function(x, BurnIn=1, Data=NULL, PDF=FALSE,
                border="black")
           abline(v=0, col="red", lty=2)
           ### Only plot an ACF if there's > 1 unique values
-          if(length(unique(x$Monitor[BurnIn:nn,j])) > 1) {
+          if(!is.constant(x$Monitor[BurnIn:nn,j])) {
                z <- acf(x$Monitor[BurnIn:nn,j], plot=FALSE)
                se <- 1/sqrt(length(x$Monitor[BurnIn:nn,j]))
                plot(z$lag, z$acf, ylim=c(min(z$acf,-2*se),1), type="h",
@@ -112,19 +112,25 @@ plot.demonoid <- function(x, BurnIn=1, Data=NULL, PDF=FALSE,
                }
           else {plot(0,0, main=paste(Data$mon.names[j], "is a constant."))}
           }
-     ### Proposal Variance (Adaptive Algorithms only)
+     ### Diminishing Adaptation
      if(nrow(x$CovarDHis) > 1) {
-          Diff <- abs(diff(x$CovarDHis))
-          adaptchange <- matrix(NA, nrow(Diff), 3)
-          for (i in 1:nrow(Diff)) {
-               adaptchange[i,1:3] <- as.vector(quantile(Diff[i,],
-                    probs=c(0.025, 0.500, 0.975)))}
-          plot(adaptchange[,2], ylim=c(min(adaptchange), max(adaptchange)),
-               type="l", col="red", xlab="Adaptations",
-               ylab="Absolute Difference", main="Proposal Variance",
-               sub="Median=Red, 95% Bounds=Gray")
-          lines(adaptchange[,1], col="gray")
-          lines(adaptchange[,3], col="gray")
+          if(x$Algorithm %in% c("Adaptive Hamiltonian Monte Carlo",
+               "Hamiltonian Monte Carlo with Dual-Averaging",
+               "No-U-Turn Sampler")) {
+               plot(x$CovarDHis[,1], type="l", xlab="Adaptations",
+                    ylab=expression(epsilon))}
+          else {
+               Diff <- abs(diff(x$CovarDHis))
+               adaptchange <- matrix(NA, nrow(Diff), 3)
+               for (i in 1:nrow(Diff)) {
+                    adaptchange[i,1:3] <- as.vector(quantile(Diff[i,],
+                         probs=c(0.025, 0.500, 0.975)))}
+               plot(adaptchange[,2], ylim=c(min(adaptchange), max(adaptchange)),
+                    type="l", col="red", xlab="Adaptations",
+                    ylab="Absolute Difference", main="Proposal Variance",
+                    sub="Median=Red, 95% Bounds=Gray")
+               lines(adaptchange[,1], col="gray")
+               lines(adaptchange[,3], col="gray")}
           }
      if(PDF == TRUE) dev.off()
      }

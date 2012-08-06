@@ -19,12 +19,15 @@ predict.demonoid <- function(object, Model, Data, ...)
      post <- as.matrix(object$Posterior1)
      if(is.matrix(object$Posterior2) == TRUE) {
           post <- as.matrix(object$Posterior2)}
+     Dev <- rep(NA, nrow(post))
      yhat <- matrix(NA, length(y), nrow(post))
      lengthcomp <- as.vector(Model(post[1,], Data)[[4]])
      if(!identical(length(lengthcomp), length(y)))
           stop("y and yhat differ in length.")
      for (i in 1:nrow(post)) {
-          yhat[,i] <- as.vector(Model(post[i,], Data)[[4]])}
+          mod <- Model(post[i,], Data)
+          Dev[i] <- as.vector(mod[[2]])
+          yhat[,i] <- as.vector(mod[[4]])}
      ### Warnings
      if(is.matrix(object$Posterior2) == FALSE) {
           warning("Non-stationary samples were used.")}
@@ -34,8 +37,10 @@ predict.demonoid <- function(object, Model, Data, ...)
           sum(is.nan(yhat)), " non-numeric (NaN) values.\n")
      if(any(is.infinite(yhat))) cat("\nWARNING: Output matrix yhat has ",
           sum(is.infinite(yhat)), " infinite values.\n")
+     if(any(!is.finite(Dev)))
+          cat("\nWARNING: Deviance has non-finite values.")
      ### Create Output
-     predicted <- list(y=y, yhat=yhat)
+     predicted <- list(y=y, yhat=yhat, Deviance=Dev)
      class(predicted) <- "demonoid.ppc"
      return(predicted)
      }

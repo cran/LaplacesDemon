@@ -14,7 +14,7 @@
     \item{Omega}{This is the symmetric, positive-definite \eqn{k \times
 	k}{k x k} matrix \eqn{\Omega}{Omega}.}
     \item{nu}{This is the scalar degrees of freedom \eqn{\nu}{nu}.}
-    \item{S}{This is the symmetric, positive-definite, \eqn{k \times
+    \item{S}{This is the symmetric, positive-semidefinite, \eqn{k \times
 	k}{k x k} scale matrix \eqn{\textbf{S}}{S}.}
     \item{log}{Logical. If \code{log=TRUE}, then the logarithm of the
     density is returned.}
@@ -34,8 +34,8 @@
     \item Notation 2: \eqn{p(\Omega) = \mathcal{W}_{\nu}(\Omega |
       \textbf{S})}{p(Omega) = W[nu](Omega | S)}
     \item Parameter 1: degrees of freedom \eqn{\nu \ge k}{nu >= k}
-    \item Parameter 2: symmetric, positive-definite \eqn{k \times k}{k x k}
-    scale matrix \eqn{\textbf{S}}{S}
+    \item Parameter 2: symmetric, positive-semidefinite
+    \eqn{k \times k}{k x k} scale matrix \eqn{\textbf{S}}{S}
     \item Mean: \eqn{E(\Omega) = \nu \textbf{S}}{E(Omega) = nuS}
     \item Variance: \eqn{var(\Omega) = \nu (\textbf{S}^2_{i,j} +
       \textbf{S}_{i,i} \textbf{S}_{j,j})}{var(Omega) = nu(S[i,j]^2 +
@@ -65,6 +65,9 @@ prior sample size, indicating the confidence in \eqn{\textbf{S}}{S},
 where \eqn{\textbf{S}}{S} is a prior guess at the order of covariance
 matrix \eqn{\Sigma}{Sigma}. A flat prior distribution is
 obtained as \eqn{\nu \rightarrow 0}{nu -> 0}.
+
+When applicable, the alternative Cholesky parameterization should be
+preferred. For more information, see \code{\link{dwishartc}}.
 
 The Wishart prior lacks flexibility, having only one parameter,
 \eqn{\nu}{nu}, to control the variability for all \eqn{k(k + 1)/2}
@@ -112,7 +115,8 @@ These functions are parameterized as per Gelman et al. (2004).
   \code{\link{dchisq}},
   \code{\link{dinvwishart}},
   \code{\link{dgamma}},
-  \code{\link{dmvn}}, and
+  \code{\link{dmvn}},
+  \code{\link{dwishartc}}, and
   \code{\link{Prec2Cov}}.
 }
 \examples{

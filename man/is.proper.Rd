@@ -11,7 +11,7 @@ is.proper(f,a,b,tol)
 }
 \arguments{
   \item{f}{This is either a probability density function or an object of
-    class \code{demonoid} or \code{laplace}.}
+    class \code{demonoid}, \code{laplace}, or \code{pmc}.}
   \item{a}{This is the lower limit of integration, and may be negative
     infinity.}
   \item{b}{This is the upper limit of integration, and may be positive
@@ -55,12 +55,12 @@ is.proper(f,a,b,tol)
   this package.
 
   To check the propriety of the joint posterior distribution, the only
-  argument to be supplied is an object of class \code{demonoid} or
-  \code{laplace}. The \code{is.proper} function checks the logarithm of
-  the marginal likelihood (see \code{\link{LML}}) for a finite value,
-  and returns true when LML is finite. This indicates that the
-  marginal likelihood is finite for all observed \eqn{\textbf{y}}{y} in
-  the model data set. This implies:
+  argument to be supplied is an object of class \code{demonoid},
+  \code{laplace}, or \code{pmc}. The \code{is.proper} function checks
+  the logarithm of the marginal likelihood (see \code{\link{LML}}) for a
+  finite value, and returns true when LML is finite. This indicates that
+  the marginal likelihood is finite for all observed \eqn{\textbf{y}}{y}
+  in the model data set. This implies:
 
   \deqn{\int p(\theta|\textbf{y})p(\theta)d\theta < \infty}{integral of
   p(theta|y)p(theta)dtheta < Inf}
@@ -86,8 +86,9 @@ is.proper(f,a,b,tol)
   \code{\link{dnormv}},
   \code{\link{integrate}},
   \code{\link{LaplaceApproximation}},
-  \code{\link{LaplacesDemon}}, and
-  \code{\link{LML}}
+  \code{\link{LaplacesDemon}},
+  \code{\link{LML}}, and
+  \code{\link{PMC}}.
 }
 \examples{
 ### Prior Probability Distribution
@@ -96,7 +97,7 @@ is.proper(function(x) {dhalfcauchy(x,25)}, 0, Inf) #x ~ HC(25)
 is.proper(function(x) {dunif(x,0,1)}, 0, 1) #x ~ U(0,1)
 is.proper(function(x) {dunif(x,-Inf,Inf)}, -Inf, Inf) #x ~ U(-Inf,Inf)
 ### Joint Posterior Distribution
-#This assumes that Fit is an object of class demonoid or laplace
+#This assumes that Fit is an object of class demonoid, laplace, or pmc
 #is.proper(Fit)
 }
 \keyword{Diagnostic}

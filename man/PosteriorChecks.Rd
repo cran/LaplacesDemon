@@ -9,15 +9,15 @@
   greater than zero [\eqn{p(\theta > 0)}{p(theta > 0)}], the estimated
   number of modes, the kurtosis and skewness of the posterior
   distributions, the burn-in of each chain (for MCMC only), and the
-  integrated autocorrelation time. A correlation matrix is
-  provided only for objects of class \code{demonoid}.
+  integrated autocorrelation time. A posterior correlation matrix is
+  provided only for objects of class \code{demonoid} or \code{pmc}.
 }
 \usage{
 PosteriorChecks(x, Parms)
 }
 \arguments{
   \item{x}{This required argument accepts an object of class
-    \code{demonoid} or \code{laplace}.}
+    \code{demonoid}, \code{laplace}, or \code{pmc}.}
   \item{Parms}{This argument accepts a vector of quoted strings to be
     matched for selecting parameters. This argument defaults to
     \code{NULL} and selects every parameter. Each quoted string is
@@ -39,6 +39,23 @@ PosteriorChecks(x, Parms)
   chains with the highest \code{\link{IAT}}, and these chains are
   studied for non-randomness with a joint trace plot, via the
   \code{\link{joint.density.plot}} function.
+
+  Posterior correlation may be studied between model updates as well as
+  after a model seems to have converged. While frequentists consider
+  multicollinear predictor variables, Bayesians tend to consider
+  posterior correlation of the parameters. Models with multicollinear
+  parameters take more iterations to converge. Hierarchical models often
+  have high posterior correlations. Common remedies include transforming
+  the predictors, reparameterization to reduce posterior correlation,
+  using WIPs (Weakly-Informative Priors), or selecting a different
+  numerical approximation algorithm. An example of reparameterization is
+  to constrain related parameters to sum to zero. Another approach is to
+  specify the parameters according to a multivariate distribution that
+  is assisted by estimating a covariance matrix. Some algorithms are
+  more robust to posterior correlation than others. For example,
+  posterior correlation should generally be less problematic for twalk
+  than AMWG in \code{\link{LaplacesDemon}}. Posterior correlation may be
+  plotted with the \code{\link{plotMatrix}} function.
 
   After a user is convinced of the applicability of the current MCMC
   algorithm, and that the chains have converged, \code{PosteriorChecks}
@@ -93,10 +110,15 @@ PosteriorChecks(x, Parms)
   \code{\link{IAT}},
   \code{\link{Importance}},
   \code{\link{LaplaceApproximation}},
-  \code{\link{LaplacesDemon}}, and
-  \code{\link{Modes}}.
+  \code{\link{LaplacesDemon}},
+  \code{\link{Modes}},
+  \code{\link{plotMatrix}}, and
+  \code{\link{PMC}}.
 }
 \examples{### See the LaplacesDemon function for an example.}
 \keyword{Diagnostic}
 \keyword{MCMC}
+\keyword{Monte Carlo}
+\keyword{Multicollinearity}
+\keyword{Posterior Correlation}
 \keyword{Utility}

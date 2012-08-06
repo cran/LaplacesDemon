@@ -10,7 +10,7 @@ CSF <- function(x, name, method="Quantiles", quantiles=c(.025,.5,.975),
      {
      if(missing(x)) stop("The x argument is required.")
      if(missing(name)) name <- "x"
-     if(length(unique(x)) == 0) stop("x must not be constant.")
+     if(is.constant(x)) stop("x must not be constant.")
      if(!is.vector(x)) x <- as.vector(x)
      if(method == "ESS") {
           y <- rep(0, length(x))

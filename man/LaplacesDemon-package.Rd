@@ -3,28 +3,29 @@
 \docType{package}
 \title{The LaplacesDemon Package}
 \description{
-Welcome to LaplacesDemon, an R package for Bayesian inference.
+Welcome to LaplacesDemon, a complete environment for Bayesian inference
+within R.
 }
 \details{
   \tabular{ll}{
     Package: \tab LaplacesDemon\cr
     Type: \tab Package\cr
-    Version: \tab 12.07.02\cr
-    Date: \tab 2012-07-02\cr
+    Version: \tab 12.08.06\cr
+    Date: \tab 2012-08-06\cr
     License: \tab GPL-2\cr
   }
   The goal of LaplacesDemon, often referred to as Laplace's Demon, is to
   provide a complete and self-contained Bayesian environment within R.
   For example, this package includes over a dozen MCMC algorithms, Laplace
-  Approximation with multiple optimization algorithms, over 80 examples
-  in the ``Examples'' vignette, dozens of additional probability
-  distributions, numerous MCMC diagnostics, Bayes factors, posterior
-  predictive checks, a variety of plots, elicitation, parameter and
-  variable importance, Bayesian forms of test statistics (such as
-  Durbin-Watson, Jarque-Bera, etc.), and numerous additional utility
-  functions, such as functions for multimodality, matrices, or timing
-  your model specification. Other vignettes include an introduction to
-  Bayesian inference, as well as a tutorial.
+  Approximation with multiple optimization algorithms, PMC, over 80
+  examples in the ``Examples'' vignette, dozens of additional
+  probability distributions, numerous MCMC diagnostics, Bayes factors,
+  posterior predictive checks, a variety of plots, elicitation,
+  parameter and variable importance, Bayesian forms of test statistics
+  (such as Durbin-Watson, Jarque-Bera, etc.), validation, and numerous
+  additional utility functions, such as functions for multimodality,
+  matrices, or timing your model specification. Other vignettes include
+  an introduction to Bayesian inference, as well as a tutorial.
 
   There are many plans for the growth of this package, and many are
   long-term plans such as to cotinuously stockpile distributions,

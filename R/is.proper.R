@@ -10,8 +10,8 @@ is.proper <- function(f, a, b, tol=1e-5)
        {
        ### Initial Checks
        if(!is.function(f) & (class(f) != "demonoid") &
-            (class(f) != "laplace"))
-            stop("f is not a function or object of class demonoid or laplace.")
+            (class(f) != "laplace") & class(f) != "pmc")
+            stop("f is not a function or object of class demonoid, laplace, or pmc.")
        ### Propriety
        propriety <- FALSE
        if(is.function(f)) {

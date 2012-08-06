@@ -159,7 +159,7 @@ LML(Model=NULL, Data=NULL, Modes=NULL, theta=NULL, LL=NULL, method="NSIS")
 \examples{
 ### If a model object were created and called Fit, then:
 #
-### Applying HME to an object of class demonoid:
+### Applying HME to an object of class demonoid or pmc:
 #LML(LL=Fit$Deviance*(-1/2), method="HME")
 #
 ### Applying LME1 to an object of class demonoid:

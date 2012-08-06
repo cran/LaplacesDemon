@@ -7,8 +7,9 @@
   several optimization algorithms. The goal of Laplace Approximation is
   to estimate the posterior mode and variance of each parameter. This
   function is useful for optimizing initial values and estimating a
-  covariance matrix to be input into the \code{\link{LaplacesDemon}}
-  function, or sometimes for model estimation in its own right.
+  covariance matrix to be input into the \code{\link{LaplacesDemon}} or
+  \code{\link{PMC}} function, or sometimes for model estimation in its
+  own right.
 }
 \usage{
 LaplaceApproximation(Model, parm, Data, Interval=1.0E-6,
@@ -26,8 +27,9 @@ LaplaceApproximation(Model, parm, Data, Interval=1.0E-6,
     length to the number of parameters. \code{LaplaceApproximation} will
     attempt to optimize these initial values for the parameters, where
     the optimized values are the posterior modes, for later use with the
-    \code{\link{LaplacesDemon}} function. The \code{\link{GIV}} function
-    may be used to randomly generate initial values.}
+    \code{\link{LaplacesDemon}} or \code{\link{PMC}} function. The
+    \code{\link{GIV}} function may be used to randomly generate initial
+    values.}
   \item{Data}{This required argument accepts a list of data. The list of
     data must include \code{mon.names} which contains monitored variable
     names, and \code{parm.names} which contains parameter
@@ -69,8 +71,8 @@ LaplaceApproximation(Model, parm, Data, Interval=1.0E-6,
     including \code{plot.laplace} and \code{predict.laplace}. The only
     time that it is advantageous for \code{sir=FALSE} is when
     \code{LaplaceApproximation} is used to help the initial values for
-    \code{LaplacesDemon}, and it is unnecessary for time to be spent on
-    sampling.}
+    \code{LaplacesDemon} or \code{\link{PMC}}, and it is unnecessary for
+    time to be spent on sampling.}
   \item{Stop.Tolerance}{This argument accepts any positive number and
     defaults to 1.0E-5. At each iteration, the square root of the sum of
     the squared differences of the logarithm of the unnormalized joint
@@ -173,10 +175,10 @@ LaplaceApproximation(Model, parm, Data, Interval=1.0E-6,
   approximates the Hessian matrix of second derivatives, and attempts to
   calculate the covariance matrix by taking the inverse of the negative
   of this matrix. If successful, then this covariance matrix may be
-  passed to \code{\link{LaplacesDemon}}, and the diagonal of this matrix
-  is the variance of the parameters. If unsuccessful, then a scaled
-  identity matrix is returned, and each parameter's variance will be 1.
-
+  passed to \code{\link{LaplacesDemon}} or \code{\link{PMC}}, and the
+  diagonal of this matrix is the variance of the parameters. If
+  unsuccessful, then a scaled identity matrix is returned, and each
+  parameter's variance will be 1.
 }
 \value{
   \code{LaplaceApproximation} returns an object of class \code{laplace}
@@ -192,12 +194,13 @@ LaplaceApproximation(Model, parm, Data, Interval=1.0E-6,
     approximate Hessian matrix. If an error is encountered in attempting
     to solve the matrix inversion, then an identity matrix is
     returned. The \code{Covar} matrix may be scaled and input into the
-    \code{Covar} argument of the \code{\link{LaplacesDemon}} function
-    for further MCMC estimation, or the diagonal of this matrix may be
-    used to represent the posterior variance of the parameters, provided
-    the algorithm converged and matrix inversion was successful. To
-    scale this matrix for use with Laplace's Demon, multiply it by
-    \eqn{2.38^2/d}, where \eqn{d} is the number of initial values.}
+    \code{Covar} argument of the \code{\link{LaplacesDemon}} or
+    \code{\link{PMC}} function for further MCMC estimation, or the
+    diagonal of this matrix may be used to represent the posterior
+    variance of the parameters, provided the algorithm converged and
+    matrix inversion was successful. To scale this matrix for use with
+    Laplace's Demon or PMC, multiply it by \eqn{2.38^2/d}, where \eqn{d}
+    is the number of initial values.}
   \item{Deviance}{This is a vector of the iterative history of the
     deviance in the \code{LaplaceApproximation} function, as it sought
     convergence.}
@@ -300,7 +303,8 @@ LaplaceApproximation(Model, parm, Data, Interval=1.0E-6,
   \code{\link{LaplacesDemon}},
   \code{\link{GIV}},
   \code{\link{LML}},
-  \code{\link{optim}}, and
+  \code{\link{optim}},
+  \code{\link{PMC}}, and
   \code{\link{SIR}}.
 }
 \examples{
@@ -316,10 +320,10 @@ J <- ncol(X)
 for (j in 2:J) {X[,j] <- CenterScale(X[,j])}
 mon.names <- c("sigma","mu[1]")
 parm.names <- as.parm.names(list(beta=rep(0,J), log.sigma=0))
-MyData <- list(J=J, X=X, mon.names=mon.names, parm.names=parm.names, y=y)
-
-############################  Initial Values  #############################
-Initial.Values <- c(rep(0,J), log(1))
+PGF <- function(Data) return(c(rnormv(Data$J,0,1000),
+     log(rhalfcauchy(1,25))))
+MyData <- list(J=J, PGF=PGF, X=X, mon.names=mon.names,
+     parm.names=parm.names, y=y)
 
 ##########################  Model Specification  ##########################
 Model <- function(parm, Data)
@@ -335,10 +339,14 @@ Model <- function(parm, Data)
      LL <- sum(dnorm(Data$y, mu, sigma, log=TRUE))
      ### Log-Posterior
      LP <- LL + beta.prior + sigma.prior
-     Modelout <- list(LP=LP, Dev=-2*LL, Monitor=c(sigma,mu[1]), yhat=mu,
-          parm=parm)
+     Modelout <- list(LP=LP, Dev=-2*LL, Monitor=c(sigma,mu[1]),
+          yhat=rnorm(length(mu), mu, sigma), parm=parm)
      return(Modelout)
      }
+
+############################  Initial Values  #############################
+#Initial.Values <- GIV(Model, MyData, PGF=TRUE)
+Initial.Values <- rep(0,J+1)
 
 Fit <- LaplaceApproximation(Model, Initial.Values, Data=MyData,
      Iterations=10000, Method="AGA")

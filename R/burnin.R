@@ -20,7 +20,8 @@ burnin <- function(x, method="Geweke")
                     p <- KS.Diagnostic(x[iter:n])
                     if(p <= 0.05) stationary <- 1}
                else { #method == Geweke
-                    z <- Geweke.Diagnostic(x[iter:n])
+                    z <- try(Geweke.Diagnostic(x[iter:n]), silent=TRUE)
+                    if(inherits(z, "try-error")) z <- 3
                     if(abs(z < 2)) stationary <- 1}
                if(stationary == 0) iter <- iter + jump
                if(iter >= n) stationary <- 1}

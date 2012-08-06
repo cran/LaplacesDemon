@@ -2,7 +2,7 @@
 # BayesFactor                                                             #
 #                                                                         #
 # The purpose of the BayesFactor function is to estimate a Bayes factor   #
-# from two objects, either of class demonoid or laplace.                  #
+# from two objects, either of class demonoid, laplace, or pmc.            #
 ###########################################################################
 
 BayesFactor <- function(x)
@@ -12,8 +12,9 @@ BayesFactor <- function(x)
      Model.num <- length(x)
      for (i in 1:Model.num) {
           if(!identical(class(x[[i]]), "demonoid") &
-               !identical(class(x[[i]]), "laplace"))
-               stop("x is not of class demonoid or laplace.")
+               !identical(class(x[[i]]), "laplace") &
+               !identical(class(x[[i]]), "pmc"))
+               stop("x is not of class demonoid, laplace, or pmc.")
           if(identical(class(x[[i]]), "laplace") &
                identical(x[[i]]$Converged, FALSE)) { 
                stop("LaplaceApproximation() did not converge in ",
@@ -24,8 +25,7 @@ BayesFactor <- function(x)
      ### Bayes factor
      B <- matrix(NA, Model.num, Model.num)
      for (i in 1:Model.num) {for (j in 1:Model.num) {
-          B[i,j] <- exp(x[[i]]$LML - x[[j]]$LML)
-          }}
+          B[i,j] <- exp(x[[i]]$LML - x[[j]]$LML)}}
      strength <- rep(NA,6)
      strength[1] <- "-Inf  <  B <= 0.1   Strong against"
      strength[2] <- "0.1   <  B <= (1/3) Substantial against"

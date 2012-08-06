@@ -6,12 +6,11 @@
   These are utility functions for math.
 }
 \usage{
-logadd(x, y, add=TRUE)
+logadd(x, add=TRUE)
 partial(Model, parm, Data, Interval=1e-6)
 }
 \arguments{
   \item{x}{This is a numeric vector.}
-  \item{y}{This is a numeric vector.}
   \item{add}{Logical. This defaults to \code{TRUE}, in which case
     \eqn{\log(x+y)}{log(x+y)} is performed. Otherwise,
     \eqn{\log(x-y)}{log(x-y)} is performed.}
@@ -26,8 +25,8 @@ partial(Model, parm, Data, Interval=1e-6)
   The \code{logadd} function performs addition (or subtraction) when the
   terms are logarithmic. The equations are:
 
-  \deqn{\log(x+y) = \log(x) - \log(1 + \exp(\log(y) + \log(x)))}{log(x+y) =
-    log(x) - log(1 + exp(log(y) + log(x)))}
+  \deqn{\log(x+y) = \log(x) + \log(1 + \exp(\log(y) - \log(x)))}{log(x+y) =
+    log(x) + log(1 + exp(log(y) - log(x)))}
   \deqn{\log(x-y) = \log(x) + \log(1 - \exp(\log(y) - \log(x)))}{log(x+y) =
     log(x) + log(1 - exp(log(y) - log(x)))}
   
@@ -41,7 +40,9 @@ partial(Model, parm, Data, Interval=1e-6)
   each parameter. A related function is \code{Hessian}, which returns a
   matrix of second-order partial derivatives of the model specification
   function with respect to its parameters. This function is not intended
-  to be called by the user, but is used by other functions.
+  to be called by the user, but is used by other functions. Automatic
+  differentiation (AD) is an improvement over finite-differencing, but
+  is currently unavailable here.
 }
 \value{
   \code{logadd} returns the result of \eqn{\log(x+y)}{log(x+y)} or

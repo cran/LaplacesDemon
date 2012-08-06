@@ -37,9 +37,10 @@ as.inverse <- function(x)
      xinv <- as.symmetric.matrix(xinv)
      return(xinv)
      }
-as.parm.matrix <- function(x, k, parm, Data, a=-Inf, b=Inf, restrict=FALSE)
+as.parm.matrix <- function(x, k, parm, Data, a=-Inf, b=Inf, restrict=FALSE,
+     chol=FALSE)
      {
-     X <- matrix(NA, k, k)
+     X <- matrix(0, k, k)
      if(restrict == TRUE) {
           X[upper.tri(X, diag=TRUE)] <- c(1,
                parm[grep(deparse(substitute(x)),
@@ -47,10 +48,30 @@ as.parm.matrix <- function(x, k, parm, Data, a=-Inf, b=Inf, restrict=FALSE)
      else {
           X[upper.tri(X, diag=TRUE)] <- parm[grep(deparse(substitute(x)),
                Data$parm.names)]}
+     if(chol == TRUE) {
+          if(a != -Inf | b != Inf) {
+               x <- as.vector(X[upper.tri(X, diag=TRUE)])
+               x.num <- which(x < a)
+               x[x.num] <- a
+               x.num <- which(x > b)
+               x[x.num] <- b
+               X[upper.tri(X, diag=TRUE)] <- x
+               diag(X) <- abs(diag(X))
+               }
+          X[lower.tri(X)] <- 0
+          return(X)
+          }
      X[lower.tri(X)] <- t(X)[lower.tri(X)]
+     if(a != -Inf | b != Inf) {
+          x <- as.vector(X[upper.tri(X, diag=TRUE)])
+          x.num <- which(x < a)
+          x[x.num] <- a
+          x.num <- which(x > b)
+          x[x.num] <- b
+          X[upper.tri(X, diag=TRUE)] <- x
+          X[lower.tri(X)] <- t(X)[lower.tri(X)]
+          }
      if(!is.symmetric.matrix(X)) X <- as.symmetric.matrix(X)
-     if(a != -Inf) X <- ifelse(X < a, a, X)
-     if(b != Inf) X <- ifelse(X > b, b, X)
      if(restrict == FALSE) {
           if(is.positive.definite(X)) {
                assign("LaplacesDemonMatrix", as.vector(X[upper.tri(X,

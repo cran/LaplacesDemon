@@ -74,7 +74,9 @@ LaplaceApproximation <- function(Model, parm, Data, Interval=1.0E-6,
           stop("The number of initial values and parameters differs.")
      if(!is.finite(m.old[[1]])) {
           cat("Generating initial values due to a non-finite posterior.\n")
-          Initial.Values <- GIV(Model, Data)
+          if(!is.null(Data$PGF))
+               Initial.Values <- GIV(Model, Data, PGF=TRUE)
+          else Initial.Values <- GIV(Model, Data)
           m.old <- Model(Initial.Values, Data)
           }
      if(!is.finite(m.old[[1]]))
@@ -195,6 +197,7 @@ LaplaceApproximation <- function(Model, parm, Data, Interval=1.0E-6,
      else if({sir == FALSE} & {converged == TRUE}) {
           cat("Estimating Log of the Marginal Likelihood\n")
           LML <- LML(Model, Data, Modes, method="LME2")}
+     colnames(VarCov) <- rownames(VarCov) <- Data$parm.names
      time2 <- proc.time()
      #############################  Output  ##############################
      LA <- list(Call=LA.call,

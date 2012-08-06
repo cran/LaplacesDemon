@@ -1,24 +1,27 @@
 \name{dist.Multivariate.Power.Exponential}
 \alias{dmvpe}
+\alias{rmvpe}
 \title{Multivariate Power Exponential Distribution}
 \description{
-  This is the density function for the multivariate power exponential
-  distribution.
+  These functions provide the density and random number generation for
+  the multivariate power exponential distribution.
 }
 \usage{
 dmvpe(x=c(0,0), mu=c(0,0), Sigma=diag(2), kappa=1, log=FALSE)
+rmvpe(n, mu=c(0,0), Sigma=diag(2), kappa=1)
 }
 \arguments{
   \item{x}{This is data or parameters in the form of a vector of length
-       \eqn{k} or a matrix with \eqn{k} columns.}
+    \eqn{k} or a matrix with \eqn{k} columns.}
+  \item{n}{This is the number of random draws.}
   \item{mu}{This is mean vector \eqn{\mu}{mu} with length \eqn{k} or
-       matrix with \eqn{k} columns.}
+    matrix with \eqn{k} columns.}
   \item{Sigma}{This is the \eqn{k \times k}{k x k} covariance matrix
-       \eqn{\Sigma}{Sigma}.}
+    \eqn{\Sigma}{Sigma}.}
   \item{kappa}{This is the kurtosis parameter, \eqn{\kappa}{kappa}, and
-       must be positive.}
+    must be positive.}
   \item{log}{Logical. If \code{log=TRUE}, then the logarithm of the
-       density is returned.}
+    density is returned.}
 }
 \details{
   \itemize{
@@ -61,9 +64,13 @@ multivariate Laplace distribution (\eqn{\kappa = 0.5}{kappa = 0.5}) as
 special cases, depending on the kurtosis or \eqn{\kappa}{kappa}
 parameter. A multivariate uniform occurs as
 \eqn{\kappa \rightarrow \infty}{kappa -> infinity}.
+
+The \code{rmvpe} function is a modified form of the rmvpowerexp function
+in the MNM package.
 }
 \value{
-  \code{dmvpe} gives the density.
+  \code{dmvpe} gives the density and
+  \code{rmvpe} generates random deviates.
 }
 \references{
   Gomez, E., Gomez-Villegas, M.A., and Marin, J.M. (1998). "A
@@ -95,5 +102,7 @@ x <- matrix(runif(n*k),n,k)
 mu <- matrix(runif(n*k),n,k)
 Sigma <- diag(k)
 dmvpe(x, mu, Sigma, kappa=1)
+X <- rmvpe(n, mu, Sigma, kappa=1)
+joint.density.plot(X[,1], X[,2], color=TRUE)
 }
 \keyword{Distribution}

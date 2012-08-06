@@ -41,6 +41,36 @@ Consort <- function(object=NULL)
           else {
                Acc.Rate.Low <- 0.6
                Acc.Rate.High <- 0.7}}
+     else if(object$Algorithm == "Hamiltonian Monte Carlo with Dual-Averaging") {
+          A <- substr(object$Call, 1, nchar(object$Call))
+          A <- strsplit(A, " ")
+          A <- as.numeric(sub(",", "",
+               A[[length(A)]][[length(A[[length(A)]])-12]]))
+          delta <- substr(object$Call, 1, nchar(object$Call))
+          delta <- strsplit(delta, " ")
+          delta <- as.numeric(sub(",", "",
+               delta[[length(delta)]][[length(delta[[length(delta)]])-9]]))
+          Lmax <- substr(object$Call, 1, nchar(object$Call))
+          Lmax <- strsplit(Lmax, " ")
+          Lmax <- as.numeric(sub(",", "",
+               Lmax[[length(Lmax)]][[length(Lmax[[length(Lmax)]])-3]]))
+          lambda <- substr(object$Call, 1, nchar(object$Call))
+          lambda <- strsplit(lambda, " ")
+          lambda <- as.numeric(sub(")", "",
+               lambda[[length(lambda)]][[length(lambda[[length(lambda)]])]]))
+          Acc.Rate.Low <- max(round(delta - 0.05, 2), 0.01)
+          Acc.Rate.High <- min(round(delta + 0.05, 2), 1)}
+     else if(object$Algorithm == "No-U-Turn Sampler") {
+          A <- substr(object$Call, 1, nchar(object$Call))
+          A <- strsplit(A, " ")
+          A <- as.numeric(sub(",", "",
+               A[[length(A)]][[length(A[[length(A)]])-6]]))
+          delta <- substr(object$Call, 1, nchar(object$Call))
+          delta <- strsplit(delta, " ")
+          delta <- as.numeric(sub(",", "",
+               delta[[length(delta)]][[length(delta[[length(delta)]])-3]]))
+          Acc.Rate.Low <- max(round(delta - 0.05, 2), 0.01)
+          Acc.Rate.High <- min(round(delta + 0.05, 2), 1)}
      else {
           Acc.Rate.Low <- 0.15
           Acc.Rate.High <- 0.5}
@@ -158,7 +188,9 @@ Consort <- function(object=NULL)
      else {
           if(Dim.Adapt == FALSE) {
                cat("WARNING: Diminishing adaptation did not occur.\n")
-               if({object$Algorithm != "Sequential Adaptive Metropolis-within-Gibbs"} & {object$Algorithm != "Updating Sequential Adaptive Metropolis-within-Gibbs"})
+               if({object$Algorithm != "No-U-Turn Sampler"} &
+                  {object$Algorithm != "Sequential Adaptive Metropolis-within-Gibbs"} &
+                  {object$Algorithm != "Updating Sequential Adaptive Metropolis-within-Gibbs"})
                     cat("         A new algorithm will be suggested.\n\n")}
           
           cat("Laplace's Demon has not been appeased, and suggests\n")
@@ -186,7 +218,10 @@ Consort <- function(object=NULL)
           else if(object$Algorithm == "Delayed Rejection Metropolis") Alg <- "DRM"
           else if(object$Algorithm == "Experimental") Alg <- "Exper"
           else if(object$Algorithm == "Hamiltonian Monte Carlo") Alg <- "HMC"
+          else if(object$Algorithm == "Hamiltonian Monte Carlo with Dual-Averaging")
+               Alg <- "HMCDA"
           else if(object$Algorithm == "Metropolis-within-Gibbs") Alg <- "MWG"
+          else if(object$Algorithm == "No-U-Turn Sampler") Alg <- "NUTS"
           else if(object$Algorithm == "Robust Adaptive Metropolis") Alg <- "RAM"
           else if(object$Algorithm == "Random-Walk Metropolis") Alg <- "RWM"
           else if(object$Algorithm == "Sequential Adaptive Metropolis-within-Gibbs") Alg <- "SAMWG"
@@ -318,6 +353,20 @@ Consort <- function(object=NULL)
                     sep="")
                cat("L=", L, "))\n\n", sep="")
                }
+          if(Alg == "HMCDA" & Dim.Adapt) {
+               ### HMCDA
+               cat(oname, " <- LaplacesDemon(Model, Data=", dname,
+                    ", Initial.Values,\n", sep="")
+               cat("     Covar=NULL, Iterations=",
+                    Rec.Iterations, ", Status=", Rec.Status, ", ",
+                    "Thinning=", Rec.Thinning, ",\n", sep="")
+               cat("     Algorithm=\"HMCDA\", ",
+                    "Specs=list(A=", round(Rec.Iterations/2),
+                    ", delta=", delta, ",\n", sep="")
+               cat("     epsilon=",
+                    round(object$CovarDHis[nrow(object$CovarDHis),1],3),
+                    ", Lmax=", Lmax, ", lambda=", lambda, "))\n\n", sep="")
+               }
           if({(Alg == "AMWG") & Dim.Adapt & Fast & Ready} |
              {(Alg == "AMWG") & Dim.Adapt & !Fast & Ready} |
              {(Alg == "MWG") & Dim.Adapt & Fast & Ready} |
@@ -330,6 +379,22 @@ Consort <- function(object=NULL)
                     "Thinning=", Rec.Thinning, ",\n", sep="")
                cat("     Algorithm=\"MWG\", ",
                     "Specs=NULL)\n\n", sep="")
+               }
+          if({Alg == "NUTS"} |
+             {(Alg == "HMCDA") & !Dim.Adapt}) {
+               ### NUTS
+               if(Alg == "HMCDA") delta <- 0.6
+               cat(oname, " <- LaplacesDemon(Model, Data=", dname,
+                    ", Initial.Values,\n", sep="")
+               cat("     Covar=NULL, Iterations=",
+                    Rec.Iterations, ", Status=", Rec.Status, ", ",
+                    "Thinning=", Rec.Thinning, ",\n", sep="")
+               cat("     Algorithm=\"NUTS\", ",
+                    "Specs=list(A=", round(Rec.Iterations/2),
+                    ", delta=", delta, ",\n", sep="")
+               cat("     epsilon=",
+                    round(object$CovarDHis[nrow(object$CovarDHis),1],3),
+                    "))\n\n", sep="")
                }
           if({(Alg == "AM") & !Dim.Adapt & !Fast & !Ready} | 
              {(Alg == "AMM") & !Dim.Adapt & !Fast & Ready} | 

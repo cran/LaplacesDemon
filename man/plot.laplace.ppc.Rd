@@ -119,29 +119,23 @@
   the proportion of values less than or equal to y. This plot is
   appropriate when y is univariate and at least ordinal.
 
-  \code{Fitted} plots compare y with its replicate and provide loess
-  smoothing. Otherwise, y is also compared with the quantiles of the
-  probability interval of its replicate, and smoothing is also
-  applied. This plot is appropriate when y is univariate and not
-  categorical.
+  \code{Fitted} plots compare y with the probability interval of its
+  replicate, and provide loess smoothing. This plot is appropriate when
+  y is univariate and not categorical.
 
   \code{Fitted, Multivariate, C} requires \code{Data} to be
-  specified, and also requires that variable \code{Y} exist in the data
+  specified, and also requires that variable \code{Y} exists in the data
   set with exactly that name. These plots compare each column-wise
-  vector of y in Y with its replicate and provide loess smoothing.
-  Otherwise, y is also compared with the quantiles of the probability
-  interval of its replicate, and smoothing is also applied. This plot
-  is appropriate when Y is multivariate, not categorical, and desired to
-  be seen column-wise.
-  
+  vector of y in Y with its replicates and provide loess smoothing.
+  This plot is appropriate when Y is multivariate, not categorical, and
+  desired to be seen column-wise.
+
   \code{Fitted, Multivariate, R} requires \code{Data} to be
-  specified, and also requires that variable \code{Y} exist in the data
+  specified, and also requires that variable \code{Y} exists in the data
   set with exactly that name. These plots compare each row-wise
-  vector of y in Y with its replicate and provide loess smoothing.
-  Otherwise, y is also compared with the quantiles of the probability
-  interval of its replicate, and smoothing is also applied. This plot
-  is appropriate when Y is multivariate, not categorical, and desired to
-  be seen row-wise.
+  vector of y in Y with its replicates and provide loess smoothing.
+  This plot is appropriate when Y is multivariate, not categorical, and
+  desired to be seen row-wise.
 
   \code{Jarque-Bera} plots the distributions of the Jarque-Bera (JB)
   test statistics (Jarque and Bera, 1980), both observed

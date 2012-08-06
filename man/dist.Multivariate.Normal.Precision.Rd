@@ -16,7 +16,7 @@ rmvnp(n=1, mu, Omega)
        \eqn{k} or a matrix with \eqn{k} columns.}
   \item{n}{This is the number of random draws.}
   \item{mu}{This is mean vector \eqn{\mu}{mu} with length \eqn{k} or
-       matrix (\code{dmvnp} only) with \eqn{k} columns.}
+       matrix with \eqn{k} columns.}
   \item{Omega}{This is the \eqn{k \times k}{k x k} precision matrix
        \eqn{\Omega}{Omega}.}
   \item{log}{Logical. If \code{log=TRUE}, then the logarithm of the
@@ -56,10 +56,13 @@ distribution. This distribution has a mean parameter vector
 \eqn{\mu}{mu} of length \eqn{k} and a \eqn{k \times k}{k x k}
 precision matrix \eqn{\Omega}{Omega}, which must be positive-definite.
 
+When applicable, the alternative Cholesky parameterization should be
+preferred. For more information, see \code{\link{dmvnpc}}.
+
 For models where the dependent variable, Y, is specified to be
 distributed multivariate normal given the model, the Mardia test (see
-\code{\link{plot.demonoid.ppc}} or \code{\link{plot.laplace.ppc}}) may
-be used to test the residuals.
+\code{\link{plot.demonoid.ppc}}, \code{\link{plot.laplace.ppc}}, or
+\code{\link{plot.pmc.ppc}}) may be used to test the residuals.
 }
 \value{
   \code{dmvnp} gives the density and 
@@ -68,13 +71,16 @@ be used to test the residuals.
 \references{\url{http://www.statisticat.com/laplacesdemon.html}}
 \author{Byron Hall \email{statisticat@gmail.com}}
 \seealso{
-  \code{\link{dwishart}},
   \code{\link{dmvn}},
+  \code{\link{dmvnc}},
+  \code{\link{dmvnpc}},
   \code{\link{dnorm}},
   \code{\link{dnormp}},
   \code{\link{dnormv}},
-  \code{\link{plot.demonoid.ppc}}, and
-  \code{\link{plot.laplace.ppc}}.
+  \code{\link{dwishart}},
+  \code{\link{plot.demonoid.ppc}},
+  \code{\link{plot.laplace.ppc}}, and
+  \code{\link{plot.pmc.ppc}}.
 }
 \examples{
 library(LaplacesDemon)

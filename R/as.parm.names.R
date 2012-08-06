@@ -58,8 +58,7 @@ as.parm.names <- function(x, uppertri=NULL) {
                         parm.names[cnt] <- paste(xname, "[", j, ",", k,
                              "]", sep="")
                         cnt <- cnt + 1
-                        }
-                   }}
+                        }}}
               }
          ### Array
          else if(is.array(x[[i]]) & (uppertri[i] == 0)) {

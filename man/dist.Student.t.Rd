@@ -78,7 +78,8 @@ Student t-distribution approaches
 \eqn{\mathcal{N}(\mu, \sigma^2)}{N(mu, sigma^2)}. The
 case of \eqn{\nu = 1}{nu = 1} is the Cauchy distribution.
 
-These functions are similar to those in the \code{gamlss.dist} package.
+The \code{pst} and \code{qst} functions are similar to those in the
+\code{gamlss.dist} package.
 }
 \value{
   \code{dst} gives the density,

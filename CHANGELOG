@@ -1,3 +1,42 @@
+2012-08-05 Vignette Examples: Added PGF
+2012-08-04 GIV: Added the PGF argument
+2012-08-03 Added dinvbeta, rinvbeta
+2012-08-02 Added rmvpe
+2012-08-01 LaplacesDemon.RAM: added Summary1
+2012-07-30 Added PMC.RAM
+2012-07-29 Vignette Examples: adapted many examples to Cholesky parameterization
+2012-07-28 ddirichlet, dhalfcauchy, dinvwishart: now calculated as log-density
+2012-07-28 dlaplacep, dmvc, dmvcp, dmvnp, dmvt: now calculated as log-density
+2012-07-28 dmvtp, dpareto, dpe, dsdlaplace: now calculated as log-density
+2012-07-28 dslaplace, dwishart: now calculated as log-density
+2012-07-27 interval: added the reflect argument
+2012-07-26 Added dmvcc, dmvcpc, dmvlc, dmvnc, dmvnpc, dmvpec, dmvtc
+2012-07-26 Added rmvcc, rmvcpc, rmvlc, rmvnc, rmvnpc, rmvpec, rmvtc
+2012-07-26 Added dinvwishartc, dwishartc, rinvwishartc, rwishartc
+2012-07-25 rmvn: Fixed bug affecting rmvc, rmvcp, rmvl, rmvn, rmvnp, rmvt, rmvtp
+2012-07-19 Added plotMatrix
+2012-07-18 LaplacesDemon: Added 2 algorithms: HMCDA and NUTS
+2012-07-17 Vignette Examples: Added Linear Regression with Power Priors
+2012-07-16 Importance: Added BPIC
+2012-07-16 summary.demonoid.ppc, ...laplace.ppc, ...pmc.ppc: Added BPIC
+2012-07-16 predict.demonoid, predict.laplace, predict.ppc: Added BPIC
+2012-07-16 Added is.constant
+2012-07-15 logadd: Expanded to add or subtract vectors
+2012-07-14 dst, rst: Improved calculations, oddly enough, avoiding dt and rt
+2012-07-13 plot.demonoic.ppc, plot.laplace.ppc, plot.pmc.ppc: Changed Fitted
+2012-07-12 DESCRIPTION: Changed package title and description
+2012-07-11 Vignette Examples: Fixed bug with mu and ppc
+2012-07-11 Vignette Tutorial: Fixed bug reported by Kodi Arfer with mu and ppc
+2012-07-10 summary.demonoid.ppc, summary.laplace.ppc, summary.pmc.ppc: Added PPL
+2012-07-09 Added as.covar, mainly due to multiple PMC matrices
+2012-07-08 as.initial.values, BayesFactor: includes pmc objects
+2012-07-08 caterpillar.plot, is.proper, Levene.Test: includes pmc objects
+2012-07-08 Importance and LPL.interval: includes pmc objects
+2012-07-08 PosteriorChecks and Validate: includes pmc objects
+2012-07-07 Added is.pmc, is.pmc.ppc
+2012-07-06 Added PMC, plot.pmc, predict.pmc, print.pmc, summary.pmc.ppc
+2012-07-03 Added as.ppc, is.demonoid.val, and Validate
+2012-07-02 Added BayesianBootstrap
 2012-06-30 Added is.proper
 2012-06-29 Vignette Bayesian Inference: Added WIP and Reference Prior sections
 2012-06-28 Vignette Examples: Fixed bug with MNL, used K, not J

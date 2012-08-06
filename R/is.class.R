@@ -29,6 +29,12 @@ is.demonoid.ppc <- function(x)
      if(identical(class(x), "demonoid.ppc")) demonoid.ppc <- TRUE
      return(demonoid.ppc)
      }
+is.demonoid.val <- function(x)
+     {
+     demonoid.val <- FALSE
+     if(identical(class(x), "demonoid.val")) demonoid.val <- TRUE
+     return(demonoid.val)
+     }
 is.importance <- function(x)
      {
      importance <- FALSE
@@ -52,6 +58,18 @@ is.laplace.ppc <- function(x)
      laplace.ppc <- FALSE
      if(identical(class(x), "laplace.ppc")) laplace.ppc <- TRUE
      return(laplace.ppc)
+     }
+is.pmc <- function(x)
+     {
+     pmc <- FALSE
+     if(identical(class(x), "pmc")) pmc <- TRUE
+     return(pmc)
+     }
+is.pmc.ppc <- function(x)
+     {
+     pmc.ppc <- FALSE
+     if(identical(class(x), "pmc.ppc")) pmc.ppc <- TRUE
+     return(pmc.ppc)
      }
 
 #End

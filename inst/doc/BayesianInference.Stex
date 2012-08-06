@@ -171,7 +171,7 @@ The components\footnote{In Bayesian decision theory, an additional component exi
 
 In Bayesian inference, a prior probability distribution, often called simply the prior, of an uncertain parameter $\theta$ or latent variable is a probability distribution that expresses uncertainty about $\theta$ before the data are taken into account\footnote{One so-called version of Bayesian inference is `empirical Bayes', which sounds enticing because anything `empirical' seems desirable. However, empirical Bayes is a term for the use of data-dependent priors, where the prior is first modeled usually with maximum likelihood and then used in the Bayesian model. This is an undesirable double-use of the data and is most problematic with small sample sizes \citep{berger06}. It also seems to violate the elementary concept that a prior probability distribution expresses uncertainty about $\theta$ \textit{before} the data are taken into account. It has been claimed that ``empirical Bayes methods are not Bayesian'' \citep{bernardo08}.}. The parameters of a prior distribution are called hyperparameters, to distinguish them from the parameters ($\Theta$) of the model.
 
-When applying Bayes' theorem, the prior is multiplied by the likelihood function and then normalized to estimate the posterior probability distribution, which is the conditional distribution of $\Theta$ given the data.
+When applying Bayes' theorem, the prior is multiplied by the likelihood function and then normalized to estimate the posterior probability distribution, which is the conditional distribution of $\Theta$ given the data. Moreover, the prior distribution affects the posterior distribution.
 
 Prior probability distributions have traditionally belonged to one of two categories: informative priors and uninformative priors. Here, four categories of priors are presented according to information\footnote{`Information' is used loosely here to describe either the prior information from personal beliefs or informational-theoretic content.} and the goal in the use of the prior. The four categories are informative, weakly informative, least informative, and uninformative.
 
@@ -179,13 +179,13 @@ Prior probability distributions have traditionally belonged to one of two catego
 
 When prior information is available about $\theta$, it should be included in the prior distribution of $\theta$. For example, if the present model form is similar to a previous model form, and the present model is intended to be an updated version based on more current data, then the posterior distribution of $\theta$ from the previous model may be used as the prior distribution of $\theta$ for the present model.
 
-In this way, each version of a model is not starting from scratch, based only on the present data, but the cumulative effects of all data, past and present, can be taken into account. The power prior, introduced with \citet{ibrahim00}, is a class of informative prior distribution that takes previous data and results into account. If the present data is very similar to the previous data, then the precision of the posterior distribution increases when including more and more information from previous models. If the present data differs considerably, then the posterior distribution of $\theta$ may be in the tails of the prior distribution for $\theta$, so the prior distribution contributes less density in its tails. Moreover, the prior distribution affects the posterior distribution.
+In this way, each version of a model is not starting from scratch, based only on the present data, but the cumulative effects of all data, past and present, can be taken into account. To ensure the current data do not overwhelm the prior , \citet{ibrahim00} introduced the power prior. The power prior is a class of informative prior distribution that takes previous data and results into account. If the present data is very similar to the previous data, then the precision of the posterior distribution increases when including more and more information from previous models. If the present data differs considerably, then the posterior distribution of $\theta$ may be in the tails of the prior distribution for $\theta$, so the prior distribution contributes less density in its tails.
 
 Sometimes informative prior information is not simply ready to be used, such as when it resides in another person, as in an expert. In this case, their personal beliefs about the probability of the event must be elicited into the form of a proper probability density function. This process is called prior elicitation.
 
 \subsection{Weakly Informative Priors}
 
-Weakly Informative Prior (WIP) distributions use prior information for regularization and stabilization, providing enough prior information to prevent results that contradict our knowledge or problems such as an algorithmic failure to explore the state-space. Another goal is for WIPs to use less prior information than is actually available. A WIP should provide some of the benefit of prior information while avoiding some of the risk from using information that doesn't exist. WIPs are the most common priors in practice, and are favored by subjective Bayesians.
+Weakly Informative Prior (WIP) distributions use prior information for regularization\footnote{The definition of regularization is to introduce additional information in order to solve an ill-posed problem or to prevent overfitting.} and stabilization, providing enough prior information to prevent results that contradict our knowledge or problems such as an algorithmic failure to explore the state-space. Another goal is for WIPs to use less prior information than is actually available. A WIP should provide some of the benefit of prior information while avoiding some of the risk from using information that doesn't exist. WIPs are the most common priors in practice, and are favored by subjective Bayesians.
 
 Selecting a WIP can be tricky. WIP distributions should change with the sample size, because a model should have enough prior information to learn from the data, but the prior information must also be weak enough to learn from the data.
 
@@ -198,7 +198,9 @@ where $\theta$ is normally-distributed according to a mean of 0 and a variance o
 A popular objective Bayeisan criticism against WIPs is that there is no precise, mathematical form to derive the optimal WIP for a given model and data.
 
 \subsubsection{Vague Priors}
-A vague prior, also called a diffuse prior\footnote{Some sources refer to diffuse priors as flat priors.}, is difficult to define, after considering WIPs. The first formal move from vague to weakly informative priors is \citet{lambert05}. After conjugate priors were introduced \citep{raiffa61}, most applied modeling has used vague priors, considered as approximately uninformative priors. Typically, a vague prior was a conjugate prior with a large scale parameter. However, vague priors can pose problems when the sample size is small. Most problems with vague priors and small sample size are associated with scale, rather than location, parameters. The problem can be particularly acute in random-effects models, and the term random-effects is used rather loosely here to imply exchangeable, hierarchical, and multilevel structures.
+A vague prior, also called a diffuse prior\footnote{Some sources refer to diffuse priors as flat priors.}, is difficult to define, after considering WIPs. The first formal move from vague to weakly informative priors is \citet{lambert05}. After conjugate priors were introduced \citep{raiffa61}, most applied Bayesian modeling has used vague priors, parameterized to approximate the concept of uninformative priors (better considered as least informative priors, see below). Conjugate priors are described in more detail later in the section entitled ``Conjugacy''.
+
+Typically, a vague prior is a conjugate prior with a large scale parameter. However, vague priors can pose problems when the sample size is small. Most problems with vague priors and small sample size are associated with scale, rather than location, parameters. The problem can be particularly acute in random-effects models, and the term random-effects is used rather loosely here to imply exchangeable, hierarchical, and multilevel structures. A vague prior is defined here as usually being a conjugate prior that is intended to approximate an uninformative prior (or actually, a least informative prior), and without the goals of regularization and stabilization.
 
 \subsection{Least Informative Priors}
 
@@ -390,9 +392,11 @@ The logarithm of the unnormalized joint posterior distribution is maximized with
 
 The technical problem of evaluating quantities required for Bayesian inference typically reduces to the calculation of a ratio of two integrals \citep[p. 339]{bernardo00}. In all cases, the technical key to the implementation of the formal solution given by Bayes' theorem is the ability to perform a number of integrations \citep[p. 340]{bernardo00}. Except in certain rather stylized problems, the required integrations will not be feasible analytically and, thus, efficient approximation strategies are required.
 
-There are too many different types of numerical approximation algorithms in Bayesian inference to cover in any detail in this article. An incomplete list of broad categories of Bayesian numerical approximation may include Approximate Bayesian Computation (ABC), Iterative Quadrature, Laplace Approximation, Markov chain Monte Carlo (MCMC), and Variational Bayes (VB). Since MCMC is most common, and because the \proglang{R} package entitled \pkg{LaplacesDemon} offers Laplace Approximation and seven MCMC algorithms (as well as ABC in these contexts), ABC, Laplace Approximation and MCMC are introduced below. For more information on MCMC algorithms in \pkg{LaplacesDemon}, see the accompanying vignette entitled ``\pkg{LaplacesDemon} Tutorial''.
+There are too many different types of numerical approximation algorithms in Bayesian inference to cover in any detail in this article. An incomplete list of broad categories of Bayesian numerical approximation may include Approximate Bayesian Computation (ABC), Importance Sampling, Iterative Quadrature, Laplace Approximation, Markov chain Monte Carlo (MCMC), and Variational Bayes (VB). Since MCMC is most common, and because the \proglang{R} package entitled \pkg{LaplacesDemon} offers Importance Sampling, Laplace Approximation, and over a dozen MCMC algorithms (as well as ABC in these contexts), the following methods are introduced below: ABC, Importance Sampling, Laplace Approximation, and MCMC. For more information on algorithms in \pkg{LaplacesDemon}, see the accompanying vignette entitled ``\pkg{LaplacesDemon} Tutorial''.
 
 Approximate Bayesian Computation (ABC), also called likelihood-free estimation, is a family of numerical approximation techniques in Bayesian inference. ABC is especially useful when evaluation of the likelihood, $p(\textbf{y} | \Theta)$ is computationally prohibitive, or when suitable likelihoods are unavailable. As such, ABC algorithms estimate likelihood-free approximations. ABC is usually faster than a similar likelihood-based numerical approximation technique, because the likelihood is not evaluated directly, but replaced with an approximation that is usually easier to calculate. The approximation of a likelihood is usually estimated with a measure of distance between the observed sample, $\textbf{y}$, and its replicate given the model, $\textbf{y}^{rep}$, or with summary statistics of the observed and replicated samples.
+
+Importance Sampling is a method of estimating a distribution with samples from a different distribution, called the importance distribution. Importance weights are assigned to each sample. The main difficulty with importance sampling is in the selection of the importance distribution. Importance sampling is the basis of a wide variety of algorithms, some of which involve the combination of importance sampling and Markov chain Monte Carlo. There are also many variations of importance sampling, including adaptive importance sampling, and parametric and nonparametric self-normalized importance sampling. Population Monte Carlo (PMC) is based on adaptive importance sampling.
 
 Laplace Approximation dates back to \citet{laplace74, laplace14}, and is used to approximate the posterior moments of integrals. Specifically, the posterior mode is estimated for each parameter, assumed to be unimodal and Gaussian. As a Gaussian distribution, the posterior mean is the same as the posterior mode, and the variance is estimated. Laplace Approximation is a family of deterministic algorithms that usually converge faster than MCMC, and just a little slower than Maximum Likelihood Estimation (MLE) \citep{azevedo94}. Laplace Approximation shares many limitations of MLE, including asymptotic estimation with respect to sample size.
 
@@ -414,7 +418,7 @@ If $\textbf{y}$ has missing values, then the missing $\textbf{y}$s can be estima
 
 $$p(\textbf{y}^{new} | \textbf{y}) = \int p(\textbf{y}^{new} | \beta,\sigma^2)p(\beta,\sigma^2 | \textbf{y}) d\beta d\sigma^2$$
 
-The posterior predictive distribution is easy to estimate, since it is the same thing as the expectation $\mu$ in
+The posterior predictive distribution is easy to estimate
 
 $$\textbf{y}^{new} \sim \mathcal{N}(\mu, \sigma^2)$$
 
@@ -455,7 +459,7 @@ Two of many possible alternatives are to use
 \item Deviance Information Criterion (DIC)
 \end{enumerate}
 
-DIC is the most popular method of assessing model fit and comparing models, though Bayes Factor are better, when appropriate, because they take more into account.
+DIC is the most popular method of assessing model fit and comparing models, though Bayes Factors are better, when appropriate, because they take more into account.
 
 \section{Model Fit}
 
@@ -465,7 +469,7 @@ To begin with, model fit can be summarized with deviance, which is defined as -2
 
 $$D(\textbf{y},\Theta) = -2\log[p(\textbf{y} | \Theta)]$$
 
-Just as with the likelihood, $p(\textbf{y} | \Theta)$, or log-likelihood, the deviance exists at both the record- and model-level. Due to the development of \proglang{BUGS} software, deviance is defined differently in Bayesian inference than frequentist inference. In frequentist inference, deviance is -2 times the log-likelihood ratio of a reduced model compared to a full model, whereas in Bayesian inference, deviance is simply -2 times the log-likelihood. In Bayesian inference, the lowest expected deviance has the highest posterior probability \citep[p. 181]{gelman04}.
+Just as with the likelihood, $p(\textbf{y} | \Theta)$, or log-likelihood, the deviance exists at both the record- and model-level. Due to the development of \proglang{BUGS} software \citep{gilks94}, deviance is defined differently in Bayesian inference than frequentist inference. In frequentist inference, deviance is -2 times the log-likelihood ratio of a reduced model compared to a full model, whereas in Bayesian inference, deviance is simply -2 times the log-likelihood. In Bayesian inference, the lowest expected deviance has the highest posterior probability \citep[p. 181]{gelman04}.
 
 It is possible to have a negative deviance. Deviance is derived from the likelihood, which is derived from probability density functions (PDF). Evaluated at a certain point in parameter space, a PDF can have a density larger than 1 due to a small standard deviation or lack of variation. Likelihoods greater than 1 lead to negative deviance, and are appropriate.
 
@@ -479,7 +483,7 @@ The effect of model fitting, pD or pV, can be thought of as the number of `uncon
 
 Model complexity, pD or pV, should be positive. Although pV must be positive since it is related to variance, it is possible for pD to be negative, which indicates one or more problems: log-likelihood is non-concave, a conflict between the prior and the data, or that the posterior mean is a poor estimator (such as with a bimodal posterior).
 
-The sum of both the mean model-level deviance and the model complexity (pD or pV) is the Deviance Information Criterion (DIC), a model fit statistic that is also an estimate of the expected loss, with deviance as a loss function. DIC is
+The sum of both the mean model-level deviance and the model complexity (pD or pV) is the Deviance Information Criterion (DIC), a model fit statistic that is also an estimate of the expected loss, with deviance as a loss function \citep{spiegelhalter98, spiegelhalter02}. DIC is
 
 $$\mathrm{DIC} = \bar{D} + \mathrm{pV}$$
 
@@ -487,7 +491,7 @@ DIC may be compared across different models and even different methods, as long 
 
 It is difficult to say what would constitute an important difference in DIC. Very roughly, differences of more than 10 might rule out the model with the higher DIC, differences between 5 and 10 are substantial, but if the difference in DIC is, say, less than 5, and the models make very different inferences, then it could be misleading just to report the model with the lowest DIC.
 
-The expected predictive deviance has been suggested as a criterion of model fit when the goal is to pick a model with the best out-of-sample predictive power. It can be approximately estimated with a predictive DIC, estimated by comparing the deviance between $\textbf{y}^{new}$ and $\textbf{y}^{holdout}$.
+The Bayesian Predictive Information Criterion (BPIC) was introduced as a criterion of model fit when the goal is to pick a model with the best out-of-sample predictive power \citep{ando07}. BPIC is a variation of DIC where the effective number of parameters is 2pD (or 2pV). BPIC may be compared between $\textbf{y}^{new}$ and $\textbf{y}^{holdout}$, and has many other extensions, such as with Bayesian Model Averaging (BMA).
 
 \section{Posterior Predictive Checks}
 
@@ -533,7 +537,7 @@ The CPO is
 
 $$p(\textbf{y}_i | \textbf{y}_{[i]}) = \int p(\textbf{y}_i |\Theta)p(\Theta | \textbf{y}_{[i]})d\Theta$$
 
-where $\textbf{y}_i$ is each instance of an observed $\textbf{y}$, and $\textbf{y}_{[i]}$ is $\textbf{y}$ without the current observation $i$. The CPO is easy to calculate with MCMC numerical approximation. By considering the inverse likelihood across $T$ iterations, the CPO for each individual $i$ is
+where $\textbf{y}_i$ is each instance of an observed $\textbf{y}$, and $\textbf{y}_{[i]}$ is $\textbf{y}$ without the current observation $i$. The CPO is easy to calculate with MCMC or PMC numerical approximation. By considering the inverse likelihood across $T$ iterations, the CPO for each individual $i$ is
 
 $$\mathrm{CPO}_i = \frac{1}{T^{-1} \displaystyle\sum^T_{t=1} p(\textbf{y}_i | \Theta_t)^{-1}}$$
 
@@ -561,7 +565,7 @@ $$\mathrm{L} = \sum^N_{i=1} \sqrt{\mathrm{var}(\textbf{y}^{rep}_{i,1:T}) + (\tex
 
 over $t=1,\dots,T$ posterior samples. The calibration number, $S_L$, is the standard deviation of L over records $i=1,\dots,N$.
 
-The L-criterion has been extended, such as including weights, and is best explored elsewhere.
+\citet{gelfand98} introduced Posterior Predictive Loss (PPL). This posterior predictive check for model comparison may be viewed as an extension to the L-criterion in which a weight $k$ is applied to the accuracy (fit) component.
 
 \section{Advantages Of Bayesian Inference Over Frequentist Inference}
 
@@ -583,11 +587,11 @@ frequentist inference.
 \item Bayesian inference uses observed data only. Frequentist inference uses both observed data and future data that is unobserved and hypothetical.
 \item Bayesian inference uses prior distributions, so more information is used and 95\% probability intervals of posterior distributions should be narrower than 95\% confidence intervals of frequentist point-estimates.
 \item Bayesian inference uses probability intervals (quantile-based, highest posterior density, or preferably lowest posterior loss) to state the probability that $\theta$ is between two points. Frequentist inference uses confidence intervals, which must be interpreted with probability of zero or one that $\theta$ is in the region, and the frequentist never knows whether it is or is not, but can only say that if 100 repeated samples were drawn in the future, that it would be in the region for 95 samples.
-\item Bayesian inference via MCMC algorithms allows more complicated models that frequentists are unable to estimate.
+\item Bayesian inference via MCMC or PMC algorithms allows more complicated models that frequentists are unable to estimate.
 \item Bayesian inference via MCMC has a theoretic guarantee than the MCMC algorithm will converge if run long enough. Frequentist inference with Maximum Likelihood Estimation (MLE) has no guarantee of convergence.
-\item Bayesian inference via MCMC is unbiased with respect to sample size and can accommodate any sample size no matter how small. Frequentist inference becomes more biased as sample size decreases from infinity, and is often wildly biased with small samples, so minimum sample size is an issue. Conversely, frequentist inference with large sample sizes biases p-values to indicate that insignificant effects are significant.
-\item Bayesian inference via MCMC uses exact estimation with respect to sample size. Frequentist inference uses approximate estimation that relies on asymptotic theory.
-\item Bayesian inference with correlated predictors sometimes allows the hyperparameters to be distributed multivariate-normal, therefore including such correlation into the MCMC algorithm to improve estimation. Frequentist inference does not use prior distributions, so confidence intervals are wider and less certain with correlated predictors.
+\item Bayesian inference via MCMC or PMC is unbiased with respect to sample size and can accommodate any sample size no matter how small. Frequentist inference becomes more biased as sample size decreases from infinity, and is often wildly biased with small samples, so minimum sample size is an issue. Conversely, frequentist inference with large sample sizes biases p-values to indicate that insignificant effects are significant.
+\item Bayesian inference via MCMC or PMC uses exact estimation with respect to sample size. Frequentist inference uses approximate estimation that relies on asymptotic theory.
+\item Bayesian inference with correlated predictors sometimes allows the hyperparameters to be distributed multivariate-normal, therefore including such correlation into the MCMC or PMC algorithm to improve estimation. Frequentist inference does not use prior distributions, so confidence intervals are wider and less certain with correlated predictors.
 \item Bayesian inference with proper priors is immune to singularities and near-singularities with matrix inversions, unlike frequentist inference.
 \end{itemize}
   
@@ -598,7 +602,7 @@ Following is a short list of advantages of frequentist inference over Bayesian i
 \begin{itemize}
 \item Frequentist models are able to include large data sets, while Bayesian models via MCMC have traditionally been restricted to small sample sizes (though Bayesian models via Laplace Approximation can handle large data sets). MCMC algorithms in Laplace's Demon, however, do not loop through records, and because these algorithms are vectorized in this respect, can handle large data sets.
 \item Frequentist models are usually much easier to prepare because many things do not need to be specified, such as prior distributions, initial values for numerical approximation, and usually the likelihood function. Most frequentist methods have been standardized to ``procedures'' where less knowledge and programming are required, and in many cases the user can just click on a few things and not really know what they are doing. Garbage in, garbage out.
-\item Frequentist models have much shorter run-times than Bayesian models via MCMC (though Laplace Approximation yields run-times that are almost as fast as the frequentist MLE). Simple models with small sample sizes may be similar, but complex models with larger sample sizes may be minutes (frequentist) vs. weeks (Bayesian via MCMC).
+\item Frequentist models have much shorter run-times than Bayesian models via MCMC or PMC (though Laplace Approximation yields run-times that are almost as fast as the frequentist MLE). Simple models with small sample sizes may be similar, but complex models with larger sample sizes may be minutes (frequentist) vs. weeks (Bayesian via MCMC).
 \end{itemize}
 
 As they say, it pays to go Bayes. Please send an email to \email{statisticat@gmail.com} with any questions or concerns about this article.

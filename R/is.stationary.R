@@ -11,6 +11,7 @@ is.stationary <- function(x)
   if(missing(x)) stop("The x argument is required.")
   stationary <- FALSE
   if(is.vector(x)) {
+       if(is.constant(x)) return(TRUE)
        options(warn=-1)
        test <- try(as.vector(Geweke.Diagnostic(x)), silent=TRUE)
        options(warn=0)

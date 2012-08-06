@@ -5,14 +5,14 @@
 \description{
   Monte Carlo Standard Error (MCSE) is an estimate of the inaccuracy of
   Monte Carlo samples, usually regarding the expectation of posterior
-  samples, \eqn{\mathrm{E}(\theta)}{E(theta)}, from Markov chain Monte
-  Carlo (MCMC) algorithms, such as with the \code{\link{LaplacesDemon}}
-  or \code{\link{LaplacesDemon.hpc}} functions. MCSE approaches zero as
-  the number of independent posterior samples approaches infinity. MCSE
-  is essentially a standard deviation around the posterior mean of the
-  samples, \eqn{\mathrm{E}(\theta)}{E(theta)}, due to uncertainty
-  associated with using an MCMC algorithm, or Monte Carlo methods in
-  general.
+  samples, \eqn{\mathrm{E}(\theta)}{E(theta)}, from Monte Carlo or
+  Markov chain Monte Carlo (MCMC) algorithms, such as with the
+  \code{\link{LaplacesDemon}} or \code{\link{LaplacesDemon.hpc}}
+  functions. MCSE approaches zero as the number of independent posterior
+  samples approaches infinity. MCSE is essentially a standard deviation
+  around the posterior mean of the samples,
+  \eqn{\mathrm{E}(\theta)}{E(theta)}, due to uncertainty associated with
+  using an MCMC algorithm, or Monte Carlo methods in general.
 
   The acceptable size of the MCSE depends on the acceptable uncertainty
   associated around the marginal posterior mean,

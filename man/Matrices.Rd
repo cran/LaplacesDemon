@@ -22,7 +22,7 @@
 \usage{
 as.indicator.matrix(x)
 as.inverse(x)
-as.parm.matrix(x, k, parm, Data, a=-Inf, b=Inf, restrict=FALSE)
+as.parm.matrix(x, k, parm, Data, a=-Inf, b=Inf, restrict=FALSE, chol=FALSE)
 as.positive.definite(x)
 as.positive.semidefinite(x)
 as.symmetric.matrix(x, k=NULL)
@@ -64,6 +64,8 @@ upper.triangle(x, diag=FALSE)
     example. Be aware that a global variable, \code{LaplacesDemonMatrix}, is
     created so \code{as.parm.matrix} can keep track of changes from
     iteration to iteration.}
+  \item{chol}{Logical. If \code{TRUE}, then x is an upper-triangular
+    matrix.}
   \item{file}{This is the name of the file from which the data will be
     imported or read.}
   \item{header}{Logical. When \code{TRUE}, the first row of the file
@@ -124,11 +126,12 @@ upper.triangle(x, diag=FALSE)
   matrix have changed.
 
   The \code{as.positive.definite} function returns the nearest
-  positive-definite matrix for a matrix that is square and symmetric,
-  This is intended only for covariance and precision matrices, and has
-  been optimized for speed. A more extensible function is \code{nearPD}
-  in the matrixcalc package, which is also able to work with correlation
-  matrices, and matrices that are asymmetric.
+  positive-definite matrix for a matrix that is square and symmetric
+  (Higham, 2002). This version is intended only for covariance and
+  precision matrices, and has been optimized for speed. A more
+  extensible function is \code{nearPD} in the matrixcalc package, which
+  is also able to work with correlation matrices, and matrices that are
+  asymmetric.
 
   The \code{as.positive.semidefinite} function iteratively seeks to
   return a square, symmetric matrix that is at least
@@ -163,6 +166,8 @@ upper.triangle(x, diag=FALSE)
   the \code{Model} function is evaulated only for the upper triangular
   of this matrix, and the lower triangular is copied. This function is
   not intended to be called by the user, but is made available here.
+  Automatic differentiation (AD) is an improvement over
+  finite-differencing, but is currently unavailable here.
 
   The \code{is.positive.definite} function is a logical test of whether
   or not a matrix is positive-definite. A \eqn{k \times k}{k x k}

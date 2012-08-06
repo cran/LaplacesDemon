@@ -2,8 +2,8 @@
 \alias{Model.Spec.Time}
 \title{Model Specification Time}
 \description{
-  The \code{Model.Spec.Time} function returns the time in minutes that it
-  took to evaluate a model specification a number of times, as well as
+  The \code{Model.Spec.Time} function returns the time in minutes to
+  evaluate a model specification a number of times, as well as
   the evaluations per minute, and componentwise iterations per minute.
 }
 \usage{
@@ -20,14 +20,15 @@ Model.Spec.Time(Model, Initial.Values, Data, n=1000)
     and accuracy increases with \code{n}.}
 }
 \details{
-  The largest single factor to affect the run-time of an algorithm,
-  whether it is with \code{\link{LaplaceApproximation}} or
-  \code{\link{LaplacesDemon}}, is the time that it takes to evaluate the
-  model specifiation. This has also been observed in Rosenthal (2007).
-  It is highly recommended that a user of the \code{LaplacesDemon}
-  package should attempt to reduce the run-time of the model
-  specification, usually by testing alternate forms of code for speed.
-
+  The largest single factor to affect the run-time of an algorithm --
+  whether it is with \code{\link{LaplaceApproximation}},
+  \code{\link{LaplacesDemon}}, or \code{\link{PMC}} -- is the time that
+  it takes to evaluate the model specification. This has also been
+  observed in Rosenthal (2007). It is highly recommended that a user of
+  the \code{LaplacesDemon} package should attempt to reduce the run-time
+  of the model specification, usually by testing alternate forms of code
+  for speed.
+  
   A model specification function that is optimized for speed and
   involves many records may result in a model update run-time that is
   considerably less than other popular MCMC-based software algorithms
@@ -48,7 +49,7 @@ Model.Spec.Time(Model, Initial.Values, Data, n=1000)
 
   Examples in the \code{LaplacesDemon} package are not necessarily
   optimized for speed, which is often compromised for clarity of
-  programming. For example, most examples in the ``Examples'' vignette
+  programming. For instace, most examples in the ``Examples'' vignette
   use the \code{grep} function to find the position of a parameter based
   on an associated parameter name. This makes the model specification
   function much more readable, and also makes it easy to modify by
@@ -66,35 +67,37 @@ Model.Spec.Time(Model, Initial.Values, Data, n=1000)
   \code{.Fortran} function. This experimentation has not yet been done,
   but should generally be worth the effort only when the model
   specification is vectorized in the faster language as well. One
-  suggestion may be to browse for R packages on CRAN that enable a user
-  to speed up R code by incorporating C and other languages.
+  suggestion may be to browse for \code{R} packages on CRAN that enable
+  a user to speed up \code{R} code by incorporating \code{C} and other
+  languages.
 
   Another use for \code{Model.Spec.Time} is to allow the user to make an
   informed decision about which MCMC algorithm to select, given the
   speed of their model specification. For example, the Adaptive
   Metropolis-within-Gibbs (AMWG) of Roberts and Rosenthal (2009) is
-  currently the adaptive algorithm of choice in general, but this choice
-  is conditional on run-time. While the other MCMC algorithms in
-  \code{LaplacesDemon} evaluate the model specification function once
-  per iteration, componentwise algorithms (AMWG and MWG) evaluate it
-  once per parameter per iteration, significantly increasing run-time
-  per iteration in large models. The \code{Model.Spec.Time} may forewarn
-  the user of the associated run-time, and if it should be decided to go
-  with an alternate MCMC algorithm, such as AMM, in which each element
-  of its covariance matrix must stabilize for the chains to become
-  stationary. AMM, for example, will require many more iterations of
+  currently the adaptive MCMC algorithm of choice in general in many
+  cases, but this choice is conditional on run-time. While the other
+  MCMC algorithms in \code{LaplacesDemon} evaluate the model
+  specification function once per iteration, componentwise algorithms
+  such as in the MWG family evaluate it once per parameter per
+  iteration, significantly increasing run-time per iteration in large
+  models. The \code{Model.Spec.Time} may forewarn the user of the
+  associated run-time, and if it should be decided to go with an
+  alternate MCMC algorithm, such as AMM, in which each element of its
+  covariance matrix must stabilize for the chains to become
+  stationary. AMM, for example, will require many more iterations of 
   burn-in (for more information, see the \code{\link{burnin}} function),
   but with numerous iterations, allows more thinning. A general
   recommendation may be to use AMWG when
   \code{Componentwise.Iters.per.Minute} >= 1000, but this is subjective
-  and best determined by each user for each model. This does not include
-  the time of the MCMC algorithm, which includes pre- and post-processing
-  time (checking stationarity, summarizing, estimating LML, etc.), and
-  therefore changes with the number of iterations.
-
-  Following are a few common suggestions for increasing the speed of R
-  code in the model specification function. There are often exceptions
-  to these suggestions, so case-by-case experimentation is also suggested.
+  and best determined by each user for each model. A better decision may
+  be made by comparing MCMC algorithms with the \code{\link{Juxtapose}}
+  function for a particular model.
+  
+  Following are a few common suggestions for increasing the speed of
+  \code{R} code in the model specification function. There are often
+  exceptions to these suggestions, so case-by-case experimentation is
+  also suggested.
 
   \itemize{
     \item Replace exponents with multiplied terms, such as \code{x^2}
@@ -140,9 +143,11 @@ Model.Spec.Time(Model, Initial.Values, Data, n=1000)
   \code{\link{.Fortran}},
   \code{\link{apply}},
   \code{\link{grep}},
+  \code{\link{Juxtapose}},
   \code{\link{LaplaceApproximation}},
   \code{\link{LaplacesDemon}},
-  \code{\link{max.col}}, and
+  \code{\link{max.col}},
+  \code{\link{PMC}}, and
   \code{\link{system.time}}.
 }
 \keyword{Utility}

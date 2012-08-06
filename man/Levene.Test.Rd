@@ -10,7 +10,7 @@ Levene.Test(x, Method="U", G=NULL, Data=NULL)
 }
 \arguments{
   \item{x}{This required argument must be an object of class
-    \code{demonoid.ppc} or \code{laplace.ppc}.}
+    \code{demonoid.ppc}, \code{laplace.ppc}, or \code{pmc.ppc}.}
   \item{Method}{The method defaults to \code{U} for a univariate
     dependent variable (DV), y. When the DV is multivariate,
     \code{Method="C"} applies Levene's test to each column associated
@@ -85,11 +85,12 @@ Levene.Test(x, Method="U", G=NULL, Data=NULL)
 \author{Byron Hall \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{LaplaceApproximation}},
-  \code{\link{LaplacesDemon}}, and
+  \code{\link{LaplacesDemon}},
+  \code{\link{PMC}}, and
   \code{\link{p.interval}}.
 }
 \examples{
-#First, update the model with LaplaceApproximation or LaplacesDemon.
+#First, update the model with LaplaceApproximation, LaplacesDemon, or PMC.
 #Then, use the predict function, creating, say, object Pred.
 #Finally:
 #Levene.Test(Pred)

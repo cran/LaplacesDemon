@@ -20,12 +20,13 @@ Importance <- function(object, Model, Data, Categorical=FALSE, Discrep,
      Pred <- predict(object, Model, Data)
      Summ <- summary(Pred, Categorical=Categorical, Discrep=Discrep, d=d,
           Quiet=TRUE)
-     out <- matrix(0, ncol(X.orig) + 1, 3)
-     if(Categorical == FALSE) out[1,1] <- round(Summ$Concordance, 3)
-     else out[1,1] <- round(Summ$Mean.Lift, 3)
-     out[1,2] <- Summ$Discrepancy.Statistic
+     out <- matrix(0, ncol(X.orig) + 1, 4)
+     out[1,1] <- Summ$BPIC[1,3]
+     if(Categorical == FALSE) out[1,2] <- round(Summ$Concordance, 3)
+     else out[1,2] <- round(Summ$Mean.Lift, 3)
+     out[1,3] <- Summ$Discrepancy.Statistic
      if(Categorical == FALSE) {
-          out[1,3] <- Summ$L.criterion
+          out[1,4] <- Summ$L.criterion
           S.L <- Summ$S.L}
      else S.L <- NA
      for (i in 1:ncol(X.orig)) {
@@ -36,15 +37,15 @@ Importance <- function(object, Model, Data, Categorical=FALSE, Discrep,
           Pred <- predict(object, Model, Data)
           Summ <- summary(Pred, Categorical=Categorical,
                Discrep=Discrep, d=d, Quiet=TRUE)
-          if(Categorical == FALSE) out[i+1,1] <- round(Summ$Concordance, 3)
-          else out[i+1,1] <- round(Summ$Mean.Lift, 3)
-          out[i+1,2] <- Summ$Discrepancy.Statistic
+          out[i+1,1] <- Summ$BPIC[1,3]
+          if(Categorical == FALSE) out[i+1,2] <- round(Summ$Concordance, 3)
+          else out[i+1,2] <- round(Summ$Mean.Lift, 3)
+          out[i+1,3] <- Summ$Discrepancy.Statistic
           if(Categorical == FALSE) {
-               out[i+1,3] <- Summ$L.criterion
-               S.L <- c(S.L, Summ$S.L)}
-          }
+               out[i+1,4] <- Summ$L.criterion
+               S.L <- c(S.L, Summ$S.L)}}
      if(Categorical == FALSE) cat("\n\nS.L:", S.L)
-     colnames(out) <- c("Concordance", "Discrep", "L-criterion")
+     colnames(out) <- c("BPIC","Concordance", "Discrep", "L-criterion")
      rownames(out) <- c("Full", paste("X[,-", 1:ncol(X.orig), "]", sep=""))
      attr(out, "S.L") <- S.L
      class(out) <- "importance"

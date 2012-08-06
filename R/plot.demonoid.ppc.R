@@ -35,9 +35,7 @@ plot.demonoid.ppc <- function(x, Style=NULL, Data=NULL, Rows=NULL,
                     col="gray", col.smooth="gray")
                panel.smooth(co[Rows,i], temp[Rows,6], pch=16, cex=0.75,
                     col="gray", col.smooth="gray")
-               panel.smooth(co[Rows,i], temp[Rows,5], pch=16, cex=0.75)
-               }
-          }
+               panel.smooth(co[Rows,i], temp[Rows,5], pch=16, cex=0.75)}}
      if(Style == "Covariates, Categorical DV") {
           if(PDF == TRUE) {pdf("PPC.Plots.Covariates.Cat.pdf")
                par(mfrow=c(3,3))}
@@ -54,9 +52,7 @@ plot.demonoid.ppc <- function(x, Style=NULL, Data=NULL, Rows=NULL,
                plot(co[Rows,i], temp[Rows,j], pch=16, cex=0.75,
                     xlab=paste("X[,",i,"]", sep=""),
                     ylab=colnames(temp)[j])
-               panel.smooth(co[Rows,i], temp[Rows,j], pch=16, cex=0.75)
-               }}
-          }
+               panel.smooth(co[Rows,i], temp[Rows,j], pch=16, cex=0.75)}}}
      if(Style == "Density") {
           if(PDF == TRUE) {pdf("PPC.Plots.Density.pdf")
                par(mfrow=c(3,3))}
@@ -68,8 +64,7 @@ plot.demonoid.ppc <- function(x, Style=NULL, Data=NULL, Rows=NULL,
                     sub="Black=Density, Red=y")
                polygon(density(x$yhat[Rows[j],]), col="black",
                     border="black")
-               abline(v=x$y[Rows[j]], col="red")}
-          }
+               abline(v=x$y[Rows[j]], col="red")}}
      if(Style == "DW") {
           if(PDF == TRUE) pdf("PPC.Plots.DW.pdf")
           par(mfrow=c(1,1))
@@ -98,8 +93,7 @@ plot.demonoid.ppc <- function(x, Style=NULL, Data=NULL, Rows=NULL,
                na.rm=TRUE),3), " = ", result, " autocorrelation", sep=""))
           polygon(d.d.obs, col="black", border="black")
           lines(d.d.rep, col="red")
-          abline(v=2, col="red")
-          }
+          abline(v=2, col="red")}
      if(Style == "DW, Multivariate, C") {
           if(PDF == TRUE) {pdf("PPC.Plots.DW.M.pdf")
                par(mfrow=c(1,1))}
@@ -136,8 +130,7 @@ plot.demonoid.ppc <- function(x, Style=NULL, Data=NULL, Rows=NULL,
                     sub=paste("Y[,",j,"]",sep=""))
                polygon(d.d.obs, col="black", border="black")
                lines(d.d.rep, col="red")
-               abline(v=2, col="red")}
-          }
+               abline(v=2, col="red")}}
      if(Style == "ECDF") {
           if(PDF == TRUE) pdf("PPC.Plots.ECDF.pdf")
           par(mfrow=c(1,1))
@@ -150,23 +143,19 @@ plot.demonoid.ppc <- function(x, Style=NULL, Data=NULL, Rows=NULL,
           lines(ecdf(apply(x$yhat[Rows,], 1, quantile, probs=0.025)),
                verticals=TRUE, do.points=FALSE, col="gray")
           lines(ecdf(apply(x$yhat[Rows,], 1, quantile, probs=0.500)),
-               verticals=TRUE, do.points=FALSE, col="red")
-          }
+               verticals=TRUE, do.points=FALSE, col="red")}
      if(Style == "Fitted") {
           if(PDF == TRUE) pdf("PPC.Plots.Fitted.pdf")
           par(mfrow=c(1,1))
           temp <- summary(x, Quiet=TRUE)$Summary
           plot(temp[Rows,1], temp[Rows,5], pch=16, cex=0.75,
-               ylim=c(min(temp[Rows,c(1,4:6)], na.rm=TRUE),
-               max(temp[Rows,c(1,4:6)], na.rm=TRUE)),
-               xlab="y", ylab="yhat", main="Fitted",
-               sub="Gray dots and lines are yhat at 2.5% and 95%.")
-          panel.smooth(temp[Rows,1], temp[Rows,4], pch=16, cex=0.75,
-               col="gray", col.smooth="gray")
-          panel.smooth(temp[Rows,1], temp[Rows,6], pch=16, cex=0.75,
-               col="gray", col.smooth="gray")
-          panel.smooth(temp[Rows,1], temp[Rows,5], pch=16, cex=0.75)
-          }
+               ylim=c(min(temp[Rows,4], na.rm=TRUE),
+               max(temp[Rows,6], na.rm=TRUE)),
+               xlab="y", ylab="yhat", main="Fitted")
+          for (i in Rows) {
+               lines(c(temp[Rows[i],1], temp[Rows[i],1]),
+                    c(temp[Rows[i],4], temp[Rows[i],6]))}
+          panel.smooth(temp[Rows,1], temp[Rows,5], pch=16, cex=0.75)}
      if(Style == "Fitted, Multivariate, C") {
           if(PDF == TRUE) {pdf("PPC.Plots.Fitted.M.pdf")
                par(mfrow=c(1,1))}
@@ -176,28 +165,23 @@ plot.demonoid.ppc <- function(x, Style=NULL, Data=NULL, Rows=NULL,
           if(is.null(Data$Y)) stop("Y is required in Data.")
           temp <- summary(x, Quiet=TRUE)$Summary
           for (i in 1:ncol(Data$Y)) {
-               plot(matrix(temp[,1], nrow(Data$Y), ncol(Data$Y))[,i],
-                    matrix(temp[,5], nrow(Data$Y), ncol(Data$Y))[,i],
-                    pch=16, cex=0.75,
-                    ylim=c(min(Data$Y[,i],
-                         matrix(temp[,4], nrow(Data$Y),
-                              ncol(Data$Y))[,i], na.rm=TRUE),
-                         max(Data$Y[,i],
-                         matrix(temp[,6], nrow(Data$Y),
-                              ncol(Data$Y))[,i], na.rm=TRUE)),
+               temp1 <- as.vector(matrix(temp[,1], nrow(Data$Y),
+                    ncol(Data$Y))[,i])
+               temp2 <- as.vector(matrix(temp[,4], nrow(Data$Y),
+                    ncol(Data$Y))[,i])
+               temp3 <- as.vector(matrix(temp[,5], nrow(Data$Y),
+                    ncol(Data$Y))[,i])
+               temp4 <- as.vector(matrix(temp[,6], nrow(Data$Y),
+                    ncol(Data$Y))[,i])
+               plot(temp1, temp3, pch=16, cex=0.75,
+                    ylim=c(min(temp2, na.rm=TRUE),
+                         max(temp4, na.rm=TRUE)),
                     xlab=paste("Y[,", i, "]", sep=""), ylab="yhat",
-                    main="Fitted",
-                    sub="Gray dots and lines are yhat at 2.5% and 95%.")
-               panel.smooth(matrix(temp[,1], nrow(Data$Y), ncol(Data$Y))[,i],
-                    matrix(temp[,4], nrow(Data$Y), ncol(Data$Y))[,i],
-                    pch=16, cex=0.75, col="gray", col.smooth="gray")
-               panel.smooth(matrix(temp[,1], nrow(Data$Y), ncol(Data$Y))[,i],
-                    matrix(temp[,6], nrow(Data$Y), ncol(Data$Y))[,i],
-                    pch=16, cex=0.75, col="gray", col.smooth="gray")
-               panel.smooth(matrix(temp[,1], nrow(Data$Y), ncol(Data$Y))[,i],
-                    matrix(temp[,5], nrow(Data$Y), ncol(Data$Y))[,i],
-                    pch=16, cex=0.75)}
-          }
+                    main="Fitted")
+               for (j in 1:nrow(Data$Y)) {
+                    lines(c(temp1[j], temp1[j]),
+                         c(temp2[j], temp4[j]))}
+               panel.smooth(temp1, temp3, pch=16, cex=0.75)}}
      if(Style == "Fitted, Multivariate, R") {
           if(PDF == TRUE) {pdf("PPC.Plots.Fitted.M.pdf")
                par(mfrow=c(1,1))}
@@ -207,28 +191,23 @@ plot.demonoid.ppc <- function(x, Style=NULL, Data=NULL, Rows=NULL,
           if(is.null(Data$Y)) stop("Y is required in Data.")
           temp <- summary(x, Quiet=TRUE)$Summary
           for (i in 1:nrow(Data$Y)) {
-               plot(matrix(temp[,1], nrow(Data$Y), ncol(Data$Y))[i,],
-                    matrix(temp[,5], nrow(Data$Y), ncol(Data$Y))[i,],
-                    pch=16, cex=0.75,
-                    ylim=c(min(Data$Y[i,],
-                         matrix(temp[,4], nrow(Data$Y),
-                              ncol(Data$Y))[i,], na.rm=TRUE),
-                         max(Data$Y[i,],
-                         matrix(temp[,6], nrow(Data$Y),
-                              ncol(Data$Y))[i,], na.rm=TRUE)),
+               temp1 <- as.vector(matrix(temp[,1], nrow(Data$Y),
+                    ncol(Data$Y))[i,])
+               temp2 <- as.vector(matrix(temp[,4], nrow(Data$Y),
+                    ncol(Data$Y))[i,])
+               temp3 <- as.vector(matrix(temp[,5], nrow(Data$Y),
+                    ncol(Data$Y))[i,])
+               temp4 <- as.vector(matrix(temp[,6], nrow(Data$Y),
+                    ncol(Data$Y))[i,])
+               plot(temp1, temp3, pch=16, cex=0.75,
+                    ylim=c(min(temp2, na.rm=TRUE),
+                         max(temp4, na.rm=TRUE)),
                     xlab=paste("Y[,", i, "]", sep=""), ylab="yhat",
-                    main="Fitted",
-                    sub="Gray dots and lines are yhat at 2.5% and 95%.")
-               panel.smooth(matrix(temp[,1], nrow(Data$Y), ncol(Data$Y))[i,],
-                    matrix(temp[,4], nrow(Data$Y), ncol(Data$Y))[i,],
-                    pch=16, cex=0.75, col="gray", col.smooth="gray")
-               panel.smooth(matrix(temp[,1], nrow(Data$Y), ncol(Data$Y))[i,],
-                    matrix(temp[,6], nrow(Data$Y), ncol(Data$Y))[i,],
-                    pch=16, cex=0.75, col="gray", col.smooth="gray")
-               panel.smooth(matrix(temp[,1], nrow(Data$Y), ncol(Data$Y))[i,],
-                    matrix(temp[,5], nrow(Data$Y), ncol(Data$Y))[i,],
-                    pch=16, cex=0.75)}
-          }
+                    main="Fitted")
+               for (j in 1:ncol(Data$Y)) {
+                    lines(c(temp1[j], temp1[j]),
+                         c(temp2[j], temp4[j]))}
+               panel.smooth(temp1, temp3, pch=16, cex=0.75)}}
      if(Style == "Jarque-Bera") {
           if(PDF == TRUE) pdf("PPC.Plots.Jarque.Bera.pdf")
           par(mfrow=c(1,1))
@@ -267,8 +246,7 @@ plot.demonoid.ppc <- function(x, Style=NULL, Data=NULL, Rows=NULL,
                probs=0.975, na.rm=TRUE)),2), "), p(JB.obs > JB.rep) = ",
                p, " = ", result, sep=""))
           polygon(d.obs, col="black", border="black")
-          lines(d.rep, col="red")
-          }
+          lines(d.rep, col="red")}
      if(Style == "Jarque-Bera, Multivariate, C") {
           if(PDF == TRUE) {pdf("PPC.Plots.Jarque.Bera.pdf")
                par(mfrow=c(1,1))}
@@ -315,8 +293,7 @@ plot.demonoid.ppc <- function(x, Style=NULL, Data=NULL, Rows=NULL,
                     probs=0.975, na.rm=TRUE)),2), "), p(JB.obs > JB.rep) = ",
                     p, " = ", result, sep=""))
                polygon(d.obs, col="black", border="black")
-               lines(d.rep, col="red")}
-          }
+               lines(d.rep, col="red")}}
      if(Style == "Mardia") {
           if(PDF == TRUE) pdf("PPC.Plots.Mardia.pdf")
           par(mfrow=c(2,1))
@@ -386,8 +363,7 @@ plot.demonoid.ppc <- function(x, Style=NULL, Data=NULL, Rows=NULL,
                     na.rm=TRUE), 2), "), p(K4.obs > K4.rep) = ",
                     p.K4, " = ", K4.result, sep=""))
           polygon(d.K4.obs, col="black", border="black")
-          lines(d.K4.rep, col="red")
-          }
+          lines(d.K4.rep, col="red")}
      if(Style == "Predictive Quantiles") {
           if(PDF == TRUE) pdf("PPC.Plots.PQ.pdf")
           par(mfrow=c(1,1))
@@ -396,8 +372,7 @@ plot.demonoid.ppc <- function(x, Style=NULL, Data=NULL, Rows=NULL,
                xlab="y", ylab="PQ", main="Predictive Quantiles")
           panel.smooth(temp[Rows,1], temp[Rows,7], pch=16, cex=0.75)
           abline(h=0.025, col="gray")
-          abline(h=0.975, col="gray")
-          }
+          abline(h=0.975, col="gray")}
      if(Style == "Residual Density") {
           if(PDF == TRUE) pdf("PPC.Plots.Residual.Density.pdf")
           par(mfrow=c(1,1))
@@ -408,8 +383,7 @@ plot.demonoid.ppc <- function(x, Style=NULL, Data=NULL, Rows=NULL,
           plot(dens, col="black", main="Residual Density",
                xlab=expression(epsilon), ylab="Density")
           polygon(dens, col="black", border="black")
-          abline(v=0, col="red")
-          }
+          abline(v=0, col="red")}
      if(Style == "Residual Density, Multivariate, C") {
           if(PDF == TRUE) {pdf("PPC.Plots.Residual.Density.pdf")
                par(mfrow=c(1,1))}
@@ -428,9 +402,7 @@ plot.demonoid.ppc <- function(x, Style=NULL, Data=NULL, Rows=NULL,
                     xlab=paste("epsilon[,", i, "]", sep=""),
                     ylab="Density")
                polygon(dens, col="black", border="black")
-               abline(v=0, col="red")
-               }
-          }
+               abline(v=0, col="red")}}
      if(Style == "Residual Density, Multivariate, R") {
           if(PDF == TRUE) {pdf("PPC.Plots.Residual.Density.pdf")
                par(mfrow=c(1,1))}
@@ -449,9 +421,7 @@ plot.demonoid.ppc <- function(x, Style=NULL, Data=NULL, Rows=NULL,
                     xlab=paste("epsilon[", i, ",]", sep=""),
                     ylab="Density")
                polygon(dens, col="black", border="black")
-               abline(v=0, col="red")
-               }
-          }
+               abline(v=0, col="red")}}
      if(Style == "Residuals") {
           if(PDF == TRUE) pdf("PPC.Plots.Residuals.pdf")
           par(mfrow=c(1,1))
@@ -465,8 +435,7 @@ plot.demonoid.ppc <- function(x, Style=NULL, Data=NULL, Rows=NULL,
           lines(rep(0, ncol(epsilon.summary[,Rows])), col="red")
           for (i in Rows) {
                lines(c(i,i), c(epsilon.summary[1,Rows[i]],
-                    epsilon.summary[3,Rows[i]]), col="black")}
-          }
+                    epsilon.summary[3,Rows[i]]), col="black")}}
      if(Style == "Residuals, Multivariate, C") {
           if(PDF == TRUE) {pdf("PPC.Plots.Residuals.pdf")
                par(mfrow=c(1,1))}
@@ -489,9 +458,7 @@ plot.demonoid.ppc <- function(x, Style=NULL, Data=NULL, Rows=NULL,
                lines(rep(0, nrow(epsilon.500)), col="red")
                for (j in 1:nrow(Data$Y)) {
                     lines(c(j,j), c(epsilon.025[j,i],
-                         epsilon.975[j,i]), col="black")}
-               }
-          }
+                         epsilon.975[j,i]), col="black")}}}
      if(Style == "Residuals, Multivariate, R") {
           if(PDF == TRUE) {pdf("PPC.Plots.Residuals.pdf")
                par(mfrow=c(1,1))}
@@ -514,9 +481,7 @@ plot.demonoid.ppc <- function(x, Style=NULL, Data=NULL, Rows=NULL,
                lines(rep(0, ncol(epsilon.500)), col="red")
                for (j in 1:ncol(Data$Y)) {
                     lines(c(j,j), c(epsilon.025[i,j],
-                         epsilon.975[i,j]), col="black")}
-               }
-          }
+                         epsilon.975[i,j]), col="black")}}}
      if(Style == "Space-Time by Space") {
           if(PDF == TRUE) {pdf("PPC.Plots.SpaceTime.pdf")
                par(mfrow=c(1,1))}
@@ -542,9 +507,7 @@ plot.demonoid.ppc <- function(x, Style=NULL, Data=NULL, Rows=NULL,
                     sub="Actual=Black, Fit=Red, Interval=Gray")
                lines(matrix(temp[,4], Data$S, Data$T)[s,], col="gray")
                lines(matrix(temp[,6], Data$S, Data$T)[s,], col="gray")
-               lines(matrix(temp[,5], Data$S, Data$T)[s,], col="red")
-               }
-          }
+               lines(matrix(temp[,5], Data$S, Data$T)[s,], col="red")}}
      if(Style == "Space-Time by Time") {
           if(PDF == TRUE) {pdf("PPC.Plots.SpaceTime.pdf")
                par(mfrow=c(1,1))}
@@ -565,8 +528,7 @@ plot.demonoid.ppc <- function(x, Style=NULL, Data=NULL, Rows=NULL,
                     col=heat.colors(120)[Heat[,t]],
                     pch=16, cex=0.75, xlab="Longitude", ylab="Latitude",
                     main=paste("Space-Time at t=",t," of ", Data$T,
-                         sep=""), sub="Red=High, Yellow=Low")}
-          }
+                         sep=""), sub="Red=High, Yellow=Low")}}
      if(Style == "Spatial") {
           if(PDF == TRUE) pdf("PPC.Plots.Spatial.pdf")
           par(mfrow=c(1,1))
@@ -580,8 +542,7 @@ plot.demonoid.ppc <- function(x, Style=NULL, Data=NULL, Rows=NULL,
           plot(Data$longitude[Rows], Data$latitude[Rows],
                col=heat.colors(120)[heat],
                pch=16, cex=0.75, xlab="Longitude", ylab="Latitude",
-               main="Spatial Plot", sub="Red=High, Yellow=Low")
-          }
+               main="Spatial Plot", sub="Red=High, Yellow=Low")}
      if(Style == "Spatial Uncertainty") {
           if(PDF == TRUE) pdf("PPC.Plots.Spatial.Unc.pdf")
           par(mfrow=c(1,1))
@@ -599,8 +560,7 @@ plot.demonoid.ppc <- function(x, Style=NULL, Data=NULL, Rows=NULL,
                col=heat.colors(120)[heat],
                pch=16, cex=0.75, xlab="Longitude", ylab="Latitude",
                main="Spatial Uncertainty Plot",
-               sub="Red=High, Yellow=Low")
-          }
+               sub="Red=High, Yellow=Low")}
      if(Style == "Time-Series") {
           if(PDF == TRUE) pdf("PPC.Plots.TimeSeries.pdf")
           par(mfrow=c(1,1))
@@ -613,8 +573,7 @@ plot.demonoid.ppc <- function(x, Style=NULL, Data=NULL, Rows=NULL,
                sub="Actual=Black, Fit=Red, Interval=Gray")
           lines(temp[Rows,4], col="gray")
           lines(temp[Rows,6], col="gray")
-          lines(temp[Rows,5], col="red")
-          }
+          lines(temp[Rows,5], col="red")}
      if(Style == "Time-Series, Multivariate, C") {
           if(PDF == TRUE) {pdf("PPC.Plots.TimeSeries.pdf")
                par(mfrow=c(1,1))}
@@ -640,8 +599,7 @@ plot.demonoid.ppc <- function(x, Style=NULL, Data=NULL, Rows=NULL,
           lines(matrix(temp[Rows,6],nrow(Data$Y),ncol(Data$Y))[,i],
                col="gray")
           lines(matrix(temp[Rows,5],nrow(Data$Y),ncol(Data$Y))[,i],
-               col="red")}
-          }
+               col="red")}}
      if(Style == "Time-Series, Multivariate, R") {
           if(PDF == TRUE) {pdf("PPC.Plots.TimeSeries.pdf")
                par(mfrow=c(1,1))}
@@ -667,8 +625,7 @@ plot.demonoid.ppc <- function(x, Style=NULL, Data=NULL, Rows=NULL,
           lines(matrix(temp[Rows,6],nrow(Data$Y),ncol(Data$Y))[i,],
                col="gray")
           lines(matrix(temp[Rows,5],nrow(Data$Y),ncol(Data$Y))[i,],
-               col="red")}
-          }
+               col="red")}}
      if(PDF == TRUE) dev.off()
      }
 

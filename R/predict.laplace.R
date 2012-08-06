@@ -18,18 +18,17 @@ predict.laplace <- function(object, Model, Data, ...)
      if(!is.null(Data$y)) y <- as.vector(Data$y)
      if(!is.null(Data$Y)) y <- as.vector(Data$Y)
      ### p(y[rep] | y), Deviance, and Monitors
-     deviance <- rep(NA, nrow(object$Posterior))
+     Dev <- rep(NA, nrow(object$Posterior))
      monitor <- matrix(NA, length(Data$mon.names), nrow(object$Posterior))
      lengthcomp <- as.vector(Model(object$Posterior[1,], Data)[[4]])
      if(!identical(length(lengthcomp), length(y)))
           stop("y and yhat differ in length.")
      yhat <- matrix(NA, length(y), nrow(object$Posterior))
      for (i in 1:nrow(object$Posterior)) {
-          temp <- Model(object$Posterior[i,], Data)
-          deviance[i] <- as.vector(temp[[2]])
-          monitor[,i] <- as.vector(temp[[3]])
-          yhat[,i] <- as.vector(temp[[4]])
-          }
+          mod <- Model(object$Posterior[i,], Data)
+          Dev[i] <- as.vector(mod[[2]])
+          monitor[,i] <- as.vector(mod[[3]])
+          yhat[,i] <- as.vector(mod[[4]])}
      rownames(monitor) <- Data$mon.names
      ### Warnings
      if(any(is.na(yhat))) cat("\nWARNING: Output matrix yhat has ",
@@ -38,8 +37,10 @@ predict.laplace <- function(object, Model, Data, ...)
           sum(is.nan(yhat)), " non-numeric (NaN) values.")
      if(any(is.infinite(yhat))) cat("\nWARNING: Output matrix yhat has ",
           sum(is.infinite(yhat)), " infinite values.")
+     if(any(!is.finite(Dev)))
+          cat("\nWARNING: Deviance has non-finite values.")
      ### Create Output
-     predicted <- list(y=y, yhat=yhat, deviance=deviance,
+     predicted <- list(y=y, yhat=yhat, Deviance=Dev,
           monitor=monitor)
      class(predicted) <- "laplace.ppc"
      return(predicted)

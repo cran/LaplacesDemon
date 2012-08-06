@@ -19,7 +19,7 @@ LaplacesDemon.RAM <- function(Model, Data, Iterations, Thinning)
      Data <- as.vector(object.size(Data)) / Const
      Deviance <- as.vector(object.size(runif(round(Iterations /
           Thinning)))) / Const
-     Initial.Values <- as.vector(runif(LIV)) / Const
+     Initial.Values <- as.vector(object.size(runif(LIV))) / Const
      Model <- as.vector(object.size(Model)) / Const
      Monitor <- as.vector(object.size(matrix(runif(Iterations*LM),
           round(Iterations / Thinning), LM))) / Const
@@ -27,6 +27,8 @@ LaplacesDemon.RAM <- function(Model, Data, Iterations, Thinning)
           Iterations, LIV))) / Const
      Posterior1 <- as.vector(object.size(matrix(runif(round(Iterations /
           Thinning)), round(Iterations / Thinning), LIV))) / Const
+     Summary1 <- as.vector(object.size(matrix(runif((LIV+1+LM)*7),
+          LIV+1+LM, 7))) / Const
      mem.list <- list(Covar=Covar,
           Data=Data,
           Deviance=Deviance,
@@ -35,8 +37,9 @@ LaplacesDemon.RAM <- function(Model, Data, Iterations, Thinning)
           Monitor=Monitor,
           post=post,
           Posterior1=Posterior1,
+          Summary1=Summary1,
           Total=sum(Covar,Data,Deviance,Initial.Values,Model,Monitor,
-               post,Posterior1))
+               post,Posterior1,Summary1))
      return(mem.list)
      }
 

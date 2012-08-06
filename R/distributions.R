@@ -191,7 +191,15 @@ dcat <- function(x, p, log=FALSE)
      }
 rcat <- function(n, p)
      {
-     x <- which(rmultinom(n, size=1, prob=p) == 1, arr.ind=TRUE)[,'row']
+     if(is.vector(p)) {
+          x <- as.vector(which(rmultinom(n, size=1, prob=p) == 1,
+               arr.ind=TRUE)[, "row"])}
+     else {
+          n <- nrow(p)
+          x <- apply(p, 1, function(x) {
+               as.vector(which(rmultinom(1, size=1, prob=x) == 1,
+               arr.ind=TRUE)[, "row"])})
+          }
      return(x)
      }
 
@@ -203,26 +211,19 @@ rcat <- function(n, p)
 
 ddirichlet <- function(x, alpha, log=FALSE)
      {
-     dirichlet1 <- function(x, alpha) {
-          logD <- sum(lgamma(alpha)) - lgamma(sum(alpha))
-          s <- sum({alpha-1}*log(x))
-          exp(sum(s)-logD)
-          }
-    if(!is.matrix(x)) x <- matrix(x)
-    if(is.data.frame(x)) x <- matrix(x)
-    else x <- t(x)
-    if(!is.matrix(alpha))
-         alpha <- matrix(alpha, ncol=length(alpha), nrow=nrow(x),
-              byrow=TRUE)
-    if(!identical(dim(x), dim(alpha)))
-         stop("The dimensions of x and alpha differ.")
-    dens <- vector(length=nrow(x))
-    for (i in 1:nrow(x)) {dens[i] <- dirichlet1(x[i,], alpha[i,])}
-    dens[apply(x, 1, function(z) any(z < 0 | z > 1))] <- 0
-    dens[apply(x, 1, function(z) all.equal(sum(z), 1) != TRUE)] <- 0
-    if(log == TRUE) dens <- log(dens + .Machine$double.xmin) #Prevent -Inf
-    return(dens)
-    }
+     if(missing(x)) stop("x is a required argument.")
+     if(missing(alpha)) stop("alpha is a required argument.")
+     if(!is.matrix(x)) x <- rbind(x)
+     if(!is.matrix(alpha))
+          alpha <- matrix(alpha, nrow(x), length(alpha), byrow=TRUE)
+     if(any(rowSums(x) != 1)) alpha / rowSums(alpha)
+     if(any(x < 0)) stop("x must be non-negative.")
+     if(any(alpha <= 0)) stop("alpha must be positive.")
+     dens <- lgamma(sum(alpha)) - sum(lgamma(alpha)) +
+          sum((alpha-1)*log(x))
+     if(log == FALSE) dens <- exp(dens)
+     return(dens)
+     }
 rdirichlet <- function(n, alpha)
      {
      l <- length(alpha)
@@ -241,8 +242,8 @@ dhalfcauchy <- function(x, scale=25, log=FALSE)
      if(any(scale <= 0)) stop("The scale parameter must be positive.")
      NN <- max(length(x), length(scale))
      x <- rep(x, len=NN); scale <- rep(scale, len=NN)
-     dens <- 2*scale / (pi*{x*x + scale*scale})
-     if(log == TRUE) dens <- log(dens + .Machine$double.xmin) #Prevent -Inf
+     dens <- log(2*scale) - log(pi*{x*x + scale*scale})
+     if(log == FALSE) dens <- exp(dens)
      return(dens)
      }
 phalfcauchy <- function(q, scale=25)
@@ -282,8 +283,8 @@ rhalfcauchy <- function(n, scale=25)
 
 dhalfnorm <- function(x, scale=sqrt(pi/2), log=FALSE)
      {
-     dens <- 2*dnorm(x, mean=0, sd=sqrt(pi/2) / scale)
-     if(log == TRUE) dens <- log(dens  + .Machine$double.xmin) #Prevent -Inf
+     dens <- log(2) + dnorm(x, mean=0, sd=sqrt(pi/2) / scale, log=TRUE)
+     if(log == FALSE) dens <- exp(dens)
      return(dens)
      }
 phalfnorm <- function(q, scale=sqrt(pi/2), lower.tail=TRUE, log.p=FALSE)
@@ -328,8 +329,8 @@ dhalft <- function(x, scale=25, nu=1, log=FALSE)
      NN <- max(length(x), length(scale), length(nu))
      x <- rep(x, len=NN); scale <- rep(scale, len=NN)
      nu <- rep(nu, len=NN)
-     dens <- (1 + {1/nu}*{x/scale}*{x/scale})^(-{nu+1}/2)
-     if(log == TRUE) dens <- log(dens + .Machine$double.xmin) #Prevent -Inf
+     dens <- (-(nu+1)/2)*log(1 + (1/nu)*(x/scale)*(x/scale))
+     if(log == FALSE) dens <- exp(dens)
      return(dens)
      }
 phalft <- function(q, scale=25, nu=1)
@@ -356,6 +357,24 @@ rhalft <- function(n, scale=25, nu=1)
      scale <- rep(scale, len=n); nu <- rep(nu, len=n)
      if(any(scale <= 0)) stop("The scale parameter must be positive.")
      x <- rtrunc(n, "st", a=0, b=Inf, mu=0, sigma=scale, nu=nu)
+     return(x)
+     }
+
+###########################################################################
+# Inverse Beta Distribution                                               #
+###########################################################################
+
+dinvbeta <- function(x, a, b, log=FALSE)
+     {
+     const <- lgamma(a + b) - lgamma(a) - lgamma(b)
+     dens <- const + (a - 1) * log(x) - (a + b) * log(1 + x)
+     if(log == FALSE) dens <- exp(dens)
+     return(dens)
+     }
+rinvbeta <- function(n, a, b)
+     {
+     x <- rbeta(n, a, b)
+     x <- x / (1-x)
      return(x)
      }
 
@@ -428,9 +447,9 @@ dinvgaussian <- function(x, mu, lambda, log=FALSE)
      NN <- max(length(x), length(mu), length(lambda))
      x <- rep(x, len=NN); mu <- rep(mu, len=NN)
      lambda <- rep(lambda, len=NN)
-     dens <- (lambda / (2*pi*x^3))^0.5 *
-          exp(-((lambda*(x - mu)^2) / (2*mu^2*x)))
-     if(log == TRUE) dens <- log(dens + .Machine$double.xmin) #Prevent -Inf
+     dens <- 0.5*log(lambda / (2*pi*x^3)) -
+          ((lambda*(x - mu)^2) / (2*mu^2*x))
+     if(log == FALSE) dens <- exp(dens)
      return(dens)
      }
 rinvgaussian <- function(n, mu, lambda)
@@ -457,25 +476,50 @@ dinvwishart <- function(Sigma, nu, S, log=FALSE)
      if(!is.positive.definite(Sigma))
           stop("Matrix Sigma is not positive-definite.")
      if(!is.matrix(S)) S <- matrix(S)
-     if(!is.positive.definite(S))
-          stop("Matrix S is not positive-definite.")
+     if(!is.positive.semidefinite(S))
+          stop("Matrix S is not positive-semidefinite.")
      if(!identical(dim(S), dim(Sigma)))
           stop("The dimensions of Sigma and S differ.")
      if(nu < nrow(S))
           stop("The nu parameter is less than the dimension of S.")
      k <- nrow(Sigma)
-     detS <- det(S)
-     detSigma <- det(Sigma)
-     invSigma <- as.inverse(Sigma)
-     gamprod <- 1
-     for (i in 1:k) {gamprod <- gamprod * gamma((nu + 1 - i) / 2)}
-     dens <- (2^(nu*k/2)*pi^(k*(k-1)/4)*gamprod)^(-1) * detS^(nu/2) *
-          detSigma^(-(nu+k+1)/2) * exp(-0.5 * tr(S %*% invSigma))
-     if(log == TRUE) dens <- log(dens + .Machine$double.xmin) #Prevent -Inf
+     gamsum <- 0
+     for (i in 1:k) {gamsum <- gamsum + lgamma((nu + 1 - i)/2)}
+     dens <- -(nu*k/2)*log(2) - ((k*(k - 1))/4)*log(pi) - gamsum +
+          (nu/2)*log(det(S)) - ((nu + k + 1)/2)*log(det(Sigma)) -
+          0.5*tr(S %*% as.inverse(Sigma))
+     if(log == FALSE) dens <- exp(dens)
      return(dens)
      }
 rinvwishart <- function(nu, S)
      {return(as.inverse(rwishart(nu, as.inverse(S))))}
+
+###########################################################################
+# Inverse Wishart Distribution (Cholesky Parameterization)                #
+###########################################################################
+
+dinvwishartc <- function(U, nu, S, log=FALSE)
+     {
+     if(missing(U)) stop("Upper triangular U is required.")
+     Sigma <- t(U) %*% U
+     if(!is.matrix(S)) S <- matrix(S)
+     if(!is.positive.semidefinite(S))
+          stop("Matrix S is not positive-semidefinite.")
+     if(!identical(dim(S), dim(Sigma)))
+          stop("The dimensions of Sigma and S differ.")
+     if(nu < nrow(S))
+          stop("The nu parameter is less than the dimension of S.")
+     k <- nrow(Sigma)
+     gamsum <- 0
+     for (i in 1:k) {gamsum <- gamsum + lgamma((nu + 1 - i)/2)}
+     dens <- -(nu*k/2)*log(2) - ((k*(k - 1))/4)*log(pi) - gamsum +
+          (nu/2)*log(det(S)) - ((nu + k + 1)/2)*log(det(Sigma)) -
+          0.5*tr(S %*% as.inverse(Sigma))
+     if(log == FALSE) dens <- exp(dens)
+     return(dens)
+     }
+rinvwishartc <- function(nu, S)
+     {return(chol(as.inverse(rwishart(nu, as.inverse(S)))))}
 
 ###########################################################################
 # Laplace Distribution                                                    #
@@ -538,8 +582,8 @@ dlaplacep <- function(x, mu=0, tau=1, log=FALSE)
      if(any(tau <= 0)) stop("The tau parameter must be positive.")
      NN <- max(length(x), length(mu), length(tau))
      x <- rep(x, len=NN); mu <- rep(mu, len=NN); tau <- rep(tau, len=NN)
-     dens <- (tau/2) * exp(-tau*abs(x-mu))
-     if(log == TRUE) dens <- log(dens + .Machine$double.xmin) #Prevent -Inf
+     dens <- log(tau/2) + (-tau*abs(x-mu))
+     if(log == FALSE) dens <- exp(dens)
      return(dens)
      }
 plaplacep <- function(q, mu=0, tau=1)
@@ -647,8 +691,8 @@ dlnormp <- function(x, mu, tau, log=FALSE)
      if(any(tau <= 0)) stop("The tau parameter must be positive.")
      NN <- max(length(x), length(mu), length(tau))
      x <- rep(x, len=NN); mu <- rep(mu, len=NN); tau <- rep(tau, len=NN)
-     dens <- sqrt(tau/(2*pi)) * (1/x) * exp(-(tau/2)*(log(x-mu))^2)
-     if(log == TRUE) dens <- log(dens + .Machine$double.xmin) #Prevent -Inf
+     dens <- log(sqrt(tau/(2*pi))) + log(1/x) + (-(tau/2)*(log(x-mu)^2))
+     if(log == FALSE) dens <- exp(dens)
      return(dens)
      }
 plnormp <- function(q, mu, tau, lower.tail=TRUE, log.p=FALSE)
@@ -694,23 +738,57 @@ dmvc <- function(x, mu, S, log=FALSE)
      ss <- x - mu
      Omega <- as.inverse(S)
      z <- rowSums({ss %*% Omega} * ss)
-     dens <- as.vector(gamma(k/2) / (gamma(0.5) * 1^(k/2) *
-          pi^(k/2) * sqrt(det(S)) * (1 + z)^((1+k)/2)))
-     if(log == TRUE) dens <- log(dens + .Machine$double.xmin) #Prevent -Inf
+     dens <- as.vector(lgamma(k/2) - (lgamma(0.5) + log(1^(k/2)) +
+          (k/2)*log(pi) + 0.5*log(det(S)) + ((1+k)/2)*log(1+z)))
+     if(log == FALSE) dens <- exp(dens)
      return(dens)
      }
 rmvc <- function(n=1, mu=rep(0,k), S)
      {
-     mu <- as.vector(mu)
-     if(missing(S)) S <- diag(length(mu))
+     mu <- rbind(mu)
+     if(missing(S)) S <- diag(ncol(mu))
      if(!is.matrix(S)) S <- matrix(S)
      if(!is.positive.definite(S))
           stop("Matrix S is not positive-definite.")
      k <- ncol(S)
+     if(n > nrow(mu)) mu <- matrix(mu, n, k, byrow=TRUE)
      x <- rchisq(n,1)
      x <- ifelse(x == 0, 1e-100, x)
      z <- rmvn(n, rep(0,k), S)
-     x <- t(mu + t(z/sqrt(x)))
+     x <- mu + z/sqrt(x)
+     return(x)
+     }
+
+###########################################################################
+# Multivariate Cauchy Distribution (Cholesky Parameterization)            #
+###########################################################################
+
+dmvcc <- function(x, mu, U, log=FALSE)
+     {
+     if(!is.matrix(x)) x <- rbind(x)
+     if(!is.matrix(mu)) mu <- rep(mu, each=nrow(x))
+     if(missing(U)) stop("Upper triangular U is required.")
+     k <- nrow(U)
+     S <- t(U) %*% U
+     ss <- x - mu
+     Omega <- as.inverse(S)
+     z <- rowSums({ss %*% Omega} * ss)
+     dens <- as.vector(lgamma(k/2) - (lgamma(0.5) + log(1^(k/2)) +
+          (k/2)*log(pi) + 0.5*log(det(S)) + ((1+k)/2)*log(1+z)))
+     if(log == FALSE) dens <- exp(dens)
+     return(dens)
+     }
+rmvcc <- function(n=1, mu=rep(0,k), U)
+     {
+     mu <- rbind(mu)
+     if(missing(U)) stop("Upper triangular U is required.")
+     k <- ncol(U)
+     S <- t(U) %*% U
+     if(n > nrow(mu)) mu <- matrix(mu, n, k, byrow=TRUE)
+     x <- rchisq(n,1)
+     x <- ifelse(x == 0, 1e-100, x)
+     z <- rmvnc(n, rep(0,k), U)
+     x <- mu + z/sqrt(x)
      return(x)
      }
 
@@ -730,24 +808,57 @@ dmvcp <- function(x, mu, Omega, log=FALSE)
      detOmega <- det(Omega)
      ss <- x - mu
      z <- rowSums({ss %*% Omega} * ss)
-     dens <- as.vector((gamma((1+k)/2) /
-          (gamma(0.5)*1^(k/2)*pi^(k/2))) * detOmega^0.5 *
-          (1 + z)^(-(1+k)/2))
-     if(log == TRUE) dens <- log(dens + .Machine$double.xmin) #Prevent -Inf
+     dens <- as.vector(lgamma((1+k)/2) - (lgamma(0.5) + log(1^(k/2)) +
+          (k/2)*log(pi)) + 0.5*log(detOmega) + (-(1+k)/2)*log(1 + z))
+     if(log == FALSE) dens <- exp(dens)
      return(dens)
      }
 rmvcp <- function(n=1, mu, Omega)
      {
-     mu <- as.vector(mu)
+     mu <- rbind(mu)
+     if(missing(Omega)) Omega <- diag(ncol(mu))
      if(!is.matrix(Omega)) Omega <- matrix(Omega)
      if(!is.positive.definite(Omega))
           stop("Matrix Omega is not positive-definite.")
      Sigma <- as.inverse(Omega)
      k <- ncol(Sigma)
+     if(n > nrow(mu)) mu <- matrix(mu, n, k, byrow=TRUE)
      x <- rchisq(n,1)
      x <- ifelse(x == 0, 1e-100, x)
      z <- rmvn(n, rep(0,k), Sigma)
-     x <- t(mu + t(z/sqrt(x)))
+     x <- mu + z/sqrt(x)
+     return(x)
+     }
+
+###########################################################################
+# Multivariate Cauchy Distribution (Precision-Cholesky Parameterization)  #
+###########################################################################
+
+dmvcpc <- function(x, mu, U, log=FALSE)
+     {
+     if(!is.matrix(x)) x <- rbind(x)
+     if(!is.matrix(mu)) mu <- rep(mu, each=nrow(x))
+     if(missing(U)) stop("Upper triangular U is required.")
+     k <- nrow(U)
+     Omega <- t(U) %*% U
+     detOmega <- det(Omega)
+     ss <- x - mu
+     z <- rowSums({ss %*% Omega} * ss)
+     dens <- as.vector(lgamma((1+k)/2) - (lgamma(0.5) + log(1^(k/2)) +
+          (k/2)*log(pi)) + 0.5*log(detOmega) + (-(1+k)/2)*log(1 + z))
+     if(log == FALSE) dens <- exp(dens)
+     return(dens)
+     }
+rmvcpc <- function(n=1, mu, U)
+     {
+     mu <- rbind(mu)
+     if(missing(U)) stop("Upper triangular U is required.")
+     k <- ncol(U)
+     if(n > nrow(mu)) mu <- matrix(mu, n, k, byrow=TRUE)
+     x <- rchisq(n,1)
+     x <- ifelse(x == 0, 1e-100, x)
+     z <- rmvnc(n, rep(0,k), U)
+     x <- mu + z/sqrt(x)
      return(x)
      }
 
@@ -761,12 +872,35 @@ dmvl <- function(x, mu, Sigma, log=FALSE)
      }
 rmvl <- function(n, mu, Sigma)
      {
+     mu <- rbind(mu)
+     if(missing(Sigma)) Sigma <- diag(ncol(mu))
      if(!is.matrix(Sigma)) Sigma <- matrix(Sigma)
      if(!is.positive.definite(Sigma))
           stop("Matrix Sigma is not positive-definite.")
-     mu <- matrix(mu, n, ncol(Sigma), byrow=TRUE)
-     e <- matrix(rexp(n, 1), n, ncol(mu))
-     z <- rmvn(n, rep(0, ncol(mu)), Sigma)
+     k <- ncol(Sigma)
+     if(n > nrow(mu)) mu <- matrix(mu, n, k, byrow=TRUE)
+     e <- matrix(rexp(n, 1), n, k)
+     z <- rmvn(n, rep(0, k), Sigma)
+     x <- e*mu + sqrt(e)*z
+     return(x)
+     }
+
+###########################################################################
+# Multivariate Laplace Distribution (Cholesky Parameterization)           #
+###########################################################################
+
+dmvlc <- function(x, mu, U, log=FALSE)
+     {
+     return(dmvpec(x, mu, U, kappa=0.5, log))
+     }
+rmvlc <- function(n, mu, U)
+     {
+     mu <- rbind(mu)
+     if(missing(U)) stop("Upper triangular U is required.")
+     k <- ncol(U)
+     if(n > nrow(mu)) mu <- matrix(mu, n, k, byrow=TRUE)
+     e <- matrix(rexp(n, 1), n, k)
+     z <- rmvnc(n, rep(0, k), U)
      x <- e*mu + sqrt(e)*z
      return(x)
      }
@@ -788,21 +922,53 @@ dmvn <- function(x, mu, Sigma, log=FALSE)
      Omega <- as.inverse(Sigma)
      ss <- x - mu
      z <- rowSums({ss %*% Omega} * ss)
-     d <- eigen(Sigma, symmetric = TRUE)$values
+     d <- eigen(Sigma, symmetric=TRUE)$values
      dens <- as.vector(-0.5 * (k * log(2 * pi) + sum(log(d))) - (0.5 * z))
      if(log == FALSE) dens <- exp(dens)
      return(dens)
      }
 rmvn <- function(n=1, mu=rep(0,k), Sigma)
      {
-     mu <- as.vector(mu)
-     if(missing(Sigma)) Sigma <- diag(length(mu))
+     mu <- rbind(mu)
+     if(missing(Sigma)) Sigma <- diag(ncol(mu))
      if(!is.matrix(Sigma)) Sigma <- matrix(Sigma)
      if(!is.positive.definite(Sigma))
           stop("Matrix Sigma is not positive-definite.")
      k <- ncol(Sigma)
+     if(n > nrow(mu)) mu <- matrix(mu, n, k, byrow=TRUE)
      z <- matrix(rnorm(n*k),n,k) %*% chol(Sigma)
-     x <- t(mu + t(z))
+     x <- mu + z
+     return(x)
+     }
+
+###########################################################################
+# Multivariate Normal Distribution (Cholesky Parameterization)            #
+###########################################################################
+
+dmvnc <- function(x, mu, U, log=FALSE)
+     {
+     if(!is.matrix(x)) x <- rbind(x)
+     if(!is.matrix(mu)) mu <- rep(mu, each=nrow(x))
+     if(missing(U)) stop("Upper triangular U is required.")
+     k <- ncol(U)
+     Sigma <- t(U) %*% U
+     k <- nrow(Sigma)
+     Omega <- as.inverse(Sigma)
+     ss <- x - mu
+     z <- rowSums({ss %*% Omega} * ss)
+     d <- eigen(Sigma, symmetric=TRUE)$values
+     dens <- as.vector(-0.5 * (k * log(2 * pi) + sum(log(d))) - (0.5 * z))
+     if(log == FALSE) dens <- exp(dens)
+     return(dens)
+     }
+rmvnc <- function(n=1, mu=rep(0,k), U)
+     {
+     mu <- rbind(mu)
+     if(missing(U)) stop("Upper triangular U is required.")
+     k <- ncol(U)
+     if(n > nrow(mu)) mu <- matrix(mu, n, k, byrow=TRUE)
+     z <- matrix(rnorm(n*k),n,k) %*% U
+     x <- mu + z
      return(x)
      }
 
@@ -822,21 +988,54 @@ dmvnp <- function(x, mu, Omega, log=FALSE)
      detOmega <- det(Omega)
      ss <- x - mu
      z <- rowSums({ss %*% Omega} * ss)
-     dens <- as.vector((2*pi)^(-k/2) * detOmega^0.5 * exp(-0.5 * z))
-     if(log == TRUE) dens <- log(dens + .Machine$double.xmin) #Prevent -Inf
+     dens <- as.vector((-k/2)*(log(2) + log(pi)) + 0.5*log(detOmega) -
+          0.5*z)
+     if(log == FALSE) dens <- exp(dens)
      return(dens)
      }
 rmvnp <- function(n=1, mu=rep(0,k), Omega)
      {
-     mu <- as.vector(mu)
-     if(missing(Omega)) Omega <- diag(length(mu))
+     mu <- rbind(mu)
+     if(missing(Omega)) Omega <- diag(ncol(mu))
      if(!is.matrix(Omega)) Omega <- matrix(Omega)
      if(!is.positive.definite(Omega))
           stop("Matrix Omega is not positive-definite.")
      Sigma <- as.inverse(Omega)
      k <- ncol(Sigma)
+     if(n > nrow(mu)) mu <- matrix(mu, n, k, byrow=TRUE)
      z <- matrix(rnorm(n*k),n,k) %*% chol(Sigma)
-     x <- t(mu + t(z))
+     x <- mu + z
+     return(x)
+     }
+
+###########################################################################
+# Multivariate Normal Distribution (Precision-Cholesky Parameterization)  #
+###########################################################################
+
+dmvnpc <- function(x, mu, U, log=FALSE)
+     {
+     if(!is.matrix(x)) x <- rbind(x)
+     if(!is.matrix(mu)) mu <- rep(mu, each=nrow(x))
+     if(missing(U)) stop("Upper triangular U is required.")
+     k <- ncol(U)
+     Omega <- t(U) %*% U
+     detOmega <- det(Omega)
+     ss <- x - mu
+     z <- rowSums({ss %*% Omega} * ss)
+     dens <- as.vector((-k/2)*(log(2) + log(pi)) + 0.5*log(detOmega) -
+          0.5*z)
+     if(log == FALSE) dens <- exp(dens)
+     return(dens)
+     }
+rmvnpc <- function(n=1, mu=rep(0,k), U)
+     {
+     mu <- rbind(mu)
+     if(missing(U)) stop("Upper triangular U is required.")
+     Sigma <- as.inverse(t(U) %*% U)
+     k <- ncol(Sigma)
+     if(n > nrow(mu)) mu <- matrix(mu, n, k, byrow=TRUE)
+     z <- matrix(rnorm(n*k),n,k) %*% chol(Sigma)
+     x <- mu + z
      return(x)
      }
 
@@ -850,10 +1049,11 @@ dmvpolya <- function(x, alpha, log=FALSE)
      alpha <- as.vector(alpha)
      if(!identical(length(x), length(alpha)))
           stop("x and alpha differ in length.")
-     dens <- (factorial(sum(x)) / prod(factorial(x))) *
-          (factorial(sum(alpha)-1) / factorial(sum(x) + sum(alpha)-1)) *
-          (prod(factorial(x + alpha - 1) / factorial(alpha - 1)))
-     if(log == TRUE) dens <- log(dens + .Machine$double.xmin) #Prevent -Inf
+     dens <- (log(factorial(sum(x))) - sum(log(factorial(x)))) +
+          (log(factorial(sum(alpha)-1)) -
+          log(factorial(sum(x) + sum(alpha)-1))) +
+          (sum(log(factorial(x + alpha - 1)) - log(factorial(alpha - 1))))
+     if(log == FALSE) dens <- exp(dens)
      return(dens)
      }
 
@@ -873,11 +1073,91 @@ dmvpe <- function(x=c(0,0), mu=c(0,0), Sigma=diag(2), kappa=1, log=FALSE)
      k <- nrow(Sigma)
      ss <- x - mu
      temp <- rowSums({ss %*% Sigma} * ss)
-     dens <- ((k*gamma(k/2)) / (pi^(k/2) * sqrt(det(Sigma)) *
-          gamma(1 + k/(2*kappa)) * 2^(1 + k/(2*kappa)))) *
-          exp(-0.5*temp)^kappa
-     if(log == TRUE) dens <- log(dens + .Machine$double.xmin) #Prevent -Inf
-     return(as.vector(dens))
+     dens <- as.vector(((log(k)+lgamma(k/2)) - ((k/2)*log(pi) +
+          0.5*log(det(Sigma)) + lgamma(1 + k/(2*kappa)) +
+          (1 + k/(2*kappa))*log(2))) + kappa*(-0.5*temp))
+     if(log == FALSE) dens <- exp(dens)
+     return(dens)
+     }
+rmvpe <- function(n, mu=c(0,0), Sigma=diag(2), kappa=1) 
+     {
+     mu <- rbind(mu)
+     k <- ncol(mu)
+     if(n > nrow(mu)) mu <- matrix(mu, n, k, byrow=TRUE)
+     if(k != nrow(Sigma)) {
+          stop("mu and Sigma have non-conforming size.")}
+     ev <- eigen(Sigma, symmetric=TRUE)
+     if(!all(ev$values >= -sqrt(.Machine$double.eps) *
+          abs(ev$values[1]))) {
+          stop("Sigma must be positive-definite.")}
+     SigmaSqrt <- ev$vectors %*% diag(sqrt(ev$values),
+          length(ev$values)) %*% t(ev$vectors)
+     radius <- (rgamma(n, shape=k/(2*kappa), scale=1/2))^(1/(2*kappa))
+     runifsphere <- function(n, k)
+          {
+          p <- as.integer(k)
+          if(!is.integer(k))
+               stop("k must be an integer in [2,Inf)")
+          if(k < 2) stop("k must be an integer in [2,Inf).")
+          Mnormal <- matrix(rnorm(n*k,0,1), nrow=n)
+          rownorms <- sqrt(rowSums(Mnormal^2))
+          unifsphere <- sweep(Mnormal,1,rownorms, "/")
+          return(unifsphere)
+          }
+     un <- runifsphere(n=n, k=k)
+     x <- mu + radius * un %*% SigmaSqrt
+     return(x)
+     }
+
+###########################################################################
+# Multivariate Power Exponential Distribution (Cholesky Parameterization) #
+###########################################################################
+
+dmvpec <- function(x=c(0,0), mu=c(0,0), U, kappa=1, log=FALSE)
+     {
+     if(!is.matrix(x)) x <- rbind(x)
+     if(!is.matrix(mu)) mu <- rep(mu, each=nrow(x))
+     if(missing(U)) stop("Upper triangular U is required.")
+     if(any(kappa <= 0)) stop("The kappa parameter must be positive.")
+     Sigma <- t(U) %*% U
+     k <- nrow(Sigma)
+     ss <- x - mu
+     temp <- rowSums({ss %*% Sigma} * ss)
+     dens <- as.vector(((log(k)+lgamma(k/2)) - ((k/2)*log(pi) +
+          0.5*log(det(Sigma)) + lgamma(1 + k/(2*kappa)) +
+          (1 + k/(2*kappa))*log(2))) + kappa*(-0.5*temp))
+     if(log == FALSE) dens <- exp(dens)
+     return(dens)
+     }
+rmvpec <- function(n, mu=c(0,0), U, kappa=1) 
+     {
+     mu <- rbind(mu)
+     k <- ncol(mu)
+     if(n > nrow(mu)) mu <- matrix(mu, n, k, byrow=TRUE)
+     if(k != nrow(U)) {
+          stop("mu and U have non-conforming size.")}
+     Sigma <- t(U) %*% U
+     ev <- eigen(Sigma, symmetric=TRUE)
+     if(!all(ev$values >= -sqrt(.Machine$double.eps) *
+          abs(ev$values[1]))) {
+          stop("Sigma must be positive-definite.")}
+     SigmaSqrt <- ev$vectors %*% diag(sqrt(ev$values),
+          length(ev$values)) %*% t(ev$vectors)
+     radius <- (rgamma(n, shape=k/(2*kappa), scale=1/2))^(1/(2*kappa))
+     runifsphere <- function(n, k)
+          {
+          p <- as.integer(k)
+          if(!is.integer(k))
+               stop("k must be an integer in [2,Inf)")
+          if(k < 2) stop("k must be an integer in [2,Inf).")
+          Mnormal <- matrix(rnorm(n*k,0,1), nrow=n)
+          rownorms <- sqrt(rowSums(Mnormal^2))
+          unifsphere <- sweep(Mnormal,1,rownorms, "/")
+          return(unifsphere)
+          }
+     un <- runifsphere(n=n, k=k)
+     x <- mu + radius * un %*% SigmaSqrt
+     return(x)
      }
 
 ###########################################################################
@@ -898,24 +1178,60 @@ dmvt <- function(x, mu, S, df=Inf, log=FALSE)
      ss <- x - mu
      Omega <- as.inverse(S)
      z <- rowSums({ss %*% Omega} * ss)
-     dens <- as.vector(gamma((df+k)/2) / (gamma(df/2) * df^(k/2) *
-          pi^(k/2) * sqrt(det(S)) * (1 + (1/df) * z)^((df+k)/2)))
-     if(log == TRUE) dens <- log(dens + .Machine$double.xmin) #Prevent -Inf
+     dens <- as.vector(lgamma((df+k)/2) - lgamma(df/2) + (k/2)*df +
+          (k/2)*log(pi) + 0.5*log(det(S)) + ((df+k)/2)*log(1 + (1/df) * z))
+     if(log == FALSE) dens <- exp(dens)
      return(dens)
      }
 rmvt <- function(n=1, mu=rep(0,k), S, df=Inf)
      {
-     mu <- as.vector(mu)
-     if(missing(S)) S <- diag(length(mu))
+     mu <- rbind(mu)
+     if(missing(S)) S <- diag(ncol(mu))
      if(!is.matrix(S)) S <- matrix(S)
      if(!is.positive.definite(S))
           stop("Matrix S is not positive-definite.")
      if(any(df <= 0)) stop("The df parameter must be positive.")
      k <- ncol(S)
+     if(n > nrow(mu)) mu <- matrix(mu, n, k, byrow=TRUE)
      if(df==Inf) x <- 1 else x <- rchisq(n,df) / df
      x <- ifelse(x == 0, 1e-100, x)
      z <- rmvn(n, rep(0,k), S)
-     x <- t(mu + t(z/sqrt(x)))
+     x <- mu + z/sqrt(x)
+     return(x)
+     }
+
+###########################################################################
+# Multivariate t Distribution (Cholesky Parameterization)                 #
+###########################################################################
+
+dmvtc <- function(x, mu, U, df=Inf, log=FALSE)
+     {
+     if(!is.matrix(x)) x <- rbind(x)
+     if(!is.matrix(mu)) mu <- rep(mu, each=nrow(x))
+     if(missing(U)) stop("Upper triangular U is required.")
+     if(any(df <= 0)) stop("The df parameter must be positive.")
+     if(any(df > 10000)) return(dmvnc(x, mu, U, log))
+     k <- nrow(U)
+     ss <- x - mu
+     S <- t(U) %*% U
+     Omega <- as.inverse(S)
+     z <- rowSums({ss %*% Omega} * ss)
+     dens <- as.vector(lgamma((df+k)/2) - lgamma(df/2) + (k/2)*df +
+          (k/2)*log(pi) + 0.5*log(det(S)) + ((df+k)/2)*log(1 + (1/df) * z))
+     if(log == FALSE) dens <- exp(dens)
+     return(dens)
+     }
+rmvtc <- function(n=1, mu=rep(0,k), U, df=Inf)
+     {
+     mu <- rbind(mu)
+     if(missing(U)) stop("Upper triangular U is required.")
+     if(any(df <= 0)) stop("The df parameter must be positive.")
+     k <- ncol(U)
+     if(n > nrow(mu)) mu <- matrix(mu, n, k, byrow=TRUE)
+     if(df==Inf) x <- 1 else x <- rchisq(n,df) / df
+     x <- ifelse(x == 0, 1e-100, x)
+     z <- rmvnc(n, rep(0,k), U)
+     x <- mu + z/sqrt(x)
      return(x)
      }
 
@@ -937,25 +1253,63 @@ dmvtp <- function(x, mu, Omega, nu=Inf, log=FALSE)
      detOmega <- det(Omega)
      ss <- x - mu
      z <- rowSums({ss %*% Omega} * ss)
-     dens <- as.vector((gamma((nu+k)/2) /
-          (gamma(nu/2)*nu^(k/2)*pi^(k/2))) * detOmega^0.5 *
-          (1 + (1/nu) * z)^(-(nu+k)/2))
-     if(log == TRUE) dens <- log(dens + .Machine$double.xmin) #Prevent -Inf
+     dens <- as.vector(lgamma((nu+k)/2) - (lgamma(nu/2) + (k/2)*log(nu) +
+          (k/2)*log(pi)) + 0.5*log(detOmega) +
+          (-(nu+k)/2)*log(1 + (1/nu) * z))
+     if(log == FALSE) dens <- exp(dens)
      return(dens)
      }
 rmvtp <- function(n=1, mu, Omega, nu=Inf)
      {
-     mu <- as.vector(mu)
+     mu <- rbind(mu)
+     if(missing(Omega)) Omega <- diag(ncol(mu))
      if(!is.matrix(Omega)) Omega <- matrix(Omega)
      if(!is.positive.definite(Omega))
           stop("Matrix Omega is not positive-definite.")
      if(any(nu <= 0)) stop("The nu parameter must be positive.")
      Sigma <- as.inverse(Omega)
      k <- ncol(Sigma)
+     if(n > nrow(mu)) mu <- matrix(mu, n, k, byrow=TRUE)
      if(nu == Inf) x <- 1 else x <- rchisq(n,nu) / nu
      x <- ifelse(x == 0, 1e-100, x)
      z <- rmvn(n, rep(0,k), Sigma)
-     x <- t(mu + t(z/sqrt(x)))
+     x <- mu + z/sqrt(x)
+     return(x)
+     }
+
+###########################################################################
+# Multivariate t Distribution (Precision-Cholesky Parameterization)       #
+###########################################################################
+
+dmvtpc <- function(x, mu, U, nu=Inf, log=FALSE)
+     {
+     if(!is.matrix(x)) x <- rbind(x)
+     if(!is.matrix(mu)) mu <- rep(mu, each=nrow(x))
+     if(missing(U)) stop("Upper triangular U is required.")
+     if(any(nu <= 0)) stop("The nu parameter must be positive.")
+     if(any(nu > 10000)) return(dmvnpc(x, mu, U, log))
+     k <- ncol(U)
+     Omega <- t(U) %*% U
+     detOmega <- det(Omega)
+     ss <- x - mu
+     z <- rowSums({ss %*% Omega} * ss)
+     dens <- as.vector(lgamma((nu+k)/2) - (lgamma(nu/2) + (k/2)*log(nu) +
+          (k/2)*log(pi)) + 0.5*log(detOmega) +
+          (-(nu+k)/2)*log(1 + (1/nu) * z))
+     if(log == FALSE) dens <- exp(dens)
+     return(dens)
+     }
+rmvtpc <- function(n=1, mu, U, nu=Inf)
+     {
+     mu <- rbind(mu)
+     if(missing(U)) stop("Upper triangular U is required.")
+     if(any(nu <= 0)) stop("The nu parameter must be positive.")
+     k <- ncol(U)
+     if(n > nrow(mu)) mu <- matrix(mu, n, k, byrow=TRUE)
+     if(nu == Inf) x <- 1 else x <- rchisq(n,nu) / nu
+     x <- ifelse(x == 0, 1e-100, x)
+     z <- rmvnpc(n, rep(0,k), U)
+     x <- mu + z/sqrt(x)
      return(x)
      }
 
@@ -1003,11 +1357,10 @@ dpareto <- function(x, alpha, log=FALSE)
      if(any(alpha <= 0)) stop("The alpha parameter must be positive.")
      NN <- max(length(x), length(alpha))
      x <- rep(x, len=NN); alpha <- rep(alpha, len=NN)
-     dens <- ifelse(x < 1, 0, alpha / x^(alpha + 1))
-     if(log == TRUE) dens <- log(dens + .Machine$double.xmin) #Prevent -Inf
+     dens <- ifelse(x < 1, -Inf, log(alpha) - (alpha + 1)*log(x))
+     if(log == FALSE) dens <- exp(dens)
      return(dens)
      }
-
 ppareto <- function(q, alpha)
      {
      q <- as.vector(q); alpha <- as.vector(alpha)
@@ -1017,7 +1370,6 @@ ppareto <- function(q, alpha)
      p <- ifelse(q < 1, 0, 1 - 1/q^alpha)
      return(p)
      }
-
 qpareto <- function(p, alpha)
      {
      p <- as.vector(p); alpha <- as.vector(alpha)
@@ -1028,7 +1380,6 @@ qpareto <- function(p, alpha)
      q <- (1-p)^(-1/alpha)
      return(q)
      }
-
 rpareto <- function(n, alpha)
      {
      alpha <- rep(alpha, len=n)
@@ -1055,8 +1406,8 @@ dpe <- function(x, mu=0, sigma=1, kappa=2, log=FALSE)
      cost <- 2 * kappa^(1/kappa) * gamma(1 + 1/kappa) * sigma
      expon1 <- (abs(x - mu))^kappa
      expon2 <- kappa * sigma^kappa
-     dens <- (1/cost) * exp(-expon1 / expon2)
-     if(log == TRUE) dens <- log(dens + .Machine$double.xmin) #Prevent -Inf
+     dens <- log(1/cost) + (-expon1 / expon2)
+     if(log == FALSE) dens <- exp(dens)
      return(dens)
      }
 ppe <- function(q, mu=0, sigma=1, kappa=2, lower.tail=TRUE, log.p=FALSE)
@@ -1120,9 +1471,9 @@ dsdlaplace <- function(x, p, q, log=FALSE)
      if(any(q < 0) || any(q > 1)) stop("q must be in [0,1].")
      NN <- max(length(x), length(p), length(q))
      x <- rep(x, len=NN); p <- rep(p, len=NN); q <- rep(q, len=NN)
-     dens <- ifelse(x >= 0, (1-p)*(1-q)/(1-p*q)*p^x,
-          (1-p)*(1-q)/(1-p*q)*q^abs(x))
-     if(log == TRUE) dens <- log(dens + .Machine$double.xmin) #Prevent -Inf
+     dens <- ifelse(x >= 0, log(1-p) + log(1-q) - (log(1-p*q) +
+          x*log(p)), log(1-p) + log(1-q) - (log(1-p*q) + abs(x)*log(q)))
+     if(log == FALSE) dens <- exp(dens)
      return(dens)
      }
 psdlaplace <- function(x, p, q)
@@ -1180,10 +1531,10 @@ dslaplace <- function(x, mu, alpha, beta, log=FALSE)
      x <- rep(x, len=NN); mu <- rep(mu, len=NN)
      alpha <- rep(alpha, len=NN); beta <- rep(beta, len=NN)
      ab <- alpha + beta
-     belowMu <- (1/ab) * exp((x - mu)/alpha)
-     aboveMu <- (1/ab) * exp((mu - x)/beta)
+     belowMu <- log(1/ab) + ((x - mu)/alpha)
+     aboveMu <- log(1/ab) + ((mu - x)/beta)
      dens <- ifelse(x <= mu, belowMu, aboveMu)
-     if(log == TRUE) dens <- log(dens + .Machine$double.xmin) #Prevent -Inf
+     if(log == FALSE) dens <- exp(dens)
      return(dens)
      }
 pslaplace <- function(q, mu, alpha, beta)
@@ -1245,11 +1596,25 @@ dStick <- function(theta, gamma, log=FALSE)
 ###########################################################################
 # Student t Distribution (3-parameter)                                    #
 #                                                                         #
-# These functions are similar to those in the gamlss.dist package.        #
+# The pst and qst functions are similar to the TF functions in the        #
+# gamlss.dist package, but dst and rst have been refined.                 #
 ###########################################################################
 
 dst <- function(x, mu=0, sigma=1, nu=10, log=FALSE)
-     {return({1/sigma} * dt({x-mu}/sigma, df=nu, log))}
+     {
+     x <- as.vector(x); mu <- as.vector(mu)
+     sigma <- as.vector(sigma); nu <- as.vector(nu)
+     if(any(sigma <= 0)) stop("The sigma parameter must be positive.")
+     else if(any(nu <= 0)) stop("The nu parameter must be positive.")
+     NN <- max(length(x), length(mu), length(sigma), length(nu))
+     x <- rep(x, len=NN); mu <- rep(mu, len=NN)
+     sigma <- rep(sigma, len=NN); nu <- rep(nu, len=NN)
+     const <- lgamma((nu+1)/2) - lgamma(nu/2) - log(sqrt(pi*nu) * sigma)
+     dens <- const + log((1 + (1/nu)*((x-mu)/sigma)^2)^(-(nu+1)/2))
+     if(log == FALSE) dens <- exp(dens)
+     return(dens)
+     #return({1/sigma} * dt({x-mu}/sigma, df=nu, log)) #Deprecated
+     }
 pst <- function(q, mu=0, sigma=1, nu=10, lower.tail=TRUE, log.p=FALSE)
      {
      q <- as.vector(q); mu <- as.vector(mu)
@@ -1292,8 +1657,9 @@ rst <- function(n, mu=0, sigma=1, nu=10)
      if(any(sigma <= 0)) stop("The sigma parameter must be positive.")
      if(any(nu <= 0)) stop("The nu parameter must be positive.")
      n <- ceiling(n)
-     p <- runif(n)
-     x <- qst(p, mu=mu, sigma=sigma, nu=nu)
+     y <- rnorm(n)
+     z <- rchisq(n, nu)
+     x <- mu + sigma*y*sqrt(nu/z)
      return(x)
      }
 
@@ -1310,15 +1676,11 @@ dstp <- function(x, mu=0, tau=1, nu=10, log=FALSE)
      NN <- max(length(x), length(mu), length(tau), length(nu))
      x <- rep(x, len=NN); mu <- rep(mu, len=NN)
      tau <- rep(tau, len=NN); nu <- rep(nu, len=NN)
-     if(length(nu > 1)) {
-          dens <- ifelse(nu > 1000000,
-               dnorm(x, mu, sqrt(1/tau), log=FALSE),
-               (gamma((nu+1)/2) / gamma(nu/2)) * sqrt(tau/(nu*pi)) *
-                    (1 + (tau/nu)*(x-mu)^2)^(-(nu+1)/2))}
-     else {dens <- if(nu > 1000000) {dnorm(x, mu, sqrt(1/tau), log=FALSE)}
-          else {(gamma((nu+1)/2) / gamma(nu/2)) * sqrt(tau/(nu*pi)) *
-                    (1 + (tau/nu)*(x-mu)^2)^(-(nu+1)/2)}}
-     if(log == TRUE) dens <- log(dens + .Machine$double.xmin) #Prevent -Inf
+     dens <- ifelse(nu > 1000000,
+          dnorm(x, mu, sqrt(1/tau), log=TRUE),
+          (lgamma((nu+1)/2) - lgamma(nu/2)) + 0.5*log(tau/(nu*pi)) +
+          (-(nu+1)/2)*log(1 + (tau/nu)*(x-mu)^2))
+     if(log == FALSE) dens <- exp(dens)
      return(dens)
      }
 pstp <- function(q, mu=0, tau=1, nu=10, lower.tail=TRUE, log.p=FALSE)
@@ -1428,28 +1790,26 @@ dwishart <- function(Omega, nu, S, log=FALSE)
      if(!is.positive.definite(Omega))
           stop("Matrix Omega is not positive-definite.")
      if(!is.matrix(S)) S <- matrix(S)
-     if(!is.positive.definite(S))
-          stop("Matrix S is not positive-definite.")
+     if(!is.positive.semidefinite(S))
+          stop("Matrix S is not positive-semidefinite.")
      if(!identical(dim(Omega), dim(S)))
           stop("The dimensions of Omega and S differ.")
      if(nu < nrow(S))
           stop("The nu parameter is less than the dimension of S.")
      k <- nrow(Omega)
-     detS <- det(S)
-     detOmega <- det(Omega)
-     invS <- as.inverse(S)
-     gamprod <- 1
-     for (i in 1:k) {gamprod <- gamprod * gamma((nu + 1 - i) / 2)}
-     dens <- (2^(nu*k/2)*pi^(k*(k-1)/4)*gamprod)^(-1) * detS^(-nu/2) *
-          detOmega^((nu-k-1)/2) * exp(-0.5 * tr(invS %*% Omega))
-     if(log == TRUE) dens <- log(dens + .Machine$double.xmin) #Prevent -Inf
+     gamsum <- 0
+     for (i in 1:k) {gamsum <- gamsum + lgamma((nu + 1 - i)/2)}
+     dens <- -((nu*k)/2) * log(2) - ((k*(k-1))/4) * log(pi) - gamsum -
+          (nu/2) * log(det(S)) + ((nu-k-1)/2) * log(det(Omega)) -
+          (tr(as.inverse(S) %*% Omega)/2)
+     if(log == FALSE) dens <- exp(dens)
      return(dens)
      }
 rwishart <- function(nu, S)
      {
      if(!is.matrix(S)) S <- matrix(S)
-     if(!is.positive.definite(S))
-          stop("Matrix S is not positive-definite.")
+     if(!is.positive.semidefinite(S))
+          stop("Matrix S is not positive-semidefinite.")
      if(nu < nrow(S)) {
           stop("The nu parameter is less than the dimension of S.")}
      k <- nrow(S)
@@ -1462,6 +1822,49 @@ rwishart <- function(nu, S)
           Z[rep(k*kseq, kseq) +
                unlist(lapply(kseq, seq))] <- rnorm(k*{k-1}/2)}
      return(crossprod(Z %*% chol(S)))
+     }
+
+###########################################################################
+# Wishart Distribution (Cholesky Parameterization)                        #
+###########################################################################
+
+dwishartc <- function(U, nu, S, log=FALSE)
+     {
+     if(missing(U)) stop("Upper triangular U is required.")
+     Omega <- t(U) %*% U
+     if(!is.matrix(S)) S <- matrix(S)
+     if(!is.positive.semidefinite(S))
+          stop("Matrix S is not positive-semidefinite.")
+     if(!identical(dim(Omega), dim(S)))
+          stop("The dimensions of Omega and S differ.")
+     if(nu < nrow(S))
+          stop("The nu parameter is less than the dimension of S.")
+     k <- nrow(Omega)
+     gamsum <- 0
+     for (i in 1:k) {gamsum <- gamsum + lgamma((nu + 1 - i)/2)}
+     dens <- -((nu*k)/2) * log(2) - ((k*(k-1))/4) * log(pi) - gamsum -
+          (nu/2) * log(det(S)) + ((nu-k-1)/2) * log(det(Omega)) -
+          (tr(as.inverse(S) %*% Omega)/2)
+     if(log == FALSE) dens <- exp(dens)
+     return(dens)
+     }
+rwishartc <- function(nu, S)
+     {
+     if(!is.matrix(S)) S <- matrix(S)
+     if(!is.positive.semidefinite(S))
+          stop("Matrix S is not positive-semidefinite.")
+     if(nu < nrow(S)) {
+          stop("The nu parameter is less than the dimension of S.")}
+     k <- nrow(S)
+     Z <- matrix(0, k, k)
+     x <- rchisq(k, nu:{nu - k + 1})
+     x <- ifelse(x == 0, 1e-100, x)
+     diag(Z) <- sqrt(x)
+     if(k > 1) {
+          kseq <- 1:(k-1)
+          Z[rep(k*kseq, kseq) +
+               unlist(lapply(kseq, seq))] <- rnorm(k*{k-1}/2)}
+     return(chol(crossprod(Z %*% chol(S))))
      }
 
 #End

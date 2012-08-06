@@ -16,7 +16,7 @@ p.interval <- function(obj, HPD=TRUE, MM=TRUE, prob=0.95, plot=FALSE,
      if(missing(obj)) stop("The obj argument is required.")
      if(any(!is.finite(obj)))
           stop("The obj argument must contain finite values.")
-     if(length(unique(as.vector(obj))) <= 1)
+     if(is.constant(obj))
           stop("The obj argument has insufficient length.")
      if(length(prob) > 1)
           stop("The prob argument must be a scalar.")

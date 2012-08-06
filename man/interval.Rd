@@ -14,15 +14,16 @@
   outside of the interval in the first place.
 
   After the parameter is constrained to an interval in
-  \code{\link{LaplaceApproximation}} or \code{\link{LaplacesDemon}}, the
-  constrained parameter should be updated back into the \code{parm}
-  vector, so the algorithm knows it has been constrained.
+  \code{\link{LaplaceApproximation}}, \code{\link{LaplacesDemon}}, or
+  \code{\link{PMC}}, the constrained parameter should be updated back
+  into the \code{parm} vector, so the algorithm knows it has been
+  constrained.
 
   This is unrelated to the probability interval (see
   \code{\link{p.interval}} and \code{\link{LPL.interval}}).
 }
 \usage{
-interval(x, a=-Inf, b=Inf)
+interval(x, a=-Inf, b=Inf, reflect=TRUE)
 }
 \arguments{
   \item{x}{This is a scalar, vector, matrix or array, and its elements
@@ -31,6 +32,11 @@ interval(x, a=-Inf, b=Inf)
     bound of the interval, and defaults to \code{-Inf}.}
   \item{b}{This optional argument allows the specification of the upper
     bound of the interval, and defaults to \code{Inf}.}
+  \item{reflect}{Logical. When \code{TRUE}, a value outside of the
+  constrained interval is reflected or bounced back into the
+  interval. When \code{FALSE}, a value outside of the interval is
+  assigned the nearest boundary of the interval. This argument defaults
+  to \code{TRUE}.}
 }
 \value{
   The \code{interval} function returns a scalar, vector, matrix, or
@@ -43,7 +49,8 @@ interval(x, a=-Inf, b=Inf)
   \code{\link{dtrunc}},
   \code{\link{LaplaceApproximation}},
   \code{\link{LaplacesDemon}},
-  \code{\link{LPL.interval}}, and
+  \code{\link{LPL.interval}},
+  \code{\link{PMC}}, and
   \code{\link{p.interval}}.
 }
 \examples{

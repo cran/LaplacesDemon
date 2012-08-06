@@ -16,7 +16,8 @@ rcat(n, p)
     \eqn{x} after it has been converted to an \eqn{n \times k}{n x k}
     indicator matrix, such as with the \code{as.indicator.matrix} function.}
   \item{n}{This is the number of observations, which must be a positive
-    integer that has length 1.}
+    integer that has length 1. When \code{p} is supplied to \code{rcat}
+    as a matrix, \code{n} must equal the number of rows in \code{p}.}
   \item{p}{This is a vector of length \eqn{k} or \eqn{n \times k}{n x k}
     matrix of probabilities.}
   \item{log}{Logical. If \code{log=TRUE}, then the logarithm of the

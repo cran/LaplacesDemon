@@ -17,19 +17,19 @@ Juxtapose <- function(x)
      ### IAT with probability intervals
      ar.act1  <- function(y)
           {
-          stopifnot(NCOL(y)==1)
-          if(length(unique(y))<5)
+          stopifnot(NCOL(y) == 1)
+          if(length(unique(y)) < 5)
                return(list(act=NA, act.025=NA, act.975=NA, se=NA,
                     order=NA))
           order.max <- NULL
           repeat {
                A <- ar.yw(y, demean=FALSE, order.max=order.max)
-               if(A$order==0)
+               if(A$order == 0)
                     A <- ar.yw(y, demean=FALSE, order.max=1, aic=FALSE)
                pi <- A$ar
                pi.var <- A$asy.var.coef
-               if(kappa(pi.var)<1/sqrt(.Machine$double.eps) ||
-                    isTRUE(order.max==1))
+               if(kappa(pi.var) < 1 / sqrt(.Machine$double.eps) ||
+                    isTRUE(order.max == 1))
                     break
                order.max <- floor(A$order * 0.7)}
           acf <- matrix(ARMAacf(ar=pi)[2:(A$order+1)])
@@ -83,7 +83,10 @@ Juxtapose <- function(x)
           else if(alg == "Delayed Rejection Metropolis") alg <- "DRM"
           else if(alg == "Experimental") alg <- "Exper"
           else if(alg == "Hamiltonian Monte Carlo") alg <- "HMC"
+          else if(alg == "Hamiltonian Monte Carlo with Dual-Averaging")
+               alg <- "HMCDA"
           else if(alg == "Metropolis-within-Gibbs") alg <- "MWG"
+          else if(alg == "No-U-Turn Sampler") alg <- "NUTS"
           else if(alg == "Robust Adaptive Metropolis") alg <- "RAM"
           else if(alg == "Random-Walk Metropolis") alg <- "RWM"
           else if(alg == "Sequential Adaptive Metropolis-within-Gibbs")

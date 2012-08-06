@@ -38,7 +38,7 @@ Mode <- function(x)
      if(!is.vector(x)) x <- as.vector(x)
      x <- x[is.finite(x)]
      ### Amodal
-     if(length(unique(x)) == 1) return(NA)
+     if(is.constant(x)) return(NA)
      ### Discrete
      if(identical(x, round(x))) {
           Mode <- as.vector(which.max(table(x)))}
@@ -55,7 +55,7 @@ Modes <- function(x, min.size=0.1) {
      x <- as.vector(as.numeric(as.character(x)))
      x <- x[is.finite(x)]
      ### Amodal
-     if(length(unique(x)) == 1)
+     if(is.constant(x))
           return(list(modes=NA, mode.dens=NA, size=1))
      ### Differentiate kernel density by x
      length(density(x)$y)

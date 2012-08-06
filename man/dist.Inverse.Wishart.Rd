@@ -14,8 +14,8 @@
     \item{Sigma}{This is the symmetric, positive-definite
          \eqn{k \times k}{k x k} matrix \eqn{\Sigma}{Sigma}.}
     \item{nu}{This is the scalar degrees of freedom, \eqn{\nu}{nu}.}
-    \item{S}{This is the symmetric, positive-definite \eqn{k \times k}{k
-	x k} scale matrix \eqn{\textbf{S}}{S}.}
+    \item{S}{This is the symmetric, positive-semidefinite
+      \eqn{k \times k}{k x k} scale matrix \eqn{\textbf{S}}{S}.}
     \item{log}{Logical. If \code{log=TRUE}, then the logarithm of the
     density is returned.}
 }
@@ -35,8 +35,8 @@
     \item Notation 2: \eqn{p(\Sigma) = \mathcal{W}^{-1}_{\nu}(\Sigma |
       \textbf{S}^{-1})}{p(Sigma) = W^-1[nu](Sigma | S^(-1))}
     \item Parameter 1: degrees of freedom \eqn{\nu}{nu}
-    \item Parameter 2: symmetric, positive-definite \eqn{k \times k}{k x
-      k} scale matrix \eqn{\textbf{S}}{S}
+    \item Parameter 2: symmetric, positive-semidefinite
+      \eqn{k \times k}{k x k} scale matrix \eqn{\textbf{S}}{S}
     \item Mean: \eqn{E(\Sigma) = \frac{\textbf{S}}{\nu - k -
 	1}}{E(Sigma) = S / (nu - k - 1)}
     \item Variance: 
@@ -50,6 +50,9 @@ conjugate prior for the covariance matrix, \eqn{\Sigma}{Sigma}, of a
 multivariate normal distribution. The inverse-Wishart density is always
 finite, and the integral is always finite. A degenerate form occurs when
 \eqn{\nu < k}{nu < k}.
+
+When applicable, the alternative Cholesky parameterization should be
+preferred. For more information, see \code{\link{dinvwishartc}}.
 
 The inverse Wishart prior lacks flexibility, having only one parameter,
 \eqn{\nu}{nu}, to control the variability for all \eqn{k(k + 1)/2}
@@ -94,6 +97,7 @@ These functions are parameterized as per Gelman et al. (2004).
   p. 32--52.
 }
 \seealso{
+  \code{\link{dinvwishartc}},
   \code{\link{dmvn}}, and
   \code{\link{dwishart}}.
 }

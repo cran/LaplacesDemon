@@ -6,8 +6,8 @@
   This may be used to plot, or save plots of, samples in an object of
   class \code{demonoid} or \code{demonoid.hpc}. Plots include a trace
   plot, density plot, autocorrelation or ACF plot, and if an adaptive
-  algorithm was used, the absolute difference in the proposal variance
-  across adaptations.
+  algorithm was used, the absolute difference in the proposal variance,
+  or the value of epsilon, across adaptations.
 }
 \usage{
 \method{plot}{demonoid}(x, BurnIn=1, Data, PDF=FALSE, Parms, \dots)
@@ -73,14 +73,15 @@
   perfect correlation at zero lag, and quickly falls to zero
   autocorrelation for all other lags.
 
-  If an adaptive algorithm were used, then the distribution of absolute
-  differences in the proposal variances is plotted across each
-  adaptation. The proposal variance should change less as the adaptive
-  algorithm approaches the target distributions, so the absolute
-  differences in the plot should approach zero. This is called the
-  condition of diminishing adaptation. If it is not approaching
-  zero, then consider using a different adaptive MCMC algorithm. The
-  following quantiles are plotted: 0.025, 0.500, and 0.975.
+  If an adaptive algorithm was used, then the distribution of absolute
+  differences in the proposal variances, or the value of epsilon, is
+  plotted across adaptations. The proposal variance, or epsilon, should
+  change less as the adaptive algorithm approaches the target
+  distributions. The absolute differences in the proposal variance plot
+  should approach zero. This is called the condition of diminishing
+  adaptation. If it is not approaching zero, then consider using a
+  different adaptive MCMC algorithm. The following quantiles are plotted
+  for absolute changes proposal variance: 0.025, 0.500, and 0.975.
 }
 \references{
   Hall, B. (2012). "Laplace's Demon", STATISTICAT, LLC.

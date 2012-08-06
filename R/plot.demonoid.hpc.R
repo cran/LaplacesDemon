@@ -64,7 +64,7 @@ plot.demonoid.hpc <- function(x, BurnIn=1, Data=NULL, PDF=FALSE,
                lines(density(Posterior[[n]][BurnIn:nn,j]), col=n)}
           abline(v=0, col="red", lty=2)
           ### Only plot an ACF if there's > 1 unique values
-          if(length(unique(Posterior[[1]][BurnIn:nn,j])) > 1) {
+          if(!is.constant(Posterior[[1]][BurnIn:nn,j])) {
                z <- acf(Posterior[[1]][BurnIn:nn,j], plot=FALSE)
                se <- 1/sqrt(length(Posterior[[1]][BurnIn:nn,j]))
                plot(z$lag, z$acf, ylim=c(min(z$acf,-2*se),1), type="h",
@@ -98,7 +98,7 @@ plot.demonoid.hpc <- function(x, BurnIn=1, Data=NULL, PDF=FALSE,
           lines(density(Deviance[[n]][BurnIn:nn]), col=n)}
      abline(v=0, col="red", lty=2)
      #### Only plot an ACF if there's > 1 unique values
-     if(length(unique(Deviance[[1]][BurnIn:nn])) > 1) {
+     if(!is.constant(Deviance[[1]][BurnIn:nn])) {
           z <- acf(Deviance[[1]][BurnIn:nn], plot=FALSE)
           se <- 1/sqrt(length(Deviance[[1]][BurnIn:nn]))
           plot(z$lag, z$acf, ylim=c(min(z$acf,-2*se),1), type="h",
@@ -133,7 +133,7 @@ plot.demonoid.hpc <- function(x, BurnIn=1, Data=NULL, PDF=FALSE,
                lines(density(Monitor[[n]][BurnIn:nn,j]), col=n)}
           abline(v=0, col="red", lty=2)
           ### Only plot an ACF if there's > 1 unique values
-          if(length(unique(Monitor[[1]][BurnIn:nn,j])) > 1) {
+          if(!is.constant(Monitor[[1]][BurnIn:nn,j])) {
                z <- acf(Monitor[[1]][BurnIn:nn,j], plot=FALSE)
                se <- 1/sqrt(length(Monitor[[1]][BurnIn:nn,j]))
                plot(z$lag, z$acf, ylim=c(min(z$acf,-2*se),1), type="h",

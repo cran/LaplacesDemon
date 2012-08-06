@@ -31,11 +31,12 @@ Thin(x, By=1)
   random-access memory (RAM) to store large, un-thinned matrices of
   posterior samples.
 
-  \code{\link{LaplacesDemon}} automatically thins the posterior samples,
-  deviance samples, and samples of monitored variables, according to its
-  own user-specified argument. The \code{Thin} function is made
-  available here, should it be necessary to thin posterior samples
-  outside of objects of class \code{demonoid}.
+  \code{\link{LaplacesDemon}} and \code{\link{PMC}} automatically thin
+  posterior samples, deviance samples, and samples of monitored
+  variables, according to its own user-specified argument. The
+  \code{Thin} function is made available here, should it be necessary to
+  thin posterior samples outside of objects of class \code{demonoid} or
+  \code{pmc}.
 }
 \value{
   The \code{Thin} argument returns a thinned matrix. When \code{x} is a
@@ -46,13 +47,16 @@ Thin(x, By=1)
   URL=\url{http://www.statisticat.com/laplacesdemon.html}
 }
 \seealso{
-  \code{\link{ESS}} and 
-  \code{\link{LaplacesDemon}}
+  \code{\link{ESS}},
+  \code{\link{LaplacesDemon}}, and
+  \code{\link{PMC}}.
 }
 \examples{
+library(LaplacesDemon)
 x <- matrix(runif(100), 10, 10)
 Thin(x, By=2)
 }
 \keyword{Diagnostic}
 \keyword{MCMC}
+\keyword{Monte Carlo}
 \keyword{Utility}
