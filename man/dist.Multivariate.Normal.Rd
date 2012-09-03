@@ -28,7 +28,7 @@ rmvn(n=1, mu, Sigma)
     \exp(-\frac{1}{2}(\theta - \mu)'\Sigma^{-1}(\theta - \mu))}{p(theta)
     = (1/((2*pi)^(k/2)*|Sigma|^(1/2))) *
     exp(-(1/2)*(theta-mu)'*Sigma^(-1)*(theta-mu))}
-  \item Inventor: Unknown (to me, anyway)
+  \item Inventors: Robert Adrain (1808), Pierre-Simon Laplace (1812), and Francis Galton (1885)
   \item Notation 1: \eqn{\theta \sim \mathcal{MVN}(\mu, \Sigma)}{theta ~ MVN(mu, Sigma)}
   \item Notation 2: \eqn{\theta \sim \mathcal{N}_k(\mu, \Sigma)}{theta ~ N[k](mu, Sigma)}
   \item Notation 3: \eqn{p(\theta) = \mathcal{MVN}(\theta | \mu, \Sigma)}{p(theta) = MVN(theta | mu, Sigma)}
@@ -48,6 +48,10 @@ combination of its components has a univariate normal distribution.
 This distribution has a mean parameter vector \eqn{\mu}{mu} of length
 \eqn{k} and a \eqn{k \times k}{k x k} covariance matrix
 \eqn{\Sigma}{Sigma}, which must be positive-definite.
+
+The conjugate prior of the mean vector is another multivariate normal
+distribution. The conjugate prior of the covariance matrix is the
+inverse Wishart distribution (see \code{\link{dinvwishart}}).
 
 When applicable, the alternative Cholesky parameterization should be
 preferred. For more information, see \code{\link{dmvnc}}.

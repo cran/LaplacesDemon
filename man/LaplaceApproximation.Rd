@@ -349,7 +349,7 @@ Model <- function(parm, Data)
 Initial.Values <- rep(0,J+1)
 
 Fit <- LaplaceApproximation(Model, Initial.Values, Data=MyData,
-     Iterations=10000, Method="AGA")
+     Iterations=1000, Method="AGA")
 Fit
 print(Fit)
 PosteriorChecks(Fit)

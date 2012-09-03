@@ -38,7 +38,7 @@ joint.density.plot(x, y, Title=NULL, contour=TRUE, color=FALSE, Trace=NULL)
   algorithm jumps to random points of the joint density, and an
   inefficient algorithm explores more slowly. The initial point of the
   trace (which is the first element passed to \code{Trace}) is plotted
-  with a red dot. The user should consider plotting the joint density of
+  with a green dot. The user should consider plotting the joint density of
   the two marginal posterior distributions with the highest
   \code{\link{IAT}}, as identified with the
   \code{\link{PosteriorChecks}} function, since these are the two least

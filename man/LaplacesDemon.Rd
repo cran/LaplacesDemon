@@ -306,12 +306,13 @@ LaplacesDemon.hpc(Model, Data, Initial.Values, Covar=NULL,
     information). \code{LML} is estimated only with stationary samples,
     and only with a non-adaptive algorithm, including Delayed Rejection
     Metropolis (DRM), Hamiltonian Monte Carlo (HMC),
-    Metropolis-within-Gibbs (MWG), Random-Walk Metropolis (RWM),
-    Tempered Hamiltonian Monte Carlo (THMC) or t-walk (twalk).
-    \code{LML} is estimated with nonparametric self-normalized
-    importance sampling (NSIS), given LL and the marginal posterior
-    samples of the parameters. \code{LML} is useful for comparing
-    multiple models with the \code{\link{BayesFactor}} function.}
+    Metropolis-within-Gibbs (MWG), No-U-Turn Sampler (NUTS),
+    Random-Walk Metropolis (RWM), Tempered Hamiltonian Monte Carlo
+    (THMC) or t-walk (twalk). \code{LML} is estimated with nonparametric
+    self-normalized importance sampling (NSIS), given LL and the
+    marginal posterior samples of the parameters. \code{LML} is useful
+    for comparing multiple models with the \code{\link{BayesFactor}}
+    function.}
   \item{Minutes}{This indicates the number of minutes that
     \code{LaplacesDemon} was running, and this includes the initial
     checks as well as time it took the
@@ -369,8 +370,8 @@ LaplacesDemon.hpc(Model, Data, Initial.Values, Covar=NULL,
   \item{Summary2}{This matrix is identical to the matrix in
     \code{Summary1}, except that it is calculated only on the
     stationary samples found in \code{Posterior2}. If universal
-    stationarity was not estimated, then this matrix is set to
-    missing values.}
+    stationarity was not estimated for the parameters, then this matrix
+    is set to missing values.}
   \item{Thinned.Samples}{This is the number of thinned samples that
     were retained.}
   \item{Thinning}{This is the value of the \code{Thinning} argument.}
@@ -511,63 +512,63 @@ Levene.Test(Pred)
 Importance(Fit, Model, MyData, Discrep="Chi-Square")
 
 ##################  Adaptive Hamiltonian Monte Carlo  #####################
-Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
-     Covar=NULL, Iterations=1000, Status=100, Thinning=1,
-     Algorithm="AHMC", Specs=list(epsilon=rep(0.02, length(Initial.Values)),
-     L=2, Periodicity=10))
+#Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
+#     Covar=NULL, Iterations=1000, Status=100, Thinning=1,
+#     Algorithm="AHMC", Specs=list(epsilon=rep(0.02, length(Initial.Values)),
+#     L=2, Periodicity=10))
 
 ##########################  Adaptive Metropolis  ##########################
-Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
-     Covar=NULL, Iterations=1000, Status=100, Thinning=1,
-     Algorithm="AM", Specs=list(Adaptive=500, Periodicity=10))
+#Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
+#     Covar=NULL, Iterations=1000, Status=100, Thinning=1,
+#     Algorithm="AM", Specs=list(Adaptive=500, Periodicity=10))
 
 ###################  Adaptive Metropolis-within-Gibbs  ####################
-Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
-     Covar=NULL, Iterations=1000, Status=100, Thinning=1,
-     Algorithm="AMWG", Specs=list(Periodicity=50))
+#Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
+#     Covar=NULL, Iterations=1000, Status=100, Thinning=1,
+#     Algorithm="AMWG", Specs=list(Periodicity=50))
 
 #################  Delayed Rejection Adaptive Metropolis  #################
-Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
-     Covar=NULL, Iterations=1000, Status=100, Thinning=1,
-     Algorithm="DRAM", Specs=list(Adaptive=500, Periodicity=10))
+#Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
+#     Covar=NULL, Iterations=1000, Status=100, Thinning=1,
+#     Algorithm="DRAM", Specs=list(Adaptive=500, Periodicity=10))
 
 #####################  Delayed Rejection Metropolis  ######################
-Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
-     Covar=NULL, Iterations=1000, Status=100, Thinning=1,
-     Algorithm="DRM", Specs=NULL)
+#Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
+#     Covar=NULL, Iterations=1000, Status=100, Thinning=1,
+#     Algorithm="DRM", Specs=NULL)
 
 #######################  Hamiltonian Monte Carlo  #########################
-Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
-     Covar=NULL, Iterations=1000, Status=100, Thinning=1,
-     Algorithm="HMC", Specs=list(epsilon=rep(0.02, length(Initial.Values)),
-     L=2))
+#Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
+#     Covar=NULL, Iterations=1000, Status=100, Thinning=1,
+#     Algorithm="HMC", Specs=list(epsilon=rep(0.02, length(Initial.Values)),
+#     L=2))
 
 #############  Hamiltonian Monte Carlo with Dual-Averaging  ###############
-Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
-     Covar=NULL, Iterations=1000, Status=100, Thinning=1,
-     Algorithm="HMCDA", Specs=list(A=500, delta=0.65, epsilon=NULL,
-     Lmax=1000, lambda=0.1))
+#Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
+#     Covar=NULL, Iterations=1000, Status=100, Thinning=1,
+#     Algorithm="HMCDA", Specs=list(A=500, delta=0.65, epsilon=NULL,
+#     Lmax=1000, lambda=0.1))
 
 #######################  Metropolis-within-Gibbs  #########################
-Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
-     Covar=NULL, Iterations=1000, Status=100, Thinning=1,
-     Algorithm="MWG", Specs=NULL)
+#Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
+#     Covar=NULL, Iterations=1000, Status=100, Thinning=1,
+#     Algorithm="MWG", Specs=NULL)
 
 ##########################  No-U-Turn Sampler  ############################
-Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
-     Covar=NULL, Iterations=100, Status=10, Thinning=1,
-     Algorithm="NUTS", Specs=list(A=50, delta=0.6, epsilon=NULL))
+#Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
+#     Covar=NULL, Iterations=100, Status=10, Thinning=1,
+#     Algorithm="NUTS", Specs=list(A=50, delta=0.6, epsilon=NULL))
 
 ######################  Robust Adaptive Metropolis  #######################
-Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
-     Covar=NULL, Iterations=1000, Status=100, Thinning=1,
-     Algorithm="RAM", Specs=list(alpha.star=0.234, Dist="N", gamma=0.66,
-     Periodicity=10))
+#Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
+#     Covar=NULL, Iterations=1000, Status=100, Thinning=1,
+#     Algorithm="RAM", Specs=list(alpha.star=0.234, Dist="N", gamma=0.66,
+#     Periodicity=10))
 
 ########################  Random-Walk Metropolis  #########################
-Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
-     Covar=NULL, Iterations=1000, Status=100, Thinning=1,
-     Algorithm="RWM", Specs=NULL)
+#Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
+#     Covar=NULL, Iterations=1000, Status=100, Thinning=1,
+#     Algorithm="RWM", Specs=NULL)
 
 ##############  Sequential Adaptive Metropolis-within-Gibbs  ##############
 #NOTE: The SAMWG algorithm is only for state-space models (SSMs)
@@ -582,15 +583,15 @@ Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
 #     Algorithm="SMWG", Specs=list(Dyn=Dyn))
 
 ###################  Tempered Hamiltonian Monte Carlo  ####################
-Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
-     Covar=NULL, Iterations=1000, Status=100, Thinning=1,
-     Algorithm="THMC", Specs=list(epsilon=rep(0.05,length(Initial.Values)),
-     L=2, Temperature=2))
+#Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
+#     Covar=NULL, Iterations=1000, Status=100, Thinning=1,
+#     Algorithm="THMC", Specs=list(epsilon=rep(0.05,length(Initial.Values)),
+#     L=2, Temperature=2))
 
 ###############################  t-walk  #################################
-Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
-     Covar=NULL, Iterations=1000, Status=100, Thinning=1,
-     Algorithm="twalk", Specs=list(SIV=NULL, n1=4, at=6, aw=1.5))
+#Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
+#     Covar=NULL, Iterations=1000, Status=100, Thinning=1,
+#     Algorithm="twalk", Specs=list(SIV=NULL, n1=4, at=6, aw=1.5))
 
 ##########  Updating Sequential Adaptive Metropolis-within-Gibbs  #########
 #NOTE: The USAMWG algorithm is only for state-space model updating

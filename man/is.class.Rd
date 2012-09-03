@@ -10,6 +10,7 @@
 \alias{is.laplace.ppc}
 \alias{is.pmc}
 \alias{is.pmc.ppc}
+\alias{is.pmc.val}
 \title{Logical Check of Classes}
 \description{
   These functions each provide a logical test of the class of an object.
@@ -26,6 +27,7 @@ is.laplace(x)
 is.laplace.ppc(x)
 is.pmc(x)
 is.pmc.ppc(x)
+is.pmc.val(x)
 }
 \arguments{
   \item{x}{This is an object that will be subjected to a logical test of
@@ -83,6 +85,9 @@ is.pmc.ppc(x)
 
   The \code{is.pmc.ppc} function returns a logical value indicating
   whether or not the supplied object is of class \code{pmc.ppc}.
+
+  The \code{is.pmc.val} function returns a logical value indicating
+  whether or not the supplied object is of class \code{pmc.val}.
 }
 \references{\url{http://www.statisticat.com/laplacesdemon.html}}
 \author{Byron Hall \email{statisticat@gmail.com}}

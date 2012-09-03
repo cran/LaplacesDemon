@@ -56,6 +56,10 @@ distribution. This distribution has a mean parameter vector
 \eqn{\mu}{mu} of length \eqn{k} and a \eqn{k \times k}{k x k}
 precision matrix \eqn{\Omega}{Omega}, which must be positive-definite.
 
+The conjugate prior of the mean vector is another multivariate normal
+distribution. The conjugate prior of the precision matrix is the
+Wishart distribution (see \code{\link{dwishart}}).
+
 When applicable, the alternative Cholesky parameterization should be
 preferred. For more information, see \code{\link{dmvnpc}}.
 

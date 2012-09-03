@@ -3,7 +3,7 @@
 \title{The Bayesian Bootstrap}
 \description{
   This function samples data for bootstrapping, as per the Bayesian
-  Boostrap of Rubin (1981).
+  Bootstrap of Rubin (1981).
 }
 \usage{
 BayesianBootstrap(X, n=1000, Status=NULL)
@@ -43,8 +43,9 @@ BayesianBootstrap(X, n=1000, Status=NULL)
   data set.
 
   The \code{BayesianBootstrap} function has many uses, including
-  imputation, validation, creating test statistics on the population
-  data given the observed data, and more.
+  imputation (with this variation: \code{\link{ABB}}), validation,
+  creating test statistics on the population data given the observed
+  data, and more.
 }
 \value{
   This function returns a \eqn{n \times J}{n x J} matrix of samples,
@@ -59,7 +60,8 @@ BayesianBootstrap(X, n=1000, Status=NULL)
   Statistics, 9(1), p. 130--134.
 }
 \seealso{
-  \code{\link{LaplaceApproximation}} and
+  \code{\link{ABB}},
+  \code{\link{LaplaceApproximation}}, and
   \code{\link{LaplacesDemon}}.
 }
 \examples{

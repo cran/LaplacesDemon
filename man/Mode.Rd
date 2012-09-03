@@ -11,8 +11,8 @@
   The mode is a measure of central tendency. It is the value that occurs
   most frequently, or in a continuous probability distribution, it is
   the value with the most density. A distribution may have no modes
-  (such as in a uniform distribution when no value occurs more
-  frequently than any other), or one or more modes.
+  (such as with a constant, or in a uniform distribution when no value
+  occurs more frequently than any other), or one or more modes.
 }
 \usage{
 is.amodal(x, min.size=0.1)
@@ -51,12 +51,13 @@ Modes(x, min.size=0.1)
   is returned, otherwise \code{FALSE}.
   
   The \code{Mode} function returns the most frequent value when \code{x}
-  is discrete. If multiple modes exist, this function returns only the
-  mode with the highest density, or if two or more modes have the same
-  density, it returns the first mode found. Otherwise, the \code{Mode}
-  function returns the value of \code{x} associated with the highest
-  kernel density estimate, or the first one found if multiple modes
-  have the same density.
+  is discrete. If \code{x} is a constant, then it is considered amodal,
+  and \code{NA} is returned. If multiple modes exist, this function
+  returns only the mode with the highest density, or if two or more
+  modes have the same density, then it returns the first mode found.
+  Otherwise, the \code{Mode} function returns the value of \code{x}
+  associated with the highest kernel density estimate, or the first
+  one found if multiple modes have the same density.
 
   The \code{Modes} function is a simple, deterministic function that
   differences the kernel density of \code{x} and reports a number of

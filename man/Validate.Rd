@@ -107,7 +107,9 @@ Validate(object, Model, Data, plot=FALSE, PDF=FALSE)
   This function returns a list with three components. The first two
   components are also lists. Each list consists of \code{y},
   \code{yhat}, and \code{Deviance}. The third component is a matrix that
-  reports the expected deviance, pD, and BPIC.
+  reports the expected deviance, pD, and BPIC. The object is of class
+  \code{demonoid.val} for \code{\link{LaplacesDemon}}, or \code{pmc.val}
+  when associated with \code{\link{PMC}}.
 }
 \references{
   Ando, T. (2007). "Bayesian Predictive Information Criterion for

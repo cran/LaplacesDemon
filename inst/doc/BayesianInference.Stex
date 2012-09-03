@@ -195,6 +195,8 @@ $$\theta \sim \mathcal{N}(0, 10000)$$
 
 where $\theta$ is normally-distributed according to a mean of 0 and a variance of 10,000, which is equivalent to a standard deviation of 100, or precision of 1.0E-4. In this case, the density for $\theta$ is nearly flat. Nonetheless, the fact that it is not perfectly flat yields good properties for numerical approximation algorithms. In both Bayesian and frequentist inference, it is possible for numerical approximation algorithms to become stuck in regions of flat density, which become more common as sample size decreases or model complexity increases. Numerical approximation algorithms in frequentist inference function as though a flat prior were used, so numerical approximation algorithms in frequentist inference become stuck more frequently than numerical approximation algorithms in Bayesian inference. Prior distributions that are not completely flat provide enough information for the numerical approximation algorithm to continue to explore the target density, the posterior distribution.
 
+After updating a model in which WIPs exist, the user should examine the posterior to see if the posterior contradicts knowledge. If the posterior contradicts knowledge, then the WIP must be revised by including information that will make the posterior consistent with knowledge \citep{gelman08}.
+
 A popular objective Bayeisan criticism against WIPs is that there is no precise, mathematical form to derive the optimal WIP for a given model and data.
 
 \subsubsection{Vague Priors}
@@ -204,7 +206,7 @@ Typically, a vague prior is a conjugate prior with a large scale parameter. Howe
 
 \subsection{Least Informative Priors}
 
-The term `Least Informative Priors', or LIPs, is used here to describe a class of prior in which the goal is to minimize the amount of subjective information content, and to use a prior that is determined solely by the model and observed data. The rationale for using LIPs is often said to be `to let the data speak for themselves'. LIPS are favored by objective Bayesians.
+The term `Least Informative Priors', or LIPs, is used here to describe a class of prior in which the goal is to minimize the amount of subjective information content, and to use a prior that is determined solely by the model and observed data. The rationale for using LIPs is often said to be `to let the data speak for themselves'. LIPs are favored by objective Bayesians.
 
 \subsubsection{Flat Priors}
 
@@ -217,6 +219,9 @@ where $\theta$ is uniformly-distributed from negative infinity to positive infin
 Reverend Thomas Bayes (1702-1761) was the first to use inverse probability \citep{bayes63}, and used a flat prior for his billiard example so that all possible values of $\theta$ are equally likely \textit{a priori} \citep[p. 34-36]{gelman04}. Pierre-Simon Laplace (1749-1827) also used the flat prior to estimate the proportion of female births in a population, and for all estimation problems presented or justified as a reasonable expression of ignorance. Laplace's use of this prior distribution was later referred to as the `principle of indifference' or `principle of insufficient reason', and is now called the flat prior \citep[p. 39]{gelman04}. Laplace was aware that it was not truly uninformative, and used it as a LIP.
 
 Another problem with the flat prior is that it is not invariant to transformation. For example, a flat prior on a standard deviation parameter is not also flat for its variance or precision.
+
+\subsubsection{Hierarchical Prior}
+A hierarchical prior is a prior in which the parameters of the prior distribution are estimated from data via hyperpriors, rather than with subjective information \citep{gelman08}. Subjective Bayesians prefer the hierarchical prior as the LIP, and the hyperparameters are usually specified as WIPs. Hierarchical priors are presented later in more detail in the section entitled `Hierarchical Bayes'.
 
 \subsubsection{Jeffreys Prior}
 

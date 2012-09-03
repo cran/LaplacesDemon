@@ -320,7 +320,7 @@ set.seed(666)
 Initial.Values <- GIV(Model, MyData, PGF=TRUE)
 
 ########################  Population Monte Carlo  #########################
-Fit <- PMC(Model, MyData, Initial.Values, Covar=NULL, Iterations=10,
+Fit <- PMC(Model, MyData, Initial.Values, Covar=NULL, Iterations=5,
      Thinning=1, alpha=NULL, M=1, N=1000)
 Fit
 print(Fit)

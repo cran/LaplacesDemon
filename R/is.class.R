@@ -72,4 +72,11 @@ is.pmc.ppc <- function(x)
      return(pmc.ppc)
      }
 
+is.pmc.val <- function(x)
+     {
+     pmc.val <- FALSE
+     if(identical(class(x), "pmc.val")) pmc.val <- TRUE
+     return(pmc.val)
+     }
+
 #End

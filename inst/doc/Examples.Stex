@@ -1600,92 +1600,92 @@ MyData <- list(C=C, J=J, K=K, N=N, X=X, Z=Z, mon.names=mon.names, \\
 
 \section{Discrete Choice, Multinomial Probit} \label{dc.mnp}
 \subsection{Form}
-$$\textbf{Z}_{i,1:J} \sim \mathcal{N}_J(\mu_{i,1:J}, \Sigma), \quad i=1,\dots,N$$
- \[\textbf{Z}_{i,j} \in \left\{
- \begin{array}{l l}
-  $[0,10]$ & \quad \mbox{if $\textbf{y}_i = j$}\\
-  $[-10,0]$ \\ \end{array} \right. \]
-$$\mu_{1:N,j} = \textbf{X} \beta_{j,1:K} + \textbf{W} \gamma[a,1:C]$$
- \[\textbf{a} = \left\{
- \begin{array}{l l}
-  $1$ & \quad \mbox{if $\textbf{y}_i < J$}\\
-  $2$ \\ \end{array} \right. \]
-$$\Sigma \sim \mathcal{IW}_{J+1}(\textbf{S}^{-1}), \quad \textbf{S} = \textbf{I}_J, \quad \Sigma[1,1] = 1$$
-$$\beta_{j,k} \sim \mathcal{N}(0, 1000), \quad j=1,\dots,(J-1), \quad k=1,\dots,K$$
-$$\beta_{J,k} = - \sum^{J-1}_{j=1} \beta_{j,k}$$
-$$\gamma_{1,1:C} \sim \mathcal{N}(0, 1000)$$
-$$\gamma_{2,c} = - \gamma_{1,c}, \quad c=1,\dots,C$$
-$$\textbf{Z}_{i,j} \sim \mathcal{N}(0, 1000) \in [-10,10]$$
+$$\textbf{W}_{i,1:(J-1)} \sim \mathcal{N}_{J-1}(\mu_{i,1:(J-1)}, \Sigma), \quad i=1,\dots,N$$
+\[\textbf{W}_{i,j} \in \left\{
+\begin{array}{l l}
+ $[0,10]$ & \quad \mbox{if $\textbf{y}_i = j$}\\
+ $[-10,0]$ \\ \end{array} \right. \]
+$$\mu_{1:N,j} = \textbf{X} \beta_{j,1:K} + \textbf{Z} \gamma$$
+$$\Sigma = \textbf{U}^T \textbf{U}$$
+$$\beta_{j,k} \sim \mathcal{N}(0, 10), \quad j=1,\dots,(J-1), \quad k=1,\dots,K$$
+$$\gamma_c \sim \mathcal{N}(0, 10), \quad c=1,\dots,C$$
+$$\textbf{U}_{j,k} \sim \mathcal{N}(0,1), \quad j=1,\dots,(J-1), \quad k=1,\dots,(J-1), \quad j \ge k, \quad j \ne k = 1$$
 \subsection{Data}
-\code{y <- x1 <- x2 <- w1 <- w2 <- c(1:30) \\
-y[1:10] <- 1 \\
-y[11:20] <- 2 \\
-y[21:30] <- 3 \\
-x1[1:10] <- rnorm(10, 25, 2.5) \\
-x1[11:20] <- rnorm(10, 40, 4.0) \\
-x1[21:30] <- rnorm(10, 35, 3.5) \\
-x2[1:10] <- rnorm(10, 2.51, 0.25) \\
-x2[11:20] <- rnorm(10, 2.01, 0.20) \\ 
-x2[21:30] <- rnorm(10, 2.70, 0.27) \\
-w1[1:10] <- 10 \\
-w1[11:20] <- 4 \\
-w1[21:30] <- 1 \\
-w2[1:10] <- 40 \\
-w2[11:20] <- 50 \\
-w2[21:30] <- 100 \\
-N <- length(y) \\
-J <- length(unique(y)) \#Number of categories in y \\
-K <- 3 \#Number of columns to be in design matrix X \\
-S <- diag(J) \\
-X <- matrix(c(rep(1,N),x1,x2),N,K) \\
+\code{N <- 50 \\
+J <- 5 \#Categories of y \\
+K <- 8 \#Number of columns in design matrix X \\
 C <- 2 \#Number of choice-based attributes \\
-W <- matrix(c(w1,w2),N,C) \#Design matrix of choice-based attributes \\
+X <- matrix(runif(N*K,-2,2), N, K) \\
+X[,1] <- 1 \\
+beta <- matrix(runif((J-1)*K), J-1, K) \\
+gamma <- runif(C) \\
+Z <- matrix(runif(N*C), N, C) \#Design matrix of choice-based attributes \\
+Z[,1] <- 1 \\
+mu <- tcrossprod(X, beta) + as.vector(tcrossprod(Z, t(gamma))) \\
+S <- diag(J-1) \\
+u <- c(0, rnorm((J-2) + (factorial(J-1) / \\
+\hspace*{0.27 in} (factorial(J-1-2)*factorial(2))),0,1)) \\
+U <- diag(J-1) \\
+U[upper.tri(U, diag=TRUE)] <- u \\
+diag(U) <- exp(diag(U)) \\
+Sigma <- t(U) \%*\% U \\
+Sigma[1,] <- Sigma[,1] <- U[1,] \\
+mu <- tcrossprod(X, beta) \\
+W <- rmvn(N, mu, Sigma) + matrix(rnorm(N*(J-1),0,0.1), N, J-1) \\
+y <- max.col(cbind(W,0)) \\
+table(y) \\
 mon.names <- "LP" \\
-sigma.temp <- as.parm.names(list(Sigma=diag(J)), uppertri=1) \\
-parm.names <- c(sigma.temp[2:length(sigma.temp)], \\
-\hspace*{0.27 in} as.parm.names(list(beta=matrix(0,(J-1),K), gamma=rep(0,C), \\
-\hspace*{0.27 in} Z=matrix(0,N,J)))) \\
-MyData <- list(J=J, K=K, N=N, S=S, W=W, X=X, mon.names=mon.names, \\
-\hspace*{0.27 in} parm.names=parm.names, y=y) \\
+parm.names <- as.parm.names(list(beta=matrix(0,(J-1),K), gamma=rep(0,C), \\
+\hspace*{0.27 in} U=U, W=matrix(0,N,J-1)), uppertri=c(0,0,1,0)) \\
+parm.names <- parm.names[-which(parm.names == "U[1,1]")] \\
+PGF <- function(Data) \{ \\
+\hspace*{0.27 in} beta <- rnormv((Data$J-1)*Data$K,0,1) \\
+\hspace*{0.27 in} gamma <- rnormv(Data$C,0,1) \\
+\hspace*{0.27 in} U <- rnorm((Data$J-2) + (factorial(Data$J-1) / \\
+\hspace*{0.62 in} (factorial(Data$J-1-2)*factorial(2))),0,1) \\
+\hspace*{0.27 in} W <- matrix(runif(Data$N*(Data$J-1),-10,0), Data$N, Data$J-1) \\
+\hspace*{0.27 in} Y <- as.indicator.matrix(Data$y) \\
+\hspace*{0.27 in} W <- ifelse(Y[,-Data$J] == 1, abs(W), W) \\
+\hspace*{0.27 in} return(c(beta, gamma, U, as.vector(W)))\} \\
+MyData <- list(C=C, J=J, K=K, N=N, PGF=PGF, S=S, X=X, Z=Z, \\
+\hspace*{0.27 in} mon.names=mon.names, parm.names=parm.names, y=y) \\
 }
 \subsection{Model}
 \code{Model <- function(parm, Data) \\
 \hspace*{0.27 in} \{ \\
 \hspace*{0.27 in} \#\#\# Parameters \\
 \hspace*{0.27 in} beta <- matrix(parm[grep("beta", Data$parm.names)], Data$J-1, Data$K) \\
-\hspace*{0.27 in} beta <- rbind(beta, colSums(beta)*-1) \#Sum to zero constraint \\
 \hspace*{0.27 in} gamma <- parm[grep("gamma", Data$parm.names)] \\
-\hspace*{0.27 in} gamma <- rbind(gamma, gamma*-1) \#Sum to zero constraint \\
-\hspace*{0.27 in} Sigma <- as.parm.matrix(Sigma, Data$J, parm, Data, restrict=TRUE) \\
-\hspace*{0.27 in} parm[grep("Sigma", Data$parm.names)] <- upper.triangle(Sigma, \\
-\hspace*{0.62 in} diag=TRUE)[-1] \\
-\hspace*{0.27 in} Z <- matrix(parm[grep("Z", Data$parm.names)], Data$N, Data$J) \\
-\hspace*{0.27 in} \#\#\# Log(Prior Densities) \\
-\hspace*{0.27 in} beta.prior <- sum(dnormv(beta, 0, 1000, log=TRUE)) \\
-\hspace*{0.27 in} gamma.prior <- sum(dnormv(gamma, 0, 1000, log=TRUE)) \\
-\hspace*{0.27 in} Sigma.prior <- dinvwishart(Sigma, Data$J+1, Data$S, log=TRUE) \\
-\hspace*{0.27 in} Z.prior <- sum(dnormv(Z, 0, 1000, log=TRUE)) \\
-\hspace*{0.27 in} \#\#\# Log-Likelihood \\
-\hspace*{0.27 in} mu <- matrix(c(rep(tcrossprod(gamma[1,], Data$W),J), \\
-\hspace*{0.62 in} tcrossprod(gamma[2,], Data$W)),Data$N,Data$J) \\
-\hspace*{0.27 in} mu <- mu + tcrossprod(Data$X, beta) \\
+\hspace*{0.27 in} u <- c(0, parm[grep("U", Data$parm.names)]) \\
+\hspace*{0.27 in} U <- diag(Data$J-1) \\
+\hspace*{0.27 in} U[upper.tri(U, diag=TRUE)] <- u \\
+\hspace*{0.27 in} diag(U) <- exp(diag(U)) \\
+\hspace*{0.27 in} Sigma <- t(U) \%*\% U \\
+\hspace*{0.27 in} Sigma[1,] <- Sigma[,1] <- U[1,] \\
+\hspace*{0.27 in} W <- matrix(parm[grep("W", Data$parm.names)], Data$N, Data$J-1) \\
 \hspace*{0.27 in} Y <- as.indicator.matrix(Data$y) \\
-\hspace*{0.27 in} Z <- ifelse(Z > 10, 10, Z); Z <- ifelse(\{Y == 0\} \& \{Z > 0\}, 0, Z) \\
-\hspace*{0.27 in} Z <- ifelse(Z < -10, -10, Z); Z <- ifelse(\{Y == 1\} \& \{Z < 0\}, 0, Z) \\
-\hspace*{0.27 in} parm[grep("Z", Data$parm.names)] <- as.vector(Z) \\
-\hspace*{0.27 in} LL <- sum(dmvn(Z, mu, Sigma, log=TRUE)) \\
-\hspace*{0.27 in} \#eta <- exp(mu) \\
+\hspace*{0.27 in} W <- ifelse(Y[,-c(Data$J)] == 1, interval(W, 0, 10), \\
+\hspace*{0.62 in} interval(W, -10, 0)) \\
+\hspace*{0.27 in} parm[grep("W", Data$parm.names)] <- as.vector(W) \\
+\hspace*{0.27 in} \#\#\# Log(Prior Densities) \\
+\hspace*{0.27 in} beta.prior <- sum(dnormv(beta, 0, 10, log=TRUE)) \\
+\hspace*{0.27 in} gamma.prior <- sum(dnormv(gamma, 0, 10, log=TRUE)) \\
+\hspace*{0.27 in} U.prior <- sum(dnorm(u[-length(u)], 0, 1, log=TRUE)) \\
+\hspace*{0.27 in} \#\#\# Log-Likelihood \\
+\hspace*{0.27 in} mu <- tcrossprod(Data$X, beta) + \\
+\hspace*{0.62 in} as.vector(tcrossprod(Data$Z, t(gamma))) \\
+\hspace*{0.27 in} \#eta <- exp(cbind(mu,0)) \\
 \hspace*{0.27 in} \#p <- eta / rowSums(eta) \\
+\hspace*{0.27 in} LL <- sum(dmvn(W, mu, Sigma, log=TRUE)) \\
 \hspace*{0.27 in} \#\#\# Log-Posterior \\
-\hspace*{0.27 in} LP <- LL + beta.prior + gamma.prior + Sigma.prior + Z.prior \\
+\hspace*{0.27 in} LP <- LL + beta.prior + gamma.prior + U.prior \\
 \hspace*{0.27 in} Modelout <- list(LP=LP, Dev=-2*LL, Monitor=LP, \\
-\hspace*{0.62 in} yhat=max.col(rmvn(nrow(mu), mu, Sigma)), parm=parm) \\
+\hspace*{0.62 in} yhat=max.col(cbind(rmvn(nrow(mu), mu, Sigma),0)), parm=parm) \\
 \hspace*{0.27 in} return(Modelout) \\
 \hspace*{0.27 in} \} \\
 }
 \subsection{Initial Values}
-\code{Initial.Values <- c(upper.triangle(S, diag=TRUE)[-1], \\
-\hspace*{0.27 in} rep(0,(J-1)*K), rep(0,C), rep(0,N*J))}
+\code{Initial.Values <- GIV(Model, MyData, PGF=TRUE)}
 
 \section{Distributed Lag, Koyck} \label{dl.koyck}
 This example applies Koyck or geometric distributed lags to $k=1,\dots,K$ discrete events in covariate $\textbf{x}$, transforming the covariate into a $N$ x $K$ matrix $\textbf{X}$ and creates a $N$ x $K$ lag matrix $\textbf{L}$.
@@ -2015,9 +2015,9 @@ N <- 20 \#Number of records \\
 P <- 3 \#Number of factors \\
 alpha <- runif(M)*10 \\
 Lambda <- matrix(runif(M*P,-1,1), P, M) \\
-Sigma <- matrix(runif(P*P), P, P); diag(Sigma) <- 1 + runif(P)*5 \\
-Sigma <- as.symmetric.matrix(Sigma); Sigma <- as.positive.definite(Sigma) \\
-F <- rmvn(N, rep(0,P), Sigma) \\
+U <- diag(P)
+U[upper.tri(U, diag=TRUE)] <- runif(length(upper.triangle(U, diag=TRUE)))
+F <- rmvnc(N, rep(0,P), U) \\
 Y <- matrix(alpha, N, M, byrow=TRUE) + tcrossprod(F, t(Lambda)) \\
 gamma <- rep(0,P) \\
 S <- diag(P) \\
@@ -3667,39 +3667,49 @@ MyData <- list(J=J, K=K, N=N, PGF=PGF, X=X, mon.names=mon.names, \\
 \code{Initial.Values <- c(0.5, rep(0.1,(J-1)*K))}
 
 \section{Multinomial Probit} \label{mnp}
-In this form of MNP, the $\beta$ parameters are sum-to-zero constraints in the reference category, and covariance matrix $\Sigma$ includes all $J$ categories of $\textbf{y}$.
 \subsection{Form}
-$$\textbf{Z}_{i,1:J} \sim \mathcal{N}_J(\mu_{i,1:J}, \Sigma), \quad i=1,\dots,N$$
-\[\textbf{Z}_{i,j} \in \left\{
+$$\textbf{W}_{i,1:(J-1)} \sim \mathcal{N}_{J-1}(\mu_{i,1:(J-1)}, \Sigma), \quad i=1,\dots,N$$
+\[\textbf{W}_{i,j} \in \left\{
 \begin{array}{l l}
  $[0,10]$ & \quad \mbox{if $\textbf{y}_i = j$}\\
  $[-10,0]$ \\ \end{array} \right. \]
 $$\mu_{1:N,j} = \textbf{X} \beta_{j,1:K}$$
-$$\Sigma \sim \mathcal{IW}_{J+1}(\textbf{S}^{-1}), \quad \textbf{S} = \textbf{I}_J, \quad \Sigma[1,1] = 1$$
-$$\beta_{j,k} \sim \mathcal{N}(0, 1000), \quad j=1,\dots,(J-1), \quad k=1,\dots,K$$
-$$\beta_{J,k} = - \sum^{J-1}_{j=1} \beta_{j,k}$$
-$$\textbf{Z}_{i,j} \sim \mathcal{N}(0, 1000) \in [-10,10]$$
+$$\Sigma = \textbf{U}^T \textbf{U}$$
+$$\beta_{j,k} \sim \mathcal{N}(0, 10), \quad j=1,\dots,(J-1), \quad k=1,\dots,K$$
+$$\textbf{U}_{j,k} \sim \mathcal{N}(0,1), \quad j=1,\dots,(J-1), \quad k=1,\dots,(J-1), \quad j \ge k, \quad j \ne k = 1$$
 \subsection{Data}
-\code{y <- x1 <- x2 <- c(1:30) \\
-y[1:10] <- 1 \\
-y[11:20] <- 2 \\
-y[21:30] <- 3 \\
-x1[1:10] <- rnorm(10, 25, 2.5) \\
-x1[11:20] <- rnorm(10, 40, 4.0) \\
-x1[21:30] <- rnorm(10, 35, 3.5) \\
-x2[1:10] <- rnorm(10, 2.51, 0.25) \\
-x2[11:20] <- rnorm(10, 2.01, 0.20) \\
-x2[21:30] <- rnorm(10, 2.70, 0.27) \\
-N <- length(y) \\
-J <- 3 \#Number of categories in y \\
-K <- 3 \#Number of columns to be in design matrix X \\
-S <- diag(J) \\
-X <- matrix(c(rep(1,N),x1,x2),N,K) \\
+\code{N <- 50 \\
+J <- 5 \#Categories of y \\
+K <- 8 \#Number of columns in design matrix X \\
+X <- matrix(runif(N*K,-2,2), N, K) \\
+X[,1] <- 1 \\
+beta <- matrix(runif((J-1)*K), J-1, K) \\
+mu <- tcrossprod(X, beta) \\
+S <- diag(J-1) \\
+u <- c(0, rnorm((J-2) + (factorial(J-1) / \\
+\hspace*{0.27 in} (factorial(J-1-2)*factorial(2))),0,1)) \\
+U <- diag(J-1) \\
+U[upper.tri(U, diag=TRUE)] <- u \\
+diag(U) <- exp(diag(U)) \\
+Sigma <- t(U) \%*\% U \\
+Sigma[1,] <- Sigma[,1] <- U[1,] \\
+mu <- tcrossprod(X, beta) \\
+W <- rmvn(N, mu, Sigma) + matrix(rnorm(N*(J-1),0,0.1), N, J-1) \\
+y <- max.col(cbind(W,0)) \\
+table(y) \\
 mon.names <- "LP" \\
-sigma.temp <- as.parm.names(list(Sigma=diag(J)), uppertri=1) \\
-parm.names <- c(sigma.temp[2:length(sigma.temp)], \\
-\hspace*{0.27 in} as.parm.names(list(beta=matrix(0,(J-1),K), Z=matrix(0,N,J)))) \\
-MyData <- list(J=J, K=K, N=N, S=S, X=X, mon.names=mon.names, \\
+parm.names <- as.parm.names(list(beta=matrix(0,(J-1),K), \\
+\hspace*{0.27 in} U=U, W=matrix(0,N,J-1)), uppertri=c(0,1,0)) \\
+parm.names <- parm.names[-which(parm.names == "U[1,1]")] \\
+PGF <- function(Data) \{ \\
+\hspace*{0.27 in} beta <- rnormv((Data$J-1)*Data$K,0,1) \\
+\hspace*{0.27 in} U <- rnorm((Data$J-2) + (factorial(Data$J-1) / \\
+\hspace*{0.62 in} (factorial(Data$J-1-2)*factorial(2))),0,1) \\
+\hspace*{0.27 in} W <- matrix(runif(Data$N*(Data$J-1),-10,0), Data$N, Data$J-1) \\
+\hspace*{0.27 in} Y <- as.indicator.matrix(Data$y) \\
+\hspace*{0.27 in} W <- ifelse(Y[,-Data$J] == 1, abs(W), W) \\
+\hspace*{0.27 in} return(c(beta, U, as.vector(W)))\} \\
+MyData <- list(J=J, K=K, N=N, PGF=PGF, S=S, X=X, mon.names=mon.names, \\
 \hspace*{0.27 in} parm.names=parm.names, y=y) \\
 }
 \subsection{Model}
@@ -3707,44 +3717,44 @@ MyData <- list(J=J, K=K, N=N, S=S, X=X, mon.names=mon.names, \\
 \hspace*{0.27 in} \{ \\
 \hspace*{0.27 in} \#\#\# Parameters \\
 \hspace*{0.27 in} beta <- matrix(parm[grep("beta", Data$parm.names)], Data$J-1, Data$K) \\
-\hspace*{0.27 in} beta <- rbind(beta, colSums(beta)*-1) \#Sum to zero constraint \\
-\hspace*{0.27 in} Sigma <- as.parm.matrix(Sigma, Data$J, parm, Data, restrict=TRUE) \\
-\hspace*{0.27 in} parm[grep("Sigma", Data$parm.names)] <- upper.triangle(Sigma, \\
-\hspace*{0.62 in} diag=TRUE)[-1] \\
-\hspace*{0.27 in} Z <- matrix(parm[grep("Z", Data$parm.names)], Data$N, Data$J) \\
+\hspace*{0.27 in} u <- c(0, parm[grep("U", Data$parm.names)]) \\
+\hspace*{0.27 in} U <- diag(Data$J-1) \\
+\hspace*{0.27 in} U[upper.tri(U, diag=TRUE)] <- u \\
+\hspace*{0.27 in} diag(U) <- exp(diag(U)) \\
+\hspace*{0.27 in} Sigma <- t(U) \%*\% U \\
+\hspace*{0.27 in} Sigma[1,] <- Sigma[,1] <- U[1,] \\
+\hspace*{0.27 in} W <- matrix(parm[grep("W", Data$parm.names)], Data$N, Data$J-1) \\
+\hspace*{0.27 in} Y <- as.indicator.matrix(Data$y) \\
+\hspace*{0.27 in} W <- ifelse(Y[,-c(Data$J)] == 1, interval(W, 0, 10), \\
+\hspace*{0.62 in} interval(W, -10, 0)) \\
+\hspace*{0.27 in} parm[grep("W", Data$parm.names)] <- as.vector(W) \\
 \hspace*{0.27 in} \#\#\# Log(Prior Densities) \\
-\hspace*{0.27 in} beta.prior <- sum(dnormv(beta, 0, 1000, log=TRUE)) \\
-\hspace*{0.27 in} Sigma.prior <- dinvwishart(Sigma, Data$J+1, Data$S, log=TRUE) \\
-\hspace*{0.27 in} Z.prior <- sum(dnormv(Z, 0, 1000, log=TRUE)) \\
+\hspace*{0.27 in} beta.prior <- sum(dnormv(beta, 0, 10, log=TRUE)) \\
+\hspace*{0.27 in} U.prior <- sum(dnorm(u[-length(u)], 0, 1, log=TRUE)) \\
 \hspace*{0.27 in} \#\#\# Log-Likelihood \\
 \hspace*{0.27 in} mu <- tcrossprod(Data$X, beta) \\
-\hspace*{0.27 in} Y <- as.indicator.matrix(Data$y) \\
-\hspace*{0.27 in} Z <- ifelse(Z > 10, 10, Z); Z <- ifelse(\{Y == 0\} \& \{Z > 0\}, 0, Z) \\
-\hspace*{0.27 in} Z <- ifelse(Z < -10, -10, Z); Z <- ifelse(\{Y == 1\} \& \{Z < 0\}, 0, Z) \\
-\hspace*{0.27 in} parm[grep("Z", Data$parm.names)] <- as.vector(Z) \\
-\hspace*{0.27 in} LL <- sum(dmvn(Z, mu, Sigma, log=TRUE)) \\
-\hspace*{0.27 in} \#eta <- exp(mu) \\
+\hspace*{0.27 in} \#eta <- exp(cbind(mu,0)) \\
 \hspace*{0.27 in} \#p <- eta / rowSums(eta) \\
+\hspace*{0.27 in} LL <- sum(dmvn(W, mu, Sigma, log=TRUE)) \\
 \hspace*{0.27 in} \#\#\# Log-Posterior \\
-\hspace*{0.27 in} LP <- LL + beta.prior + Sigma.prior + Z.prior \\
+\hspace*{0.27 in} LP <- LL + beta.prior + U.prior \\
 \hspace*{0.27 in} Modelout <- list(LP=LP, Dev=-2*LL, Monitor=LP, \\
-\hspace*{0.62 in} yhat=max.col(rmvn(nrow(mu), mu, Sigma)), parm=parm) \\
+\hspace*{0.62 in} yhat=max.col(cbind(rmvn(nrow(mu), mu, Sigma),0)), parm=parm) \\
 \hspace*{0.27 in} return(Modelout) \\
 \hspace*{0.27 in} \} \\
 }
 \subsection{Initial Values}
-\code{Initial.Values <- c(rep(0, length(upper.triangle(S, diag=TRUE)) - 1), \\
-\hspace*{0.27 in} rep(0,(J-1)*K), rep(0,N*J))}
+\code{Initial.Values <- GIV(Model, MyData, PGF=TRUE)}
 
 \section{Multivariate Binary Probit} \label{multiv.bin.probit}
 \subsection{Form}
 $$\textbf{Z}_{i,1:J} \sim \mathcal{N}_J(\mu_{i,1:J}, \Sigma), \quad i=1,\dots,N$$
-\[\textbf{Z}_{i,j} \in \left\{ 
+\[\textbf{Z}_{i,j} \in \left\{
 \begin{array}{l l}
- $[0,10]$ & \quad \mbox{if $\textbf{y}_i = j$}\\ 
+ $[0,10]$ & \quad \mbox{if $\textbf{y}_i = j$}\\
  $[-10,0]$ \\ \end{array} \right. \]
 $$\mu_{1:N,j} = \textbf{X} \beta_{j,1:K}$$
-$$\Sigma \sim \mathcal{IW}_{J+1}(\textbf{S}^{-1}), \quad \textbf{S} = \textbf{I}_J, \quad \Sigma[1,1] = 1$$
+$$\Sigma \sim \mathcal{IW}_{J+1}(\textbf{S}^-1), \quad \textbf{S} = \textbf{I}_J, \quad \Sigma[1,1] = 1$$
 $$\beta_{j,k} \sim \mathcal{N}(0, 1000), \quad j=1,\dots,(J-1), \quad k=1,\dots,K$$
 $$\beta_{J,k} = - \sum^{J-1}_{j=1} \beta_{j,k}$$
 $$\textbf{Z}_{i,j} \sim \mathcal{N}(0, 1000) \in [-10,10]$$
@@ -3767,34 +3777,32 @@ MyData <- list(J=J, K=K, N=N, S=S, X=X, Y=Y, mon.names=mon.names, \\
 \code{Model <- function(parm, Data) \\
 \hspace*{0.27 in} \{ \\
 \hspace*{0.27 in} \#\#\# Parameters \\
-\hspace*{0.27 in} beta <- matrix(parm[grep("beta", Data$parm.names)], Data$J-1, Data$K) \\
-\hspace*{0.27 in} beta <- rbind(beta, colSums(beta)*-1) \#Sum to zero constraint \\
-\hspace*{0.27 in} Sigma <- as.parm.matrix(Sigma, Data$J, parm, Data, restrict=TRUE) \\
-\hspace*{0.27 in} parm[grep("Sigma", Data$parm.names)] <- upper.triangle(Sigma, \\
-\hspace*{0.62 in} diag=TRUE)[-1] \\
-\hspace*{0.27 in} Z <- matrix(parm[grep("Z", Data$parm.names)], Data$N, Data$J) \\
+\hspace*{0.27 in} beta <- matrix(parm[grep("beta", Data$parm.names)], Data$J, Data$K) \\
+\hspace*{0.27 in} u <- c(0, parm[grep("U", Data$parm.names)]) \\
+\hspace*{0.27 in} U <- diag(Data$J) \\
+\hspace*{0.27 in} U[upper.tri(U, diag=TRUE)] <- u \\
+\hspace*{0.27 in} diag(U) <- exp(diag(U)) \\
+\hspace*{0.27 in} Sigma <- t(U) \%*\% U \\
+\hspace*{0.27 in} Sigma[1,] <- Sigma[,1] <- U[1,] \\
+\hspace*{0.27 in} W <- matrix(parm[grep("W", Data$parm.names)], Data$N, Data$J) \\
+\hspace*{0.27 in} W <- ifelse(Y == 1, interval(W, 0, 10), \\
+\hspace*{0.62 in} interval(W, -10, 0)) \\
+\hspace*{0.27 in} parm[grep("W", Data$parm.names)] <- as.vector(W) \\
 \hspace*{0.27 in} \#\#\# Log(Prior Densities) \\
 \hspace*{0.27 in} beta.prior <- sum(dnormv(beta, 0, 1000, log=TRUE)) \\
-\hspace*{0.27 in} Sigma.prior <- dinvwishart(Sigma, Data$J+1, Data$S, log=TRUE) \\
-\hspace*{0.27 in} Z.prior <- sum(dnormv(Z, 0, 1000, log=TRUE)) \\
+\hspace*{0.27 in} U.prior <- sum(dnorm(u[-length(u)], 0, 1, log=TRUE)) \\
 \hspace*{0.27 in} \#\#\# Log-Likelihood \\
 \hspace*{0.27 in} mu <- tcrossprod(Data$X, beta) \\
-\hspace*{0.27 in} Z <- ifelse(Z > 10, 10, Z) \\
-\hspace*{0.27 in} Z <- ifelse(\{Data$Y == 0\} \& \{Z > 0\}, 0, Z) \\
-\hspace*{0.27 in} Z <- ifelse(Z < -10, -10, Z) \\
-\hspace*{0.27 in} Z <- ifelse(\{Data$Y == 1\} \& \{Z < 0\}, 0, Z) \\
-\hspace*{0.27 in} parm[grep("Z", Data$parm.names)] <- as.vector(Z) \\
-\hspace*{0.27 in} LL <- sum(dmvn(Z, mu, Sigma, log=TRUE)) \\
+\hspace*{0.27 in} LL <- sum(dmvn(W, mu, Sigma, log=TRUE)) \\
 \hspace*{0.27 in} \#\#\# Log-Posterior \\
-\hspace*{0.27 in} LP <- LL + beta.prior + Sigma.prior + Z.prior \\
+\hspace*{0.27 in} LP <- LL + beta.prior + U.prior \\
 \hspace*{0.27 in} Modelout <- list(LP=LP, Dev=-2*LL, Monitor=LP, \\
-\hspace*{0.62 in} yhat=max.col(rmvn(nrow(mu), mu, Sigma)), parm=parm) \\
+\hspace*{0.62 in} yhat=1*(rmvn(prod(nrow(mu)), mu, Sigma) >= 0), parm=parm) \\
 \hspace*{0.27 in} return(Modelout) \\
 \hspace*{0.27 in} \} \\
 }
 \subsection{Initial Values}
-\code{Initial.Values <- c(rep(0, length(upper.triangle(S, diag=TRUE)) - 1), \\
-\hspace*{0.27 in} rep(0,(J-1)*K), rep(0,N*J))}
+\code{Initial.Values <- GIV(Model, MyData, PGF=TRUE)}
 
 \section{Multivariate Laplace Regression} \label{multivariate.lap.reg}
 \subsection{Form}

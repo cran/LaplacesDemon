@@ -40,7 +40,7 @@ Mode <- function(x)
      ### Amodal
      if(is.constant(x)) return(NA)
      ### Discrete
-     if(identical(x, round(x))) {
+     if(all(x == round(x))) {
           Mode <- as.vector(which.max(table(x)))}
      ### Continuous (using kernel density)
      else {

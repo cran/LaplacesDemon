@@ -84,6 +84,8 @@ plotMatrix <- function(x, col=colorRampPalette(c("red","black","green"))(100),
           par(mar=c(0, 0, 2, 0), bg="white")
           plot.new()
           plot.window(c(0, ncol(x)), c(0, nrow(x)), asp=1)
+          cex.x <- 1 / {log(length(xLabels))/5 + 1}
+          cex.y <- 1 / {log(length(yLabels))/5 + 1}
           xlabwidth <- max(strwidth(yLabels, cex=cex))
           ylabwidth <- max(strwidth(xLabels, cex=cex))
           plot.window(c(-xlabwidth + 0.5, ncol(x) + 0.5),
@@ -92,9 +94,9 @@ plotMatrix <- function(x, col=colorRampPalette(c("red","black","green"))(100),
           bg <- "gray10"
           rect(0.5, 0.5, ncol(x) + 0.5, nrow(x) + 0.5, col=bg)
           text(rep(-xlabwidth/2, nrow(x)), nrow(x):1, xLabels,
-               col="black", cex=cex)
+               col="black", cex=cex.x)
           text(1:ncol(x), rep(nrow(x) + 1 + ylabwidth/2, ncol(x)),
-               yLabels, srt=90, col="black", cex=cex)
+               yLabels, srt=90, col="black", cex=cex.y)
           ### Add grid
           lines <- "gray30"
           segments(rep(0.5, nrow(x) + 1), 0.5 + 0:nrow(x),

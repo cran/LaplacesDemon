@@ -37,7 +37,7 @@ joint.density.plot <- function(x, y, Title=NULL, contour=TRUE, color=FALSE,
           ay <- outer(gy, y, "-" ) / h[2L]
           z <- tcrossprod(matrix(dnorm(ax), , nx),
                matrix(dnorm(ay), , nx)) / (nx * h[1L] * h[2L])
-          list(x = gx, y = gy, z = z)
+          list(x=gx, y=gy, z=z)
           }
      bandwidth.nrd <- function(x)
           {
@@ -49,9 +49,8 @@ joint.density.plot <- function(x, y, Title=NULL, contour=TRUE, color=FALSE,
      if(color == FALSE) {
      plot(x, y, cex=0.1, main=Title, xlab=xname, ylab=yname, col="gray")}
      else if(color == TRUE) {
-          #image(dd, main=Title, xlab=xname, ylab=yname, col=gray((50:200)/200))
-          #image(dd, main=Title, xlab=xname, ylab=yname, col=heat.colors(200))
-          image(dd, main=Title, xlab=xname, ylab=yname, col=topo.colors(200))
+          crp <- colorRampPalette(c("black","red","yellow","white"), space="rgb")
+          image(dd, main=Title, xlab=xname, ylab=yname, col=crp(200))
           }
      if(contour == TRUE) {contour(dd, nlevels=10, add=TRUE)}
      if(!is.null(Trace)) {
@@ -60,8 +59,8 @@ joint.density.plot <- function(x, y, Title=NULL, contour=TRUE, color=FALSE,
              stop("Trace[1] not smaller than Trace[2].")
           if(Trace[1] < 1) stop("Trace[1] < 1.")
           if(Trace[2] > length(x)) stop("Trace[2] > length(x).")
-          lines(x[Trace[1]:Trace[2]], y[Trace[1]:Trace[2]])
-          points(x[Trace[1]], y[Trace[1]], cex=0.5, col="red")
+          lines(x[Trace[1]:Trace[2]], y[Trace[1]:Trace[2]], col="green")
+          points(x[Trace[1]], y[Trace[1]], cex=0.5, col="green")
           }
      }
 

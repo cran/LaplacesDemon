@@ -2361,7 +2361,7 @@ twalk <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
           }
      Runtwalk <- function(Iterations, dim, x0, xp0, pphi, at, aw,
           F1=0.4918, F2=F1+0.4918, F3=F2+0.0082, Model, Data, Status,
-          Thinning, Acceptance, Dev, Mon, Mo0, post, thinned)
+          Thinning, Acceptance, Dev, Mon, Mo0, post, thinned, VarCov)
           {
           x <- x0 ### Primary vector of initial values
           xp <- xp0 ### Secondary vector of initial values
@@ -2376,7 +2376,7 @@ twalk <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
                U <- Mo0.1[[1]] * -1
                Up <- Mo0.2[[1]] * -1}
           else {
-               cat("\nInitial values out of support")
+               cat("\nInitial values are out of support.")
                cat("\n  Initial.Values=", x)
                cat("\n SIV=", xp)
                stop("Try re-specifying initial values.")}
@@ -2427,7 +2427,7 @@ twalk <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
      out <- Runtwalk(Iterations=Iterations, dim=LIV, x0=post[1,], xp0=xp0,
           pphi=min(LIV, n1)/LIV, at=6, aw=1.5, Model=Model, Data=Data,
           Status=Status, Thinning=Thinning, Acceptance=Acceptance, Dev=Dev,
-          Mon=Mon, Mo0=Mo0, post=post, thinned=thinned)
+          Mon=Mon, Mo0=Mo0, post=post, thinned=thinned, VarCov=VarCov)
      ### Output
      return(out)
      }

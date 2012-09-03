@@ -41,6 +41,13 @@ Model.Spec.Time(Model, Initial.Values, Data, n=1000)
   \code{apply} functions), then run-time will typically be slower than
   other popular MCMC-based software algorithms.
 
+  The speed of calculating the model specification function is
+  affected by parameter constraints, such as with the
+  \code{\link{interval}} function. Parameter constraints may add
+  considerable variability to the speed of this calculation, and usually
+  more variation occurs with initial values that are far from the target
+  distributions.
+
   Distributions in the \code{LaplacesDemon} package usually have logical
   checks to ensure correctness. These checks may slow the 
   calculation of the density, for example. If the user is confident
@@ -143,6 +150,7 @@ Model.Spec.Time(Model, Initial.Values, Data, n=1000)
   \code{\link{.Fortran}},
   \code{\link{apply}},
   \code{\link{grep}},
+  \code{\link{interval}},
   \code{\link{Juxtapose}},
   \code{\link{LaplaceApproximation}},
   \code{\link{LaplacesDemon}},

@@ -106,7 +106,8 @@ Validate <- function(object, Model, Data, plot=FALSE, PDF=FALSE)
           list(y=y2, yhat=yhat2, Deviance=dev2),
           BPIC=bpic)
      names(predicted) <- c("Modeled","Validation","BPIC")
-     class(predicted) <- "demonoid.val"
+     if(class(object) == "demonoid") class(predicted) <- "demonoid.val"
+     else class(predicted) <- "pmc.val"
      return(predicted)
      }
 

@@ -25,17 +25,15 @@ plot.pmc.ppc <- function(x, Style=NULL, Data=NULL, Rows=NULL, PDF=FALSE,
           if(is.null(Data$X)) co <- matrix(Data$x, length(Data$x), 1)
           else if(is.null(Data$x)) co <- Data$X
           temp <- summary(x, Quiet=TRUE)$Summary
+          mycol <- rgb(0, 100, 0, 50, maxColorValue=255)
           for (i in 1:ncol(co)) {
-               plot(co[Rows,i], temp[Rows,5], pch=16, cex=0.75,
+               plot(co[Rows,i], temp[Rows,5], col=mycol, pch=16, cex=0.75,
                     ylim=c(min(temp[Rows,c(1,4:6)]),max(temp[Rows,c(1,4:6)])),
                     xlab=paste("X[,",i,"]", sep=""),
                     ylab="yhat",
-                    sub="Gray dots and lines are yhat at 2.5% and 95%.")
-               panel.smooth(co[Rows,i], temp[Rows,4], pch=16, cex=0.75,
-                    col="gray", col.smooth="gray")
-               panel.smooth(co[Rows,i], temp[Rows,6], pch=16, cex=0.75,
-                    col="gray", col.smooth="gray")
-               panel.smooth(co[Rows,i], temp[Rows,5], pch=16, cex=0.75)}}
+                    sub="Gray lines are yhat at 2.5% and 95%.")
+               panel.smooth(co[Rows,i], temp[Rows,5], col=mycol, pch=16,
+                    cex=0.75)}}
      if(Style == "Covariates, Categorical DV") {
           if(PDF == TRUE) {pdf("PPC.Plots.Covariates.Cat.pdf")
                par(mfrow=c(3,3))}
@@ -48,11 +46,13 @@ plot.pmc.ppc <- function(x, Style=NULL, Data=NULL, Rows=NULL, PDF=FALSE,
           else if(is.null(Data$x)) co <- Data$X
           temp <- summary(x, Categorical=TRUE, Quiet=TRUE)$Summary
           ncat <- length(table(temp[,1]))
+          mycol <- rgb(0, 100, 0, 50, maxColorValue=255)
           for (i in 1:ncol(co)) {for (j in 2:(ncat+1)) {
-               plot(co[Rows,i], temp[Rows,j], pch=16, cex=0.75,
+               plot(co[Rows,i], temp[Rows,j], col=mycol, pch=16, cex=0.75,
                     xlab=paste("X[,",i,"]", sep=""),
                     ylab=colnames(temp)[j])
-               panel.smooth(co[Rows,i], temp[Rows,j], pch=16, cex=0.75)}}}
+               panel.smooth(co[Rows,i], temp[Rows,j], col=mycol, pch=16,
+                    cex=0.75)}}}
      if(Style == "Density") {
           if(PDF == TRUE) {pdf("PPC.Plots.Density.pdf")
                par(mfrow=c(3,3))}
@@ -367,9 +367,12 @@ plot.pmc.ppc <- function(x, Style=NULL, Data=NULL, Rows=NULL, PDF=FALSE,
           if(PDF == TRUE) pdf("PPC.Plots.PQ.pdf")
           par(mfrow=c(1,1))
           temp <- summary(x, Quiet=TRUE)$Summary
-          plot(temp[Rows,1], temp[Rows,7], ylim=c(0,1), pch=16, cex=0.75,
-               xlab="y", ylab="PQ", main="Predictive Quantiles")
-          panel.smooth(temp[Rows,1], temp[Rows,7], pch=16, cex=0.75)
+          mycol <- rgb(0, 100, 0, 50, maxColorValue=255)
+          plot(temp[Rows,1], temp[Rows,7], ylim=c(0,1), col=mycol,
+               pch=16, cex=0.75, xlab="y", ylab="PQ",
+               main="Predictive Quantiles")
+          panel.smooth(temp[Rows,1], temp[Rows,7], col=mycol, pch=16,
+               cex=0.75)
           abline(h=0.025, col="gray")
           abline(h=0.975, col="gray")}
      if(Style == "Residual Density") {

@@ -19,14 +19,14 @@ BayesianBootstrap <- function(X, n=1000, Status=NULL)
           if(Status < 1 | Status > S) Status <- S + 1}
      N <- nrow(X)
      J <- ncol(X)
-     X <- X[order(X[,1]),]
+     X <- as.matrix(X[order(X[,1]),])
      X.B <- matrix(NA,S,J)
      ### Bootstrap Samples
      for (s in 1:S) {
           if(s %% Status == 0) cat("\nBootstrapped Samples:", s)
           u <- c(0, sort(runif(N-1)), 1)
           g <- diff(u)
-          X.B[s,] <- X[sample(1:N, 1, prob=g),]
+          X.B[s,] <- X[sample(1:N, 1, prob=g, replace=TRUE),]
           }
      cat("\n\nThe Bayesian Bootstrap has finished.\n\n")
      return(X.B)

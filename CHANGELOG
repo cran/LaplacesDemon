@@ -1,3 +1,10 @@
+2012-08-29 Added ABB
+2012-08-28 Vignette Examples: Fixed bug with DC.MNP, MNP, and MBP
+2012-08-28 BayesianBootstrap: Fixed bug when X is a vector
+2012-08-08 Added is.pmc.val
+2012-08-08 Validate: Added class pmc.val
+2012-08-07 plotMatrix: Fixed bug with label size when circle=TRUE
+2012-08-07 joint.density.plot: Changed color ramp
 2012-08-05 Vignette Examples: Added PGF
 2012-08-04 GIV: Added the PGF argument
 2012-08-03 Added dinvbeta, rinvbeta
