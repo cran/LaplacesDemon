@@ -10,8 +10,8 @@ within R.
   \tabular{ll}{
     Package: \tab LaplacesDemon\cr
     Type: \tab Package\cr
-    Version: \tab 12.09.03\cr
-    Date: \tab 2012-09-03\cr
+    Version: \tab 12.10.01\cr
+    Date: \tab 2012-10-01\cr
     License: \tab GPL-2\cr
   }
   The goal of LaplacesDemon, often referred to as Laplace's Demon, is to

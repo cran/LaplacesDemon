@@ -63,7 +63,9 @@ Validate(object, Model, Data, plot=FALSE, PDF=FALSE)
   data set.
 
   Predictive loss is associated with overfitting, differences between
-  the model and validation data set, or model misspecification.
+  the model and validation data set, or model misspecification. Bayesian
+  inference is reputed to be much more robust to overfitting than
+  frequentist inference.
 
   There are many ways to measure predictive loss, and within each
   approach, there are usually numerous possible loss functions. The

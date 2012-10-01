@@ -101,15 +101,17 @@ This vignette will grow over time as examples of more methods become included. C
 \item Linear Regression, Multilevel \ref{linear.reg.ml}
 \item Linear Regression with Full Missingness \ref{linear.reg.full.miss}
 \item Linear Regression with Missing Response \ref{linear.reg.miss.resp}
+\item Linear Regression with Missing Response via ABB \ref{linear.reg.miss.resp.abb}
 \item Linear Regression with Power Priors \ref{linear.reg.pp}
 \item LSTAR \ref{lstar}
 \item MANCOVA \ref{mancova}
 \item MANOVA \ref{manova}
+\item Missing Values \ref{linear.reg.full.miss} \ref{linear.reg.miss.resp} \ref{linear.reg.miss.resp.abb}
 \item Mixture Model, Dirichlet Process \ref{eca}
 \item Mixture Model, Finite \ref{cca} \ref{fmm}
 \item Mixture Model, Infinite \ref{eca} \ref{imm}
 \item Mixture Model, Poisson-Gamma \ref{poisson.gamma}
-\item Model Averaging \ref{ssvs}
+\item Model Averaging \ref{ssvs} \ref{rj}
 \item Multilevel Model \ref{linear.reg.ml}
 \item Multinomial Logit \ref{mnl}
 \item Multinomial Logit, Nested \ref{nmnl}
@@ -120,9 +122,7 @@ This vignette will grow over time as examples of more methods become included. C
 \item Negative Binomial Regression \ref{negbin.reg}
 \item Normal, Multilevel \ref{norm.ml}
 \item Ordinal Logit \ref{ordinal.logit}
-\item Ordinal Probit \ref{ordinal.probit}
 \item Panel, Autoregressive Poisson \ref{panel.ap}
-\item Penalized Spline Regression \ref{penalized.spline}
 \item Poisson Regression \ref{poisson.reg}
 \item Poisson Regression, Overdispersed \ref{poisson.gamma} \ref{negbin.reg}
 \item Poisson-Gamma Regression \ref{poisson.gamma}
@@ -148,6 +148,7 @@ This vignette will grow over time as examples of more methods become included. C
 \item Threshold Autoregression (TAR) \ref{tar}
 \item TARCH(1) \ref{tarch}
 \item Variable Selection, BAL \ref{bal}
+\item Variable Selection, RJ \ref{rj}
 \item Variable Selection, SSVS \ref{ssvs}
 \item Vector Autoregression, VAR(1) \ref{var1}
 \item Weighted Regression \ref{weighted.reg}
@@ -161,9 +162,9 @@ $$\textbf{y}_i \sim \mathcal{N}(\mu_i, \sigma^2_1)$$
 $$\mu_i = \alpha + \beta[\textbf{X}_{i,1}] + \gamma[\textbf{X}_{i,2}] + \delta \textbf{X}_{i,2}, \quad i=1,\dots,N$$
 $$\epsilon_i = \textbf{y}_i - \mu_i$$
 $$\alpha \sim \mathcal{N}(0, 1000)$$
-$$\beta_j \sim \mathcal{N}(0, \sigma^2_2), \quad j=1,\dots,(J-1)$$
+$$\beta_j \sim \mathcal{N}(0, \sigma^2_2), \quad j=1,\dots,J$$
 $$\beta_J = - \sum^{J-1}_{j=1} \beta_j$$
-$$\gamma_k \sim \mathcal{N}(0, \sigma^2_3), \quad k=1,\dots,(K-1)$$
+$$\gamma_k \sim \mathcal{N}(0, \sigma^2_3), \quad k=1,\dots,K$$
 $$\gamma_K = - \sum^{K-1}_{k=1} \gamma_k$$
 $$\delta \sim \mathcal{N}(0, 1000)$$
 $$\sigma_m \sim \mathcal{HC}(25), \quad m=1,\dots,3$$
@@ -234,7 +235,7 @@ When $J=2$, this is a Bayesian form of a t-test.
 $$\textbf{y} \sim \mathcal{N}(\mu, \sigma^2_1)$$
 $$\mu_i = \alpha + \beta[\textbf{x}_i], \quad i=1,\dots,N$$
 $$\alpha \sim \mathcal{N}(0, 1000)$$
-$$\beta_j \sim \mathcal{N}(0, \sigma^2_2), \quad j=1,\dots,(J-1)$$
+$$\beta_j \sim \mathcal{N}(0, \sigma^2_2), \quad j=1,\dots,J$$
 $$\beta_J = - \displaystyle\sum^{J-1}_{j=1} \beta_j$$
 $$\sigma_{1:2} \sim \mathcal{HC}(25)$$
 \subsection{Data}
@@ -287,9 +288,9 @@ $$\textbf{y}_i \sim \mathcal{N}(\mu_i, \sigma^2_1)$$
 $$\mu_i = \alpha + \beta[\textbf{X}_{i,1}] + \gamma[\textbf{X}_{i,2}], \quad i=1,\dots,N$$
 $$\epsilon_i = \textbf{y}_i - \mu_i$$
 $$\alpha \sim \mathcal{N}(0, 1000)$$
-$$\beta_j \sim \mathcal{N}(0, \sigma^2_2), \quad j=1,\dots,(J-1)$$
+$$\beta_j \sim \mathcal{N}(0, \sigma^2_2), \quad j=1,\dots,J$$
 $$\beta_J = - \sum^{J-1}_{j=1} \beta_j$$
-$$\gamma_k \sim \mathcal{N}(0, \sigma^2_3), \quad k=1,\dots,(K-1)$$
+$$\gamma_k \sim \mathcal{N}(0, \sigma^2_3), \quad k=1,\dots,K$$
 $$\gamma_K = - \sum^{K-1}_{k=1} \gamma_k$$
 $$\sigma_m \sim \mathcal{HC}(25), \quad m=1,\dots,3$$
 \subsection{Data}
@@ -1280,37 +1281,46 @@ MyData <- list(J=J, PGF=PGF, X=X, mon.names=mon.names, \\
 \code{Initial.Values <- c(rep(0,J), log(1))}
 
 \section{Contingency Table} \label{contingency.table}
-The two-way contingency table, matrix $\textbf{Y}$, can easily be extended to more dimensions. For this example, it is vectorized as $y$, and used like an ANOVA data set. Contingency table $\textbf{Y}$ has J rows and K columns. The cell counts are fit with Poisson regression, according to intercept $\alpha$, main effects $\beta_j$ for each row, main effects $\gamma_k$ for each column, and interaction effects $\delta_{j,k}$ for dependence effects. An omnibus (all cells) test of independence is done by estimating two models (one with $\delta$, and one without), and a large enough Bayes Factor indicates a violation of independence when the model with $\delta$ fits better than the model without $\delta$. In an ANOVA-like style, main effects contrasts can be used to distinguish rows or groups of rows from each other, as well as with columns.  Likewise, interaction effects contrasts can be used to test independence in groups of $\delta_{j,k}$ elements. Finally, single-cell interactions can be used to indicate violations of independence for a given cell, such as when zero is not within its 95\% probability interval. Although a little different, this example is similar to a method presented by \citet{albert97}. 
+The two-way contingency table, matrix $\textbf{Y}$, can easily be extended to more dimensions. For this example, it is vectorized as $y$, and used like an ANOVA data set. Contingency table $\textbf{Y}$ has J rows and K columns. The cell counts are fit with Poisson regression, according to intercept $\alpha$, main effects $\beta_j$ for each row, main effects $\gamma_k$ for each column, and interaction effects $\delta_{j,k}$ for dependence effects. An omnibus (all cells) test of independence is done by estimating two models (one with $\delta$, and one without), and a large enough Bayes Factor indicates a violation of independence when the model with $\delta$ fits better than the model without $\delta$. In an ANOVA-like style, main effects contrasts can be used to distinguish rows or groups of rows from each other, as well as with columns. Likewise, interaction effects contrasts can be used to test independence in groups of $\delta_{j,k}$ elements. Finally, single-cell interactions can be used to indicate violations of independence for a given cell, such as when zero is not within its 95\% probability interval.
 \subsection{Form}
 $$\textbf{Y}_{j,k} \sim \mathcal{P}(\lambda_{j,k}), \quad j=1,\dots,J, \quad k=1,\dots,K$$
 $$\lambda_{j,k} = \exp(\alpha + \beta_j + \gamma_k + \delta_{j,k}), \quad j=1,\dots,J, \quad k=1,\dots,K$$
 $$\alpha \sim \mathcal{N}(0, 1000)$$
 $$\beta_j \sim \mathcal{N}(0, \beta^2_\sigma), \quad j=1,\dots,J$$
+$$\beta_J = - \displaystyle\sum^{J-1}_{j=1} \beta_j$$
 $$\beta_\sigma \sim \mathcal{HC}(25)$$
 $$\gamma_k \sim \mathcal{N}(0, \gamma^2_\sigma), \quad k=1,\dots,K$$
+$$\gamma_K = - \displaystyle\sum^{K-1}_{k=1} \gamma_k$$
 $$\gamma_\sigma \sim \mathcal{HC}(25)$$
 $$\delta_{j,k} \sim \mathcal{N}(0, \delta^2_\sigma)$$
+$$\delta_{J,K} = - \displaystyle\sum \delta_{-J,-K}$$
 $$\delta_\sigma \sim \mathcal{HC}(25)$$
 \subsection{Data}
-\code{J <- 4 \#Rows \\
-K <- 4 \#Columns \\
-Y <- matrix(c(10,20,60,20, 40,30,10,40, 10,10,40,10, 40,50,1,40), J, K, \\
-\hspace*{0.27 in} dimnames=list(c("Chrysler","Ford","Foreign","GM"), \\
-\hspace*{0.27 in} c("I-4","I-6","V-6","V-8"))) \\
+\code{J <- 3 \#Rows \\
+K <- 3 \#Columns \\
+log.alpha <- log(runif(1, 100, 200)) \\
+beta <- rnorm(J-1, 3); beta <- c(beta, -sum(beta)) \\
+gamma <- rnorm(J-1, 3); gamma <- c(gamma, -sum(gamma)) \\
+delta <- rnorm(J*K-1, 2); delta <- c(delta, -sum(delta)) \\
+Y <- matrix(exp(log.alpha), J, K) + matrix(beta, J, K, byrow=TRUE) + \\
+\hspace*{0.27 in} matrix(gamma, J, K) + matrix(delta, J, K) + \\
+\hspace*{0.27 in} matrix(rnorm(J*K,0,0.1), J, K) \\
+Y <- round(Y) \\
 y <- as.vector(Y) \\
 N <- length(y) \#Cells \\
 r <- rep(1:J, N/J) \\
-c <- rep(1,K) \\
-for (k in 2:K) \{c <- c(c, rep(k, K))\} \\
+co <- rep(1,K) \\
+for (k in 2:K) \{co <- c(co, rep(k, K))\} \\
 mon.names <- c("LP","beta.sigma","gamma.sigma","delta.sigma") \\
-parm.names <- as.parm.names(list(alpha=0, beta=rep(0,J), gamma=rep(0,J), \\
-\hspace*{0.27 in} log.b.sigma=0, log.g.sigma=0, log.d.sigma=0, \\
-\hspace*{0.27 in} delta=matrix(0,J,K))) \\
-PGF <- function(Data) return(c(rnormv(1,0,1000), \\
-\hspace*{0.27 in} rnorm(Data$J,0,rhalfcauchy(1,25)), rnorm(Data$J,0,rhalfcauchy(1,25)), \\
-\hspace*{0.27 in} log(rhalfcauchy(3,25)), rnorm(Data$J*Data$K,0,rhalfcauchy(1,25)))) \\
-MyData <- list(J=J, K=K, N=N, PGF=PGF, c=c, mon.names=mon.names, \\
-\hspace*{0.27 in} parm.names=parm.names, r=r, y=y)
+parm.names <- as.parm.names(list(log.alpha=0, beta=rep(0,J-1), \\
+\hspace*{0.27 in} gamma=rep(0,K-1), log.b.sigma=0, log.g.sigma=0, log.d.sigma=0, \\
+\hspace*{0.27 in} delta=rep(0,J*K-1))) \\
+PGF <- function(Data) return(c(log(rnorm(1,mean(Y),1)), \\
+\hspace*{0.27 in} rnorm(Data$J-1,0,rhalfcauchy(1,5)), \\
+\hspace*{0.27 in} rnorm(Data$K-1,0,rhalfcauchy(1,5)), \\
+\hspace*{0.27 in} log(rhalfcauchy(3,5)), rnorm(Data$J*Data$K-1,0,rhalfcauchy(1,5)))) \\
+MyData <- list(J=J, K=K, N=N, PGF=PGF, co=co, mon.names=mon.names, \\
+\hspace*{0.27 in} parm.names=parm.names, r=r, y=y) \\
 }
 \subsection{Model}
 \code{Model <- function(parm, Data) \\
@@ -1320,11 +1330,14 @@ MyData <- list(J=J, K=K, N=N, PGF=PGF, c=c, mon.names=mon.names, \\
 \hspace*{0.27 in} gamma.sigma <- exp(parm[grep("log.g.sigma", Data$parm.names)]) \\
 \hspace*{0.27 in} delta.sigma <- exp(parm[grep("log.d.sigma", Data$parm.names)]) \\
 \hspace*{0.27 in} \#\#\# Parameters \\
-\hspace*{0.27 in} alpha <- parm[grep("alpha", Data$parm.names)] \\
+\hspace*{0.27 in} alpha <- exp(parm[grep("log.alpha", Data$parm.names)]) \\
 \hspace*{0.27 in} beta <- parm[grep("beta", Data$parm.names)] \\
+\hspace*{0.27 in} beta <- c(beta, -sum(beta))
 \hspace*{0.27 in} gamma <- parm[grep("gamma", Data$parm.names)] \\
-\hspace*{0.27 in} delta <- matrix(parm[grep("delta", Data$parm.names)], \\
-\hspace*{0.62 in} Data$J, Data$K) \\
+\hspace*{0.27 in} gamma <- c(gamma, -sum(gamma))
+\hspace*{0.27 in} delta <- parm[grep("delta", Data$parm.names)] \\
+\hspace*{0.27 in} c(delta, -sum(delta)) \\
+\hspace*{0.62 in} delta <- matrix(delta, Data$J, Data$K) \\
 \hspace*{0.27 in} \#\#\# Log(Hyperprior Densities) \\
 \hspace*{0.27 in} beta.sigma.prior <- dhalfcauchy(beta.sigma, 25, log=TRUE) \\
 \hspace*{0.27 in} gamma.sigma.prior <- dhalfcauchy(gamma.sigma, 25, log=TRUE) \\
@@ -1335,8 +1348,8 @@ MyData <- list(J=J, K=K, N=N, PGF=PGF, c=c, mon.names=mon.names, \\
 \hspace*{0.27 in} gamma.prior <- sum(dnorm(gamma, 0, gamma.sigma, log=TRUE)) \\
 \hspace*{0.27 in} delta.prior <- sum(dnorm(delta, 0, delta.sigma, log=TRUE)) \\
 \hspace*{0.27 in} \#\#\# Log-Likelihood \\
-\hspace*{0.27 in} lambda <- exp(alpha + beta[Data$r] + gamma[Data$c] + \\
-\hspace*{0.62 in} diag(delta[Data$r,Data$c])) \\
+\hspace*{0.27 in} lambda <- exp(alpha + beta[Data$r] + gamma[Data$co] + \\
+\hspace*{0.62 in} diag(delta[Data$r,Data$co])) \\
 \hspace*{0.27 in} LL <- sum(dpois(Data$y, lambda, log=TRUE)) \\
 \hspace*{0.27 in} \#\#\# Log-Posterior \\
 \hspace*{0.27 in} LP <- LL + alpha.prior + beta.prior + beta.sigma.prior + \\
@@ -1349,7 +1362,8 @@ MyData <- list(J=J, K=K, N=N, PGF=PGF, c=c, mon.names=mon.names, \\
 \hspace*{0.27 in} \} \\
 }
 \subsection{Initial Values}
-\code{Initial.Values <- c(0, rep(0,J), rep(0,K), rep(0,3), rep(0,J*K))}
+\code{Initial.Values <- c(log(mean(y)), rep(0,J-1), rep(0,K-1), rep(0,3), \\
+\hspace*{0.27 in} rep(0,J*K-1))}
 
 \section{Covariance Separation Strategy} \label{cov.sep.strat}
 A Seemingly Unrelated Regression (SUR) model is used to provide an example of a flexible way to estimate covariance or precision matrices with the ``separation strategy'' decomposition of \citet{barnard00}. For more information on SUR models, see section \ref{sur}.
@@ -1395,10 +1409,10 @@ mon.names <- "LP" \\
 parm.names <- as.parm.names(list(alpha=rep(0,3), beta=rep(0,3), \\
 \hspace*{0.27 in} R=diag(J), rho.mu=0, rho.sigma=0, log.sigma=rep(0,J), sigma.mu=0, \\
 \hspace*{0.27 in} log.sig.sigma=0), uppertri=c(0,0,1,0,0,0,0,0)) \\
-PGF <- function(Data) return(c(rnormv(3,0,1000), rnormv(3,0,1000), \\
+PGF <- function(Data) return(c(rnormv(3,0,10), rnormv(3,0,10), \\
 \hspace*{0.27 in} runif(length(upper.triangle(diag(Data$J), diag=TRUE)), -1, 1), \\
 \hspace*{0.27 in} rtrunc(1, "norm", a=-1, b=1, mean=0, sd=2), \\
-\hspace*{0.27 in} log(rhalfcauchy(Data$J+1,25)), rhalfnorm(1, 1000), \\
+\hspace*{0.27 in} log(rhalfcauchy(Data$J+1,25)), rhalfnorm(1, 10), \\
 \hspace*{0.27 in} log(rhalfcauchy(1,25)))) \\
 MyData <- list(J=J, PGF=PGF, T=T, Y=Y, CG=CG, CW=CW, IG=IG, IW=IW, VG=VG, \\
 \hspace*{0.27 in} VW=VW, mon.names=mon.names, parm.names=parm.names) \\
@@ -1422,7 +1436,7 @@ MyData <- list(J=J, PGF=PGF, T=T, Y=Y, CG=CG, CW=CW, IG=IG, IW=IW, VG=VG, \\
 \hspace*{0.27 in} R <- as.parm.matrix(R, Data$J, parm, Data, a=-1, b=1) \\
 \hspace*{0.27 in} parm[grep("R", Data$parm.names)] <- upper.triangle(R, diag=TRUE) \\
 \hspace*{0.27 in} sigma <- exp(parm[grep("log.sigma", Data$parm.names)]) \\
-\hspace*{0.27 in} S <- diag(Data$J); diag(S) <- sigma \\
+\hspace*{0.27 in} S <- diag(sigma) \\
 \hspace*{0.27 in} Sigma <- as.symmetric.matrix(S \%*\% R \%*\% S) \\
 \hspace*{0.27 in} \#\#\# Log(Hyperprior Densities) \\
 \hspace*{0.27 in} rho.mu.prior <- dtrunc(rho.mu, "norm", a=-1, b=1, mean=0, sd=2, \\
@@ -1490,8 +1504,8 @@ X <- matrix(c(rep(1,N),x01,x02),N,K) \#Design matrix of individual attrib. \\
 Z <- matrix(c(z01,z02),N,C) \#Design matrix of choice-based attributes \\
 mon.names <- "LP" \\
 parm.names <- as.parm.names(list(beta=matrix(0,J-1,K), gamma=rep(0,C))) \\
-PGF <- function(Data) return(c(rnormv((Data$J-1)*Data$K,0,1000), \\
-\hspace*{0.27 in} rnormv(Data$C,0,1000))) \\
+PGF <- function(Data) return(c(rnormv((Data$J-1)*Data$K,0,10), \\
+\hspace*{0.27 in} rnormv(Data$C,0,10))) \\
 MyData <- list(C=C, J=J, K=K, N=N, PGF=PGF, X=X, Z=Z, mon.names=mon.names, \\
 \hspace*{0.27 in} parm.names=parm.names, y=y) \\
 }
@@ -2886,21 +2900,25 @@ MyData <- list(G=G, J=J, N=N, PGF=PGF, S=S, X=X, m=m, mon.names=mon.names, \\
 \hspace*{0.27 in} upper.triangle(S, diag=TRUE))}
 
 \section{Linear Regression with Full Missingness} \label{linear.reg.full.miss}
-With `full missingness', there are missing values for both the dependent variable (DV) and at least one independent variable (IV). Regarding initial values, only missing values for the IVs need to be specified. The `full likelihood` approach to full missingness is excellent as long as the model is identifiable. When it is not identifiable, imputation may be done in a previous stage.
+With `full missingness', there are missing values for both the dependent variable (DV) and at least one independent variable (IV). The `full likelihood` approach to full missingness is excellent as long as the model is identifiable. When it is not identifiable, imputation may be done in a previous stage. In this example, matrix $\alpha$ is for regression effects for IVs, vector $\beta$ is for regression effects for the DV, vector $\gamma$ is for missing values for IVs, and $\delta$ is for missing values for the DV.
 \subsection{Form}
-$$\textbf{y} \sim \mathcal{N}(\nu, \sigma^2_J)$$
-$$\nu = \textbf{X} \beta$$
-$$\mu_{,j} = (\textbf{X} | \textbf{A}) \Gamma_{,j-1}, \quad j=2,\dots,J$$
-\[\textbf{A}_{i,j} = \left\{
+$$\textbf{y}^{imp} \sim \mathcal{N}(\nu, \sigma^2_J)$$
+$$\textbf{X}^{imp} \sim \mathcal{N}(\mu, \sigma^2_{-J}$$
+$$\nu = \textbf{X}^{imp} \beta$$
+$$\mu = \textbf{X}^{imp} \alpha$$
+\[\textbf{y}^{imp} = \left\{
 \begin{array}{l l}
- $$\alpha_k$$ & \quad \mbox{if $\textbf{X}_{i,j} = \mathrm{NA}$}\\
- \textbf{X}_{i,j} \\ \end{array} \right. \]
-$$\quad i=1,\dots,N, \quad j=1,\dots,J, \quad k=1,\dots,K$$
-$$\alpha_k \sim \mathcal{N}(0, 1000), \quad k=1,\dots,K$$
+ $$\delta$$ & \quad \mbox{if $\textbf{y}^{mis}$}\\
+ \textbf{y}^{obs} \\ \end{array} \right. \]
+\[\textbf{X}^{imp} = \left\{
+\begin{array}{l l}
+ $$\gamma$$ & \quad \mbox{if $\textbf{X}^{mis}$}\\
+ \textbf{X}^{obs} \\ \end{array} \right. \]
+$$\alpha_{j,l} \sim \mathcal{N}(0, 1000), \quad j=1,\dots,(J-1), \quad l=1,\dots,(J-1)$$
 $$\beta_j \sim \mathcal{N}(0, 1000), \quad j=1,\dots,J$$
-$$\Gamma_{j,l} \sim \mathcal{N}(0, 1000), \quad j=1,\dots,(J-1), \quad l=1,\dots,(J-1)$$
+$$\gamma_m \sim \mathcal{N}(0, 1000), \quad m=1,\dots,M$$
+$$\delta_p \sim \mathcal{N}(0, 1000), \quad p=1,\dots,P$$
 $$\sigma_j \sim \mathcal{HC}(25), \quad j=1,\dots,J$$
-Missing values for IVs are in vector $\alpha$. These parameter values are inserted into design matrix \textbf{X} via matrix \textbf{A}, which indicates the position of missing values. Matrix $\Gamma$ contains parameters to predict the IVs as additive, linear functions of other IVs. Vector $\beta$ contains parameters to predict \textbf{y}.
 \subsection{Data}
 \code{N <- 100 \\
 J <- 5 \\
@@ -2912,69 +2930,141 @@ y <- as.vector(tcrossprod(X, t(beta.orig)) + rnorm(N,0,0.1)) \\
 y[sample(1:N, round(N*.05))] <- NA \\
 m <- ifelse(is.na(y), 1, 0) \#Missing indicator for vector y \\
 mon.names <- "LP" \\
-parm.names <- as.parm.names(list(alpha=rep(0,length(which(is.na(X)))), \\
-\hspace*{0.27 in} beta=rep(0,J), Gamma=matrix(0,J-1,J-1), log.sigma=rep(0,J))) \\
-PGF <- function(Data) return(c(rnormv(length(which(is.na(X))),0,1000), \\
-\hspace*{0.27 in} rnormv(Data$J,0,1000), rnormv((Data$J-1)*(Data$J-1),0,1000), \\
+parm.names <- as.parm.names(list(alpha=matrix(0,J-1,J-1), \\
+\hspace*{0.27 in} beta=rep(0,J), \\
+\hspace*{0.27 in} gamma=rep(0,sum(is.na(X))), \\
+\hspace*{0.27 in} delta=rep(0,sum(is.na(y))), \\
+\hspace*{0.27 in} log.sigma=rep(0,J))) \\
+PGF <- function(Data) return(c(rnormv((Data$J-1)*(Data$J-1),0,10), \\
+\hspace*{0.27 in} rnormv(Data$J,0,10), \\
+\hspace*{0.27 in} rnormv(sum(is.na(Data$X)),0,10), \\
+\hspace*{0.27 in} rnormv(sum(is.na(Data$y)),mean(Data$y, na.rm=TRUE),1), \\
 \hspace*{0.27 in} log(rhalfcauchy(Data$J,25)))) \\
-MyData <- list(J=J, M=M, N=N, PGF=PGF, X=X, m=m, mon.names=mon.names, \\
+MyData <- list(J=J, N=N, PGF=PGF, X=X, mon.names=mon.names, \\
 \hspace*{0.27 in} parm.names=parm.names, y=y) \\
 }
 \subsection{Model}
 \code{Model <- function(parm, Data) \\
 \hspace*{0.27 in} \{ \\
 \hspace*{0.27 in} \#\#\# Parameters \\
-\hspace*{0.27 in} alpha <- parm[grep("alpha", Data$parm.names)] \\
-\hspace*{0.27 in} beta <- parm[grep("beta", Data$parm.names)] \\
-\hspace*{0.27 in} Gamma <- matrix(parm[grep("Gamma", Data$parm.names)], Data$J-1, \\
+\hspace*{0.27 in} alpha <- matrix(parm[grep("alpha", Data$parm.names)], Data$J-1, \\
 \hspace*{0.62 in} Data$J-1) \\
+\hspace*{0.27 in} beta <- parm[grep("beta", Data$parm.names)] \\
+\hspace*{0.27 in} gamma <- parm[grep("gamma", Data$parm.names)] \\
+\hspace*{0.27 in} delta <- parm[grep("delta", Data$parm.names)] \\
 \hspace*{0.27 in} sigma <- exp(parm[grep("log.sigma", Data$parm.names)]) \\
 \hspace*{0.27 in} \#\#\# Log(Prior Densities) \\
 \hspace*{0.27 in} alpha.prior <- sum(dnormv(alpha, 0, 1000, log=TRUE)) \\
 \hspace*{0.27 in} beta.prior <- sum(dnormv(beta, 0, 1000, log=TRUE)) \\
-\hspace*{0.27 in} Gamma.prior <- sum(dnormv(Gamma, 0, 1000, log=TRUE)) \\
+\hspace*{0.27 in} gamma.prior <- sum(dnormv(gamma, 0, 1000, log=TRUE)) \\
+\hspace*{0.27 in} delta.prior <- sum(dnormv(delta, 0, 1000, log=TRUE)) \\
 \hspace*{0.27 in} sigma.prior <- sum(dhalfcauchy(sigma, 25, log=TRUE)) \\
 \hspace*{0.27 in} \#\#\# Log-Likelihood \\
-\hspace*{0.27 in} A <- rep(0,Data$N*Data$J) \\
-\hspace*{0.27 in} A[which(is.na(Data$X))] <- alpha \\
-\hspace*{0.27 in} mu <- X.imputed <- ifelse(is.na(Data$X), 0, Data$X) + \\
-\hspace*{0.62 in} matrix(A, Data$N, Data$J) \\
+\hspace*{0.27 in} mu <- X.imputed <- Data$X \\
+\hspace*{0.27 in} X.imputed[which(is.na(X.imputed))] <- gamma \\
+\hspace*{0.27 in} y.imputed <- Data$y \\
+\hspace*{0.27 in} y.imputed[which(is.na(y.imputed))] <- delta \\
 \hspace*{0.27 in} for (j in 2:Data$J) \{mu[,j] <- tcrossprod(X.imputed[,-j], \\
-\hspace*{0.62 in} t(Gamma[,(j-1)]))\} \\
+\hspace*{0.62 in} t(alpha[,(j-1)]))\} \\
 \hspace*{0.27 in} nu <- tcrossprod(X.imputed, t(beta)) \\
-\hspace*{0.27 in} y.imputed <- ifelse(is.na(Data$y), nu, Data$y) \\
-\hspace*{0.27 in} LL <- sum((1-Data$M[,-1]) * dnorm(X.imputed[,-1], mu[,-1], \\
+\hspace*{0.27 in} LL <- sum(dnorm(X.imputed[,-1], mu[,-1], \\
 \hspace*{0.62 in} matrix(sigma[1:(Data$J-1)], Data$N, Data$J-1), log=TRUE), \\
-\hspace*{0.62 in} (1-Data$m) * dnorm(y.imputed, nu, sigma[Data$J], log=TRUE)) \\
+\hspace*{0.62 in} dnorm(y.imputed, nu, sigma[Data$J], log=TRUE)) \\
 \hspace*{0.27 in} \#\#\# Log-Posterior \\
-\hspace*{0.27 in} LP <- LL + alpha.prior + beta.prior + Gamma.prior + sigma.prior \\
+\hspace*{0.27 in} LP <- LL + alpha.prior + beta.prior + gamma.prior + delta.prior + \\
+\hspace*{0.62 in} sigma.prior \\
 \hspace*{0.27 in} Modelout <- list(LP=LP, Dev=-2*LL, Monitor=LP, \\
 \hspace*{0.62 in} yhat=rnorm(length(nu), nu, sigma[Data$J]), parm=parm) \\
 \hspace*{0.27 in} return(Modelout) \\
-\hspace*{0.27 in} \} \\
+\hspace*{0.27 in} \}
 }
 \subsection{Initial Values}
-\code{Initial.Values <- c(rep(0,length(which(is.na(X)))), rep(0,J), \\
-\hspace*{0.27 in} rep(0,(J-1)\textasciicircum 2), rep(1,J))}
+\code{Initial.Values <- c(rep(0, (J-1)\textasciicircum 2), rep(0,J), rep(0,sum(is.na(X))), \\
+\hspace*{0.27 in} rep(0,sum(is.na(y))), rep(1,J))}
 
 \section{Linear Regression with Missing Response} \label{linear.reg.miss.resp}
-Initial values do not need to be specified for missing values in this response, $\textbf{y}$. Instead, at each iteration, missing values in $\textbf{y}$ are replaced with their estimate in $\mu$.
+This is an introductory example to missing values using data augmentation with auxiliary variables. The dependent variable, or response, has both observed values, $\textbf{y}^{obs}$, and missing values, $\textbf{y}^{mis}$. The $\alpha$ vector is for missing value imputation, and enables the use of the full-likelihood by augmenting te state with these auxiliary variables. In the model form, $M$ is used to denote the number of missing values, though it is used as an indicator in the data.
 \subsection{Form}
-$$\textbf{y} \sim \mathcal{N}(\mu, \sigma^2)$$
+$$\textbf{y}^{imp} \sim \mathcal{N}(\mu, \sigma^2)$$
+\[\textbf{y}^{imp} = \left\{
+\begin{array}{l l}
+ $$\alpha$$ & \quad \mbox{if $\textbf{y}^{mis}$}\\
+ \textbf{y}^{obs} \\ \end{array} \right. \]
 $$\mu = \textbf{X}\beta$$
+$$\alpha_m \sim \mathcal{N}(0, 1000), \quad m=1,\dots,M$$
 $$\beta_j \sim \mathcal{N}(0, 1000), \quad j=1,\dots,J$$
 $$\sigma \sim \mathcal{HC}(25)$$
 \subsection{Data}
 \code{data(demonsnacks) \\
+N <- nrow(demonsnacks) \\
+J <- ncol(demonsnacks) \\
 y <- log(demonsnacks$Calories) \\
 y[sample(1:N, round(N*0.05))] <- NA \\
 M <- ifelse(is.na(y), 1, 0) \\
-X <- cbind(1, as.matrix(demonsnacks[,c(7,8,10)])) \\
-J <- ncol(X) \\
+X <- cbind(1, as.matrix(demonsnacks[,c(1,3:10)])) \\
 for (j in 2:J) \{X[,j] <- CenterScale(X[,j])\} \\
 mon.names <- c("LP","sigma") \\
-parm.names <- as.parm.names(list(beta=rep(0,J), log.sigma=0)) \\
-PGF <- function(Data) return(c(rnormv(Data$J,0,1000), \\
+parm.names <- as.parm.names(list(alpha=rep(0,sum(M)), beta=rep(0,J), \\
+\hspace*{0.27 in} log.sigma=0)) \\
+PGF <- function(Data) return(c(rnorm(sum(Data$M),mean(y,na.rm=TRUE),1), \\
+\hspace*{0.27 in} rnormv(Data$J,0,1000), log(rhalfcauchy(1,25)))) \\
+MyData <- list(J=J, M=M, PGF=PGF, X=X, mon.names=mon.names, \\
+\hspace*{0.27 in} parm.names=parm.names, y=y) \\
+}
+\subsection{Model}
+\code{Model <- function(parm, Data) \\
+\hspace*{0.27 in} \{ \\
+\hspace*{0.27 in} \#\#\# Parameters \\
+\hspace*{0.27 in} alpha <- parm[1:sum(Data$M)] \\
+\hspace*{0.27 in} beta <- parm[sum(Data$M)+1:Data$J] \\
+\hspace*{0.27 in} sigma <- exp(parm[sum(Data$M)+Data$J+1]) \\
+\hspace*{0.27 in} \#\#\# Log(Prior Densities) \\
+\hspace*{0.27 in} alpha.prior <- sum(dnormv(alpha, 0, 1000, log=TRUE) \\
+\hspace*{0.27 in} beta.prior <- sum(dnormv(beta, 0, 1000, log=TRUE)) \\
+\hspace*{0.27 in} sigma.prior <- dgamma(sigma, 25, log=TRUE) \\
+\hspace*{0.27 in} \#\#\# Log-Likelihood \\
+\hspace*{0.27 in} mu <- tcrossprod(Data$X, t(beta)) \\
+\hspace*{0.27 in} y.imputed <- Data$y \\
+\hspace*{0.27 in} y.imputed[which(is.na(Data$y))] <- alpha \\
+\hspace*{0.27 in} LL <- sum(dnorm(y.imputed, mu, sigma, log=TRUE)) \\
+\hspace*{0.27 in} \#\#\# Log-Posterior \\
+\hspace*{0.27 in} LP <- LL + alpha.prior + beta.prior + sigma.prior \\
+\hspace*{0.27 in} Modelout <- list(LP=LP, Dev=-2*LL, Monitor=c(LP,sigma), \\
+\hspace*{0.62 in} yhat=rnorm(length(mu), mu, sigma), parm=parm) \\
+\hspace*{0.27 in} return(Modelout) \\
+\hspace*{0.27 in} \} \\
+}
+\subsection{Initial Values}
+\code{Initial.Values <- c(rep(0,sum(M)), rep(0,J), log(1))}
+
+\section{Linear Regression with Missing Response via ABB} \label{linear.reg.miss.resp}
+The Approximate Bayesian Bootstrap (ABB), using the \code{ABB} function, is used to impute missing values in the dependent variable (DV), or response, given a propensity score. In this example, vector $\alpha$ is used to estimate propensity score $\eta$, while vector $\beta$ is for regression effects, and vector $\gamma$ has the monitored missing values. For more information on ABB, see the \code{ABB} function.
+\subsection{Form}
+$$\textbf{y}^{imp} \sim \mathcal{N}(\mu, \sigma^2)$$
+\[\textbf{y}^{imp} = \left\{
+\begin{array}{l l}
+ $$\gamma$$ & \quad \mbox{if $\textbf{y}^{mis}$}\\
+ \textbf{y}^{obs} \\ \end{array} \right. \]
+$$\mu = \textbf{X}\beta$$
+$$\gamma \sim p(\textbf{y}^{obs} | \textbf{y}^{obs}, \textbf{y}^{mis}, \eta)$$
+$$\eta = \frac{1}{1 + \exp(-\nu)}$$
+$$\nu = \textbf{X} \alpha$$
+$$\alpha_j \sim \mathcal{N}(0, 1000), \quad j=1,\dots,J$$
+$$\beta_j \sim \mathcal{N}(0, 1000), \quad j=1,\dots,J$$
+$$\sigma \sim \mathcal{HC}(25)$$
+\subsection{Data}
+\code{data(demonsnacks) \\
+N <- nrow(demonsnacks) \\
+J <- ncol(demonsnacks) \\
+y <- log(demonsnacks$Calories) \\
+y[sample(1:N, round(N*0.05))] <- NA \\
+M <- ifelse(is.na(y), 1, 0) \\
+X <- cbind(1, as.matrix(demonsnacks[,c(1,3:10)])) \\
+for (j in 2:J) \{X[,j] <- CenterScale(X[,j])\} \\
+mon.names <- c("LP","sigma",paste("gamma[",1:sum(is.na(y)),"]",sep="")) \\
+parm.names <- as.parm.names(list(alpha=rep(0,J), beta=rep(0,J), \\
+\hspace*{0.27 in} log.sigma=0)) \\
+PGF <- function(Data) return(c(rnormv(Data$J,0,10), rnormv(Data$J,0,10), \\
 \hspace*{0.27 in} log(rhalfcauchy(1,25)))) \\
 MyData <- list(J=J, M=M, PGF=PGF, X=X, mon.names=mon.names, \\
 \hspace*{0.27 in} parm.names=parm.names, y=y) \\
@@ -2983,24 +3073,36 @@ MyData <- list(J=J, M=M, PGF=PGF, X=X, mon.names=mon.names, \\
 \code{Model <- function(parm, Data) \\
 \hspace*{0.27 in} \{ \\
 \hspace*{0.27 in} \#\#\# Parameters \\
-\hspace*{0.27 in} beta <- parm[1:Data$J] \\
-\hspace*{0.27 in} sigma <- exp(parm[Data$J+1]) \\
+\hspace*{0.27 in} alpha <- parm[1:Data$J] \\
+\hspace*{0.27 in} beta <- parm[Data$J+1:Data$J] \\
+\hspace*{0.27 in} sigma <- exp(parm[2*Data$J+1]) \\
 \hspace*{0.27 in} \#\#\# Log(Prior Densities) \\
+\hspace*{0.27 in} alpha.prior <- sum(dnormv(alpha, 0, 1000, log=TRUE)) \\
 \hspace*{0.27 in} beta.prior <- sum(dnormv(beta, 0, 1000, log=TRUE)) \\
 \hspace*{0.27 in} sigma.prior <- dgamma(sigma, 25, log=TRUE) \\
 \hspace*{0.27 in} \#\#\# Log-Likelihood \\
+\hspace*{0.27 in} y.imputed <- Data$y \\
 \hspace*{0.27 in} mu <- tcrossprod(Data$X, t(beta)) \\
-\hspace*{0.27 in} y.imputed <- ifelse(is.na(Data$y), mu, Data$y) \\
-\hspace*{0.27 in} LL <- sum((1-Data$M) * dnorm(y.imputed, mu, sigma, log=TRUE)) \\
+\hspace*{0.27 in} nu <- as.vector(tcrossprod(Data$X, t(alpha))) \\
+\hspace*{0.27 in} eta <- invlogit(nu) \\
+\hspace*{0.27 in} breaks <- as.vector(quantile(eta, probs=c(0,0.2,0.4,0.6,0.8,1))) \\
+\hspace*{0.27 in} B <- matrix(breaks[-length(breaks)], length(Data$y), 5, byrow=TRUE) \\
+\hspace*{0.27 in} z <- rowSums(eta >= B) \\
+\hspace*{0.27 in} for (i in 1:5) \{ \\
+\hspace*{0.62 in} if(any(is.na(Data$y[which(z == i)]))) \{ \\
+\hspace*{0.95 in} imp <- unlist(ABB(Data$y[which(z == i)])) \\
+\hspace*{0.95 in} y.imputed[which(\{z == i\} \& is.na(Data$y))] <- imp\}\} \\
+\hspace*{0.27 in} gamma <- y.imputed[which(is.na(Data$y))] \\
+\hspace*{0.27 in} LL <- sum(dbern(Data$M, eta, log=TRUE), \\
+\hspace*{0.62 in} dnorm(y.imputed, mu, sigma, log=TRUE)) \\
 \hspace*{0.27 in} \#\#\# Log-Posterior \\
-\hspace*{0.27 in} LP <- LL + beta.prior + sigma.prior \\
-\hspace*{0.27 in} Modelout <- list(LP=LP, Dev=-2*LL, Monitor=c(LP,sigma), \\
+\hspace*{0.27 in} LP <- LL + alpha.prior + beta.prior + sigma.prior \\
+\hspace*{0.27 in} Modelout <- list(LP=LP, Dev=-2*LL, Monitor=c(LP,sigma,gamma), \\
 \hspace*{0.62 in} yhat=rnorm(length(mu), mu, sigma), parm=parm) \\
 \hspace*{0.27 in} return(Modelout) \\
 \hspace*{0.27 in} \} \\
 }
 \subsection{Initial Values}
-\code{Initial.Values <- c(rep(0,J), log(1))}
 
 \section{Linear Regression with Power Priors} \label{linear.reg.pp}
 Power priors \citep{ibrahim00} are a class of informative priors when relevant historical data is available. Power priors may be used when it is desirable to take historical data into account while analyzing similar, current data. Both the current data, $\textbf{y}$ and $\textbf{X}$, and historical data, $\textbf{y}_h$ and $\textbf{X}_h$, are included in the power prior analysis, where $h$ indicates historical data. Each data set receives its own likelihood function, though the likelihood of the historical data is raised to an exponential power, $\alpha \in [0,1]$. In this example, $\alpha$ is a constant.
@@ -3822,7 +3924,7 @@ Sigma <- as.symmetric.matrix(Sigma) \\
 for (i in 1:N) \{Y[i,] <- colMeans(rmvn(1000, mu[i,], Sigma))\} \\
 S <- diag(K) \\
 mon.names <- "LP" \\
-parm.names <- as.parm.names(list(beta=matrix(0,K,J), Omega=diag(K)), \\
+parm.names <- as.parm.names(list(beta=matrix(0,K,J), U=diag(K)), \\
 \hspace*{0.27 in} uppertri=c(0,1)) \\
 PGF <- function(Data) return(c(rnormv(Data$K*Data$J,0,1), \\
 \hspace*{0.27 in} upper.triangle(rwishartc(Data$K+1,Data$S), diag=TRUE))) \\
@@ -3834,19 +3936,18 @@ MyData <- list(J=J, K=K, N=N, PGF=PGF, S=S, X=X, Y=Y, mon.names=mon.names, \\
 \hspace*{0.27 in} \{ \\
 \hspace*{0.27 in} \#\#\# Parameters \\
 \hspace*{0.27 in} beta <- matrix(parm[grep("beta", Data$parm.names)], Data$K, Data$J) \\
-\hspace*{0.27 in} Omega <- as.parm.matrix(Omega, Data$K, parm, Data) \\
-\hspace*{0.27 in} parm[grep("Omega", Data$parm.names)] <- upper.triangle(Omega, \\
-\hspace*{0.62 in} diag=TRUE) \\
+\hspace*{0.27 in} U <- as.parm.matrix(U, Data$K, parm, Data, chol=TRUE) \\
+\hspace*{0.27 in} diag(U) <- exp(diag(U)) \\
 \hspace*{0.27 in} \#\#\# Log(Prior Densities) \\
 \hspace*{0.27 in} beta.prior <- sum(dnormv(beta, 0, 1000, log=TRUE)) \\
-\hspace*{0.27 in} Omega.prior <- dwishart(Omega, Data$K+1, Data$S, log=TRUE) \\
+\hspace*{0.27 in} U.prior <- dwishart(U, Data$K+1, Data$S, log=TRUE) \\
 \hspace*{0.27 in} \#\#\# Log-Likelihood \\
 \hspace*{0.27 in} mu <- tcrossprod(Data$X, beta) \\
-\hspace*{0.27 in} LL <- sum(dmvl(Data$Y, mu, Omega, log=TRUE)) \\
+\hspace*{0.27 in} LL <- sum(dmvlc(Data$Y, mu, U, log=TRUE)) \\
 \hspace*{0.27 in} \#\#\# Log-Posterior \\
-\hspace*{0.27 in} LP <- LL + beta.prior + Omega.prior \\
+\hspace*{0.27 in} LP <- LL + beta.prior + U.prior \\
 \hspace*{0.27 in} Modelout <- list(LP=LP, Dev=-2*LL, Monitor=LP, \\
-\hspace*{0.62 in} yhat=rmvl(nrow(mu), mu, Omega), parm=parm) \\
+\hspace*{0.62 in} yhat=rmvlc(nrow(mu), mu, U), parm=parm) \\
 \hspace*{0.27 in} return(Modelout) \\
 \hspace*{0.27 in} \} \\
 }
@@ -4056,66 +4157,6 @@ MyData <- list(J=J, K=K, N=N, PGF=PGF, X=X, mon.names=mon.names, \\
 \subsection{Initial Values}
 \code{Initial.Values <- c(rep(0,K), seq(from=-1, to=1, len=(J-1)))}
 
-\section{Ordinal Probit} \label{ordinal.probit}
-\subsection{Form}
-$$\textbf{y}_i \sim \mathcal{CAT}(P_{i,1:J})$$
-$$P_{,J} = 1 - Q_{,(J-1)}$$
-$$P_{,j} = Q_{,j} - Q_{,(j-1)}, \quad j=2,\dots,(J-1)$$
-$$P_{,1} = Q_{,1}$$
-$$Q = \phi(\mu)$$
-$$\mu_{,j} = \delta_j + \textbf{X} \beta, \quad \in [-5,5]$$
-$$\beta_k \sim \mathcal{N}(0, 1000), \quad k=1,\dots,K$$
-$$\delta_j \sim \mathcal{N}(0, 1000) \in [(j-1),j], \quad j=1,\dots,(J-1)$$
-\subsection{Data}
-\code{data(demonsnacks) \\
-N <- nrow(demonsnacks) \\
-J <- 3 \#Number of categories in y \\
-K <- ncol(demonsnacks) \#Number of columns in design matrix X \\
-y <- log(demonsnacks$Calories) \\
-y <- ifelse(y < 4.5669, 1, ifelse(y > 5.5268, 3, 2)) \#Discretize \\
-X <- cbind(1, as.matrix(demonsnacks[,c(1,3:10)])) \\
-for (k in 2:K) \{X[,k] <- CenterScale(X[,k])\} \\
-mon.names <- "LP" \\
-parm.names <- as.parm.names(list(beta=rep(0,K), delta=rep(0,J-1))) \\
-PGF <- function(Data) \\
-\hspace*{0.27 in} \{ \\
-\hspace*{0.27 in} delta <- rnorm(Data$J-1,0,1) \\
-\hspace*{0.27 in} delta <- delta[order(delta)] \\
-\hspace*{0.27 in} return(c(rnormv(Data$K,0,10), delta)) \\
-\hspace*{0.27 in} \} \\
-MyData <- list(J=J, K=K, N=N, PGF=PGF, X=X, mon.names=mon.names, \\
-     parm.names=parm.names, y=y) \\
-}
-\subsection{Model}
-\code{Model <- function(parm, Data) \\
-\hspace*{0.27 in} \{ \\
-\hspace*{0.27 in} \#\#\# Parameters \\
-\hspace*{0.27 in} beta <- parm[1:Data$K] \\
-\hspace*{0.27 in} delta <- parm[-(1:Data$K)] \\
-\hspace*{0.27 in} delta[-1] <- ifelse(delta[-1] < delta[-length(delta)], \\
-\hspace*{0.62 in} delta[-length(delta)], delta[-1]) \\
-\hspace*{0.27 in} parm[-(1:Data$K)] <- delta \\
-\hspace*{0.27 in} \#\#\# Log(Prior Densities) \\
-\hspace*{0.27 in} beta.prior <- sum(dnormv(beta, 0, 1000, log=TRUE)) \\
-\hspace*{0.27 in} delta.prior <- sum(dnormv(delta, 0, 1000, log=TRUE)) \\
-\hspace*{0.27 in} \#\#\# Log-Likelihood \\
-\hspace*{0.27 in} mu <- matrix(delta, Data$N, Data$J-1, byrow=TRUE) + \\
-\hspace*{0.62 in} matrix(tcrossprod(Data$X, t(beta)), Data$N, Data$J-1) \\
-\hspace*{0.27 in} mu <- interval(mu, -5, 5, reflect=FALSE) \\
-\hspace*{0.27 in} P <- Q <- pnorm(mu) \\
-\hspace*{0.27 in} P[,-1] <- Q[,-1] - Q[,-(Data$J-1)] \\
-\hspace*{0.27 in} P <- cbind(P, 1 - Q[,(Data$J-1)]) \\
-\hspace*{0.27 in} LL <- sum(dcat(Data$y, P, log=TRUE)) \\
-\hspace*{0.27 in} \#\#\# Log-Posterior \\
-\hspace*{0.27 in} LP <- LL + beta.prior + delta.prior \\
-\hspace*{0.27 in} Modelout <- list(LP=LP, Dev=-2*LL, Monitor=LP, yhat=rcat(nrow(P), P), \\
-\hspace*{0.62 in} parm=parm) \\
-\hspace*{0.27 in} return(Modelout) \\
-\hspace*{0.27 in} \} \\
-}
-\subsection{Initial Values}
-\code{Initial.Values <- c(rep(0,K), seq(from=-1, to=1, len=(J-1)))}
-
 \section{Panel, Autoregressive Poisson} \label{panel.ap}
 \subsection{Form}
 $$\textbf{Y} \sim \mathcal{P}(\Lambda)$$
@@ -4179,63 +4220,6 @@ MyData <- list(N=N, PGF=PGF, T=T, Y=Y, mon.names=mon.names, \\
 }
 \subsection{Initial Values}
 \code{Initial.Values <- c(rep(0,N), 0, log(1), 0, 0)}
-
-\section{Penalized Spline Regression} \label{penalized.spline}
-This example is adapted from \citet{crainiceanu05}. The user specifies the degree $D$ of polynomials and the number $K$ of knots. Regression effects $\beta$ regard the polynomial in design matrix $\textbf{X}$, and $\gamma$ regard the splines in design matrix $\textbf{S}$.
-\subsection{Form}
-$$\textbf{y} \sim \mathcal{N}(\mu, \sigma^2_1)$$
-$$\mu = \textbf{X} \beta + \textbf{S} \gamma$$
-\[\textbf{S}_{i,k} = \left\{ 
-\begin{array}{l l}
-  (\textbf{x}_i - k)^D & \quad \mbox{if $\textbf{S}_{i,k} > 0$}\\
-  0 \\ \end{array} \right. \]
-$$\textbf{X}_{i,d} = \textbf{x}^{d-1}_i, \quad d=2,\dots,(D+1)$$
-$$\textbf{X}_{i,1} = 1$$
-$$\beta_d \sim \mathcal{N}(0, 1000), \quad d=1,\dots,(D+1)$$
-$$\gamma_k \sim \mathcal{N}(0, \sigma^2_2), \quad k=1,\dots,K$$
-$$\sigma_j \sim \mathcal{HC}(25), \quad j=1,\dots,2$$
-\subsection{Data}
-\code{N <- 100 \\
-x <- 1:N \\
-y <- sin(2*pi*x/N) + runif(N,-1,1) \\
-K <- 10 \#Number of knots \\
-D <- 2 \#Degree of polynomial \\
-x <- CenterScale(x) \\
-k <- as.vector(quantile(x, probs=(1:K / (K+1)))) \\
-X <- cbind(rep(1,N), matrix(x, N, D)\textasciicircum matrix(1:D, N, D, byrow=TRUE)) \\
-S <- matrix(x, N, K) - matrix(k, N, K, byrow=TRUE) \\
-S <- ifelse(S > 0, S, 0); S <- S\textasciicircum D \\
-mon.names <- "LP" \\
-parm.names <- as.parm.names(list(beta=rep(0,D+1), gamma=rep(0,K), \\
-\hspace*{0.27 in} log.sigma=rep(0,2))) \\
-PGF <- function(Data) return(c(rnormv(Data$D+1,0,1000), \\
-\hspace*{0.27 in} rnorm(Data$K,0,rhalfcauchy(1,25)), log(rhalfcauchy(2,25)))) \\
-MyData <- list(D=D, K=K, N=N, PGF=PGF, S=S, X=X, mon.names=mon.names, \\
-\hspace*{0.27 in} parm.names=parm.names, y=y) \\
-}
-\subsection{Model}
-\code{Model <- function(parm, Data) \\
-\hspace*{0.27 in} \{ \\
-\hspace*{0.27 in} \#\#\# Parameters \\
-\hspace*{0.27 in} beta <- parm[grep("beta", Data$parm.names)] \\
-\hspace*{0.27 in} gamma <- parm[grep("gamma", Data$parm.names)] \\
-\hspace*{0.27 in} sigma <- exp(parm[grep("log.sigma", Data$parm.names)]) \\
-\hspace*{0.27 in} \#\#\# Log(Prior Densities) \\
-\hspace*{0.27 in} beta.prior <- sum(dnormv(beta, 0, 1000, log=TRUE)) \\
-\hspace*{0.27 in} gamma.prior <- sum(dnorm(gamma, 0, sigma[2], log=TRUE)) \\
-\hspace*{0.27 in} sigma.prior <- sum(dhalfcauchy(sigma, 25, log=TRUE)) \\
-\hspace*{0.27 in} \#\#\# Log-Likelihood \\
-\hspace*{0.27 in} mu <- tcrossprod(Data$X, t(beta)) + tcrossprod(Data$S, t(gamma)) \\
-\hspace*{0.27 in} LL <- sum(dnorm(Data$y, mu, sigma[1], log=TRUE)) \\
-\hspace*{0.27 in} \#\#\# Log-Posterior \\
-\hspace*{0.27 in} LP <- LL + beta.prior + gamma.prior + sigma.prior \\
-\hspace*{0.27 in} Modelout <- list(LP=LP, Dev=-2*LL, Monitor=LP, \\
-\hspace*{0.62 in} yhat=rnorm(length(mu), sigma[1]), parm=parm) \\
-\hspace*{0.27 in} return(Modelout) \\
-\hspace*{0.27 in} \} \\
-}
-\subsection{Initial Values}
-\code{Initial.Values <- c(rep(0,D+1), rep(0,K), c(1,1))}
 
 \section{Poisson Regression} \label{poisson.reg}
 \subsection{Form}
@@ -5412,8 +5396,8 @@ This approach to variable selection is one of several forms of the Bayesian Adap
 \subsection{Form}
 $$\textbf{y} \sim \mathcal{N}(\mu, \sigma^2)$$
 $$\mu = \textbf{X}\beta$$
-$$\beta_j \sim \mathcal{N}(0, \gamma_j), \quad j=1,\dots,J$$
-$$\gamma_j \sim \mathcal{G}^{-1}(\delta, \tau)$$
+$$\beta_j \sim \mathcal{L}(0, \gamma_j), \quad j=1,\dots,J$$
+$$\gamma_j \sim \mathcal{G}^{-1}(\delta, \tau), \quad \in [0,\infty]$$
 $$\delta \sim \mathcal{HC}(25)$$
 $$\tau \sim \mathcal{HC}(25)$$
 $$\sigma \sim \mathcal{HC}(25)$$
@@ -5424,10 +5408,10 @@ y <- log(demonsnacks$Calories) \\
 X <- cbind(1, as.matrix(demonsnacks[,c(1,3:10)])) \\
 for (j in 2:J) \{X[,j] <- CenterScale(X[,j])\} \\
 mon.names <- c("LP","sigma") \\
-parm.names <- as.parm.names(list(beta=rep(0,J), log.gamma=rep(0,J), \\
+parm.names <- as.parm.names(list(beta=rep(0,J), gamma=rep(0,J), \\
 \hspace*{0.27 in} log.delta=0, log.tau=0, log.sigma=0)) \\
 PGF <- function(Data) return(c(rnormv(Data$J,0,10), \\
-\hspace*{0.27 in} log(rgamma(Data$J,rhalfcauchy(1,25),rhalfcauchy(1,25))), \\
+\hspace*{0.27 in} rgamma(Data$J,rhalfcauchy(1,25),rhalfcauchy(1,25)), \\
 \hspace*{0.27 in} log(rhalfcauchy(3,25)))) \\
 MyData <- list(J=J, PGF=PGF, X=X, mon.names=mon.names, \\
 \hspace*{0.27 in} parm.names=parm.names, y=y) \\
@@ -5439,7 +5423,7 @@ MyData <- list(J=J, PGF=PGF, X=X, mon.names=mon.names, \\
 \hspace*{0.27 in} delta <- exp(parm[2*Data$J+1]) \\
 \hspace*{0.27 in} tau <- exp(parm[2*Data$J+2]) \\
 \hspace*{0.27 in} \#\#\# Hyperparameters \\
-\hspace*{0.27 in} gamma <- exp(parm[Data$J+1:Data$J]) \\
+\hspace*{0.27 in} gamma <- interval(parm[Data$J+1:Data$J], 0, Inf) \\
 \hspace*{0.27 in} \#\#\# Parameters \\
 \hspace*{0.27 in} beta <- parm[1:Data$J] \\
 \hspace*{0.27 in} sigma <- exp(parm[2*Data$J+3]) \\
@@ -5449,7 +5433,7 @@ MyData <- list(J=J, PGF=PGF, X=X, mon.names=mon.names, \\
 \hspace*{0.27 in} \#\#\# Log(Hyperprior Densities) \\
 \hspace*{0.27 in} gamma.prior <- sum(dinvgamma(gamma, delta, tau, log=TRUE)) \\
 \hspace*{0.27 in} \#\#\# Log(Prior Densities) \\
-\hspace*{0.27 in} beta.prior <- sum(dnormv(beta, 0, gamma, log=TRUE)) \\
+\hspace*{0.27 in} beta.prior <- sum(dlaplace(beta, 0, gamma, log=TRUE)) \\
 \hspace*{0.27 in} sigma.prior <- dhalfcauchy(sigma, 25, log=TRUE) \\
 \hspace*{0.27 in} \#\#\# Log-Likelihood \\
 \hspace*{0.27 in} mu <- tcrossprod(Data$X, t(beta)) \\
@@ -5465,10 +5449,61 @@ MyData <- list(J=J, PGF=PGF, X=X, mon.names=mon.names, \\
 \subsection{Initial Values}
 \code{Initial.Values <- c(rep(0,J), rep(0,J), rep(1,3))}
 
+\section{Variable Selection, RJ} \label{rj}
+This example uses the RJ (Reversible-Jump) algorithm of the \code{LaplacesDemon} function for variable selection and Bayesian Model Averaging (BMA). Other MCMC algorithms will not perform variable selection with this example, as presented. This is an example of variable selection in a linear regression. The only difference between the following example, and the example of linear regression (\ref{linear.reg}), is that RJ specifications are also included for the RJ algorithm, and that the RJ algorithm must be used.
+\subsection{Form}
+$$\textbf{y} \sim \mathcal{N}(\mu, \sigma^2)$$
+$$\mu = \textbf{X}\beta$$
+$$\beta_j \sim \mathcal{N}(0, 1000), \quad j=1,\dots,J$$
+$$\sigma \sim \mathcal{HC}(25)$$
+\subsection{Data}
+\code{N <- 1000 \\
+J <- 100 \#Number of predictors, including the intercept \\
+X <- matrix(1,N,J) \\
+for (j in 2:J) \{X[,j] <- rnorm(N,runif(1,-3,3),runif(1,0.1,1))\} \\
+beta.orig <- runif(J,-3,3) \\
+zero <- sample(2:J, round(J*0.9)) \#Assign most parameters to be zero \\
+beta.orig[zero] <- 0 \\
+e <- rnorm(N,0,0.1) \\
+y <- as.vector(tcrossprod(beta.orig, X) + e) \\
+mon.names <- c("LP","sigma") \\
+parm.names <- as.parm.names(list(beta=rep(0,J), log.sigma=0)) \\
+PGF <- function(Data) return(c(rnormv(Data$J,0,1), \\
+\hspace*{0.27 in} log(rhalfcauchy(1,25)))) \\
+MyData <- list(J=J, PGF=PGF, X=X, mon.names=mon.names, \\
+\hspace*{0.27 in} parm.names=parm.names, y=y) \\
+\#\#\# Reversible-Jump Specifications
+bin.n <- J-1 \#Maximum allowable model size \\
+bin.p <- 0.4 \#Most probable size: bin.p x bin.n is binomial mean and median \\
+parm.p <- rep(1/J,J+1) \\
+selectable=c(0, rep(1,J-1), 0) \\
+}
+\subsection{Model}
+\code{Model <- function(parm, Data) \\
+\hspace*{0.27 in} \{ \\
+\hspace*{0.27 in} \#\#\# Parameters \\
+\hspace*{0.27 in} beta <- parm[1:Data$J] \\
+\hspace*{0.27 in} sigma <- exp(parm[Data$J+1]) \\
+\hspace*{0.27 in} \#\#\# Log(Prior Densities) \\
+\hspace*{0.27 in} beta.prior <- sum(dnormv(beta, 0, 1000, log=TRUE)) \\
+\hspace*{0.27 in} sigma.prior <- dhalfcauchy(sigma, 25, log=TRUE) \\
+\hspace*{0.27 in} \#\#\# Log-Likelihood \\
+\hspace*{0.27 in} mu <- tcrossprod(Data$X, t(beta)) \\
+\hspace*{0.27 in} LL <- sum(dnorm(Data$y, mu, sigma, log=TRUE)) \\
+\hspace*{0.27 in} \#\#\# Log-Posterior \\
+\hspace*{0.27 in} LP <- LL + beta.prior + sigma.prior \\
+\hspace*{0.27 in} Modelout <- list(LP=LP, Dev=-2*LL, Monitor=c(LP,sigma), \\
+\hspace*{0.62 in} yhat=rnorm(length(mu), mu, sigma), parm=parm) \\
+\hspace*{0.27 in} return(Modelout) \\
+\hspace*{0.27 in} \} \\
+}
+\subsection{Initial Values}
+\code{Initial.Values <- GIV(Model, MyData, PGF=TRUE)}
+
 \section{Variable Selection, SSVS} \label{ssvs}
 This example uses a modified form of the random-effects (or global adaptation) Stochastic Search Variable Selection (SSVS) algorithm presented in \citet{ohara09}, which selects variables according to practical significance rather than statistical significance. Here, SSVS is applied to linear regression, though this method is widely applicable. For $J$ variables, each regression effects vector $\beta_j$ is conditional on $\gamma_j$, a binary inclusion variable. Each $\beta_j$ is a discrete mixture distribution with respect to $\gamma_j = 0$ or $\gamma_j = 1$, with precision 100 or $\beta_\sigma = 0.1$, respectively. As with other representations of SSVS, these precisions may require tuning.
 
-With other representations of SSVS, each $\gamma_j$ is Bernoulli-distributed, though this would be problematic in Laplace's Demon, because $\gamma_j$ would be in the list of parameters (rather than monitors), and would not be stationary due to switching behavior. To keep $\gamma$ in the monitors, a weakly informative normal density is placed on each prior $\delta_j$, with mean $1/J$ for $J$ variables and variance $1000$. Each $\delta_j$ is transformed with the inverse logit and rounded to $\gamma_j$. Note that $\lfloor x + 0.5 \rfloor$ means to round $x$. The prior for $\delta$ can be manipulated to influence sparseness.
+With other representations of SSVS, each $\gamma_j$ is Bernoulli-distributed, though this would be problematic in Laplace's Demon, because $\gamma_j$ is discrete, rather than continuous. To keep $\gamma$ in the monitors, a beta density is placed on each prior $\delta_j$, with parameters 1 and 2, and experimentation is encouraged. Each $\delta_j$ is constrained to the interval $[0.01,0.99]$, and rounded to $\gamma_j$. Note that $\lfloor x + 0.5 \rfloor$ means to round $x$. The prior for $\delta$ can be manipulated to influence sparseness.
 
 When the goal is to select the best model, each $\textbf{X}_{1:N,j}$ is retained for a future run when the posterior mean of $\gamma_j \ge 0.5$. When the goal is model-averaging, the results of this model may be used directly, which would please L. J. Savage, who said that ``models should be as big as an elephant'' \citep{draper95}.
 
@@ -5477,8 +5512,8 @@ $$\textbf{y} \sim \mathcal{N}(\mu, \sigma^2)$$
 $$\mu = \textbf{X} \beta$$
 $$(\beta_j | \gamma_j) \sim (1 - \gamma_j)\mathcal{N}(0, 0.01) + \gamma_j \mathcal{N}(0, \beta^2_\sigma) \quad j=1,\dots,J$$
 $$\beta_\sigma \sim \mathcal{HC}(25)$$
-$$\gamma_j = \lfloor \frac{1}{1 + \exp(-\delta_j)} + 0.5 \rfloor, \quad j=1,...,J$$
-$$\delta_j \sim \mathcal{N}(0, 10) \in [-100,100], \quad j=1,\dots,J$$
+$$\gamma_j = \lfloor \delta_j + 0.5 \rfloor, \quad j=1,...,J$$
+$$\delta_j \sim \mathcal{B}(1, 2) \in [0.01,0.99], \quad j=1,\dots,J$$
 $$\sigma \sim \mathcal{HC}(25)$$
 \subsection{Data}
 \code{data(demonsnacks) \\
@@ -5490,8 +5525,7 @@ mon.names <- c("LP", "min.beta.sigma", "sigma", \\
 \hspace*{0.27 in} as.parm.names(list(gamma=rep(0,J)))) \\
 parm.names <- as.parm.names(list(beta=rep(0,J), delta=rep(0,J), \\
 \hspace*{0.27 in} log.beta.sigma=0, log.sigma=0)) \\
-PGF <- function(Data) return(c(rnorm(Data$J,0,1000), rtrunc(Data$J, \\
-\hspace*{0.27 in} "norm", a=-100, b=100, mean=logit(1/Data$J), sd=sqrt(1000)), \\
+PGF <- function(Data) return(c(rnorm(Data$J,0,1), rbeta(Data$J,1,2), \\
 \hspace*{0.27 in} log(rhalfcauchy(2,25)))) \\
 MyData <- list(J=J, PGF=PGF, X=X, mon.names=mon.names, \\
 \hspace*{0.27 in} parm.names=parm.names, y=y)
@@ -5505,15 +5539,14 @@ MyData <- list(J=J, PGF=PGF, X=X, mon.names=mon.names, \\
 \hspace*{0.27 in} beta <- parm[1:Data$J] \\
 \hspace*{0.27 in} delta <- interval(parm[grep("delta", Data$parm.names)],-100,100) \\
 \hspace*{0.27 in} parm[grep("delta", Data$parm.names)] <- delta \\
-\hspace*{0.27 in} gamma <- round(invlogit(delta)) \\
+\hspace*{0.27 in} gamma <- round(delta) \\
 \hspace*{0.27 in} beta.sigma <- ifelse(gamma == 0, 0.1, beta.sigma) \\
 \hspace*{0.27 in} sigma <- exp(parm[grep("log.sigma", Data$parm.names)]) \\
 \hspace*{0.27 in} \#\#\# Log(Hyperprior Densities) \\
 \hspace*{0.27 in} beta.sigma.prior <- sum(dhalfcauchy(beta.sigma, 25, log=TRUE)) \\
 \hspace*{0.27 in} \#\#\# Log(Prior Densities) \\
 \hspace*{0.27 in} beta.prior <- sum(dnorm(beta, 0, beta.sigma, log=TRUE)) \\
-\hspace*{0.27 in} delta.prior <- sum(dtrunc(delta, "norm", a=-100, b=100, \\
-\hspace*{0.62 in} mean=logit(1/Data$J), sd=sqrt(1000), log=TRUE)) \\
+\hspace*{0.27 in} delta.prior <- sum(dbeta(delta, 1, 2, log=TRUE)) \\
 \hspace*{0.27 in} sigma.prior <- dhalfcauchy(sigma, 25, log=TRUE) \\
 \hspace*{0.27 in} \#\#\# Log-Likelihood \\
 \hspace*{0.27 in} mu <- tcrossprod(beta, Data$X) \\

@@ -363,7 +363,6 @@ Rprop <- function(Model, parm, Data, Interval, Iterations, Stop.Tolerance,
           m.new <- Model(parm.new, Data)
           tol.new <- sqrt(sum({m.new[[5]] - parm.old}^2))
           if(!is.finite(m.new[[1]]) | {m.new[[1]] < m.old[[1]]}) {
-               ### New code for testing
                p.order <- sample(1:length(parm.new))
                parm.temp <- parm.old
                for (i in 1:length(p.order)) {

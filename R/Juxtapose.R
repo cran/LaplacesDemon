@@ -78,6 +78,7 @@ Juxtapose <- function(x)
           else if(alg == "Adaptive Metropolis") alg <- "AM"
           else if(alg == "Adaptive-Mixture Metropolis") alg <- "AMM"
           else if(alg == "Adaptive Metropolis-within-Gibbs") alg <- "AMWG"
+          else if(alg == "Componentwise Hit-And-Run Metropolis") alg <- "CHARM"
           else if(alg == "Delayed Rejection Adaptive Metropolis")
                alg <- "DRAM"
           else if(alg == "Delayed Rejection Metropolis") alg <- "DRM"
@@ -85,8 +86,10 @@ Juxtapose <- function(x)
           else if(alg == "Hamiltonian Monte Carlo") alg <- "HMC"
           else if(alg == "Hamiltonian Monte Carlo with Dual-Averaging")
                alg <- "HMCDA"
+          else if(alg == "Hit-And-Run Metropolis") alg <- "HARM"
           else if(alg == "Metropolis-within-Gibbs") alg <- "MWG"
           else if(alg == "No-U-Turn Sampler") alg <- "NUTS"
+          else if(alg == "Reversible-Jump") alg <- "RJ"
           else if(alg == "Robust Adaptive Metropolis") alg <- "RAM"
           else if(alg == "Random-Walk Metropolis") alg <- "RWM"
           else if(alg == "Sequential Adaptive Metropolis-within-Gibbs")

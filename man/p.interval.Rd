@@ -45,7 +45,8 @@ p.interval(obj, HPD=TRUE, MM=TRUE, prob=0.95, plot=FALSE, PDF=FALSE, \dots)
   probability distribution. When generalized to multivariate forms, it
   is called a probability region (or credible region), though some
   sources refer to a probability region (or credible region) as the
-  area within the probability interval.
+  area within the probability interval. Bivariate probability regions
+  may be plotted with the \code{\link{joint.pr.plot}} function.
 
   The \code{p.interval} function may return different probability
   intervals: a quantile-based probability interval, a unimodal
@@ -126,7 +127,8 @@ p.interval(obj, HPD=TRUE, MM=TRUE, prob=0.95, plot=FALSE, PDF=FALSE, \dots)
   URL=\url{http://www.statisticat.com/laplacesdemon.html}
 }
 \seealso{
-  \code{\link{is.multimodal}}, 
+  \code{\link{is.multimodal}},
+  \code{\link{joint.pr.plot}},
   \code{\link{LaplacesDemon}}, and
   \code{\link{LPL.interval}}.}
 \examples{

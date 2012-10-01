@@ -1,3 +1,16 @@
+2012-09-28 Vignette Examples: Added Variable Selection, RJ
+2012-09-26 LaplacesDemon: Added the RJ algorithm
+2012-09-25 Vignette Examples: Removed Penalized Reg. and Ordinal Probit
+2012-09-24 Vignette Examples: Added Linear Reg. with Missing Response via ABB
+2012-09-23 Vignette Examples: Contingency table revised
+2012-09-22 Vignette Tutorial: HARM becomes the recommended beginning MCMC alg.
+2012-09-21 dinvgaussian: Fixed bug
+2012-09-17 Vignette Examples: SSVS has delta specified differently
+2012-09-16 LaplacesDemon: Added CHARM and HARM algorithms
+2012-09-15 Vignette Examples: Multivariate Laplace Regression uses Cholesky
+2012-09-15 dmvpe, dmvpec: Fixed bug with Sigma, thanks to Olga Usuga
+2012-09-06 Vignette Examples: Changed specification of BAL
+2012-09-03 Added joint.pr.plot
 2012-08-29 Added ABB
 2012-08-28 Vignette Examples: Fixed bug with DC.MNP, MNP, and MBP
 2012-08-28 BayesianBootstrap: Fixed bug when X is a vector

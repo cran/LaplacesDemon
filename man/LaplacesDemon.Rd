@@ -21,18 +21,18 @@ LaplacesDemon.hpc(Model, Data, Initial.Values, Covar=NULL,
 }
 \arguments{
   \item{Model}{This required argument receives the model from a
-    user-defined function. The user-defined function is where the model
-    is specified. \code{LaplacesDemon} passes two arguments to the model
-    function, \code{parms} and \code{Data}, and receives five arguments
-    from the model function: \code{LP} (the logarithm of the
-    unnormalized joint posterior), \code{Dev} (the deviance),
-    \code{Monitor} (the monitored variables), \code{yhat} (the variables
-    for posterior predictive checks), and \code{parm}, the vector of
-    parameters, which may be constrained in the model function. More
-    information on the Model specification function may be found in the
-    "LaplacesDemon Tutorial" vignette, and the \code{\link{is.model}}
-    function. Many examples of model specification functions may be
-    found in the "Examples" vignette.}
+    user-defined function that must be named Model. The user-defined
+    function is where the model is specified. \code{LaplacesDemon}
+    passes two arguments to the model function, \code{parms} and
+    \code{Data}, and receives five arguments from the model function:
+    \code{LP} (the logarithm of the unnormalized joint posterior),
+    \code{Dev} (the deviance), \code{Monitor} (the monitored variables),
+    \code{yhat} (the variables for posterior predictive checks), and
+    \code{parm}, the vector of parameters, which may be constrained in
+    the model function. More information on the Model specification
+    function may be found in the "LaplacesDemon Tutorial" vignette, and
+    the \code{\link{is.model}} function. Many examples of model
+    specification functions may be found in the "Examples" vignette.}
   \item{Data}{This required argument accepts a list of data. The list of
     data must contain \code{mon.names} which contains monitored variable
     names, and must contain \code{parm.names} which contains parameter
@@ -78,7 +78,7 @@ LaplacesDemon.hpc(Model, Data, Initial.Values, Covar=NULL,
     This argument accepts integers between 1 and the number of
     iterations, and indicates how often the user would like the status
     of the number of iterations and proposal type (for example,
-    multivariate or single-component, or mixture, or subset) printed to
+    multivariate or componentwise, or mixture, or subset) printed to
     the screen. For example, if a model is updated for 1,000 iterations
     and \code{Status=200}, then a status message will be printed at the
     following iterations: 200, 400, 600, and 800 in
@@ -97,8 +97,8 @@ LaplacesDemon.hpc(Model, Data, Initial.Values, Covar=NULL,
   \item{Specs}{This argument defaults to \code{NULL}, and accepts a list
     of specifications for the MCMC algorithm declared in the
     \code{Algorithm} argument. The specifications associated with each
-    algorithm may be seen below in the examples, and are described in
-    the details section below.}
+    algorithm may be seen below in the examples, must appear in the
+    order shown, and are described in the details section below.}
   \item{Chains}{This argument is required only for
     \code{LaplacesDemon.hpc}, and indicates the number of parallel
     chains.}
@@ -125,16 +125,19 @@ LaplacesDemon.hpc(Model, Data, Initial.Values, Covar=NULL,
   \itemize{
     \item Adaptive Hamiltonian Monte Carlo (AHMC)
     \item Adaptive Metropolis (AM)
-    \item Adaptive-Mixture Metropolis (AMM)
     \item Adaptive Metropolis-within-Gibbs (AMWG)
+    \item Adaptive-Mixture Metropolis (AMM)
+    \item Componentwise Hit-And-Run Metropolis (CHARM)
     \item Delayed Rejection Adaptive Metropolis (DRAM)
     \item Delayed Rejection Metropolis (DRM)
     \item Hamiltonian Monte Carlo (HMC)
     \item Hamiltonian Monte Carlo with Dual-Averaging (HMCDA)
+    \item Hit-And-Run Metropolis (HARM)
     \item Metropolis-within-Gibbs (MWG)
     \item No-U-Turn Sampler (NUTS)
-    \item Robust Adaptive Metropolis (RAM)
     \item Random-Walk Metropolis (RWM)
+    \item Reversible-Jump (RJ)
+    \item Robust Adaptive Metropolis (RAM)
     \item Sequential Adaptive Metropolis-within-Gibbs (SAMWG)
     \item Sequential Metropolis-within-Gibbs (SMWG)
     \item Tempered Hamiltonian Monte Carlo (THMC)
@@ -170,6 +173,10 @@ LaplacesDemon.hpc(Model, Data, Initial.Values, Covar=NULL,
     \item \code{aw} affects the walk move in twalk, and \code{aw=1.5} is
     recommended. If adjusted, it is recommended to stay in the
     interval [0.3,2].
+    \item \code{bin.n} is the scalar size parameter for a binomial prior
+    distribution of model size for the RJ algorithm.
+    \item \code{bin.p} is the scalar probability parameter for a
+    binomial prior distribution of model size for the RJ algorithm.
     \item \code{Begin} indicates the time-period in which to begin
     updating (filtering or predicting) in the USAMWG and USMWG
     algorithms.
@@ -205,6 +212,9 @@ LaplacesDemon.hpc(Model, Data, Initial.Values, Covar=NULL,
     to adjust, and is used in twalk. It relates to the number of
     parameters, and \code{n1=4} is recommended. If adjusted, it is
     recommended to stay in the interval [2,20].
+    \item \code{parm.p} is a vector of probabilities for parameter
+    selection in the RJ algorithm, and must be equal in length to
+    the number of initial values.
     \item \code{Periodicity} specifies how often in iterations the
     adaptive algorithm should adapt, and is used by AHMC, AM, AMM, AMWG,
     DRAM, RAM, SAMWG, and USAMWG. If \code{Periodicity=10}, then the
@@ -214,6 +224,14 @@ LaplacesDemon.hpc(Model, Data, Initial.Values, Covar=NULL,
     adapts less often to the target distributions, so it is a
     trade-off. It is recommended to use the lowest value that runs fast
     enough to suit the user, or provide sufficient adaptation.
+    \item \code{selectable} is a vector of indicators of whether or not
+    a parameter is selectable for variable selection in the RJ
+    algorithm. Non-selectable parameters are assigned a zero, and are
+    always in the model. Selectable parameters are assigned a one. This
+    vector must be equal in length to the number of initial values.
+    \item \code{selected} is a vector of indicators of whether or not
+    each parameter is selected when the RJ algorithm begins, and
+    must be equal in length to the number of initial values.
     \item \code{SIV} stands for secondary initial values and is used by
     twalk. \code{SIV} must be the same length as \code{Initial.Values},
     and each element of these two vectors must be unique from each
@@ -227,7 +245,7 @@ LaplacesDemon.hpc(Model, Data, Initial.Values, Covar=NULL,
     distributions, and may be helpful with multimodal distributions.
     \item \code{w} is a mixture weight for the AMM algorithm. It is in
     the interval (0,1], and is recommended to use \code{w=0.05}, as per
-    Roberts and Rosenthal (2009). the The two mixture components are
+    Roberts and Rosenthal (2009). The two mixture components are
     adaptive multivariate and static/symmetric univariate proposals. The
     mixture is determined at each iteration with mixture weight
     \code{w}. A higher value of \code{w} is associated with more
@@ -247,17 +265,17 @@ LaplacesDemon.hpc(Model, Data, Initial.Values, Covar=NULL,
   \item{Acceptance.Rate}{This is the acceptance rate of the MCMC
     algorithm, indicating the percentage of iterations in which the
     proposals were accepted. The optimal acceptance rate varies with the
-    number of parameters, and by algorithm. Algorithms that update
-    single components have an optimal acceptance rate of 0.44,
-    regardless of the number of parameters. Algorithms that update with
-    multivariate proposals tend to have an optimal acceptance rate that
-    ranges from 0.44 for one parameter (one IID Gaussian target
-    distribution) to 0.234 for an infinite number of parameters (IID
-    Gaussian target distributions), and 0.234 is approached quickly as
-    the number of parameters increases. The AHMC, HMC, and THMC
-    algorithms have an optimal acceptance rate of 0.67, except when the
-    algorithm specification \code{L=1}, where the optimal acceptance
-    rate is 0.574.}
+    number of parameters, and by algorithm. Algorithms with
+    componentwise Gaussian proposals have an optimal acceptance rate of
+    0.44, regardless of the number of parameters. Algorithms that update
+    with multivariate Gaussian proposals tend to have an optimal
+    acceptance rate that ranges from 0.44 for one parameter (one IID
+    Gaussian target distribution) to 0.234 for an infinite number of
+    parameters (IID Gaussian target distributions), and 0.234 is
+    approached quickly as the number of parameters increases. The AHMC,
+    HMC, and THMC algorithms have an optimal acceptance rate of 0.67,
+    except when the algorithm specification \code{L=1}, where the
+    optimal acceptance rate is 0.574.}
   \item{Adaptive}{This reports the value of the \code{Adaptive}
     argument.}
   \item{Algorithm}{This reports the specific algorithm used.}
@@ -304,8 +322,9 @@ LaplacesDemon.hpc(Model, Data, Initial.Values, Covar=NULL,
   \item{LML}{This is an approximation of the logarithm of the marginal
     likelihood of the data (see the \code{\link{LML}} function for more
     information). \code{LML} is estimated only with stationary samples,
-    and only with a non-adaptive algorithm, including Delayed Rejection
-    Metropolis (DRM), Hamiltonian Monte Carlo (HMC),
+    and only with a non-adaptive algorithm, including Componentwise
+    Hit-And-Run (CHARM), Delayed Rejection Metropolis (DRM),
+    Hamiltonian Monte Carlo (HMC), Hit-And-Run (HARM),
     Metropolis-within-Gibbs (MWG), No-U-Turn Sampler (NUTS),
     Random-Walk Metropolis (RWM), Tempered Hamiltonian Monte Carlo
     (THMC) or t-walk (twalk). \code{LML} is estimated with nonparametric
@@ -388,6 +407,10 @@ LaplacesDemon.hpc(Model, Data, Initial.Values, Covar=NULL,
   Data Analysis, Texts in Statistical Science, 2nd ed.". Chapman and
   Hall, London.
 
+  Green, P.J. (1995). "Reversible Jump Markov Chain Monte Carlo
+  Computation and Bayesian Model Determination". Biometrika, 82,
+  p. 711--732.
+
   Hall, B. (2012). "Laplace's Demon", STATISTICAT, LLC.
   URL=\url{http://www.statisticat.com/laplacesdemon.html}
 
@@ -420,6 +443,10 @@ LaplacesDemon.hpc(Model, Data, Initial.Values, Covar=NULL,
   
   Rosenthal, J.S. (2007). "AMCMC: An R interface for adaptive MCMC".
   Computational Statistics and Data Analysis, 51, p. 5467--5470.
+
+  Smith, R.L. (1984). "Efficient Monte Carlo Procedures for Generating
+  Points Uniformly Distributed Over Bounded Region". Operations
+  Research, 32, p. 1296--1308.
 
   Vihola, M. (2011). "Robust Adaptive Metropolis Algorithm with Coerced
   Acceptance Rate". Statistics and Computing. Springer, Netherlands.
@@ -487,10 +514,10 @@ Initial.Values <- GIV(Model, MyData, PGF=TRUE)
 # Examples of MCMC Algorithms                                             #
 ###########################################################################
 
-######################  Adaptive-Mixture Metropolis  ######################
+#############################  Hit-And-Run  ###############################
 Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
      Covar=NULL, Iterations=1000, Status=100, Thinning=1,
-     Algorithm="AMM", Specs=list(Adaptive=500, Periodicity=10, w=0.05))
+     Algorithm="HARM", Specs=NULL)
 Fit
 print(Fit)
 Consort(Fit)
@@ -526,6 +553,16 @@ Importance(Fit, Model, MyData, Discrep="Chi-Square")
 #Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
 #     Covar=NULL, Iterations=1000, Status=100, Thinning=1,
 #     Algorithm="AMWG", Specs=list(Periodicity=50))
+
+######################  Adaptive-Mixture Metropolis  ######################
+#Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
+#     Covar=NULL, Iterations=1000, Status=100, Thinning=1,
+#     Algorithm="AMM", Specs=list(Adaptive=500, Periodicity=10, w=0.05))
+
+######################  Componentwise Hit-And-Run  ########################
+#Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
+#     Covar=NULL, Iterations=1000, Status=100, Thinning=1,
+#     Algorithm="CHARM", Specs=NULL)
 
 #################  Delayed Rejection Adaptive Metropolis  #################
 #Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
@@ -564,6 +601,17 @@ Importance(Fit, Model, MyData, Discrep="Chi-Square")
 #     Covar=NULL, Iterations=1000, Status=100, Thinning=1,
 #     Algorithm="RAM", Specs=list(alpha.star=0.234, Dist="N", gamma=0.66,
 #     Periodicity=10))
+
+###########################  Reversible-Jump  #############################
+#bin.n <- J-1
+#bin.p <- 0.2
+#parm.p <- c(1, rep(1/(J-1),(J-1)), 1)
+#selectable <- c(0, rep(1,J-1), 0)
+#Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
+#     Covar=NULL, Iterations=1000, Status=100, Thinning=1,
+#     Algorithm="RJ", Specs=list(bin.n=bin.n, bin.p=bin.p,
+#          parm.p=parm.p, selectable=selectable,
+#          selected=c(0,rep(1,J-1),0)))
 
 ########################  Random-Walk Metropolis  #########################
 #Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
@@ -617,12 +665,14 @@ Importance(Fit, Model, MyData, Discrep="Chi-Square")
 \keyword{Delayed Rejection Adaptive Metropolis}
 \keyword{Delayed Rejection Metropolis}
 \keyword{Hamiltonian Monte Carlo}
+\keyword{Hit-And-Run}
 \keyword{MCMC}
 \keyword{Metropolis-within-Gibbs}
 \keyword{Multiple Chains}
 \keyword{No-U-Turn Sampler}
 \keyword{Optimization}
 \keyword{Parallel Chains}
+\keyword{Reversible-Jump}
 \keyword{Robust Adaptive Metropolis}
 \keyword{Random-Walk Metropolis}
 \keyword{Sequential Adaptive Metropolis-within-Gibbs}

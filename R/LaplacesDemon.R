@@ -53,9 +53,10 @@ LaplacesDemon <- function(Model, Data, Initial.Values, Covar=NULL,
           Thinning <- 1
           cat("'Thinning' has been changed to ", Thinning, ".\n",
                sep="")}
-     if(Algorithm %in% c("AHMC","AM","AMM","AMWG","DRAM","DRM",
-          "Experimental","HMC","HMCDA","MWG","NUTS","RAM","RWM","SAMWG",
-          "SMWG","THMC","twalk","USAMWG","USMWG")) {
+     if(Algorithm %in% c("AHMC","AM","AMM","AMWG","CHARM","DRAM","DRM",
+          "Experimental","HARM","HMC","HMCDA","MWG","NUTS","RAM",
+          "RJ","RWM","SAMWG","SMWG","THMC","twalk","USAMWG",
+          "USMWG")) {
           if(Algorithm == "AHMC") {
                Algorithm <- "Adaptive Hamiltonian Monte Carlo"
                if(missing(Specs)) stop("The Specs argument is required.")
@@ -114,6 +115,11 @@ LaplacesDemon <- function(Model, Data, Initial.Values, Covar=NULL,
                else {
                     Periodicity <- 50
                     cat("\nPeriodicity was misspecified and changed to 50.\n")}}
+          if(Algorithm == "CHARM") {
+               Algorithm <- "Componentwise Hit-And-Run Metropolis"
+               Adaptive <- Iterations + 1
+               DR <- 0
+               Periodicity <- Iterations + 1}
           if(Algorithm == "DRAM") {
                Algorithm <- "Delayed Rejection Adaptive Metropolis"
                if(missing(Specs)) stop("The Specs argument is required.")
@@ -136,8 +142,8 @@ LaplacesDemon <- function(Model, Data, Initial.Values, Covar=NULL,
                Adaptive <- Iterations + 1
                DR <- 0
                Periodicity <- Iterations + 1}
-          if(Algorithm == "MWG") {
-               Algorithm <- "Metropolis-within-Gibbs"
+          if(Algorithm == "HARM") {
+               Algorithm <- "Hit-And-Run Metropolis"
                Adaptive <- Iterations + 1
                DR <- 0
                Periodicity <- Iterations + 1}
@@ -177,6 +183,11 @@ LaplacesDemon <- function(Model, Data, Initial.Values, Covar=NULL,
                          if(lambda < epsilon) lambda <- epsilon}
                Adaptive <- Iterations + 1
                DR <- 1
+               Periodicity <- Iterations + 1}
+          if(Algorithm == "MWG") {
+               Algorithm <- "Metropolis-within-Gibbs"
+               Adaptive <- Iterations + 1
+               DR <- 0
                Periodicity <- Iterations + 1}
           if(Algorithm == "NUTS") {
                Algorithm <- "No-U-Turn Sampler"
@@ -232,6 +243,42 @@ LaplacesDemon <- function(Model, Data, Initial.Values, Covar=NULL,
                else {
                     Periodicity <- 10
                     cat("\nPeriodicity was misspecified and changed to 10.\n")}}
+          if(Algorithm == "RJ") {
+               Algorithm <- "Reversible-Jump"
+               if(missing(Specs)) stop("The Specs argument is required.")
+               if(length(Specs) != 5) stop("The Specs argument is incorrect.")
+               Adaptive <- Iterations + 1
+               DR <- 0
+               Periodicity <- Iterations + 1
+               if(Specs[["bin.n"]] == Specs[[1]]) bin.n <- round(Specs[[1]])
+               else stop("bin.n was misspecified.")
+               if(bin.n > length(Initial.Values))
+                    bin.n <- length(Initial.Values)
+               if(bin.n < 1) bin.n <- 1
+               if(Specs[["bin.p"]] == Specs[[2]]) bin.p <- Specs[[2]]
+               else stop("bin.p was misspecified.")
+               if(bin.p < 0 | bin.p > 1) {
+                    bin.p <- interval(bin.p, 0, 1, reflect=FALSE)
+                    cat("\nbin.p must be in [0,1]. It's now",
+                         round(bin.p,5), "\n")}
+               if(all(Specs[["parm.p"]] == Specs[[3]])) parm.p <- Specs[[3]]
+               else stop("parm.p was misspecified.")
+               if(!is.vector(parm.p)) parm.p <- as.vector(parm.p)
+               if(length(parm.p) != length(Initial.Values)) {
+                    parm.p <- rep(parm.p[1], length(Initial.Values))
+                    cat("\nparm.p now has the correct length, all equal to parm.p[1].\n")}
+               if(all(Specs[["selectable"]] == Specs[[4]])) selectable <- Specs[[4]]
+               else stop("selectable was misspecified.")
+               if(!is.vector(selectable)) selectable <- as.vector(selectable)
+               if(length(selectable) != length(Initial.Values)) {
+                    selectable <- rep(1, length(Initial.Values))
+                    cat("\nselectable now has the correct length, all set to 1.\n")}
+               if(all(Specs[["selected"]] == Specs[[5]])) selected <- Specs[[5]]
+               else stop("selected was misspecified.")
+               if(!is.vector(selected)) selected <- as.vector(selected)
+               if(length(selected) != length(Initial.Values)) {
+                    selected <- rep(1, length(Initial.Values))
+                    cat("\nselected now has the correct length, all set to 1.\n")}}
           if(Algorithm == "RWM") {
                Algorithm <- "Random-Walk Metropolis"
                Adaptive <- Iterations + 1
@@ -483,6 +530,11 @@ LaplacesDemon <- function(Model, Data, Initial.Values, Covar=NULL,
                Periodicity, Status, Thinning, Acceptance, Dev, DiagCovar,
                Iden.Mat, LIV, Mon, Mo0, post, ScaleF, thinned, tuning,
                VarCov)}
+     else if(Algorithm == "Componentwise Hit-And-Run Metropolis") {
+          mcmc.out <- CHARM(Model, Data, Adaptive, DR, Iterations,
+               Periodicity, Status, Thinning, Acceptance, Dev, DiagCovar,
+               Iden.Mat, LIV, Mon, Mo0, post, ScaleF, thinned, tuning,
+               VarCov)}
      else if(Algorithm == "Delayed Rejection Adaptive Metropolis") {
           mcmc.out <- DRAM(Model, Data, Adaptive, DR, Iterations,
                Periodicity, Status, Thinning, Acceptance, Dev, DiagCovar,
@@ -505,6 +557,11 @@ LaplacesDemon <- function(Model, Data, Initial.Values, Covar=NULL,
                Periodicity, Status, Thinning, Acceptance, Dev, DiagCovar,
                Iden.Mat, LIV, Mon, Mo0, post, ScaleF, thinned, tuning,
                VarCov, A, delta, epsilon, Lmax, lambda)}
+     else if(Algorithm == "Hit-And-Run Metropolis") {
+          mcmc.out <- HARM(Model, Data, Adaptive, DR, Iterations,
+               Periodicity, Status, Thinning, Acceptance, Dev, DiagCovar,
+               Iden.Mat, LIV, Mon, Mo0, post, ScaleF, thinned, tuning,
+               VarCov)}
      else if(Algorithm == "Metropolis-within-Gibbs") {
           mcmc.out <- MWG(Model, Data, Adaptive, DR, Iterations,
                Periodicity, Status, Thinning, Acceptance, Dev, DiagCovar,
@@ -525,6 +582,11 @@ LaplacesDemon <- function(Model, Data, Initial.Values, Covar=NULL,
                Periodicity, Status, Thinning, Acceptance, Dev, DiagCovar,
                Iden.Mat, LIV, Mon, Mo0, post, ScaleF, thinned, tuning,
                VarCov)}
+     else if(Algorithm == "Reversible-Jump") {
+          mcmc.out <- RJ(Model, Data, Adaptive, DR, Iterations,
+               Periodicity, Status, Thinning, Acceptance, Dev, DiagCovar,
+               Iden.Mat, LIV, Mon, Mo0, post, ScaleF, thinned, tuning,
+               VarCov, bin.n, bin.p, parm.p, selectable, selected)}
      else if(Algorithm == "Sequential Adaptive Metropolis-within-Gibbs") {
           mcmc.out <- SAMWG(Model, Data, Adaptive, DR, Iterations,
                Periodicity, Status, Thinning, Acceptance, Dev, DiagCovar,
@@ -723,10 +785,12 @@ LaplacesDemon <- function(Model, Data, Initial.Values, Covar=NULL,
      ### Logarithm of the Marginal Likelihood
      LML <- list(LML=NA, VarCov=NA)
      if(({Algorithm == "Delayed Rejection Metropolis"} |
+          {Algorithm == "Hit-And-Run"} | 
           {Algorithm == "Hamiltonian Monte Carlo"} | 
           {Algorithm == "Metropolis-within-Gibbs"} |
           {Algorithm == "No-U-Turn Sampler"} | 
           {Algorithm == "Random-Walk Metropolis"} |
+          {Algorithm == "Reversible-Jump"} |
           {Algorithm == "Sequential Metropolis-within-Gibbs"} |
           {Algorithm == "Tempered Hamiltonian Monte Carlo"} | 
           {Algorithm == "t-walk"}) &
@@ -1042,6 +1106,55 @@ AMWG <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
           VarCov=VarCov)
      return(out)
      }
+CHARM <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
+     Status, Thinning, Acceptance, Dev, DiagCovar, Iden.Mat, LIV, Mon,
+     Mo0, post, ScaleF, thinned, tuning, VarCov)
+     {
+     Acceptance <- matrix(0, 1, LIV)
+     for (iter in 1:Iterations) {
+          ### Print Status
+          if(iter %% Status == 0) {cat("Iteration: ", iter,
+               ",   Proposal: Componentwise\n", sep="")}
+          ### Current Posterior
+          if(iter > 1) post[iter,] <- post[iter-1,]
+          ### Save Thinned Samples
+          if(iter %% Thinning == 0) {
+               thinned <- rbind(thinned, post[iter,])
+               Dev <- rbind(Dev, Mo0[[2]])
+               Mon <- rbind(Mon, Mo0[[3]])}
+          ### Random-Scan Componentwise Estimation
+          theta <- rnorm(LIV)
+          theta <- theta / sqrt(sum(theta*theta))
+          lambda <- runif(1)
+          for (j in sample(LIV)) {
+               ### Propose new parameter values
+               prop <- post[iter,]
+               prop[j] <- prop[j] + lambda*theta[j]
+               ### Log-Posterior of the proposed state
+               Mo1 <- Model(prop, Data)
+               if(!is.finite(Mo1[[1]])) Mo1 <- Mo0
+               if(!is.finite(Mo1[[2]])) Mo1 <- Mo0
+               if(any(!is.finite(Mo1[[3]]))) Mo1 <- Mo0
+               ### Accept/Reject
+               u <- log(runif(1)) < (Mo1[[1]] - Mo0[[1]])
+               post[iter,j] <- Mo1[[5]][j]*(u == 1) + post[iter,j]*(u == 0)
+               Mo0[[1]] <- Mo1[[1]]*(u == 1) + Mo0[[1]]*(u == 0)
+               Mo0[[2]] <- Mo1[[2]]*(u == 1) + Mo0[[2]]*(u == 0)
+               Mo0[[3]] <- Mo1[[3]]*(u == 1) + Mo0[[3]]*(u == 0)
+               Acceptance[j] <- Acceptance[j] + u}
+          if(iter %% Thinning == 0) {
+               Dev[nrow(Dev),] <- Mo1[[2]]
+               Mon[nrow(Mon),] <- Mo1[[3]]}
+          }
+     ### Output
+     out <- list(Acceptance=mean(as.vector(Acceptance)),
+          Dev=Dev,
+          DiagCovar=DiagCovar,
+          Mon=Mon,
+          thinned=thinned,
+          VarCov=VarCov)
+     return(out)
+     }
 DRAM <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
      Status, Thinning, Acceptance, Dev, DiagCovar, Iden.Mat, LIV, Mon,
      Mo0, post, ScaleF, thinned, tuning, VarCov)
@@ -1232,6 +1345,53 @@ DRM <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
                          Dev[nrow(Dev),] <- Mo1[[2]]
                          Mon[nrow(Mon),] <- Mo1[[3]]}
                     }
+               }
+          }
+     ### Output
+     out <- list(Acceptance=Acceptance,
+          Dev=Dev,
+          DiagCovar=DiagCovar,
+          Mon=Mon,
+          thinned=thinned,
+          VarCov=VarCov)
+     return(out)
+     }
+HARM <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
+     Status, Thinning, Acceptance, Dev, DiagCovar, Iden.Mat, LIV, Mon,
+     Mo0, post, ScaleF, thinned, tuning, VarCov)
+     {
+     for (iter in 1:Iterations) {
+          ### Print Status
+          if(iter %% Status == 0) cat("Iteration: ", iter, sep="")
+          ### Current Posterior
+          if(iter > 1) post[iter,] <- post[iter-1,]
+          ### Save Thinned Samples
+          if(iter %% Thinning == 0) {
+               thinned <- rbind(thinned, post[iter,])
+               Dev <- rbind(Dev, Mo0[[2]])
+               Mon <- rbind(Mon, Mo0[[3]])}
+          ### Propose new parameter values
+          theta <- rnorm(LIV)
+          d <- theta / sqrt(sum(theta*theta))
+          prop <- post[iter,] + runif(1) * d
+          if(iter %% Status == 0) 
+               cat(",   Proposal: Multivariate\n")
+          ### Log-Posterior of the proposed state
+          Mo1 <- Model(prop, Data)
+          if(!is.finite(Mo1[[1]])) Mo1 <- Mo0
+          if(!is.finite(Mo1[[2]])) Mo1 <- Mo0
+          if(any(!is.finite(Mo1[[3]]))) Mo1 <- Mo0
+          ### Accept/Reject
+          log.u <- log(runif(1))
+          log.alpha <- Mo1[[1]] - Mo0[[1]]
+          if(!is.finite(log.alpha)) log.alpha <- 0
+          if(log.u < log.alpha) {
+               Mo0 <- Mo1
+               post[iter,] <- Mo1[[5]]
+               Acceptance <- Acceptance + 1
+               if(iter %% Thinning == 0) {
+                    Dev[nrow(Dev),] <- Mo1[[2]]
+                    Mon[nrow(Mon),] <- Mo1[[3]]}
                }
           }
      ### Output
@@ -1803,6 +1963,98 @@ RAM <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
                          VarCov <- VarCov.test
                          S <- S.z}}
                DiagCovar <- rbind(DiagCovar, diag(VarCov))}
+          }
+     ### Output
+     out <- list(Acceptance=Acceptance,
+          Dev=Dev,
+          DiagCovar=DiagCovar,
+          Mon=Mon,
+          thinned=thinned,
+          VarCov=VarCov)
+     return(out)
+     }
+RJ <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
+     Status, Thinning, Acceptance, Dev, DiagCovar, Iden.Mat, LIV, Mon,
+     Mo0, post, ScaleF, thinned, tuning, VarCov, bin.n, bin.p, parm.p,
+     selectable, selected)
+     {
+     cur.parm <- cur.sel <- selected
+     cur.parm[which(selectable == 0)] <- 1
+     nonzero.post <- rep(0, LIV)
+     p <- parm.p
+     for (iter in 1:Iterations) {
+          ### Print Status
+          if(iter %% Status == 0) {cat("Iteration: ", iter,
+               ",   Proposal: Componentwise\n", sep="")}
+          ### Current Posterior
+          if(iter > 1) post[iter,] <- post[iter-1,]
+          ### Save Thinned Samples
+          if(iter %% Thinning == 0) {
+               thinned <- rbind(thinned, post[iter,])
+               Dev <- rbind(Dev, Mo0[[2]])
+               Mon <- rbind(Mon, Mo0[[3]])}
+          ### Propose a variable to include/exclude
+          v.change <- sample(LIV, 1, prob=selectable)
+          prop.sel <- cur.sel
+          prop.parm <- cur.parm
+          ### Change proposed size, but not above bin.n
+          if(sum(cur.sel) < bin.n) {
+               prop.sel[v.change] <- 1 - prop.sel[v.change]
+               prop.parm[v.change] <- 1 - prop.parm[v.change]}
+          else if(prop.sel[v.change] == 1) 
+               prop.parm[v.change] <- prop.sel[v.change] <- 0
+          ### Priors
+          prior.cur <- sum(dbern(cur.sel, p[which(selectable == 1)], log=TRUE),
+               dbinom(sum(cur.sel), bin.n, bin.p, log=TRUE))
+          prior.prop <- sum(dbern(prop.sel, p[which(selectable == 1)], log=TRUE),
+               dbinom(sum(prop.sel), bin.n, bin.p, log=TRUE))
+          ### Hit-And-Run Proposal Parameters
+          theta <- rnorm(LIV)
+          theta <- theta / sqrt(sum(theta*theta))
+          lambda <- runif(1)
+          ### Random-Scan Componentwise Estimation (Within-Model)
+          for (j in sample(which(cur.parm == 1))) {
+               ### Propose new parameter values
+               temp.post <- post[iter,]
+               temp.post[which(temp.post == 0)] <- nonzero.post[which(temp.post == 0)]
+               temp.post[which(cur.parm == 0)] <- 0
+               prop <- post[iter,] <- temp.post
+               prop[j] <- prop[j] + lambda*theta[j]
+               ### Log-Posterior of the proposed state
+               Mo1 <- Model(prop, Data)
+               if(!is.finite(Mo1[[1]])) Mo1 <- Mo0
+               if(!is.finite(Mo1[[2]])) Mo1 <- Mo0
+               if(any(!is.finite(Mo1[[3]]))) Mo1 <- Mo0
+               ### Accept/Reject (Within-Model Move)
+               u <- log(runif(1)) < (Mo1[[1]] - Mo0[[1]])
+               post[iter,j] <- Mo1[[5]][j]*(u == 1) + post[iter,j]*(u == 0)
+               if(post[iter,j] != 0) nonzero.post[j] <- post[iter,j]
+               Mo0[[1]] <- Mo1[[1]]*(u == 1) + Mo0[[1]]*(u == 0)
+               Mo0[[2]] <- Mo1[[2]]*(u == 1) + Mo0[[2]]*(u == 0)
+               Mo0[[3]] <- Mo1[[3]]*(u == 1) + Mo0[[3]]*(u == 0)
+               Acceptance <- Acceptance + (u * (1 / sum(cur.parm)))}
+          ### Random-Scan Componentwise Estimation (Between-Models)
+          prop <- post[iter,]
+          prop[v.change] <- prop.sel[v.change]*(prop[v.change] +
+               lambda*theta[v.change])
+          ### Log-Posterior of the proposed state
+          Mo1 <- Model(prop, Data)
+          if(!is.finite(Mo1[[1]])) Mo1 <- Mo0
+          if(!is.finite(Mo1[[2]])) Mo1 <- Mo0
+          if(any(!is.finite(Mo1[[3]]))) Mo1 <- Mo0
+          ### Accept/Reject (Between-Models Move)
+          u <- log(runif(1)) < (Mo1[[1]] - Mo0[[1]] + prior.prop - prior.cur)
+          if(u == TRUE) {cur.sel <- prop.sel; cur.parm <- prop.parm}
+          post[iter,v.change] <- Mo1[[5]][v.change]*(u == 1) +
+               post[iter,v.change]*(u == 0)
+          if(post[iter,v.change] != 0) nonzero.post[v.change] <- post[iter,v.change]
+          Mo0[[1]] <- Mo1[[1]]*(u == 1) + Mo0[[1]]*(u == 0)
+          Mo0[[2]] <- Mo1[[2]]*(u == 1) + Mo0[[2]]*(u == 0)
+          Mo0[[3]] <- Mo1[[3]]*(u == 1) + Mo0[[3]]*(u == 0)
+          Acceptance <- Acceptance + (u * (1 / sum(prop.parm)))
+          if(iter %% Thinning == 0) {
+               Dev[nrow(Dev),] <- Mo1[[2]]
+               Mon[nrow(Mon),] <- Mo1[[3]]}
           }
      ### Output
      out <- list(Acceptance=Acceptance,

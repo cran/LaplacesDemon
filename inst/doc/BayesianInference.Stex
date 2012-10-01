@@ -52,11 +52,11 @@ Within Bayesian inference, there are also different interpretations of probabili
 
 This article is intended as an approachable introduction to Bayesian inference, or as a handy summary for experienced Bayesians. It is assumed that the reader has at least an elementary understanding of statistics, and this article focuses on applied, rather than theoretical, material. Equations and statistical notation are included, but it is hopefully presented so the reader does not need an intricate understanding of solving integrals, for example, but should understand the basic concept of integration. Please be aware that it is difficult to summarize Bayesian inference in such a short article. In which case, consider \citet{gelman04} for a more thorough and formal introduction.
 
-\section{Bayes' Theorem}
+\section{Bayes' Theorem} \label{bayestheorem}
 
 Bayes' theorem shows the relation between two conditional probabilities that are the reverse of each other. This theorem is named after Reverend Thomas Bayes (1702-1761), and is also referred to as Bayes' law or Bayes' rule \citep{bayes63}. Bayes' theorem expresses the conditional probability, or `posterior probability', of an event $A$ after $B$ is observed in terms of the `prior probability' of $A$, prior probability of $B$, and the conditional probability of $B$ given $A$. Bayes' theorem is valid in all common interpretations of probability. The two (related) examples below should be sufficient to introduce Bayes' theorem.
 
-\subsection{Bayes' Theorem, Example 1}
+\subsection{Bayes' Theorem, Example 1} \label{bayestheorem1}
 
 Bayes' theorem provides an expression for the conditional probability of $A$ given $B$, which is equal to
 
@@ -70,7 +70,7 @@ $$\Pr(\mathrm{Hell} | \mathrm{Consort}) = \frac{\Pr(\mathrm{Consort} | \mathrm{H
 
 Note that a common fallacy is to assume that $\Pr(A | B) = \Pr(B | A)$, which is called the conditional probability fallacy.
 
-\subsection{Bayes' Theorem, Example 2}
+\subsection{Bayes' Theorem, Example 2} \label{bayestheorem2}
 
 Another way to state Bayes' theorem is
 
@@ -116,7 +116,7 @@ Finally, the desired conditional probability $\Pr(\mathrm{Hell} | \mathrm{Consor
 
 The probability of someone consorting with Laplace's Demon and going to Hell is 73.7\%, which is less than the prevalence of 75\% in the population. According to these findings, consorting with Laplace's Demon does not increase the probability of going to Hell. With that in mind, please continue\dots
 
-\section{Model-Based Bayesian Inference}
+\section{Model-Based Bayesian Inference} \label{modelbasedbayes}
 
 The basis for Bayesian inference is derived from Bayes' theorem. Here is Bayes' theorem, equation \ref{bayestheorem}, again
 
@@ -157,7 +157,7 @@ $$p(\phi | \textbf{y}) = \int p(\phi, \Lambda | \textbf{y}) d\Lambda$$
 
 In model-based Bayesian inference, Bayes' theorem is used to estimate the unnormalized joint posterior distribution, and finally the user can assess and make inferences from the marginal posterior distributions.
 
-\section{Components of Bayesian Inference}
+\section{Components of Bayesian Inference} \label{components}
 
 The components\footnote{In Bayesian decision theory, an additional component exists \citep[p. 53]{robert07}, the loss function, $\mathrm{L}(\Theta, \Delta)$.} of Bayesian inference are
 
@@ -167,7 +167,7 @@ The components\footnote{In Bayesian decision theory, an additional component exi
 \item $p(\Theta | \textbf{y})$ is the joint posterior distribution that expresses uncertainty about parameter set $\Theta$ after taking both the prior and the data into account. If parameter set $\Theta$ is partitioned into a single parameter of interest $\phi$ and the remaining parameters are considered nuisance parameters, then $p(\phi | \textbf{y})$ is the marginal posterior distribution.
 \end{enumerate}
 
-\section{Prior Distributions}
+\section{Prior Distributions} \label{priordistributions}
 
 In Bayesian inference, a prior probability distribution, often called simply the prior, of an uncertain parameter $\theta$ or latent variable is a probability distribution that expresses uncertainty about $\theta$ before the data are taken into account\footnote{One so-called version of Bayesian inference is `empirical Bayes', which sounds enticing because anything `empirical' seems desirable. However, empirical Bayes is a term for the use of data-dependent priors, where the prior is first modeled usually with maximum likelihood and then used in the Bayesian model. This is an undesirable double-use of the data and is most problematic with small sample sizes \citep{berger06}. It also seems to violate the elementary concept that a prior probability distribution expresses uncertainty about $\theta$ \textit{before} the data are taken into account. It has been claimed that ``empirical Bayes methods are not Bayesian'' \citep{bernardo08}.}. The parameters of a prior distribution are called hyperparameters, to distinguish them from the parameters ($\Theta$) of the model.
 
@@ -175,15 +175,15 @@ When applying Bayes' theorem, the prior is multiplied by the likelihood function
 
 Prior probability distributions have traditionally belonged to one of two categories: informative priors and uninformative priors. Here, four categories of priors are presented according to information\footnote{`Information' is used loosely here to describe either the prior information from personal beliefs or informational-theoretic content.} and the goal in the use of the prior. The four categories are informative, weakly informative, least informative, and uninformative.
 
-\subsection{Informative Priors}
+\subsection{Informative Priors} \label{informativepriors}
 
 When prior information is available about $\theta$, it should be included in the prior distribution of $\theta$. For example, if the present model form is similar to a previous model form, and the present model is intended to be an updated version based on more current data, then the posterior distribution of $\theta$ from the previous model may be used as the prior distribution of $\theta$ for the present model.
 
-In this way, each version of a model is not starting from scratch, based only on the present data, but the cumulative effects of all data, past and present, can be taken into account. To ensure the current data do not overwhelm the prior , \citet{ibrahim00} introduced the power prior. The power prior is a class of informative prior distribution that takes previous data and results into account. If the present data is very similar to the previous data, then the precision of the posterior distribution increases when including more and more information from previous models. If the present data differs considerably, then the posterior distribution of $\theta$ may be in the tails of the prior distribution for $\theta$, so the prior distribution contributes less density in its tails.
+In this way, each version of a model is not starting from scratch, based only on the present data, but the cumulative effects of all data, past and present, can be taken into account. To ensure the current data do not overwhelm the prior, \citet{ibrahim00} introduced the power prior. The power prior is a class of informative prior distribution that takes previous data and results into account. If the present data is very similar to the previous data, then the precision of the posterior distribution increases when including more and more information from previous models. If the present data differs considerably, then the posterior distribution of $\theta$ may be in the tails of the prior distribution for $\theta$, so the prior distribution contributes less density in its tails.
 
 Sometimes informative prior information is not simply ready to be used, such as when it resides in another person, as in an expert. In this case, their personal beliefs about the probability of the event must be elicited into the form of a proper probability density function. This process is called prior elicitation.
 
-\subsection{Weakly Informative Priors}
+\subsection{Weakly Informative Priors} \label{wips}
 
 Weakly Informative Prior (WIP) distributions use prior information for regularization\footnote{The definition of regularization is to introduce additional information in order to solve an ill-posed problem or to prevent overfitting.} and stabilization, providing enough prior information to prevent results that contradict our knowledge or problems such as an algorithmic failure to explore the state-space. Another goal is for WIPs to use less prior information than is actually available. A WIP should provide some of the benefit of prior information while avoiding some of the risk from using information that doesn't exist. WIPs are the most common priors in practice, and are favored by subjective Bayesians.
 
@@ -199,16 +199,17 @@ After updating a model in which WIPs exist, the user should examine the posterio
 
 A popular objective Bayeisan criticism against WIPs is that there is no precise, mathematical form to derive the optimal WIP for a given model and data.
 
-\subsubsection{Vague Priors}
-A vague prior, also called a diffuse prior\footnote{Some sources refer to diffuse priors as flat priors.}, is difficult to define, after considering WIPs. The first formal move from vague to weakly informative priors is \citet{lambert05}. After conjugate priors were introduced \citep{raiffa61}, most applied Bayesian modeling has used vague priors, parameterized to approximate the concept of uninformative priors (better considered as least informative priors, see below). Conjugate priors are described in more detail later in the section entitled ``Conjugacy''.
+\subsubsection{Vague Priors} \label{vaguepriors}
+
+A vague prior, also called a diffuse prior\footnote{Some sources refer to diffuse priors as flat priors.}, is difficult to define, after considering WIPs. The first formal move from vague to weakly informative priors is \citet{lambert05}. After conjugate priors were introduced \citep{raiffa61}, most applied Bayesian modeling has used vague priors, parameterized to approximate the concept of uninformative priors (better considered as least informative priors, see section \ref{lips}). For more information on conjugate priors, see section \ref{conjugacy}.
 
 Typically, a vague prior is a conjugate prior with a large scale parameter. However, vague priors can pose problems when the sample size is small. Most problems with vague priors and small sample size are associated with scale, rather than location, parameters. The problem can be particularly acute in random-effects models, and the term random-effects is used rather loosely here to imply exchangeable, hierarchical, and multilevel structures. A vague prior is defined here as usually being a conjugate prior that is intended to approximate an uninformative prior (or actually, a least informative prior), and without the goals of regularization and stabilization.
 
-\subsection{Least Informative Priors}
+\subsection{Least Informative Priors} \label{lips}
 
 The term `Least Informative Priors', or LIPs, is used here to describe a class of prior in which the goal is to minimize the amount of subjective information content, and to use a prior that is determined solely by the model and observed data. The rationale for using LIPs is often said to be `to let the data speak for themselves'. LIPs are favored by objective Bayesians.
 
-\subsubsection{Flat Priors}
+\subsubsection{Flat Priors} \label{flatpriors}
 
 The flat prior was historically the first attempt at an uninformative prior. The unbounded, uniform distribution, often called a flat prior, is
 
@@ -220,28 +221,29 @@ Reverend Thomas Bayes (1702-1761) was the first to use inverse probability \cite
 
 Another problem with the flat prior is that it is not invariant to transformation. For example, a flat prior on a standard deviation parameter is not also flat for its variance or precision.
 
-\subsubsection{Hierarchical Prior}
+\subsubsection{Hierarchical Prior} \label{hierarchicalpriors}
+
 A hierarchical prior is a prior in which the parameters of the prior distribution are estimated from data via hyperpriors, rather than with subjective information \citep{gelman08}. Subjective Bayesians prefer the hierarchical prior as the LIP, and the hyperparameters are usually specified as WIPs. Hierarchical priors are presented later in more detail in the section entitled `Hierarchical Bayes'.
 
-\subsubsection{Jeffreys Prior}
+\subsubsection{Jeffreys Prior} \label{jeffreysprior}
 
 Jeffreys prior, also called Jeffreys rule, was introduced in an attempt to establish a least informative prior that is invariant to transformations \citep{jeffreys61}. Jeffreys prior works well for a single parameter, but multi-parameter situations may have inappropriate aspects accumulate across dimensions to detrimental effect.
 
-\subsubsection{MAXENT}
+\subsubsection{MAXENT} \label{maxent}
 
 A MAXENT prior, proposed by \citet{jaynes68}, is a prior probability distribution that is selected among other candidate distributions as the prior of choice when it has the maximum entropy (MAXENT) in the considered set, given constraints on the candidate set. More entropy is associated with less information, and the least informative prior is preferred as a MAXENT prior. The principle of minimum cross-entropy generalizes MAXENT priors from mere selection to updating the prior given constraints while seeking the maximum, possible entropy.
 
-\subsubsection{Reference Priors}
+\subsubsection{Reference Priors} \label{referencepriors}
 
 Introduced by \citet{bernardo79}, reference priors do not express personal beliefs. Instead, reference priors allow the data to dominate the prior and posterior \citep{berger09}. Reference priors are estimated by maximizing the expected intrinsic discrepancy between the posterior distribution and prior distribution. This maximizes the expected posterior information about $\textbf{y}$ when the prior density is $p(\textbf{y})$. In some sense, $p(\textbf{y})$ is the `least informative' prior about $\textbf{y}$ \citep{bernardo05b}. Reference priors are often the objective prior of choice in multivariate problems, since other rules (e.g., Jeffreys' rule) may result in priors with problematic behavior. When reference priors are used, the analysis is called reference analysis, and the posterior is called the reference posterior.
 
 Subjective Bayesian criticisms of reference priors is that the concepts of regularization and stabilization are not taken into account, results that contradict knowledge are not prevented, a numerical approximation algorithm may become stuck in low-probability or flat regions, and it may not be desirable to let the data speak fully.
 
-\subsection{Uninformative Priors}
+\subsection{Uninformative Priors} \label{uninformativepriors}
 
 Traditionally, most of the above descriptions of prior distributions were categorized as uninformative priors. However, uninformative priors do not truly exist \citep{irony97}, and all priors are informative in some way. Traditionally, there have been many names associated with uninformative priors, including diffuse, minimal, non-informative, objective, reference, uniform, vague, and perhaps weakly informative.
 
-\subsection{Proper and Improper Priors}
+\subsection{Proper and Improper Priors} \label{properpriors}
 
 It is important for the prior distribution to be proper. A prior distribution, $p(\theta)$, is improper\footnote{Improper priors were introduced in \citet{jeffreys61}.} when
 
@@ -255,7 +257,7 @@ $$p(\textbf{y}) = \int p(\textbf{y} | \Theta) p(\Theta) d\Theta$$
 
 Although improper prior distributions can be used, it is good practice to avoid them.
 
-\section{Hierarchical Bayes}
+\section{Hierarchical Bayes} \label{hierarchicalbayes}
 
 Prior distributions may be estimated within the model via hyperprior distributions, which are usually vague and nearly flat. Using hyperprior distributions to estimate prior distributions is known as hierarchical Bayes. In theory, this process could continue further, using hyper-hyperprior distributions to estimate the hyperprior distributions. Estimating priors through hyperpriors, and from the data, is a method to elicit the optimal prior distributions. One of many natural uses for hierarchical Bayes is multilevel modeling.
 
@@ -269,7 +271,7 @@ $$p(\Theta, \Phi | \textbf{y}) \propto p(\textbf{y} | \Theta)p(\Theta | \Phi)p(\
 
 where $\Phi$ is a set of hyperprior distributions. By reading the equation from right to left, it begins with hyperpriors $\Phi$, which are used conditionally to estimate priors $p(\Theta | \Phi)$, which in turn is used, as per usual, to estimate the likelihood $p(\textbf{y} | \Theta)$, and finally the posterior is $p(\Theta, \Phi | \textbf{y})$.
 
-\section{Conjugacy}
+\section{Conjugacy} \label{conjugacy}
 
 When the posterior distribution $p(\Theta | \textbf{y})$ is in the same family as the prior probability distribution $p(\Theta)$, the prior and posterior are then called conjugate distributions, and the prior is called a conjugate prior for the likelihood\footnote{The conjugate prior approach was introduced in \citet{raiffa61}.}. For example, the Gaussian family is conjugate to itself (or self-conjugate) with respect to a Gaussian likelihood function: if the likelihood function is Gaussian, then choosing a Gaussian prior for the mean will ensure that the posterior distribution is also Gaussian. All probability distributions in the exponential family have conjugate priors. See \citet{gelman04} for a catalog.
 
@@ -295,15 +297,15 @@ Nonconjugate prior distributions can make interpretations of posterior inference
 
 When conjugate distributions are used, a summary statistic for a posterior distribution of $\theta$ may be represented as $t(\textbf{y})$ and said to be a sufficient statistic \citep[p. 42]{gelman04}. When nonconjugate distributions are used, a summary statistic for a posterior distribution is usually not a sufficient statistic. A sufficient statistic is a statistic that has the property of sufficiency with respect to a statistical model and the associated unknown parameter. The quantity $t(\textbf{y})$ is said to be a sufficient statistic for $\theta$, because the likelihood for $\theta$ depends on the data $\textbf{y}$ only through the value of $t(\textbf{y})$. Sufficient statistics are useful in algebraic manipulations of likelihoods and posterior distributions.
 
-\section{Likelihood}
+\section{Likelihood} \label{likelihood}
 
 In order to complete the definition of a Bayesian model, both the prior distributions and the likelihood\footnote{Ronald A. Fisher, a prominent frequentist, introduced the term likelihood in 1921 \citep{fisher21}, though the concept of likelihood was used by Bayes and Laplace. Fisher's introduction preceded a series of the most influential papers in statistics (mostly in 1922 and 1925), in which Fisher introduced numerous terms that are now common: consistency, efficiency, estimation, information, maximum likelihood estimate, optimality, parameter, statistic, sufficiency, and variance. He was the first to use Greek letters for unknown parameters and Latin letters for the estimates. Later contributions include F statistics, design of experiments, ANOVA, and many more.} must be approximated or fully specified. The likelihood, likelihood function, or $p(\textbf{y} | \Theta)$, contains the available information provided by the sample. The likelihood is
 
 $$p(\textbf{y} | \Theta) = \prod^n_{i=1} p(\textbf{y}_i | \Theta)$$
 
-The data $\textbf{y}$ affects the posterior distribution $p(\Theta | \textbf{y})$ only through the likelihood function $p(\textbf{y} | \Theta)$. In this way, Bayesian inference obeys the likelihood principle, which states that for a given sample of data, any two probability models $p(\textbf{y} | \Theta)$ that have the same likelihood function yield the same inference for $\Theta$. The likelihood principle is covered in more detail later in the section entitled ``The Likelihood Principle''.
+The data $\textbf{y}$ affects the posterior distribution $p(\Theta | \textbf{y})$ only through the likelihood function $p(\textbf{y} | \Theta)$. In this way, Bayesian inference obeys the likelihood principle, which states that for a given sample of data, any two probability models $p(\textbf{y} | \Theta)$ that have the same likelihood function yield the same inference for $\Theta$. For more information on the likelihood principle, see section \ref{likelihoodprinciple}.
 
-\subsection{Terminology: From Inverse Probability to Bayesian Probability}
+\subsection{Terminology: From Inverse Probability to Bayesian Probability} \ref{terminology}
 
 A gambler's dispute in 1654 led to the creation of a mathematical theory of probability by two famous French mathematicians, Blaise Pascal and Pierre de Fermat. Reverend Thomas Bayes (1702-1761) discovered Bayes' theorem, published posthumously in 1763, in which he was the first to use inverse probability \citep{bayes63}. `Inverse probability' refers to assigning a probability distribution to an unobserved variable, and is in essence, probability in the opposite direction of the usual sense.
 
@@ -322,9 +324,9 @@ In modern terms, given a probability distribution $p(\textbf{y} | \theta)$ for a
 
 However, $p(\textbf{y} | \theta)$ is also called the likelihood function, which can be confusing, seeming to pit the definitions of probability and likelihood against each other. A quick introduction to the likelihood principle follows, and finally all of the information on likelihood comes together in the section entitled ``Likelihood Function of a Parameterized Model''.
 
-\subsection{The Likelihood Principle}
+\subsection{The Likelihood Principle} \label{likelihoodprinciple}
 
-An informal summary of the likelihood principle may be that inferences from data to hypotheses should depend on how likely the actual data are under competing hypotheses, not on how likely imaginary data would have been under a single ``null'' hypothesis or any other properties of merely possible data.
+An informal summary of the likelihood principle may be that inferences from data to hypotheses should depend on how likely the actual data are under competing hypotheses, not on how likely imaginary data would have been under a single ``null'' hypothesis or any other properties of merely possible data. Bayesian inferences depend only on the probabilities assigned due to the observed data, not due to other data that might have been observed.
 
 A more precise interpretation may be that inference procedures which make inferences about simple hypotheses should not be justified by appealing to probabilities assigned to observations that have not occurred. The usual interpretation is that any two probability models with the same likelihood function yield the same inference for $\theta$.
 
@@ -350,7 +352,7 @@ There is ``a general fact about the mechanism of parametric Bayesian inference w
 ``Adherence to the likelihood principle means that inferences are `conditional' on the observed data as the likelihood function is parameterized by the data. This is worth contrasting to any sampling-based approach to inference. In the sampling literature, inference is conducted by examining the sampling distribution of some estimator of $\theta$, $\hat{\theta} = f(\textbf{y})$. Some sort of sampling experiment results in a distribution of $\textbf{y}$ and therefore, the estimator is viewed as a random variable. The sampling distribution of the estimator summarizes the properties of the estimator `prior' to observing the data. As such, it is irrelevant to making inferences given the data we actually observe. For any finite sample, this dinstinction is extremely important. One must conclude that, given our goal for inference, sampling distributions are simply not useful'' \citep[p. 15]{rossi05}.
 \end{quote}
 
-\subsection{Likelihood Function of a Parameterized Model}
+\subsection{Likelihood Function of a Parameterized Model} \label{likelihoodfunction}
 
 In non-technical parlance, ``likelihood'' is usually a synonym for ``probability'', but in statistical usage there is a clear distinction: whereas ``probability'' allows us to predict unknown outcomes based on known parameters, ``likelihood'' allows us to estimate unknown parameters based on known outcomes.
 
@@ -393,7 +395,7 @@ $$\log[p(\beta, \sigma^2 | \textbf{y})] = \log[p(\textbf{y} | \beta, \sigma^2)] 
 
 The logarithm of the unnormalized joint posterior distribution is maximized with numerical approximation.
 
-\section{Numerical Approximation}
+\section{Numerical Approximation} \label{numericalapproximation}
 
 The technical problem of evaluating quantities required for Bayesian inference typically reduces to the calculation of a ratio of two integrals \citep[p. 339]{bernardo00}. In all cases, the technical key to the implementation of the formal solution given by Bayes' theorem is the ability to perform a number of integrations \citep[p. 340]{bernardo00}. Except in certain rather stylized problems, the required integrations will not be feasible analytically and, thus, efficient approximation strategies are required.
 
@@ -409,7 +411,7 @@ MCMC algorithms originated in statistical physics and are now used in Bayesian i
 
 A Monte Carlo method is an algorithm that relies on repeated pseudo-random sampling for computation, and is therefore stochastic (as opposed to deterministic). Monte Carlo methods are often used for simulation. The union of Markov chains and Monte Carlo methods is called MCMC. The revival of Bayesian inference since the 1980s is due to MCMC algorithms and increased computing power. The most prevalent MCMC algorithms may be the simplest: random-walk Metropolis and Gibbs sampling. There are a large number of MCMC algorithms, and further details on MCMC are best explored outside of this article.
 
-\section{Prediction}
+\section{Prediction} \label{prediction}
 
 The ``posterior predictive distribution'' is either the replication of $\textbf{y}$ given the model (usually represented as $\textbf{y}^{rep}$), or the prediction of a new and unobserved $\textbf{y}$ (usually represented as $\textbf{y}^{new}$ or $\textbf{y}'$), given the model. This is the likelihood of the replicated or predicted data, averaged over the posterior distribution $p(\Theta | \textbf{y})$
 
@@ -429,7 +431,7 @@ $$\textbf{y}^{new} \sim \mathcal{N}(\mu, \sigma^2)$$
 
 where $\mu$ = \textbf{X}$\beta$, and $\mu$ is the conditional mean, while $\sigma^2$ is the residual variance.
 
-\section{Bayes Factors}
+\section{Bayes Factors} \label{bayesfactors}
 
 Introduced by Harold Jeffreys, a `Bayes factor' is a Bayesian alternative to frequentist hypothesis testing that is most often used for the comparison of multiple models by hypothesis testing, usually to determine which model better fits the data \citep{jeffreys61}. Bayes factors are notoriously difficult to compute, and the Bayes factor is only defined when the marginal density of $\textbf{y}$ under each model is proper. However, Bayes factors are easy to approximate with the Laplace-Metropolis Estimator \citep{kass95, lewis97}\footnote{A Bayes factor may be estimated with the \code{BayesFactor} function in \pkg{LaplacesDemon} to compare multiple models that were fit with the \code{LaplaceApproximation} or \code{LaplacesDemon} functions. See the \code{BayesFactor} function for the interpretation of a Bayes factor regarding strength of evidence.}.
 
@@ -466,7 +468,7 @@ Two of many possible alternatives are to use
 
 DIC is the most popular method of assessing model fit and comparing models, though Bayes Factors are better, when appropriate, because they take more into account.
 
-\section{Model Fit}
+\section{Model Fit} \label{modelfit}
 
 In Bayesian inference, the most common method of assessing the goodness of fit of an estimated statistical model is a generalization of the frequentist Akaike Information Criterion (AIC). The Bayesian method, like AIC, is not a test of the model in the sense of hypothesis testing, though Bayesian inference has Bayes factors for such purposes. Instead, like AIC, Bayesian inference provides a model fit statistic that is to be used as a tool to refine the current model or select the better-fitting model of different methodologies.
 
@@ -498,7 +500,7 @@ It is difficult to say what would constitute an important difference in DIC. Ver
 
 The Bayesian Predictive Information Criterion (BPIC) was introduced as a criterion of model fit when the goal is to pick a model with the best out-of-sample predictive power \citep{ando07}. BPIC is a variation of DIC where the effective number of parameters is 2pD (or 2pV). BPIC may be compared between $\textbf{y}^{new}$ and $\textbf{y}^{holdout}$, and has many other extensions, such as with Bayesian Model Averaging (BMA).
 
-\section{Posterior Predictive Checks}
+\section{Posterior Predictive Checks} \label{ppc}
 
 Comparing the predictive distribution $\textbf{y}^{rep}$ to the observed data $\textbf{y}$ is generally termed a ``posterior predictive check''. This type of check includes the uncertainty associated with the estimated parameters of the model, unlike frequentist statistics.
 
@@ -506,13 +508,13 @@ Posterior predictive checks (via the predictive distribution) involve a double-u
 
 Gelman recommends at the most basic level to compare $\textbf{y}^{rep}$ to $\textbf{y}$, looking for any systematic differences, which could indicate potential failings of the model \citep[p. 159]{gelman04}. It is often first recommended to compare graphical plots, such as the distribution of $\textbf{y}$ and $\textbf{y}^{rep}$. There are many posterior predictive checks that are not included in this article, but an introduction to a selection of them appears below.
 
-\subsection{Bayesian p-values}
+\subsection{Bayesian p-values} \label{bayesianpvalues}
 
 A Bayesian form of p-value may be estimated with a variety of test statistics \citep{gelman96a}. Usually the minimum or maximum observed $\textbf{y}$ is compared to the minimum or maximum $\textbf{y}^{rep}$. A Bayesian p-value is one of several ways to report discrepancies between $\textbf{y}$ and $\textbf{y}^{rep}$.
 
 Frequentist p-values have many problems, but here it will only be noted that the frequentist p-value estimates $p(\mathrm{data} | \mathrm{hypothesis})$, while in this case the Bayesian form estimates $p(\mathrm{hypothesis} | \mathrm{data})$. The frequentist estimates the wrong probability, because the frequentist is forced to consider the parameters to be fixed and the data random, projecting long-run frequencies of what should happen with future, repeated sampling of similar data, given a fixed parameter, or in this case hypothesis. Even the term hypothesis testing suggests you want to test the hypothesis given the data, not the data given the hypothesis\footnote{Numerous problems with frequentist p-values, confidence intervals, point estimates, and hypothesis testing are worth exploring, but not detailed in this article.}.
 
-\subsection{Chi-Square}
+\subsection{Chi-Square} \label{chisquare}
 
 \citep[p. 175]{gelman04} suggest an omnibus test such as the following $\chi^2$
 
@@ -534,7 +536,7 @@ $$\chi^{2rep}_{i,1:T} = \frac{[\textbf{y}^{rep}_{i,1:T} - E(\textbf{y}^{rep}_i)]
 
 Newer forms of $\chi^2$ tests have been proposed in the literature, and are best explored elsewhere.
 
-\subsection{Conditional Predictive Ordinate}
+\subsection{Conditional Predictive Ordinate} \label{cpo}
 
 Although the full predictive distribution $p(\textbf{y}^{rep} | \textbf{y})$ is useful for prediction, its use for model-checking is questionable because of the double-use of the data, and causes predictive performance to be overestimated. The leave-one-out cross-validation predictive density has been proposed \citep{geisser79}. This is also known as the Conditional Predictive Ordinate or CPO \citep{gelfand96}.
 
@@ -556,14 +558,14 @@ Inverse-CPOs (ICPOs) larger than 40 can be considered as possible outliers, and 
 
 The sum of the logged CPOs can be an estimator for the logarithm of the marginal likelihood\footnote{Exercise extreme caution when approximating the marginal likelihood from CPOs, or use a method with better repute, such as the Laplace-Metropolis Estimator or importance sampling.}, sometimes called the log pseudo marginal likelihood (LPsML). A ratio of PsMLs is a surrogate for the Bayes factor, sometimes known as the pseudo Bayes factor (PsBF). In this way, non-nested models may be compared with a hypothesis test to determine the better model, if one exists, based on leave-one-out cross-validation.
 
-\subsection{Predictive Concordance}
+\subsection{Predictive Concordance} \label{predictiveconcordance}
 \citet{gelfand96} suggests that any $\textbf{y}_i$ that is in either 2.5\% tail area of $\textbf{y}^{rep}_i$ should be considered an outlier. For each $i$, I am calling this the predictive quantile (PQ), which is calculated as
 
 $$\mathrm{PQ}_i = p(\textbf{y}^{rep}_i > \textbf{y}_i)$$
 
 and is somewhat similar to the Bayesian p-value. The percentage of $\textbf{y}_i$s that are not outliers is called the `Predictive Concordance'. \citet{gelfand96} suggests the goal is to attempt to achieve 95\% predictive concordance. In the case of, say 80\% predictive concordance, the discrepancy between the model and data is undesirable because the model does not fit the data well and many outliers have resulted. On the other hand, if the predictive concordance is too high, say 100\%, then overfitting may have occurred, and it may be worth considering a more parsimonious model. Kernel density plots of each $\textbf{y}^{rep}_i$ distribution are useful in this case with the actual $\textbf{y}_i$ included as a vertical bar to show its position.
 
-\subsection{L-criterion}
+\subsection{L-criterion} \label{lcriterion}
 \citet{laud95} introduced the L-criterion as one of three posterior predictive checks for model, variable, and transformation selection. The L-criterion is a posterior predictive check that is widely applicable and easy to apply. It is a sum of two components: one involves the predictive variance and the other includes the accuracy of the means of the predictive distribution. The L-criterion measures model performance with a combination of how close its predictions are to the observed data and variability of the predictions. Better models have smaller values of L. L is measured in the same units as the response variable, and measures how close the data vector $\textbf{y}$ is to the predictive distribution. In addition to the value of L, there is a value for $S_L$, which is the calibration number of L, and is useful in determining how much of a decrease is necessary between models to be noteworthy. The L-criterion is
 
 $$\mathrm{L} = \sum^N_{i=1} \sqrt{\mathrm{var}(\textbf{y}^{rep}_{i,1:T}) + (\textbf{y}_i - \frac{\sum^T_{t=1} \textbf{y}^{rep}_{i,t}}{T})^2},$$
@@ -572,7 +574,7 @@ over $t=1,\dots,T$ posterior samples. The calibration number, $S_L$, is the stan
 
 \citet{gelfand98} introduced Posterior Predictive Loss (PPL). This posterior predictive check for model comparison may be viewed as an extension to the L-criterion in which a weight $k$ is applied to the accuracy (fit) component.
 
-\section{Advantages Of Bayesian Inference Over Frequentist Inference}
+\section{Advantages Of Bayesian Inference Over Frequentist Inference} \label{advantages}
 
 Following is a short list of advantages of Bayesian inference over 
 frequentist inference.
@@ -589,6 +591,7 @@ frequentist inference.
 \item Bayesian inference is consistent with much of philosophy of science regarding epistemology, where knowledge cannot be built entirely through experimentation, but requires prior knowledge \cite[p. 510]{robert07}. Elsewhere, it has been suggested that the best choice for philosophy of science is through Bayesian inference.
 \item Bayesian inference may use DIC to compare models with different methods including hierarchical models, where frequentist model fit statistics cannot compare different methods or hierarchical models.
 \item Bayesian inference obeys the likelihood principle. Frequentist inference, including Maximum Likelihood Estimation (MLE) and the General Method of Moments (GMM) or Generalized Estimating Equations (GEE), violates the likelihood principle. ``The likelihood principle, by itself, is not sufficient to build a method of inference but should be regarded as a minimum requirement of any viable form of inference. This is a controversial point of view for anyone familiar with modern econometrics literature. Much of this literature is devoted to methods that do not obey the likelihood principle...'' \citep[p. 15]{rossi05}.
+\item Bayesian inference safeguards against overfitting by integrating over model parameters. While Bayesian inference is not immune to overfitting, overfitting is largely a frequentist problem.
 \item Bayesian inference uses observed data only. Frequentist inference uses both observed data and future data that is unobserved and hypothetical.
 \item Bayesian inference uses prior distributions, so more information is used and 95\% probability intervals of posterior distributions should be narrower than 95\% confidence intervals of frequentist point-estimates.
 \item Bayesian inference uses probability intervals (quantile-based, highest posterior density, or preferably lowest posterior loss) to state the probability that $\theta$ is between two points. Frequentist inference uses confidence intervals, which must be interpreted with probability of zero or one that $\theta$ is in the region, and the frequentist never knows whether it is or is not, but can only say that if 100 repeated samples were drawn in the future, that it would be in the region for 95 samples.
@@ -600,7 +603,7 @@ frequentist inference.
 \item Bayesian inference with proper priors is immune to singularities and near-singularities with matrix inversions, unlike frequentist inference.
 \end{itemize}
   
-\section{Advantages Of Frequentist Inference Over Bayesian Inference}
+\section{Advantages Of Frequentist Inference Over Bayesian Inference} \section{disadvantages}
 
 Following is a short list of advantages of frequentist inference over Bayesian inference.
 

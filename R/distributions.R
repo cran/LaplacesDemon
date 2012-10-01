@@ -447,7 +447,7 @@ dinvgaussian <- function(x, mu, lambda, log=FALSE)
      NN <- max(length(x), length(mu), length(lambda))
      x <- rep(x, len=NN); mu <- rep(mu, len=NN)
      lambda <- rep(lambda, len=NN)
-     dens <- 0.5*log(lambda / (2*pi*x^3)) -
+     dens <- log(lambda / (2*pi*x^3)^0.5) -
           ((lambda*(x - mu)^2) / (2*mu^2*x))
      if(log == FALSE) dens <- exp(dens)
      return(dens)
@@ -1071,8 +1071,9 @@ dmvpe <- function(x=c(0,0), mu=c(0,0), Sigma=diag(2), kappa=1, log=FALSE)
           stop("Matrix Sigma is not positive-definite.")
      if(any(kappa <= 0)) stop("The kappa parameter must be positive.")
      k <- nrow(Sigma)
+     Omega <- as.inverse(Sigma)
      ss <- x - mu
-     temp <- rowSums({ss %*% Sigma} * ss)
+     temp <- rowSums({ss %*% Omega} * ss)
      dens <- as.vector(((log(k)+lgamma(k/2)) - ((k/2)*log(pi) +
           0.5*log(det(Sigma)) + lgamma(1 + k/(2*kappa)) +
           (1 + k/(2*kappa))*log(2))) + kappa*(-0.5*temp))
@@ -1121,8 +1122,9 @@ dmvpec <- function(x=c(0,0), mu=c(0,0), U, kappa=1, log=FALSE)
      if(any(kappa <= 0)) stop("The kappa parameter must be positive.")
      Sigma <- t(U) %*% U
      k <- nrow(Sigma)
+     Omega <- as.inverse(Sigma)
      ss <- x - mu
-     temp <- rowSums({ss %*% Sigma} * ss)
+     temp <- rowSums({ss %*% Omega} * ss)
      dens <- as.vector(((log(k)+lgamma(k/2)) - ((k/2)*log(pi) +
           0.5*log(det(Sigma)) + lgamma(1 + k/(2*kappa)) +
           (1 + k/(2*kappa))*log(2))) + kappa*(-0.5*temp))
