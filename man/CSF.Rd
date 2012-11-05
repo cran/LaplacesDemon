@@ -102,14 +102,11 @@ CSF(x, name, method="Quantiles", quantiles=c(0.025,0.500,0.975), output=FALSE)
   the cumulative samples of \code{x}.
 }
 \references{
-  Hall, B. (2012). "Bayesian Inference", STATISTICAT, LLC.
-  URL=\url{http://www.statisticat.com/laplacesdemon.html}
-
   Yu, B. and Myckland, P. (1997). ``Looking at Markov Samplers through
   Cusum Path Plots: A Simple Diagnostic Idea''. Statistics and
   Computing, 8(3), p. 275--286. 
 }
-\author{Byron Hall \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{ESS}},
   \code{\link{Geweke.Diagnostic}},

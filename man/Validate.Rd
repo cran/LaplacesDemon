@@ -78,7 +78,7 @@ Validate(object, Model, Data, plot=FALSE, PDF=FALSE)
   \code{pmc}. The \code{Validate} function obtains this vector for each
   data set, and then calculates the Bayesian Predictive Information
   Criterion (BPIC), as per Ando (2007). BPIC is a variation of the
-  Deviance Information Criterion (DIC) of that has been modified for
+  Deviance Information Criterion (DIC) that has been modified for
   predictive distributions. For more information on DIC (Spiegelhalter
   et al., 2002), see the accompanying vignette entitled "Bayesian
   Inference". The goal is to minimize BPIC.
@@ -118,14 +118,12 @@ Validate(object, Model, Data, plot=FALSE, PDF=FALSE)
   the Evaluation of Hierarchical Bayesian and Empirical Bayes Models".
   Biometrika, 94 (2), p. 443--458.
   
-  Hall, B. (2012). "Laplace's Demon", STATISTICAT, LLC.
-  URL=\url{http://www.statisticat.com/laplacesdemon.html}
-
   Spiegelhalter, D.J., Best, N.G., Carlin, B.P., and van der Linde, A.
   (2002). "Bayesian Measures of Model Complexity and Fit (with
   Discussion)". Journal of the Royal Statistical Society, B 64,
   p. 583--639.
 }
+\author{Statisticat, LLC. \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{LaplaceApproximation}},
   \code{\link{LaplacesDemon}}, and

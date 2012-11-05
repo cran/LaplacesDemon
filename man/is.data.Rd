@@ -31,8 +31,7 @@ is.data(Data)
   \code{TRUE} if \code{Data} meets minimum requirements to be considered
   data in this package, and \code{FALSE} otherwise.
 }
-\references{\url{http://www.statisticat.com/laplacesdemon.html}}
-\author{Byron Hall \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{LaplaceApproximation}} and
   \code{\link{LaplacesDemon}}.

@@ -52,11 +52,7 @@
     number of posterior samples.}
   \item{Deviance}{This is a vector of predictive deviance.}
 }
-\references{
-  Hall, B. (2012). "Laplace's Demon", STATISTICAT, LLC.
-  URL=\url{http://www.statisticat.com/laplacesdemon.html}
-}
-\author{Byron Hall \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{PMC}}
 }

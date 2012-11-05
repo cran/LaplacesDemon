@@ -411,9 +411,6 @@ LaplacesDemon.hpc(Model, Data, Initial.Values, Covar=NULL,
   Computation and Bayesian Model Determination". Biometrika, 82,
   p. 711--732.
 
-  Hall, B. (2012). "Laplace's Demon", STATISTICAT, LLC.
-  URL=\url{http://www.statisticat.com/laplacesdemon.html}
-
   Haario, H., Laine, M., Mira, A., and Saksman, E. (2006). "DRAM:
   Efficient Adaptive MCMC". Statistical Computing, 16, p. 339-354.
      
@@ -451,7 +448,7 @@ LaplacesDemon.hpc(Model, Data, Initial.Values, Covar=NULL,
   Vihola, M. (2011). "Robust Adaptive Metropolis Algorithm with Coerced
   Acceptance Rate". Statistics and Computing. Springer, Netherlands.
 }
-\author{Byron Hall \email{statisticat@gmail.com}}
+\author{Statisticat, LLC \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{as.initial.values}},
   \code{\link{as.parm.names}},
@@ -481,7 +478,7 @@ J <- ncol(X)
 for (j in 2:J) {X[,j] <- CenterScale(X[,j])}
 mon.names <- c("LP","sigma")
 parm.names <- as.parm.names(list(beta=rep(0,J), log.sigma=0))
-PGF <- function(Data) return(c(rnormv(Data$J,0,1000),
+PGF <- function(Data) return(c(rnormv(Data$J,0,10),
      log(rhalfcauchy(1,25))))
 MyData <- list(J=J, PGF=PGF, X=X, mon.names=mon.names,
      parm.names=parm.names, y=y)

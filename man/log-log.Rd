@@ -37,8 +37,7 @@ loglog(p)
   \code{invcloglog} and \code{invloglog} return probability \code{p},
   and \code{loglog} returns \code{x}.
 }
-\references{\url{http://www.statisticat.com/laplacesdemon.html}}
-\author{Byron Hall \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{statisticat@gmail.com}}
 \seealso{\code{\link{LaplacesDemon}}}
 \examples{
 x <- -5:5

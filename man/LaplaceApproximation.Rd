@@ -263,9 +263,6 @@ LaplaceApproximation(Model, parm, Data, Interval=1.0E-6,
   Bernardo, J.M. and Smith, A.F.M. (2000). "Bayesian Theory". John
   Wiley \& Sons: West Sussex, England.
 
-  Hall, B. (2012). "Laplace's Demon", STATISTICAT, LLC.
-  URL=\url{http://www.statisticat.com/laplacesdemon.html}
-
   Kass, R.E. and Raftery, A.E. (1995). "Bayes Factors". Journal of the
   American Statistical Association, 90(430), p. 773--795.
      
@@ -297,7 +294,7 @@ LaplaceApproximation(Model, parm, Data, Interval=1.0E-6,
   Functions". Journal of the American Statistical Association,
   84(407), p. 710--716.
 }
-\author{Byron Hall \email{statisticat@gmail.com}}
+\author{Statisticat, LLC \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{BayesFactor}},
   \code{\link{LaplacesDemon}},
@@ -320,7 +317,7 @@ J <- ncol(X)
 for (j in 2:J) {X[,j] <- CenterScale(X[,j])}
 mon.names <- c("sigma","mu[1]")
 parm.names <- as.parm.names(list(beta=rep(0,J), log.sigma=0))
-PGF <- function(Data) return(c(rnormv(Data$J,0,1000),
+PGF <- function(Data) return(c(rnormv(Data$J,0,10),
      log(rhalfcauchy(1,25))))
 MyData <- list(J=J, PGF=PGF, X=X, mon.names=mon.names,
      parm.names=parm.names, y=y)

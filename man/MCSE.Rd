@@ -109,14 +109,11 @@ MCSS(x, a)
   Geyer, C.J. (1992). "Practical Markov Chain Monte Carlo". Statistical
   Science, 7, 4, p. 473--483.
   
-  Hall, B. (2012). "Laplace's Demon", STATISTICAT, LLC.
-  URL=\url{http://www.statisticat.com/laplacesdemon.html}
-  
   Jones, G.L., Haran, M., Caffo, B.S., and Neath, R. (2006). "Fixed-Width
   Output Analysis for Markov chain Monte Carlo". Journal of the American
   Statistical Association, 101, 1, p. 1537--1547.
 }
-\author{Byron Hall \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{Consort}},
   \code{\link{ESS}},

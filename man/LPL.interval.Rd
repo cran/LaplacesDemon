@@ -107,10 +107,8 @@ LPL.interval(Prior, Posterior, prob=0.95, plot=FALSE, PDF=FALSE)
 
   Bernardo, J.M. and Rueda, R. (2002). "Bayesian Hypothesis Testing: A
   Reference Approach". International Statistical Review, 70, p. 351--372.
-
-  Hall, B. (2012). "Laplace's Demon", STATISTICAT, LLC.
-  URL=\url{http://www.statisticat.com/laplacesdemon.html}
 }
+\author{Statisticat, LLC. \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{KLD}},
   \code{\link{p.interval}},

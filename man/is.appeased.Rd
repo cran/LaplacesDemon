@@ -33,8 +33,7 @@ is.appeased(x)
   Laplace's Demon is appeased, and the logical value returned is
   \code{TRUE}.
 }
-\references{\url{http://www.statisticat.com/laplacesdemon.html}}
-\author{Byron Hall \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{Consort}} and
   \code{\link{LaplacesDemon}}.

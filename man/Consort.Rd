@@ -98,11 +98,8 @@
   Flegal, J.M., Haran, M., and Jones, G.L. (2008). "Markov chain Monte
   Carlo: Can We Trust the Third Significant Figure?". Statistical
   Science, 23, p. 250--260.
-  
-  Hall, B. (2012). "Laplace's Demon", STATISTICAT, LLC.
-  URL=\url{http://www.statisticat.com/laplacesdemon.html}
 }
-\author{Byron Hall \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{ESS}},
   \code{\link{Geweke.Diagnostic}},

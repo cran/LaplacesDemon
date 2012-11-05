@@ -256,9 +256,6 @@
   Assessment of Model Fitness via Realized Discrepancies". Statistica
   Sinica, 6, p. 733--807.
 
-  Hall, B. (2012). "Laplace's Demon", STATISTICAT,
-  LLC. URL=\url{http://www.statisticat.com/laplacesdemon.html}
-
   Laud, P.W. and Ibrahim, J.G. (1995). "Predictive Model
   Selection". Journal of the Royal Statistical Society, B 57,
   p. 247--262.
@@ -268,7 +265,7 @@
   Discussion)". Journal of the Royal Statistical Society, B 64,
   p. 583--639.
 }
-\author{Byron Hall \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{PMC}},
   \code{\link{predict.pmc}}, and

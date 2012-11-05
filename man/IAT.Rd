@@ -56,11 +56,8 @@ IAT(x)
   Christen, J.A. and Fox, C. (2010). "A General Purpose Sampling
   Algorithm for Continuous Distributions (the t-walk)". Bayesian
   Analysis, 5(2), p. 263--282.
-
-  Hall, B. (2012). "Laplace's Demon", STATISTICAT, LLC.
-  URL=\url{http://www.statisticat.com/laplacesdemon.html}
 }
-\author{Byron Hall \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{burnin}},
   \code{\link{Compare}},

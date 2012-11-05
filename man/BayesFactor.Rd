@@ -109,9 +109,6 @@ model is the true model.
   Data Analysis, Texts in Statistical Science, 2nd ed.". Chapman and
   Hall, London.
 
-  Hall, B. (2012). "Bayesian Inference", STATISTICAT, LLC.
-  URL=\url{http://www.statisticat.com/laplacesdemon.html}
-
   Jeffreys, H. (1961). "Theory of Probability, Third Edition". Oxford
   University Press: Oxford, England.
 
@@ -122,7 +119,7 @@ model is the true model.
   Posterior Simulation with the Laplace-Metropolis Estimator". Journal
   of the American Statistical Association, 92, p. 648--655.
 }
-\author{Byron Hall \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{is.bayesfactor}},
   \code{\link{is.proper}},
@@ -149,7 +146,7 @@ X <- cbind(1, as.matrix(demonsnacks[,7]))
 X[,2] <- CenterScale(X[,2])
 mon.names <- c("LP","sigma")
 parm.names <- as.parm.names(list(beta=rep(0,J), log.sigma=0))
-PGF <- function(Data) return(c(rnormv(Data$J,0,1000),
+PGF <- function(Data) return(c(rnormv(Data$J,0,10),
      log(rhalfcauchy(1,25))))
 MyData <- list(J=J, PGF=PGF, X=X, mon.names=mon.names,
      parm.names=parm.names, y=y)
@@ -190,7 +187,7 @@ X[,2] <- CenterScale(X[,2])
 X[,3] <- CenterScale(X[,3])
 mon.names <- c("sigma","mu[1]")
 parm.names <- as.parm.names(list(beta=rep(0,J), log.sigma=0))
-PGF <- function(Data) return(c(rnormv(Data$J,0,1000),
+PGF <- function(Data) return(c(rnormv(Data$J,0,10),
      log(rhalfcauchy(1,25))))
 MyData <- list(J=J, PGF=PGF, X=X, mon.names=mon.names,
      parm.names=parm.names, y=y)

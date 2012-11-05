@@ -17,11 +17,7 @@
   \code{print(Fit[[2]])} when the \code{demonoid.hpc} object is named
   \code{Fit}, for example.
 }
-\references{
-  Hall, B. (2012). "Laplace's Demon", STATISTICAT, LLC.
-  URL=\url{http://www.statisticat.com/laplacesdemon.html}
-}
-\author{Byron Hall \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{Consort}},
   \code{\link{LaplacesDemon}}, and

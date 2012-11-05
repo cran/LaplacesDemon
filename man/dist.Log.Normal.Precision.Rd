@@ -71,8 +71,7 @@ These functions are similar to those in \code{base R}.
   \code{qlnormp} gives the quantile function, and
   \code{rlnormp} generates random deviates.
 }
-\references{\url{http://www.statisticat.com/laplacesdemon.html}}
-\author{Byron Hall \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{dnorm}},
   \code{\link{dnormp}},

@@ -56,7 +56,7 @@ Model.Spec.Time(Model, Initial.Values, Data, n=1000)
 
   Examples in the \code{LaplacesDemon} package are not necessarily
   optimized for speed, which is often compromised for clarity of
-  programming. For instace, most examples in the ``Examples'' vignette
+  programming. For instance, most examples in the ``Examples'' vignette
   use the \code{grep} function to find the position of a parameter based
   on an associated parameter name. This makes the model specification
   function much more readable, and also makes it easy to modify by
@@ -120,6 +120,15 @@ Model.Spec.Time(Model, Initial.Values, Data, n=1000)
     functions. There are often specialized functions. For example,
     \code{max.col(X)} is faster than \code{apply(X, 1, which.max)}.
   }
+
+  When seeking speed, things to consider beyond the LaplacesDemon
+  package are the Basic Linear Algebra System (BLAS) and hardware. The
+  ATLAS (Automatically Tuned Linear Algebra System) should be worth
+  installing (and there are several alternatives), but this discussion
+  is beyond the scope of this documentation. Lastly, the speed at which
+  the computer can process iterations is limited by its hardware, and
+  more should be considered than merely the CPU (Central Processing
+  Unit). Again, though, this is beyond the scope of this documentation.
 }
 \value{
   The \code{Model.Spec.Time} function returns a list with three
@@ -138,13 +147,10 @@ Model.Spec.Time(Model, Initial.Values, Data, n=1000)
     each iteration.}
 }
 \references{
-  Hall, B. (2012). "Laplace's Demon", STATISTICAT, LLC.
-  URL=\url{http://www.statisticat.com/laplacesdemon.html}
-
   Roberts, G.O. and Rosenthal, J.S. (2009). "Examples of Adaptive
   MCMC". Computational Statistics and Data Analysis, 18, p. 349--367.
 }
-\author{Byron Hall \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{.C}},
   \code{\link{.Fortran}},

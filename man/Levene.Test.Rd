@@ -74,15 +74,12 @@ Levene.Test(x, Method="U", G=NULL, Data=NULL)
   the groups are assumed not to differ effectively.
 }
 \references{
-  Hall, B. (2012). "Laplace's Demon", STATISTICAT, LLC.
-  URL=\url{http://www.statisticat.com/laplacesdemon.html}
-
   Levene, H. (1960). "Robust Tests for Equality of Variances". In
   I. Olkins, S. G. Ghurye, W. Hoeffding, W. G. Madow, & H. B. Mann
   (Eds.), Contributions to Probability and Statistics, p. 278--292.
   Stanford, CA: Stanford University Press.
 }
-\author{Byron Hall \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{LaplaceApproximation}},
   \code{\link{LaplacesDemon}},

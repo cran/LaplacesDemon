@@ -43,8 +43,7 @@ interval(x, a=-Inf, b=Inf, reflect=TRUE)
   array in accord with its argument, \code{x}. Each element is
   constrained to the interval [\code{a},\code{b}].
 }
-\references{\url{http://www.statisticat.com/laplacesdemon.html}}
-\author{Byron Hall \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{dtrunc}},
   \code{\link{LaplaceApproximation}},

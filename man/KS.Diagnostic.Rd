@@ -46,11 +46,8 @@ KS.Diagnostic(x)
   Brooks, S.P., Giudici, P., and Philippe, A. (2003). "Nonparametric
   Convergence Assessment for MCMC Model Selection". Journal of
   Computational and Graphical Statistics. 12(1), p. 1--22.
-  
-  Hall, B. (2012). "Laplace's Demon", STATISTICAT, LLC.
-  URL=\url{http://www.statisticat.com/laplacesdemon.html}
 }
-\author{Byron Hall \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{is.stationary}},
   \code{\link{ks.test}}, and

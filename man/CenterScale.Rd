@@ -47,9 +47,6 @@ CenterScale(x, Binary="none", Inverse=FALSE, mu, sigma, Range, Min)
 \references{
   Gelman, A. (2008). "Scaling Regression Inputs by Dividing by Two Standard
   Devations". Statistics in Medicine, 27, p. 2865--2873.
-
-  Hall, B. (2012). "Laplace's Demon", STATISTICAT, LLC.
-  URL=\url{http://www.statisticat.com/laplacesdemon.html}
 }
 \seealso{
   \code{\link{LaplaceApproximation}} and

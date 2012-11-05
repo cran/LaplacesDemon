@@ -289,9 +289,6 @@
   Durbin, J., and Watson, G.S. (1950). "Testing for Serial Correlation
   in Least Squares Regression, I." Biometrika 37, p. 409--428.
   
-  Hall, B. (2012). "Laplace's Demon", STATISTICAT, LLC.
-  URL=\url{http://www.statisticat.com/laplacesdemon.html}
-  
   Jarque, C.M. and Bera, A.K. (1980). "Efficient Tests for Normality,
   Homoscedasticity and Serial Independence of Regression Residuals".
   Economics Letters,  6(3), p. 255--259.
@@ -299,7 +296,7 @@
   Mardia, K.V. (1970). "Measures of Multivariate Skewness and Kurtosis
   with Applications". Biometrika, 57(3), p. 519--530.
 }
-\author{Byron Hall \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{LaplaceApproximation}},
   \code{\link{predict.laplace}}.

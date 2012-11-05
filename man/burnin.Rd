@@ -51,11 +51,8 @@ burnin(x, method="Geweke")
   Geyer, C.J. (2011). "Introduction to Markov Chain Monte Carlo". In
   S Brooks, A Gelman, G Jones, and M Xiao-Li (eds.), "Handbook of
   Markov Chain Monte Carlo", p. 3--48. Chapman \& Hall, Boca Raton, FL.
-
-  Hall, B. (2012). "Laplace's Demon", STATISTICAT, LLC.
-  URL=\url{http://www.statisticat.com/laplacesdemon.html}
 }
-\author{Byron Hall \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{Geweke.Diagnostic}} and
   \code{\link{LaplacesDemon}}.

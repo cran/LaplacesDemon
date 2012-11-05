@@ -42,10 +42,7 @@ Thin(x, By=1)
   The \code{Thin} argument returns a thinned matrix. When \code{x} is a
   vector, the returned object is a matrix with 1 column.
 }
-\references{
-  Hall, B. (2012). "Laplace's Demon", STATISTICAT, LLC.
-  URL=\url{http://www.statisticat.com/laplacesdemon.html}
-}
+\author{Statisticat, LLC. \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{ESS}},
   \code{\link{LaplacesDemon}}, and

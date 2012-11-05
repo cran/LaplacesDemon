@@ -68,8 +68,7 @@ which must be positive-definite.
   \code{dmvcp} gives the density and 
   \code{rmvcp} generates random deviates.
 }
-\references{\url{http://www.statisticat.com/laplacesdemon.html}}
-\author{Byron Hall \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{dcauchy}},
   \code{\link{dmvc}},

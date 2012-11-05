@@ -85,9 +85,6 @@ ABB(X, K=1)
   the between-imputation variance or within-imputation variance.
 }
 \references{
-  Hall, B. (2012). "Laplace's Demon", STATISTICAT, LLC.
-  URL=\url{http://www.statisticat.com/laplacesdemon.html}
-
   Parzen, M., Lipsitz, S.R., and Fitzmaurice, G.M. (2005). "A Note on
   Reducing the Bias of the Approximate Bayesian Bootstrap Imputation
   Variance Estimator". Biometrika (2005), 92, 4, pp. 971--974.
@@ -112,6 +109,7 @@ ABB(X, K=1)
   Nonresponse". Journal of the American Statistical Association, 81,
   p. 366--374.
 }
+\author{Statisticat, LLC \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{BayesianBootstrap}} and
   \code{\link{LaplacesDemon}}.

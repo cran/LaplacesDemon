@@ -108,11 +108,7 @@ PMC.RAM(Model, Data, Iterations, Thinning, M, N)
     a number of iterations, specified thinning, mixture components, and
     number of samples.}
 }
-\references{
-  Hall, B. (2012). "Laplace's Demon", STATISTICAT, LLC.
-  URL=\url{http://www.statisticat.com/laplacesdemon.html}
-}
-\author{Byron Hall \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{LML}},
   \code{\link{object.size}}, and

@@ -26,11 +26,7 @@
 
   For more information, see the \code{\link{Juxtapose}} function.
 }
-\references{
-  Hall, B. (2012). "Laplace's Demon", STATISTICAT, LLC.
-  URL=\url{http://www.statisticat.com/laplacesdemon.html}
-}
-\author{Byron Hall \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{Juxtapose}}}
 \keyword{Plot}

@@ -134,9 +134,6 @@ LML(Model=NULL, Data=NULL, Modes=NULL, theta=NULL, LL=NULL, method="NSIS")
   Data Analysis, Texts in Statistical Science, 2nd ed.". Chapman and
   Hall, London.
      
-  Hall, B. (2012). "Laplace's Demon", STATISTICAT, LLC.
-  URL=\url{http://www.statisticat.com/laplacesdemon.html}
-
   Kass, R.E. and Raftery, A.E. (1995). "Bayes Factors". Journal of the
   American Statistical Association, 90(430), p. 773--795.
 
@@ -148,7 +145,7 @@ LML(Model=NULL, Data=NULL, Modes=NULL, theta=NULL, LL=NULL, method="NSIS")
   Inference by the Weighted Likelihood Bootstrap". Journal of the
   Royal Statistical Society, Series B 3, p. 3--48.
 }
-\author{Byron Hall \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{BayesFactor}},
   \code{\link{is.proper}},

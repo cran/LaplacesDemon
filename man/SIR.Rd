@@ -64,11 +64,8 @@ SIR(Model, Data, mu, Sigma, n=1000)
   Gordon, N.J., Salmond, D.J., and Smith, A.F.M. (1993). "Novel Approach
   to Nonlinear/Non-Gaussian Bayesian State Estimation". IEEE Proceedings
   F on Radar and Signal Processing, 140 (2), p. 107--113.
-
-  Hall, B. (2012). "Laplace's Demon", STATISTICAT, LLC.
-  URL=\url{http://www.statisticat.com/laplacesdemon.html}
 }
-\author{Byron Hall \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{dmvn}} and 
   \code{\link{LaplaceApproximation}}.

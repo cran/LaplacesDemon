@@ -189,6 +189,23 @@ dcat <- function(x, p, log=FALSE)
      dens <- as.vector(rowSums(dens))
      return(dens)
      }
+qcat <- function(pr, p, lower.tail=TRUE, log.pr=FALSE)
+     {
+     if(!is.vector(pr)) pr <- as.vector(pr)
+     if(!is.vector(p)) p <- as.vector(p)
+     if(log.pr == FALSE) {
+          if(any(pr < 0) | any(pr > 1))
+               stop("pr must be in [0,1].")}
+     else if(any(!is.finite(pr)) | any(pr > 0))
+          stop("pr, as a log, must be in (-Inf,0].")
+     if(sum(p) != 1) stop("sum(p) must be 1.")
+     if(lower.tail == FALSE) pr <- 1 - pr
+     breaks <- c(0, cumsum(p))
+     if(log.pr == TRUE) breaks <- log(breaks)
+     breaks <- matrix(breaks, length(pr), length(breaks), byrow=TRUE)
+     x <- rowSums(pr > breaks)
+     return(x)
+     }
 rcat <- function(n, p)
      {
      if(is.vector(p)) {
@@ -216,11 +233,11 @@ ddirichlet <- function(x, alpha, log=FALSE)
      if(!is.matrix(x)) x <- rbind(x)
      if(!is.matrix(alpha))
           alpha <- matrix(alpha, nrow(x), length(alpha), byrow=TRUE)
-     if(any(rowSums(x) != 1)) alpha / rowSums(alpha)
+     if(any(rowSums(x) != 1)) x / rowSums(x)
      if(any(x < 0)) stop("x must be non-negative.")
      if(any(alpha <= 0)) stop("alpha must be positive.")
-     dens <- lgamma(sum(alpha)) - sum(lgamma(alpha)) +
-          sum((alpha-1)*log(x))
+     dens <- lgamma(rowSums(alpha)) - rowSums(lgamma(alpha)) +
+          rowSums((alpha-1)*log(x))
      if(log == FALSE) dens <- exp(dens)
      return(dens)
      }

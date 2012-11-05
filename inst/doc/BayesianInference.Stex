@@ -6,16 +6,16 @@
 %\VignettePackage{LaplacesDemon}
 %\VignetteDepends{LaplacesDemon}
 
-\author{Byron Hall\\STATISTICAT, LLC}
+\author{Statisticat, LLC}
 \title{\includegraphics[height=1in,keepaspectratio]{LDlogo} \\ Bayesian Inference}
 
 %% for pretty printing and a nice hypersummary also set:
-\Plainauthor{Byron Hall} %% comma-separated
+\Plainauthor{Statisticat LLC} %% comma-separated
 \Plaintitle{Bayesian Inference} %% without formatting
 \Shorttitle{Bayesian Inference} %% a short title (if necessary)
 
 \Abstract{The Bayesian interpretation of probability is one of two broad categories of interpretations. Bayesian inference updates knowledge about unknowns, parameters, with information from data. The \pkg{LaplacesDemon} package in \proglang{R} enables Bayesian inference, and this vignette provides an introduction to the topic. This article introduces Bayes' theorem, model-based Bayesian inference, components of Bayesian inference, prior distributions, hierarchical Bayes, conjugacy, likelihood, numerical approximation, prediction, Bayes factors, model fit, posterior predictive checks, and ends by comparing advantages and disadvantages of Bayesian inference.}
-\Keywords{Bayesian, Laplace's Demon, LaplacesDemon, R, STATISTICAT}
+\Keywords{Bayesian, Laplace's Demon, LaplacesDemon, R, Statisticat}
 \Plainkeywords{bayesian, laplace's demon, laplacesdemon, r, statisticat}
 
 %% publication information
@@ -28,11 +28,10 @@
 %% \Acceptdate{2011-01-18}
 
 \Address{
- Byron Hall\\
- STATISTICAT, LLC\\
+ Statisticat, LLC\\
  Farmington, CT\\
  E-mail: \email{statisticat@gmail.com}\\
- URL: \url{http://www.statisticat.com/laplacesdemon.html}
+ URL: \url{http://www.statisticat.com/laplacesdemon.shtml}
 }
 
 %% for those who use Sweave please include the following line (with % symbols):
@@ -48,7 +47,7 @@ This article is an introduction to Bayesian inference for users of the \pkg{Lapl
 
 In statistical inference, there are two broad categories of interpretations of probability: Bayesian inference and frequentist inference. These views often differ with each other on the fundamental nature of probability. Frequentist inference loosely defines probability as the limit of an event's relative frequency in a large number of trials, and only in the context of experiments that are random and well-defined. Bayesian inference, on the other hand, is able to assign probabilities to any statement, even when a random process is not involved. In Bayesian inference, probability is a way to represent an individual's degree of belief in a statement, or given evidence.
 
-Within Bayesian inference, there are also different interpretations of probability, and different approaches based on those interpretations. The most popular interpretations and approaches are objective Bayesian inference \citep{berger06} and subjective Bayesian inference \citep{anscombe63, goldstein06}. Objective Bayesian inference is often associated with \citet{bayes63}, \citet{laplace14}, and \citet{jeffreys61}. Subjective Bayesian inference is often associated with \citet{ramsey26}, \citet{definetti31}, and \citet{savage54}. The first major event to bring about the rebirth of Bayesian inference was \citet{definetti37}. Differences in the interpretation of probability are best explored outside of this article\footnote{If these terms are new to the reader, then please do not focus too much on the words `objective' and `subjective', since there is a lot of debate over them. For what it's worth, \textit{STATISTICAT, LLC} and myself, the author of this \proglang{R} package entitled \pkg{LaplacesDemon}, favor the `subjective' interpretation.}.
+Within Bayesian inference, there are also different interpretations of probability, and different approaches based on those interpretations. The most popular interpretations and approaches are objective Bayesian inference \citep{berger06} and subjective Bayesian inference \citep{anscombe63, goldstein06}. Objective Bayesian inference is often associated with \citet{bayes63}, \citet{laplace14}, and \citet{jeffreys61}. Subjective Bayesian inference is often associated with \citet{ramsey26}, \citet{definetti31}, and \citet{savage54}. The first major event to bring about the rebirth of Bayesian inference was \citet{definetti37}. Differences in the interpretation of probability are best explored outside of this article\footnote{If these terms are new to the reader, then please do not focus too much on the words `objective' and `subjective', since there is a lot of debate over them. For what it's worth, \textit{Statisticat, LLC} and myself, the author of this \proglang{R} package entitled \pkg{LaplacesDemon}, favor the `subjective' interpretation.}.
 
 This article is intended as an approachable introduction to Bayesian inference, or as a handy summary for experienced Bayesians. It is assumed that the reader has at least an elementary understanding of statistics, and this article focuses on applied, rather than theoretical, material. Equations and statistical notation are included, but it is hopefully presented so the reader does not need an intricate understanding of solving integrals, for example, but should understand the basic concept of integration. Please be aware that it is difficult to summarize Bayesian inference in such a short article. In which case, consider \citet{gelman04} for a more thorough and formal introduction.
 
@@ -235,9 +234,9 @@ A MAXENT prior, proposed by \citet{jaynes68}, is a prior probability distributio
 
 \subsubsection{Reference Priors} \label{referencepriors}
 
-Introduced by \citet{bernardo79}, reference priors do not express personal beliefs. Instead, reference priors allow the data to dominate the prior and posterior \citep{berger09}. Reference priors are estimated by maximizing the expected intrinsic discrepancy between the posterior distribution and prior distribution. This maximizes the expected posterior information about $\textbf{y}$ when the prior density is $p(\textbf{y})$. In some sense, $p(\textbf{y})$ is the `least informative' prior about $\textbf{y}$ \citep{bernardo05b}. Reference priors are often the objective prior of choice in multivariate problems, since other rules (e.g., Jeffreys' rule) may result in priors with problematic behavior. When reference priors are used, the analysis is called reference analysis, and the posterior is called the reference posterior.
+Introduced by \citet{bernardo79}, reference priors do not express personal beliefs. Instead, reference priors allow the data to dominate the prior and posterior \citep{berger09}. Reference priors are estimated by maximizing the expected intrinsic discrepancy between the posterior distribution and prior distribution. This maximizes the expected posterior information about $\textbf{y}$ when the prior density is $p(\textbf{y})$. In some sense, $p(\textbf{y})$ is the `least informative' prior about $\textbf{y}$ \citep{bernardo05b}. Reference priors are often the objective prior of choice in multivariate problems, since other rules (e.g., Jeffreys rule) may result in priors with problematic behavior. When reference priors are used, the analysis is called reference analysis, and the posterior is called the reference posterior.
 
-Subjective Bayesian criticisms of reference priors is that the concepts of regularization and stabilization are not taken into account, results that contradict knowledge are not prevented, a numerical approximation algorithm may become stuck in low-probability or flat regions, and it may not be desirable to let the data speak fully.
+Subjective Bayesian criticisms of reference priors are that the concepts of regularization and stabilization are not taken into account, results that contradict knowledge are not prevented, a numerical approximation algorithm may become stuck in low-probability or flat regions, and it may not be desirable to let the data speak fully.
 
 \subsection{Uninformative Priors} \label{uninformativepriors}
 
@@ -303,9 +302,9 @@ In order to complete the definition of a Bayesian model, both the prior distribu
 
 $$p(\textbf{y} | \Theta) = \prod^n_{i=1} p(\textbf{y}_i | \Theta)$$
 
-The data $\textbf{y}$ affects the posterior distribution $p(\Theta | \textbf{y})$ only through the likelihood function $p(\textbf{y} | \Theta)$. In this way, Bayesian inference obeys the likelihood principle, which states that for a given sample of data, any two probability models $p(\textbf{y} | \Theta)$ that have the same likelihood function yield the same inference for $\Theta$. For more information on the likelihood principle, see section \ref{likelihoodprinciple}.
+The data $\textbf{y}$ affects the posterior distribution $p(\Theta | \textbf{y})$ only through the likelihood function $p(\textbf{y} | \Theta)$. In this way, Bayesian inference obeys the likelihood principle, which states that for a given sample of data, any two probability models $p(\textbf{y} | \Theta)$ that have the same likelihood function yield the same inference for $\Theta$. For more information on the likelihood principle, see section \ref{lprinciple}.
 
-\subsection{Terminology: From Inverse Probability to Bayesian Probability} \ref{terminology}
+\subsection{Terminology: From Inverse Probability to Bayesian Probability} \label{terminology}
 
 A gambler's dispute in 1654 led to the creation of a mathematical theory of probability by two famous French mathematicians, Blaise Pascal and Pierre de Fermat. Reverend Thomas Bayes (1702-1761) discovered Bayes' theorem, published posthumously in 1763, in which he was the first to use inverse probability \citep{bayes63}. `Inverse probability' refers to assigning a probability distribution to an unobserved variable, and is in essence, probability in the opposite direction of the usual sense.
 
@@ -324,7 +323,7 @@ In modern terms, given a probability distribution $p(\textbf{y} | \theta)$ for a
 
 However, $p(\textbf{y} | \theta)$ is also called the likelihood function, which can be confusing, seeming to pit the definitions of probability and likelihood against each other. A quick introduction to the likelihood principle follows, and finally all of the information on likelihood comes together in the section entitled ``Likelihood Function of a Parameterized Model''.
 
-\subsection{The Likelihood Principle} \label{likelihoodprinciple}
+\subsection{The Likelihood Principle} \label{lprinciple}
 
 An informal summary of the likelihood principle may be that inferences from data to hypotheses should depend on how likely the actual data are under competing hypotheses, not on how likely imaginary data would have been under a single ``null'' hypothesis or any other properties of merely possible data. Bayesian inferences depend only on the probabilities assigned due to the observed data, not due to other data that might have been observed.
 
@@ -449,7 +448,7 @@ The Bayes factor, $B$, is the posterior odds in favor of the hypothesis divided 
 (Posterior model odds) = (Bayes factor) x (prior model odds)
 \end{center}
 
-For example, when $B=2$, the data favor $\mathcal{M}_1$ over $\mathcal{M}_2$ with 2:1 odds. Table \ref{bf} shows a variation of Jeffreys' interpretation of the Bayes factor \citep{jeffreys61}.
+For example, when $B=2$, the data favor $\mathcal{M}_1$ over $\mathcal{M}_2$ with 2:1 odds.
 
 In a non-hierarchical model, the marginal likelihood may easily be approximated with the Laplace-Metropolis Estimator for model $m$ as
 
@@ -603,7 +602,7 @@ frequentist inference.
 \item Bayesian inference with proper priors is immune to singularities and near-singularities with matrix inversions, unlike frequentist inference.
 \end{itemize}
   
-\section{Advantages Of Frequentist Inference Over Bayesian Inference} \section{disadvantages}
+\section{Advantages Of Frequentist Inference Over Bayesian Inference} \label{disadvantages}
 
 Following is a short list of advantages of frequentist inference over Bayesian inference.
 

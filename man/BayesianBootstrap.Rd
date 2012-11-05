@@ -53,12 +53,10 @@ BayesianBootstrap(X, n=1000, Status=NULL)
   columns in \eqn{\textbf{X}}{X}.
 }
 \references{
-  Hall, B. (2012). "Laplace's Demon", STATISTICAT, LLC.
-  URL=\url{http://www.statisticat.com/laplacesdemon.html}
-
   Rubin, D.B. (1981). "The Bayesian Bootstrap". The Annals of
   Statistics, 9(1), p. 130--134.
 }
+\author{Statisticat, LLC. \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{ABB}},
   \code{\link{LaplaceApproximation}}, and

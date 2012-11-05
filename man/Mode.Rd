@@ -85,7 +85,7 @@ Modes(x, min.size=0.1)
   is to choose the highest mode if feasible and possible. However, the
   highest mode may be uncharacteristic of the majority of the posterior.
 }
-\author{Byron Hall \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{LaplaceApproximation}},
   \code{\link{LaplacesDemon}},

@@ -114,7 +114,7 @@ summary.laplace.ppc <- function(object=NULL, Categorical=FALSE, Rows=NULL,
           if(!is.null(Discrep) && {Discrep == "sd(yhat[i,]) > sd(y)"}) {
                for (i in 1:length(y)) {Summ[i,8] <- sd(yhat[i,]) > sd(y)}
                Discrepancy.Statistic <- round(mean(Summ[,8], na.rm=TRUE),3)}
-          L <- sqrt(apply(yhat,1,var) + (y - rowMeans(yhat))^2)
+          L <- round(sqrt(apply(yhat,1,var) + (y - rowMeans(yhat))^2), 3)
           S.L <- round(sd(L, na.rm=TRUE),3); L <- round(sum(L, na.rm=TRUE),3)
           ### Deviance
           Dbar <- round(mean(Deviance, na.rm=TRUE),3)

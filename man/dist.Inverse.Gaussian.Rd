@@ -26,7 +26,7 @@ rinvgaussian(n, mu, lambda)
 	\theta^3)^{1/2}} \exp(-\frac{\lambda (\theta - \mu)^2}{2 \mu^2
 	\theta}), \theta > 0}{p(theta) = (lambda / (2*pi*theta^3))^(1/2) *
         exp(-((lambda*(theta-mu)^2) / (2*mu^2*theta))), theta > 0}
-    \item Inventor: Unknown (to me, anyway)
+    \item Inventor: Schrodinger (1915)
     \item Notation 1: \eqn{\theta \sim \mathcal{N}^{-1}(\mu,
       \lambda)}{theta ~ N^-1(mu, lambda)}
     \item Notation 2: \eqn{p(\theta) = \mathcal{N}^{-1}(\theta | \mu,
@@ -53,6 +53,11 @@ obvious from the fact that \eqn{\theta}{theta} must be positive.
 \value{
   \code{dinvgaussian} gives the density and
   \code{rinvgaussian} generates random deviates.
+}
+\references{
+  Schrodinger E. (1915). "Zur Theorie der Fall-und Steigversuche an
+  Teilchenn mit Brownscher Bewegung". Physikalische Zeitschrift, 16,
+  p. 289--295.
 }
 \seealso{
   \code{\link{dnorm}},

@@ -77,7 +77,7 @@ parameterization is faster than the traditional parameterization.
   Distributions". Communications in Statistics-Theory and Methods, 27(3),
   p. 589--600.
 }
-\author{Byron Hall \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{chol}},
   \code{\link{dlaplace}},

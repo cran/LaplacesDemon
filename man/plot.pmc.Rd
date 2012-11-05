@@ -58,11 +58,7 @@
   so the user can verify the distribution of importance weights and the
   mixture probabilities have become stable.
 }
-\references{
-  Hall, B. (2012). "Laplace's Demon", STATISTICAT, LLC.
-  URL=\url{http://www.statisticat.com/laplacesdemon.html}
-}
-\author{Byron Hall \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{ESS}} and
   \code{\link{PMC}}.}

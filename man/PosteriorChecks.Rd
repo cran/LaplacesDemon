@@ -102,8 +102,7 @@ PosteriorChecks(x, Parms)
     integrated autocorrelation time is estimated with \code{\link{IAT}}.)
     with the \code{\link{burnin}} function.}
 }
-\references{\url{http://www.statisticat.com/laplacesdemon.html}}
-\author{Byron Hall \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{burnin}},
   \code{\link{joint.density.plot}},

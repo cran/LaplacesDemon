@@ -148,9 +148,6 @@ Juxtapose(x)
   algorithms.
 }
 \references{
-  Hall, B. (2012). "Laplace's Demon", STATISTICAT, LLC.
-  URL=\url{http://www.statisticat.com/laplacesdemon.html}
-
   Thompson, M. (2010). "Graphical Comparison of MCMC Performance". ArXiv
   e-prints, eprint 1011.4458.
 }

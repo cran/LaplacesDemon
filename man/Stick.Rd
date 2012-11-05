@@ -60,9 +60,6 @@ Stick(theta)
   element relates to a mixture component.
 }
 \references{
-  Hall, B. (2012). "Laplace's Demon", STATISTICAT, LLC.
-  URL=\url{http://www.statisticat.com/laplacesdemon.html}
-
   Ishwaran, H. and James, L. (2001). "Gibbs Sampling Methods for Stick
   Breaking Priors". Journal of the American Statistical Association,
   96(453), p. 161--173.
@@ -70,7 +67,7 @@ Stick(theta)
   Sethuraman, J. (1994). "A Constructive Definition of Dirichlet
   Priors". Statistica Sinica, 4, p. 639--650.
 }
-\author{Byron Hall \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{ddirichlet}},
   \code{\link{dmvpolya}}, and 

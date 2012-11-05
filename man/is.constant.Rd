@@ -19,8 +19,7 @@ is.constant(x)
   The \code{is.constant} function returns a logical result, reporting
   \code{TRUE} when a vector is a constant, or \code{FALSE} otherwise.
 }
-\references{\url{http://www.statisticat.com/laplacesdemon.html}}
-\author{Byron Hall \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{unique}}
 }

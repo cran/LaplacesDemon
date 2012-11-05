@@ -31,8 +31,7 @@ is.constrained(Model, Initial.Values, Data)
   \code{TRUE} if the corresponding initial value changed due to a
   constraint, or \code{FALSE} if it did not.
 }
-\references{\url{http://www.statisticat.com/laplacesdemon.html}}
-\author{Byron Hall \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{LaplacesDemon}}.
 }

@@ -75,8 +75,6 @@ vague or weakly informative Dirichlet prior distributions, so that one
 component is not favored over another. The single value that is entered
 into all elements of \eqn{\alpha}{alpha} is called the concentration
 parameter.
-
-These functions are similar to those in the \code{MCMCpack} package.
 }
 \value{
   \code{ddirichlet} gives the density and

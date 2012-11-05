@@ -122,12 +122,8 @@ BayesTheorem(PrA, PrBA)
   Mr. Price, in a letter to John Canton, M.A. and F.R.S. Philosophical
   Transactions of the Royal Statistical Society of London, 53,
   p. 370--418.
-
-  Hall, B. (2012). "Bayesian Inference", STATISTICAT, LLC.
-  URL=\url{http://www.statisticat.com/laplacesdemon.html}
-
 }
-\author{Byron Hall \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{LaplaceApproximation}} and
   \code{\link{LaplacesDemon}}

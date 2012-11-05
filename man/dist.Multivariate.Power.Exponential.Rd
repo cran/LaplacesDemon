@@ -83,7 +83,7 @@ in the MNM package.
   Family of Distributions". Communications in Statistics, Part A - Theory
   and Methods [Split from: J(CommStat)], 31(12), p. 2167--2182.
 }
-\author{Byron Hall \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{dlaplace}},
   \code{\link{dmvl}},

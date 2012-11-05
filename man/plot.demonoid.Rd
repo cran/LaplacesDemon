@@ -57,7 +57,9 @@
   target distribution. Visual inspection of a trace plot cannot
   verify convergence, but apparent non-stationarity or poor mixing can
   certainly suggest non-convergence. A red, smoothed line also appears
-  to aid visual inspection.
+  to aid visual inspection. If a componentwise algorithm is used,
+  \code{LP} is increasing and monitored, then the y-axis is limited so
+  that trending may be seen, despite negative outliers.
 
   Kernel density plots depict the marginal posterior distribution.
   There is no distributional assumption about this density.
@@ -83,11 +85,7 @@
   different adaptive MCMC algorithm. The following quantiles are plotted
   for absolute changes proposal variance: 0.025, 0.500, and 0.975.
 }
-\references{
-  Hall, B. (2012). "Laplace's Demon", STATISTICAT, LLC.
-  URL=\url{http://www.statisticat.com/laplacesdemon.html}
-}
-\author{Byron Hall \email{statisticat@gmail.com}}
+\author{Statisticat, LLC \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{ESS}},
   \code{\link{LaplacesDemon}}, and

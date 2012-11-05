@@ -261,15 +261,12 @@ alpha=NULL, M=1, N=1000, nu=9)
   Data Analysis, Texts in Statistical Science, 2nd ed.". Chapman and
   Hall, London.
   
-  Hall, B. (2012). "Laplace's Demon", STATISTICAT, LLC.
-  URL=\url{http://www.statisticat.com/laplacesdemon.html}
-
   Wraith, D., Kilbinger, M., Benabed, K., Cappe, O., Cardoso, J.F.,
   Fort, G., Prunet, S., and Robert, C.P. (2009). "Estimation of
   Cosmological Parameters Using Adaptive Importance Sampling".
   Physical Review D, 80 (2), p. 023507.
 }
-\author{Byron Hall \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{BayesFactor}},
   \code{\link{LaplaceApproximation}},

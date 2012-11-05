@@ -88,13 +88,10 @@ KLD(px, py, base)
   Bayesian Approach to Interval Estimation". Sociedad de Estadistica e
   Investigacion Operativa, 14, 2, p. 317--384.
 
-  Hall, B. (2012). "Bayesian Inference", STATISTICAT, LLC.
-  URL=\url{http://www.statisticat.com/laplacesdemon.html}
-  
   Kullback, S. and Leibler, R.A. (1951). "On Information and
   Sufficiency". The Annals of Mathematical Statistics, 22(1), p. 79--86.
 }
-\author{Byron Hall \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{LPL.interval}}
 }

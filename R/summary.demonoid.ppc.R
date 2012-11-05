@@ -124,7 +124,7 @@ summary.demonoid.ppc <- function(object=NULL, Categorical=FALSE, Rows=NULL,
           BPIC <- Dbar + 2*pD
           bpic <- matrix(c(Dbar, pD, BPIC), 1, 3)
           colnames(bpic) <- c("Dbar","pD","BPIC"); rownames(bpic) <- ""
-          L <- sqrt(apply(yhat,1,var) + (y - rowMeans(yhat))^2)
+          L <- round(sqrt(apply(yhat,1,var) + (y - rowMeans(yhat))^2),3)
           S.L <- round(sd(L, na.rm=TRUE),3); L <- round(sum(L, na.rm=TRUE),3)
           ### Create Output
           Summ.out <- list(BPIC=bpic,

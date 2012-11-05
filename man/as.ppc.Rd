@@ -31,11 +31,7 @@ as.ppc(x, set=3)
 \value{
   The returned object is an object of class \code{demonoid.ppc}.
 }
-\references{
-  Hall, B. (2012). "Laplace's Demon", STATISTICAT, LLC.
-  URL=\url{http://www.statisticat.com/laplacesdemon.html}
-}
-\author{Byron Hall \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{predict.demonoid}},
   \code{\link{summary.demonoid.ppc}}, and

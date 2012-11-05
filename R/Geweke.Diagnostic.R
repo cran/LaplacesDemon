@@ -22,19 +22,19 @@ Geweke.Diagnostic <- function(x)
           y <- as.matrix(y)
           max.freq <- 0.5; order <- 1; max.length <- 200
           if(nrow(yy) > max.length) {
-               batch.size <- ceiling(nrow(yy)/max.length)
-               yy <- aggregate(ts(yy, frequency = batch.size), nfreq = 1, 
-                    FUN = mean)}
+               batch.size <- ceiling(nrow(yy) / max.length)
+               yy <- aggregate(ts(yy, frequency=batch.size), nfreq=1, 
+                    FUN=mean)}
           else {batch.size <- 1}
           yy <- as.matrix(yy)
-          fmla <- switch(order+1,
+          fmla <- switch(order + 1,
                spec ~ one,
                spec ~ f1,
                spec ~ f1 + f2)
           if(is.null(fmla)) stop("Invalid order.")
           N <- nrow(yy)
           Nfreq <- floor(N/2)
-          freq <- seq(from = 1/N, by = 1/N, length = Nfreq)
+          freq <- seq(from=1/N, by=1/N, length=Nfreq)
           f1 <- sqrt(3) * {4 * freq - 1}
           f2 <- sqrt(5) * {24 * freq * freq - 12 * freq + 1}
           v0 <- numeric(ncol(yy))
@@ -44,16 +44,15 @@ Geweke.Diagnostic <- function(x)
                else {
                     yfft <- fft(zz)
                     spec <- Re(yfft * Conj(yfft)) / N
-                    spec.data <- data.frame(one = rep(1, Nfreq), f1=f1,
-                         f2=f2, spec = spec[1 + {1:Nfreq}],
-                         inset = I(freq<=max.freq))
-                    options(warn=-1)
-                    glm.out <- glm(fmla, family=Gamma(link="log"),
-                         data=spec.data)
-                    options(warn=0)
-                    v0[j] <- predict(glm.out, type="response",
-                         newdata=data.frame(spec=0, one=1, f1=-sqrt(3),
-                         f2=sqrt(5)))
+                    spec.data <- data.frame(one=rep(1, Nfreq), f1=f1,
+                         f2=f2, spec=spec[1 + {1:Nfreq}],
+                         inset=I(freq <= max.freq))
+                    glm.out <- try(glm(fmla, family=Gamma(link="log"),
+                         data=spec.data), silent=TRUE)
+                    if(!inherits(glm.out, "try-error")) 
+                         v0[j] <- predict(glm.out, type="response",
+                              newdata=data.frame(spec=0, one=1,
+                              f1=-sqrt(3), f2=sqrt(5)))
                     }
                }
           spec <- list(spec=v0)

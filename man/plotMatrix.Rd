@@ -69,10 +69,6 @@ plotMatrix(x, col=colorRampPalette(c("red","black","green"))(100),
   This is a modified version of the \code{circle.corr} function
   of Taiyun Wei.
 }
-\references{
-  Hall, B. (2012). "Laplace's Demon", STATISTICAT, LLC.
-  URL=\url{http://www.statisticat.com/laplacesdemon.html}
-}
 \author{Taiyun Wei}
 \seealso{\code{\link{PosteriorChecks}}}
 \examples{

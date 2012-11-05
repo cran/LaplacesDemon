@@ -71,8 +71,7 @@ which must be positive-definite. When degrees of freedom
   \code{dmvt} gives the density and 
   \code{rmvt} generates random deviates.
 }
-\references{\url{http://www.statisticat.com/laplacesdemon.html}}
-\author{Byron Hall \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{dinvwishart}},
   \code{\link{dmvc}},

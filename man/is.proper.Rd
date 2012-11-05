@@ -80,8 +80,7 @@ is.proper(f,a,b,tol)
   distribution integrates to 1 within its specified limits. \code{TRUE}
   is returned for proper univariate probability distributions.
 }
-\references{\url{http://www.statisticat.com/laplacesdemon.html}}
-\author{Byron Hall \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{dnormv}},
   \code{\link{integrate}},

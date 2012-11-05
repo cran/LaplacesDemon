@@ -45,8 +45,7 @@ is.model(Model, Initial.Values, Data)
   when \code{Model} meets minimum criteria of a model specification
   function, and \code{FALSE} otherwise.
 }
-\references{\url{http://www.statisticat.com/laplacesdemon.html}}
-\author{Byron Hall \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{LaplacesDemon}}.
 }

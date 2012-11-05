@@ -32,8 +32,7 @@ is.stationary(x)
   the supplied object is stationary according to the
   \code{\link{Geweke.Diagnostic}} function.
 }
-\references{\url{http://www.statisticat.com/laplacesdemon.html}}
-\author{Byron Hall \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{Geweke.Diagnostic}} and
   \code{\link{LaplacesDemon}}.

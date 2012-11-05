@@ -1,3 +1,11 @@
+2012-11-02 summary.demonoid.ppc: Corrected a discrepancy between L-criterions
+2012-11-02 summary.laplace.ppc: Corrected a discrepancy between L-criterions
+2012-11-02 summary.pmc.ppc: Corrected a discrepancy between L-criterions
+2012-10-21 BayesTheorem: Fixed bug with vector checks
+2012-10-15 plot.demonoid: Now delimits trace plot y-axis for componentwise LP
+2012-10-13 Added qcat
+2012-10-05 Added Gelfand.Diagnostic
+2012-10-04 Geweke.Diagnostic: Warning due to too small sample replaced with fail
 2012-09-28 Vignette Examples: Added Variable Selection, RJ
 2012-09-26 LaplacesDemon: Added the RJ algorithm
 2012-09-25 Vignette Examples: Removed Penalized Reg. and Ordinal Probit

@@ -40,6 +40,9 @@ rhalfcauchy(n, scale=25)
 
 The half-Cauchy distribution with scale \eqn{\alpha=25}{alpha=25} is a
 recommended, default, weakly informative prior distribution for a scale
+parameter. Otherwise, the scale, \eqn{\alpha}{alpha}, is recommended to
+be set to be just a little larger than the expected standard deviation,
+as a weakly informative prior distribution on a standard deviation
 parameter.
 }
 \value{
@@ -50,10 +53,6 @@ parameter.
 }
 \seealso{
   \code{\link{dcauchy}}
-}
-\references{
-  Hall, B. (2012). "Bayesian Inference", STATISTICAT, LLC.
-  URL=\url{http://www.statisticat.com/laplacesdemon.html}
 }
 \examples{
 library(LaplacesDemon)

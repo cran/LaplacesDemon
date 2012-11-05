@@ -6,18 +6,18 @@
 %\VignettePackage{LaplacesDemon}
 %\VignetteDepends{LaplacesDemon}
 
-\author{Byron Hall\\STATISTICAT, LLC}
+\author{Statisticat, LLC}
 \title{\includegraphics[height=1in,keepaspectratio]{LDlogo} \\ \pkg{LaplacesDemon} Examples}
 
 %% for pretty printing and a nice hypersummary also set:
-\Plainauthor{Byron Hall} %% comma-separated
+\Plainauthor{Statisticat LLC} %% comma-separated
 \Plaintitle{LaplacesDemon Examples} %% without formatting
 \Shorttitle{Examples} %% a short title (if necessary)
 
 \Abstract{The \pkg{LaplacesDemon} package in \proglang{R} enables Bayesian inference with any Bayesian model, provided the user specifies the likelihood. This vignette is a compendium of examples of how to specify different model forms.
 }
 \Keywords{Bayesian, Bayesian Inference, Laplace's Demon, LaplacesDemon, R, 
-STATISTICAT}
+Statisticat}
 
 %% publication information
 %% NOTE: Typically, this can be left commented and will be filled out by the technical editor
@@ -29,11 +29,10 @@ STATISTICAT}
 %% \Acceptdate{2011-01-18}
 
 \Address{
-  Byron Hall\\
-  STATISTICAT, LLC\\
+  Statisticat, LLC\\
   Farmington, CT\\
   E-mail: \email{statisticat@gmail.com}\\
-  URL: \url{http://www.statisticat.com/laplacesdemon.html}
+  URL: \url{http://www.statisticat.com/laplacesdemon.shtml}
 }
 
 %% for those who use Sweave please include the following line (with % symbols):
@@ -3037,7 +3036,7 @@ MyData <- list(J=J, M=M, PGF=PGF, X=X, mon.names=mon.names, \\
 \subsection{Initial Values}
 \code{Initial.Values <- c(rep(0,sum(M)), rep(0,J), log(1))}
 
-\section{Linear Regression with Missing Response via ABB} \label{linear.reg.miss.resp}
+\section{Linear Regression with Missing Response via ABB} \label{linear.reg.miss.resp.abb}
 The Approximate Bayesian Bootstrap (ABB), using the \code{ABB} function, is used to impute missing values in the dependent variable (DV), or response, given a propensity score. In this example, vector $\alpha$ is used to estimate propensity score $\eta$, while vector $\beta$ is for regression effects, and vector $\gamma$ has the monitored missing values. For more information on ABB, see the \code{ABB} function.
 \subsection{Form}
 $$\textbf{y}^{imp} \sim \mathcal{N}(\mu, \sigma^2)$$
@@ -4320,7 +4319,7 @@ beta <- c(1,runif(J-1,-1,1)) \\
 y <- round(exp(tcrossprod(X, t(beta)))) + 1 \# Undefined at zero \\
 mon.names <- c("LP","gamma") \\
 parm.names <- as.parm.names(list(beta=rep(0,J), log.gamma=0)) \\
-PGF <- function(Data) return(c(rnormv(Data$J,0,1000), \\
+PGF <- function(Data) return(c(rnormv(Data$J,0,10), \\
 \hspace*{0.27 in} log(rgamma(1,1E-3)))) \\
 MyData <- list(J=J, N=N, PGF=PGF, X=X, mon.names=mon.names, \\
 \hspace*{0.27 in} parm.names=parm.names, y=y) \\

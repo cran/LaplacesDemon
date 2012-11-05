@@ -76,8 +76,7 @@ parameterization is faster than the traditional parameterization.
   \code{dmvcpc} gives the density and 
   \code{rmvcpc} generates random deviates.
 }
-\references{\url{http://www.statisticat.com/laplacesdemon.html}}
-\author{Byron Hall \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{chol}},
   \code{\link{dcauchy}},

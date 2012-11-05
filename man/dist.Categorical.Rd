@@ -1,5 +1,6 @@
 \name{dist.Categorical}
 \alias{dcat}
+\alias{qcat}
 \alias{rcat}
 \title{The Categorical Distribution}
 \description{
@@ -8,6 +9,7 @@
 }
 \usage{
 dcat(x, p, log=FALSE)
+qcat(pr, p, lower.tail=TRUE, log.pr=FALSE)
 rcat(n, p)
 }
 \arguments{
@@ -19,9 +21,16 @@ rcat(n, p)
     integer that has length 1. When \code{p} is supplied to \code{rcat}
     as a matrix, \code{n} must equal the number of rows in \code{p}.}
   \item{p}{This is a vector of length \eqn{k} or \eqn{n \times k}{n x k}
-    matrix of probabilities.}
+    matrix of probabilities. The \code{qcat} function requires a
+    vector.}
+  \item{pr}{This is a vector of probabilities, or log-probabilities.}
   \item{log}{Logical. If \code{log=TRUE}, then the logarithm of the
     density is returned.}
+  \item{log.pr}{Logical. if \code{TRUE}, probabilities \eqn{pr} are
+    given as \eqn{\log(pr)}{log(pr)}.}
+  \item{lower.tail}{Logical. if \code{TRUE} (default), probabilities
+    are \eqn{Pr[X \le x]}{Pr[X <= x]}, otherwise,
+    \eqn{Pr[X > x]}{Pr[X > x]}.}
 }
 \details{
     \itemize{
@@ -47,8 +56,7 @@ Dirichlet distribution.
   \code{dcat} gives the density and
   \code{rcat} generates random deviates.
 }
-\references{\url{http://www.statisticat.com/laplacesdemon.html}}
-\author{Byron Hall \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{as.indicator.matrix}},
   \code{\link{ddirichlet}}, and

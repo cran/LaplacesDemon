@@ -97,11 +97,7 @@ LaplacesDemon.RAM(Model, Data, Iterations, Thinning)
     to update one chain in \code{\link{LaplacesDemon}} for a given model
     and data, and for a number of iterations and specified thinning.}
 }
-\references{
-  Hall, B. (2012). "Laplace's Demon", STATISTICAT, LLC.
-  URL=\url{http://www.statisticat.com/laplacesdemon.html}
-}
-\author{Byron Hall \email{statisticat@gmail.com}}
+\author{Statisticat, LLC \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{LaplacesDemon}},
   \code{\link{LML}}, and

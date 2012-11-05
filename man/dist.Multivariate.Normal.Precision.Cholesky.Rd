@@ -74,8 +74,7 @@ distributed multivariate normal given the model, the Mardia test (see
   \code{dmvnpc} gives the density and 
   \code{rmvnpc} generates random deviates.
 }
-\references{\url{http://www.statisticat.com/laplacesdemon.html}}
-\author{Byron Hall \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{chol}},
   \code{\link{dmvn}},

@@ -91,11 +91,26 @@ plot.demonoid <- function(x, BurnIn=1, Data=NULL, PDF=FALSE,
           J <- ncol(x$Monitor); nn <- nrow(x$Monitor)}
      for (j in 1:J)
           {
-          plot(BurnIn:nn,
-               x$Monitor[BurnIn:nn,j],
-               type="l", xlab="Iterations", ylab="Value",
-               main=Data$mon.names[j])
-          panel.smooth(BurnIn:nn, x$Monitor[BurnIn:nn,j], pch="")
+          if({colnames(x$Monitor)[j] == "LP"} &
+               {max(x$Monitor[BurnIn:nn,j]) > x$Monitor[BurnIn,j]} &
+               {x$Algorithm %in% c("Adaptive Metropolis-within-Gibbs",
+               "Componentwise Hit-And-Run","Metropolis-within-Gibbs",
+               "Reversible-Jump",
+               "Sequential Adaptive Metropolis-within-Gibbs",
+               "Sequential Metropolis-within-Gibbs",
+               "Updating Sequential Adaptive Metropolis-within-Gibbs",
+               "Updating Sequential Metropolis-within-Gibbs")}) {
+               plot(BurnIn:nn, x$Monitor[BurnIn:nn,j],
+                    ylim=c(x$Monitor[BurnIn,j], max(x$Monitor[BurnIn:nn,j])),
+                    type="l", xlab="Iterations", ylab="Value",
+                    main=Data$mon.names[j])
+               panel.smooth(BurnIn:nn, x$Monitor[BurnIn:nn,j], pch="")
+          }
+          else {
+               plot(BurnIn:nn, x$Monitor[BurnIn:nn,j],
+                    type="l", xlab="Iterations", ylab="Value",
+                    main=Data$mon.names[j])
+               panel.smooth(BurnIn:nn, x$Monitor[BurnIn:nn,j], pch="")}
           plot(density(x$Monitor[BurnIn:nn,j]),
                xlab="Value", main=Data$mon.names[j])
           polygon(density(x$Monitor[BurnIn:nn,j]), col="black",

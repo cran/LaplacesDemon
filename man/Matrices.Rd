@@ -232,7 +232,7 @@ upper.triangle(x, diag=FALSE)
   Problem from Finance". IMA Journal of Numerical Analysis, 22,
   p. 329--343.
 }
-\author{Byron Hall \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{Cov2Prec}},
   \code{\link{cov2cor}},

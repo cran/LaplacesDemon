@@ -122,10 +122,8 @@ p.interval(obj, HPD=TRUE, MM=TRUE, prob=0.95, plot=FALSE, PDF=FALSE, \dots)
   Bernardo, J.M. (2005). "Intrinsic Credible Regions: An Objective
   Bayesian Approach to Interval Estimation". Sociedad de Estadistica e
   Investigacion Operativa, 14, 2, p. 317--384.
-
-  Hall, B. (2012). "Laplace's Demon", STATISTICAT, LLC.
-  URL=\url{http://www.statisticat.com/laplacesdemon.html}
 }
+\author{Statisticat, LLC \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{is.multimodal}},
   \code{\link{joint.pr.plot}},

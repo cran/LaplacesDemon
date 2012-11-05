@@ -106,11 +106,7 @@ GIV(Model, Data, n=1000, PGF=FALSE)
   associated parameter in \code{Data$parm.names}. When \code{GIV} fails
   to find acceptable initial values, each returned element is \code{NA}.
 }
-\references{
-  Hall, B. (2012). "Laplace's Demon", STATISTICAT, LLC.
-  URL=\url{http://www.statisticat.com/laplacesdemon.html}
-}
-\author{Byron Hall \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{as.initial.values}},
   \code{\link{Gelman.Diagnostic}},

@@ -50,11 +50,7 @@ partial(Model, parm, Data, Interval=1e-6)
   
   \code{partial} returns a vector of partial derivatives.
 }
-\references{
-  Hall, B. (2012). "Laplace's Demon", STATISTICAT, LLC.
-  URL=\url{http://www.statisticat.com/laplacesdemon.html}
-}
-\author{Byron Hall \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{Hessian}},
   \code{\link{LaplaceApproximation}}, and

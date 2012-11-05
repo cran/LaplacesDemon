@@ -91,15 +91,12 @@ elicit(n, cats, cat.names, show.plot=FALSE)
   Hahn, E.D. (2006). "Re-examining Informative Prior Elicitation Through
   the Lens of Markov chain Monte Carlo Methods". Journal of the Royal
   Statistical Society, A 169 (1), p. 37--48.
-
-  Hall, B. (2012). "Laplace's Demon", STATISTICAT, LLC.
-  URL=\url{http://www.statisticat.com/laplacesdemon.html}
   
   Savage, L.J. (1971). "Elicitation of Personal Probabilities and
   Expectations". Journal of the American Statistical Association,
   66(336), p. 783--801.
 }
-\author{Byron Hall \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{statisticat@gmail.com}}
 \seealso{
   \code{\link{de.Finetti.Game}},
   \code{\link{KLD}},
