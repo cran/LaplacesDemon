@@ -102,7 +102,7 @@ PosteriorChecks(x, Parms)
     integrated autocorrelation time is estimated with \code{\link{IAT}}.)
     with the \code{\link{burnin}} function.}
 }
-\author{Statisticat, LLC. \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{
   \code{\link{burnin}},
   \code{\link{joint.density.plot}},

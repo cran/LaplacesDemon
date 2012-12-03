@@ -66,7 +66,7 @@ distributed multivariate normal given the model, the Mardia test (see
   \code{dmvnc} gives the density and 
   \code{rmvnc} generates random deviates.
 }
-\author{Statisticat, LLC. \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{
   \code{\link{chol}},
   \code{\link{dinvwishartc}},

@@ -71,7 +71,7 @@ which must be positive-definite. When degrees of freedom
   \code{dmvt} gives the density and 
   \code{rmvt} generates random deviates.
 }
-\author{Statisticat, LLC. \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{
   \code{\link{dinvwishart}},
   \code{\link{dmvc}},

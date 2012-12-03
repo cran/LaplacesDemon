@@ -31,7 +31,7 @@ as.ppc(x, set=3)
 \value{
   The returned object is an object of class \code{demonoid.ppc}.
 }
-\author{Statisticat, LLC. \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{
   \code{\link{predict.demonoid}},
   \code{\link{summary.demonoid.ppc}}, and

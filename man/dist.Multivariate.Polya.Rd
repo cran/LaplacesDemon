@@ -1,16 +1,20 @@
 \name{dist.Multivariate.Polya}
 \alias{dmvpolya}
+\alias{rmvpolya}
 \title{Multivariate Polya Distribution}
 \description{
-  This is the density function for the multivariate Polya
-  distribution.
+  These functions provide the density and random number generation for
+  the multivariate Polya distribution.
 }
 \usage{
 dmvpolya(x, alpha, log=FALSE)
+rmvpolya(n, alpha)
 }
 \arguments{
   \item{x}{This is data or parameters in the form of a vector of length
-       \eqn{k}.}
+    \eqn{k}.}
+  \item{n}{This is the number of random draws to take from the
+    distribution.}
   \item{alpha}{This is shape vector \eqn{\alpha}{alpha} with length
     \eqn{k}.}
   \item{log}{Logical. If \code{log=TRUE}, then the logarithm of the
@@ -34,12 +38,24 @@ dmvpolya(x, alpha, log=FALSE)
   \item Mode: \eqn{mode(\theta) = }{mode(theta) = }
 }
 
-The multivariate Polya distribution, named after George Polya (1887-1985), also called the Dirichlet compound multinomial distribution, is a compound probability distribution, where a probability vector \eqn{p} is drawn from a Dirichlet distribution with parameter vector \eqn{\alpha}{alpha}, and a set of \eqn{N} discrete samples is drawn from the categorical distribution with probability vector \eqn{p} and having \eqn{K} discrete categories. The compounding corresponds to a Polya urn scheme. In document classification, for example, the distribution is used to represent probabilities over word counts for different document types. The multivariate Polya distribution is a multivariate extension of the univariate Beta-binomial distribution.
+The multivariate Polya distribution is named after George Polya
+(1887-1985). It is also called the Dirichlet compound multinomial
+distribution or the Dirichlet-multinomial distribution. The multivariate
+Polya distribution is a compound probability distribution, where a
+probability vector \eqn{p} is drawn from a Dirichlet distribution with
+parameter vector \eqn{\alpha}{alpha}, and a set of \eqn{N} discrete
+samples is drawn from the categorical distribution with probability
+vector \eqn{p} and having \eqn{K} discrete categories. The compounding
+corresponds to a Polya urn scheme. In document classification, for
+example, the distribution is used to represent probabilities over word
+counts for different document types. The multivariate Polya distribution
+is a multivariate extension of the univariate Beta-binomial distribution.
 }
 \value{
-  \code{dmvpolya} gives the density.
+  \code{dmvpolya} gives the density and \code{rmvpolya} generates random
+  deviates.
 }
-\author{Statisticat, LLC \email{statisticat@gmail.com}}
+\author{Statisticat, LLC \email{software@bayesian-inference.com}}
 \seealso{
   \code{\link{dcat}},
   \code{\link{ddirichlet}}, and
@@ -48,5 +64,6 @@ The multivariate Polya distribution, named after George Polya (1887-1985), also 
 \examples{
 library(LaplacesDemon)
 dmvpolya(x=1:3, alpha=1:3, log=TRUE)
+x <- rmvpolya(1000, c(0.1,0.3,0.6))
 }
 \keyword{Distribution}

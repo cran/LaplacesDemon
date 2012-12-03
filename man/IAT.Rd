@@ -57,7 +57,7 @@ IAT(x)
   Algorithm for Continuous Distributions (the t-walk)". Bayesian
   Analysis, 5(2), p. 263--282.
 }
-\author{Statisticat, LLC. \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{
   \code{\link{burnin}},
   \code{\link{Compare}},

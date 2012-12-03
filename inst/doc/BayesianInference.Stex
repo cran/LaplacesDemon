@@ -14,7 +14,7 @@
 \Plaintitle{Bayesian Inference} %% without formatting
 \Shorttitle{Bayesian Inference} %% a short title (if necessary)
 
-\Abstract{The Bayesian interpretation of probability is one of two broad categories of interpretations. Bayesian inference updates knowledge about unknowns, parameters, with information from data. The \pkg{LaplacesDemon} package in \proglang{R} enables Bayesian inference, and this vignette provides an introduction to the topic. This article introduces Bayes' theorem, model-based Bayesian inference, components of Bayesian inference, prior distributions, hierarchical Bayes, conjugacy, likelihood, numerical approximation, prediction, Bayes factors, model fit, posterior predictive checks, and ends by comparing advantages and disadvantages of Bayesian inference.}
+\Abstract{The Bayesian interpretation of probability is one of two broad categories of interpretations. Bayesian inference updates knowledge about unknowns, parameters, with information from data. The \pkg{LaplacesDemon} package is a complete environment for Bayesian inference within \proglang{R}, and this vignette provides an introduction to the topic. This article introduces Bayes' theorem, model-based Bayesian inference, components of Bayesian inference, prior distributions, hierarchical Bayes, conjugacy, likelihood, numerical approximation, prediction, Bayes factors, model fit, posterior predictive checks, and ends by comparing advantages and disadvantages of Bayesian inference.}
 \Keywords{Bayesian, Laplace's Demon, LaplacesDemon, R, Statisticat}
 \Plainkeywords{bayesian, laplace's demon, laplacesdemon, r, statisticat}
 
@@ -30,8 +30,8 @@
 \Address{
  Statisticat, LLC\\
  Farmington, CT\\
- E-mail: \email{statisticat@gmail.com}\\
- URL: \url{http://www.statisticat.com/laplacesdemon.shtml}
+ E-mail: \email{software@bayesian-inference.com}\\
+ URL: \url{http://www.bayesian-inference.com/software.shtml}
 }
 
 %% for those who use Sweave please include the following line (with % symbols):
@@ -47,13 +47,13 @@ This article is an introduction to Bayesian inference for users of the \pkg{Lapl
 
 In statistical inference, there are two broad categories of interpretations of probability: Bayesian inference and frequentist inference. These views often differ with each other on the fundamental nature of probability. Frequentist inference loosely defines probability as the limit of an event's relative frequency in a large number of trials, and only in the context of experiments that are random and well-defined. Bayesian inference, on the other hand, is able to assign probabilities to any statement, even when a random process is not involved. In Bayesian inference, probability is a way to represent an individual's degree of belief in a statement, or given evidence.
 
-Within Bayesian inference, there are also different interpretations of probability, and different approaches based on those interpretations. The most popular interpretations and approaches are objective Bayesian inference \citep{berger06} and subjective Bayesian inference \citep{anscombe63, goldstein06}. Objective Bayesian inference is often associated with \citet{bayes63}, \citet{laplace14}, and \citet{jeffreys61}. Subjective Bayesian inference is often associated with \citet{ramsey26}, \citet{definetti31}, and \citet{savage54}. The first major event to bring about the rebirth of Bayesian inference was \citet{definetti37}. Differences in the interpretation of probability are best explored outside of this article\footnote{If these terms are new to the reader, then please do not focus too much on the words `objective' and `subjective', since there is a lot of debate over them. For what it's worth, \textit{Statisticat, LLC} and myself, the author of this \proglang{R} package entitled \pkg{LaplacesDemon}, favor the `subjective' interpretation.}.
+Within Bayesian inference, there are also different interpretations of probability, and different approaches based on those interpretations. The most popular interpretations and approaches are objective Bayesian inference \citep{berger06} and subjective Bayesian inference \citep{anscombe63, goldstein06}. Objective Bayesian inference is often associated with \citet{bayes63}, \citet{laplace14}, and \citet{jeffreys61}. Subjective Bayesian inference is often associated with \citet{ramsey26}, \citet{definetti31}, and \citet{savage54}. The first major event to bring about the rebirth of Bayesian inference was \citet{definetti37}. Differences in the interpretation of probability are best explored outside of this article\footnote{If these terms are new to the reader, then please do not focus too much on the words `objective' and `subjective', since there is a lot of debate over them. For what it's worth, \textit{Statisticat, LLC}, the provider of this \proglang{R} package entitled \pkg{LaplacesDemon}, favors the `subjective' interpretation.}.
 
 This article is intended as an approachable introduction to Bayesian inference, or as a handy summary for experienced Bayesians. It is assumed that the reader has at least an elementary understanding of statistics, and this article focuses on applied, rather than theoretical, material. Equations and statistical notation are included, but it is hopefully presented so the reader does not need an intricate understanding of solving integrals, for example, but should understand the basic concept of integration. Please be aware that it is difficult to summarize Bayesian inference in such a short article. In which case, consider \citet{gelman04} for a more thorough and formal introduction.
 
 \section{Bayes' Theorem} \label{bayestheorem}
 
-Bayes' theorem shows the relation between two conditional probabilities that are the reverse of each other. This theorem is named after Reverend Thomas Bayes (1702-1761), and is also referred to as Bayes' law or Bayes' rule \citep{bayes63}. Bayes' theorem expresses the conditional probability, or `posterior probability', of an event $A$ after $B$ is observed in terms of the `prior probability' of $A$, prior probability of $B$, and the conditional probability of $B$ given $A$. Bayes' theorem is valid in all common interpretations of probability. The two (related) examples below should be sufficient to introduce Bayes' theorem.
+Bayes' theorem shows the relation between two conditional probabilities that are the reverse of each other. This theorem is named after Reverend Thomas Bayes (1702-1761), and is also referred to as Bayes' law or Bayes' rule \citep{bayes63}\footnote{\citet{stigler83} suggests the earliest discoverer of Bayes' theorem was Nicholas Saunderson (1682-1739), a blind mathematician/optician, who at age 29 became the Lucasian Professor of Mathematics at Cambridge. This position was previously held by Isaac Newton.}. Bayes' theorem expresses the conditional probability, or `posterior probability', of an event $A$ after $B$ is observed in terms of the `prior probability' of $A$, prior probability of $B$, and the conditional probability of $B$ given $A$. Bayes' theorem is valid in all common interpretations of probability. The two (related) examples below should be sufficient to introduce Bayes' theorem.
 
 \subsection{Bayes' Theorem, Example 1} \label{bayestheorem1}
 
@@ -465,7 +465,7 @@ Two of many possible alternatives are to use
 \item Deviance Information Criterion (DIC)
 \end{enumerate}
 
-DIC is the most popular method of assessing model fit and comparing models, though Bayes Factors are better, when appropriate, because they take more into account.
+DIC is the most popular method of assessing model fit and comparing models, though Bayes factors are better, when appropriate, because they take more into account.
 
 \section{Model Fit} \label{modelfit}
 
@@ -515,7 +515,7 @@ Frequentist p-values have many problems, but here it will only be noted that the
 
 \subsection{Chi-Square} \label{chisquare}
 
-\citep[p. 175]{gelman04} suggest an omnibus test such as the following $\chi^2$
+\citet[p. 175]{gelman04} suggest an omnibus test such as the following $\chi^2$
 
 $$\chi^2_i = \frac{(\textbf{y}_i - \frac{\sum^T_{t=1} \textbf{y}^{rep}_{i,t}}{T})^2}{\mathrm{var}(\textbf{y}^{rep}_{i,1:T})},$$
 
@@ -612,7 +612,7 @@ Following is a short list of advantages of frequentist inference over Bayesian i
 \item Frequentist models have much shorter run-times than Bayesian models via MCMC or PMC (though Laplace Approximation yields run-times that are almost as fast as the frequentist MLE). Simple models with small sample sizes may be similar, but complex models with larger sample sizes may be minutes (frequentist) vs. weeks (Bayesian via MCMC).
 \end{itemize}
 
-As they say, it pays to go Bayes. Please send an email to \email{statisticat@gmail.com} with any questions or concerns about this article.
+As they say, it pays to go Bayes. Please send an email to \email{software@bayesian-inference.com} with any questions or concerns about this article.
 
 \bibliography{References}
 

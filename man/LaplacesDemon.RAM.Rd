@@ -97,7 +97,7 @@ LaplacesDemon.RAM(Model, Data, Iterations, Thinning)
     to update one chain in \code{\link{LaplacesDemon}} for a given model
     and data, and for a number of iterations and specified thinning.}
 }
-\author{Statisticat, LLC \email{statisticat@gmail.com}}
+\author{Statisticat, LLC \email{software@bayesian-inference.com}}
 \seealso{
   \code{\link{LaplacesDemon}},
   \code{\link{LML}}, and

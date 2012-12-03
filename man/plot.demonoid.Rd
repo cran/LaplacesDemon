@@ -85,7 +85,7 @@
   different adaptive MCMC algorithm. The following quantiles are plotted
   for absolute changes proposal variance: 0.025, 0.500, and 0.975.
 }
-\author{Statisticat, LLC \email{statisticat@gmail.com}}
+\author{Statisticat, LLC \email{software@bayesian-inference.com}}
 \seealso{
   \code{\link{ESS}},
   \code{\link{LaplacesDemon}}, and

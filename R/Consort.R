@@ -227,6 +227,7 @@ Consort <- function(object=NULL)
           else if(object$Algorithm == "Hamiltonian Monte Carlo with Dual-Averaging")
                Alg <- "HMCDA"
           else if(object$Algorithm == "Hit-And-Run Metropolis") Alg <- "HARM"
+          else if(object$Algorithm == "Independence Metropolis") Alg <- "IM"
           else if(object$Algorithm == "Metropolis-within-Gibbs") Alg <- "MWG"
           else if(object$Algorithm == "No-U-Turn Sampler") Alg <- "NUTS"
           else if(object$Algorithm == "Robust Adaptive Metropolis") Alg <- "RAM"
@@ -393,6 +394,17 @@ Consort <- function(object=NULL)
                cat("     epsilon=",
                     round(object$CovarDHis[nrow(object$CovarDHis),1],3),
                     ", Lmax=", Lmax, ", lambda=", lambda, "))\n\n", sep="")
+               }
+          if(Alg == "IM") {
+               ### IM
+               cat(oname, " <- LaplacesDemon(Model, Data=", dname,
+                    ", Initial.Values,\n", sep="")
+               cat("     Covar=", oname, "$Covar, Iterations=",
+                    Rec.Iterations, ", Status=", Rec.Status, ", ",
+                    "Thinning=", Rec.Thinning, ",\n", sep="")
+               cat("     Algorithm=\"IM\", ",
+                    "Specs=list(mu=apply(", oname,
+                    "$Posterior1, 2, mean)))\n\n", sep="")
                }
           if({(Alg == "AMWG") & Dim.Adapt & Fast & Ready} |
              {(Alg == "AMWG") & Dim.Adapt & !Fast & Ready} |

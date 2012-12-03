@@ -43,7 +43,9 @@ LaplacesDemon.hpc <- function(Model, Data, Initial.Values, Covar=NULL,
                     function(x) dyn.load(paste(wd, x, sep = "/")))
                on.exit(sapply(Dyn.libs,
                     function(x) dyn.unload(paste(wd, x, sep = "/"))))}
-          LaplacesDemon(...)
+          LaplacesDemon(Model, Data, Initial.Values[x,],
+                        Covar, Iterations, Status, Thinning,
+                        Algorithm, Specs)
           }
      cat("\nStatus messages are not displayed for parallel processing.")
      cat("\nLaplace's Demon is beginning parallelization...\n")

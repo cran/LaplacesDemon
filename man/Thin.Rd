@@ -42,7 +42,7 @@ Thin(x, By=1)
   The \code{Thin} argument returns a thinned matrix. When \code{x} is a
   vector, the returned object is a matrix with 1 column.
 }
-\author{Statisticat, LLC. \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{
   \code{\link{ESS}},
   \code{\link{LaplacesDemon}}, and

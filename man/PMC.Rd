@@ -266,7 +266,7 @@ alpha=NULL, M=1, N=1000, nu=9)
   Cosmological Parameters Using Adaptive Importance Sampling".
   Physical Review D, 80 (2), p. 023507.
 }
-\author{Statisticat, LLC. \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{
   \code{\link{BayesFactor}},
   \code{\link{LaplaceApproximation}},
@@ -339,4 +339,5 @@ Importance(Fit, Model, MyData, Discrep="Chi-Square")
 
 #End
 }
+\keyword{Importance Sampling}
 \keyword{Monte Carlo}

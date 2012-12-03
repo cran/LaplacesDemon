@@ -88,7 +88,7 @@ These functions are similar to those in \code{base R}.
   \code{qnormp} gives the quantile function, and
   \code{rnormp} generates random deviates.
 }
-\author{Statisticat, LLC. \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{
   \code{\link{dlaplace}},
   \code{\link{dnorm}},

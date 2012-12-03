@@ -10,6 +10,7 @@
 Geweke.Diagnostic <- function(x) 
      {
      x <- as.matrix(x)
+     if(nrow(x) < 100) return(rep(NA, ncol(x)))
      frac1 <- 0.1; frac2 <- 0.5
      startx <- 1; endx <- nrow(x)
      xstart <- c(startx, endx - frac2 * {endx - startx})

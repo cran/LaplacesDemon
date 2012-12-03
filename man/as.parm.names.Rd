@@ -49,7 +49,7 @@ as.parm.names(x, uppertri=NULL)
 \value{
   This function returns a vector of parameter names.
 }
-\author{Statisticat, LLC. \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{
   \code{\link{LaplaceApproximation}} and
   \code{\link{LaplacesDemon}}.

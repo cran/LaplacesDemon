@@ -71,6 +71,10 @@ than the model associated with the column. For example, element
 \code{B[3,2]} is the Bayes factor that model 3 is greater than model 2.
 The 'Strength of Evidence' aids in the interpretation (Jeffreys, 1961).
 
+A table for the interpretation of the strength of evidence for Bayes
+factors is available at
+\url{www.bayesian-inference.com/bayesfactors.shtml}.
+
 Each Bayes factor, \code{B}, is the posterior odds in favor of the
 hypothesis divided by the prior odds in favor of the hypothesis, where
 the hypothesis is usually
@@ -119,7 +123,7 @@ model is the true model.
   Posterior Simulation with the Laplace-Metropolis Estimator". Journal
   of the American Statistical Association, 92, p. 648--655.
 }
-\author{Statisticat, LLC. \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{
   \code{\link{is.bayesfactor}},
   \code{\link{is.proper}},

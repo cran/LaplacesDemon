@@ -93,7 +93,7 @@ var2sd(var=1)
     variance, \eqn{\sigma^2}{sigma^2}, where \eqn{\sigma =
     \sqrt{\sigma^2}}{sigma = sqrt(sigma^2)}.}
 }
-\author{Statisticat, LLC. \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{\code{\link{Cov2Cor}}}
 \examples{
 library(LaplacesDemon)

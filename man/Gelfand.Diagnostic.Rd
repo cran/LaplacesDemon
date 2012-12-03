@@ -41,7 +41,7 @@ Gelfand.Diagnostic(x, k=3, pen=FALSE)
   Models Using Gibbs Sampling". Journal of the American Statistical
   Association, 85, p. 972--985.
 }
-\author{Statisticat, LLC. \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{
   \code{\link{burnin}}
 }

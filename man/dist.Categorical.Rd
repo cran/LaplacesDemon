@@ -56,7 +56,7 @@ Dirichlet distribution.
   \code{dcat} gives the density and
   \code{rcat} generates random deviates.
 }
-\author{Statisticat, LLC. \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{
   \code{\link{as.indicator.matrix}},
   \code{\link{ddirichlet}}, and

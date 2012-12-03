@@ -10,8 +10,8 @@ within R.
   \tabular{ll}{
     Package: \tab LaplacesDemon\cr
     Type: \tab Package\cr
-    Version: \tab 12.11.05\cr
-    Date: \tab 2012-11-05\cr
+    Version: \tab 12.12.03\cr
+    Date: \tab 2012-12-03\cr
     License: \tab GPL-2\cr
   }
   The goal of LaplacesDemon, often referred to as Laplace's Demon, is to
@@ -36,5 +36,5 @@ within R.
   function, and the best place to start is probably with the
   LaplacesDemon Tutorial vignette.
   }
-\author{Statisticat, LLC. \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \keyword{package}

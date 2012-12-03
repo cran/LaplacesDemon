@@ -39,8 +39,16 @@ LaplacesDemon.hpc(Model, Data, Initial.Values, Covar=NULL,
     names. The \code{\link{as.parm.names}} function may be helpful for
     preparing the data, and the \code{\link{is.data}} function may be
     helpful for checking data.}
-  \item{Initial.Values}{This argument requires a vector of initial
-    values equal in length to the number of parameters. Each initial
+  \item{Initial.Values}{For \code{LaplacesDemon}, this argument requires
+    a vector of initial values equal in length to the number of
+    parameters. For \code{LaplacesDemon.hpc}, this argument also accepts
+    a vector, in which case the same initial values will be applied to
+    all parallel chains, or the argument accepts a matrix in which each
+    row is a parallel chain and the number of columns is equal in length
+    to the number of parameters. When a matrix is supplied for
+    \code{LaplacesDemon.hpc}, each parallel chain begins with its own
+    initial values that are preferably dispersed. For both
+    \code{LaplacesDemon} and \code{LaplacesDemon.hpc}, each initial
     value will be the starting point for an adaptive chain or a
     non-adaptive Markov chain of a parameter. If all initial values are
     set to zero, then Laplace's Demon will attempt to optimize the
@@ -48,12 +56,9 @@ LaplacesDemon.hpc(Model, Data, Initial.Values, Covar=NULL,
     function. After Laplace's Demon finishes updating, it may be desired
     to continue updating from where it left off. To continue, this
     argument should receive the last iteration of the previous
-    update. For example, if Fit is the output object, then
+    update. For example, if the output object is called Fit, then
     \code{Initial.Values=as.initial.values(Fit)}. Initial values may be
-    generated randomly with the \code{\link{GIV}} function. Although
-    dispersed initial values are ideal for multiple chains in
-    \code{LaplacesDemon.hpc}, all chains must begin with the same vector
-    of initial values.}
+    generated randomly with the \code{\link{GIV}} function.}
   \item{Covar}{This argument defaults to \code{NULL}, but may otherwise
     accept a \eqn{K \times K}{K x K} proposal covariance matrix for the
     first adaptation of the proposal covariances, where \eqn{K} is the
@@ -133,6 +138,7 @@ LaplacesDemon.hpc(Model, Data, Initial.Values, Covar=NULL,
     \item Hamiltonian Monte Carlo (HMC)
     \item Hamiltonian Monte Carlo with Dual-Averaging (HMCDA)
     \item Hit-And-Run Metropolis (HARM)
+    \item Independence Metropolis (IM)
     \item Metropolis-within-Gibbs (MWG)
     \item No-U-Turn Sampler (NUTS)
     \item Random-Walk Metropolis (RWM)
@@ -147,10 +153,11 @@ LaplacesDemon.hpc(Model, Data, Initial.Values, Covar=NULL,
   }
 
   It is a goal for the documentation in the \pkg{LaplacesDemon} to be
-  extensive. However, details of MCMC algorithms are best explored in
-  the "LaplacesDemon Tutorial" vignette, and additional information on
-  MCMC may be found in the vignette entitled "Bayesian
-  Inference". Algorithm specifications (\code{Specs}) are listed below:
+  extensive. However, details of MCMC algorithms are best explored
+  online at \url{www.bayesian-inference.com/mcmc.shtml}, as well
+  as in the "LaplacesDemon Tutorial" vignette, and the "Bayesian
+  Inference" vignette. Algorithm specifications (\code{Specs}) are
+  listed below:
 
   \itemize{
     \item \code{A} is the number of initial, adaptive iterations to be
@@ -208,6 +215,10 @@ LaplacesDemon.hpc(Model, Data, Initial.Values, Covar=NULL,
     \item \code{lambda} is a scalar trajectory length in HMCDA.
     \item \code{Lmax} is a scalar maximum for \code{L} (see above) in
     HMCDA.
+    \item \code{mu} is a vector that is equal in length to the initial
+    values. This vector will be used as the mean of the proposal
+    distribution, and is usually the posterior mode of a
+    previously-updated \code{\link{LaplaceApproximation}}.
     \item \code{n1} affects the size of the subset of each set of points
     to adjust, and is used in twalk. It relates to the number of
     parameters, and \code{n1=4} is recommended. If adjusted, it is
@@ -448,7 +459,7 @@ LaplacesDemon.hpc(Model, Data, Initial.Values, Covar=NULL,
   Vihola, M. (2011). "Robust Adaptive Metropolis Algorithm with Coerced
   Acceptance Rate". Statistics and Computing. Springer, Netherlands.
 }
-\author{Statisticat, LLC \email{statisticat@gmail.com}}
+\author{Statisticat, LLC \email{software@bayesian-inference.com}}
 \seealso{
   \code{\link{as.initial.values}},
   \code{\link{as.parm.names}},
@@ -511,7 +522,7 @@ Initial.Values <- GIV(Model, MyData, PGF=TRUE)
 # Examples of MCMC Algorithms                                             #
 ###########################################################################
 
-#############################  Hit-And-Run  ###############################
+########################  Hit-And-Run Metropolis  #########################
 Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
      Covar=NULL, Iterations=1000, Status=100, Thinning=1,
      Algorithm="HARM", Specs=NULL)
@@ -556,7 +567,7 @@ Importance(Fit, Model, MyData, Discrep="Chi-Square")
 #     Covar=NULL, Iterations=1000, Status=100, Thinning=1,
 #     Algorithm="AMM", Specs=list(Adaptive=500, Periodicity=10, w=0.05))
 
-######################  Componentwise Hit-And-Run  ########################
+#################  Componentwise Hit-And-Run Metropolis  ##################
 #Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
 #     Covar=NULL, Iterations=1000, Status=100, Thinning=1,
 #     Algorithm="CHARM", Specs=NULL)
@@ -582,6 +593,13 @@ Importance(Fit, Model, MyData, Discrep="Chi-Square")
 #     Covar=NULL, Iterations=1000, Status=100, Thinning=1,
 #     Algorithm="HMCDA", Specs=list(A=500, delta=0.65, epsilon=NULL,
 #     Lmax=1000, lambda=0.1))
+
+########################  Independence Metropolis  ########################
+### Note: the mu and Covar arguments are populated from a previous Laplace
+### Approximation.
+#Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
+#     Covar=Fit$Covar, Iterations=1000, Status=100, Thinning=1,
+#     Algorithm="IM", Specs=list(mu=Fit$Summary1[,1]))
 
 #######################  Metropolis-within-Gibbs  #########################
 #Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
@@ -663,6 +681,7 @@ Importance(Fit, Model, MyData, Discrep="Chi-Square")
 \keyword{Delayed Rejection Metropolis}
 \keyword{Hamiltonian Monte Carlo}
 \keyword{Hit-And-Run}
+\keyword{Independence Metropolis}
 \keyword{MCMC}
 \keyword{Metropolis-within-Gibbs}
 \keyword{Multiple Chains}

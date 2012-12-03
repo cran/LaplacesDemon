@@ -296,7 +296,7 @@
   Mardia, K.V. (1970). "Measures of Multivariate Skewness and Kurtosis
   with Applications". Biometrika, 57(3), p. 519--530.
 }
-\author{Statisticat, LLC \email{statisticat@gmail.com}}
+\author{Statisticat, LLC \email{software@bayesian-inference.com}}
 \seealso{
   \code{\link{LaplacesDemon}} and
   \code{\link{predict.demonoid}}.

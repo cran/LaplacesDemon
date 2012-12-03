@@ -32,7 +32,7 @@ is.stationary(x)
   the supplied object is stationary according to the
   \code{\link{Geweke.Diagnostic}} function.
 }
-\author{Statisticat, LLC. \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{
   \code{\link{Geweke.Diagnostic}} and
   \code{\link{LaplacesDemon}}.

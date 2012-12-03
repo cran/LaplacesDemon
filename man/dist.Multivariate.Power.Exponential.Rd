@@ -65,6 +65,9 @@ special cases, depending on the kurtosis or \eqn{\kappa}{kappa}
 parameter. A multivariate uniform occurs as
 \eqn{\kappa \rightarrow \infty}{kappa -> infinity}.
 
+If the goal is to use a multivariate Laplace distribution, the
+\code{dmvl} function will perform faster and more accurately.
+
 The \code{rmvpe} function is a modified form of the rmvpowerexp function
 in the MNM package.
 }
@@ -83,7 +86,7 @@ in the MNM package.
   Family of Distributions". Communications in Statistics, Part A - Theory
   and Methods [Split from: J(CommStat)], 31(12), p. 2167--2182.
 }
-\author{Statisticat, LLC. \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{
   \code{\link{dlaplace}},
   \code{\link{dmvl}},

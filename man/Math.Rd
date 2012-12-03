@@ -50,7 +50,7 @@ partial(Model, parm, Data, Interval=1e-6)
   
   \code{partial} returns a vector of partial derivatives.
 }
-\author{Statisticat, LLC. \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{
   \code{\link{Hessian}},
   \code{\link{LaplaceApproximation}}, and

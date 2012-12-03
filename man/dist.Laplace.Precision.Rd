@@ -32,7 +32,7 @@ rlaplacep(n, mu=0, tau=1)
   \itemize{
   \item Application: Continuous Univariate
   \item Density: \eqn{p(\theta) = \frac{\tau}{2} \exp(-\tau |\theta-\mu|)}{p(theta) = (tau/2) * exp(-tau*abs(theta-mu))}
-  \item Inventor: Pierre-Simon Laplace
+  \item Inventor: Pierre-Simon Laplace (1774)
   \item Notation 1: \eqn{\theta \sim \mathrm{Laplace}(\mu,\tau^{-1})}{theta ~
   Laplace(mu, tau^(-1))}
   \item Notation 2: \eqn{\theta \sim \mathcal{L}(\mu, \tau^{-1})}{theta ~
@@ -74,7 +74,7 @@ inference.
   \code{qlaplacep} gives the quantile function, and
   \code{rlaplacep} generates random deviates.
 }
-\author{Statisticat, LLC. \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{
   \code{\link{dalaplace}},
   \code{\link{dexp}},

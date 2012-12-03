@@ -31,7 +31,7 @@ rlaplace(n, location=0, scale=1)
   \itemize{
   \item Application: Continuous Univariate
   \item Density: \eqn{p(\theta) = \frac{1}{2 \lambda} \exp(-\frac{|\theta - \mu|}{\lambda})}{p(theta) = (1 / (2*lambda)) * exp(-(abs(theta - mu) / lambda))}
-  \item Inventor: Pierre-Simon Laplace
+  \item Inventor: Pierre-Simon Laplace (1774)
   \item Notation 1: \eqn{\theta \sim
     \mathrm{Laplace}(\mu,\lambda)}{theta ~ Laplace(mu, lambda)}
   \item Notation 2: \eqn{\theta \sim \mathcal{L}(\mu, \lambda)}{theta ~
@@ -47,16 +47,16 @@ rlaplace(n, location=0, scale=1)
   \item Mode: \eqn{mode(\theta) = \mu}{mode(theta) = mu}
 }
 
-The Laplace distribution is also called the double exponential 
-distribution, because it looks like two exponential distributions back to
-back with respect to location \eqn{\mu}{mu}. It is also called the
-``First Law of Laplace'', just as the normal distribution is referred to
-as the ``Second Law of Laplace''. The Laplace distribution is
-symmetric with respect to \eqn{\mu}{mu}, though there are asymmetric
-versions of the Laplace distribution. The PDF of the Laplace
-distribution is reminiscent of the normal distribution; however,
-whereas the normal distribution is expressed in terms of the squared
-difference from the mean \eqn{\mu}{mu}, the Laplace density is
+The Laplace distribution (Laplace, 1774) is also called the double
+exponential distribution, because it looks like two exponential
+distributions back to back with respect to location \eqn{\mu}{mu}. It is
+also called the ``First Law of Laplace'', just as the normal
+distribution is referred to as the ``Second Law of Laplace''. The
+Laplace distribution is symmetric with respect to \eqn{\mu}{mu}, though
+there are asymmetric versions of the Laplace distribution. The PDF of
+the Laplace distribution is reminiscent of the normal distribution;
+however, whereas the normal distribution is expressed in terms of the
+squared difference from the mean \eqn{\mu}{mu}, the Laplace density is
 expressed in terms of the absolute difference from the mean,
 \eqn{\mu}{mu}. Consequently, the Laplace distribution has fatter
 tails than the normal distribution. It has been argued that the Laplace
@@ -75,6 +75,12 @@ These functions are similar to those in the \code{VGAM} package.
   \code{plaplace} gives the distribution function,
   \code{qlaplace} gives the quantile function, and
   \code{rlaplace} generates random deviates.
+}
+\references{
+  Laplace, P. (1774). "Memoire sur la Probabilite des Causes par les
+  Evenements." l'Academie Royale des Sciences, 6, 621--656. English
+  translation by S.M. Stigler in 1986 as "Memoir on the Probability
+  of the Causes of Events" in Statistical Science, 1(3), 359--378.
 }
 \seealso{
   \code{\link{dalaplace}},

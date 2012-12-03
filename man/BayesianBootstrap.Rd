@@ -2,21 +2,25 @@
 \alias{BayesianBootstrap}
 \title{The Bayesian Bootstrap}
 \description{
-  This function samples data for bootstrapping, as per the Bayesian
-  Bootstrap of Rubin (1981).
+  This function performs the Bayesian Bootstrap of Rubin (1981),
+  returning either bootstrapped weights or statistics.
 }
 \usage{
-BayesianBootstrap(X, n=1000, Status=NULL)
+BayesianBootstrap(X, n=1000, Method="weights", Status=NULL)
 }
 \arguments{
   \item{X}{This is a vector or matrix of data. When a matrix is
     supplied, sampling is based on the first column.}
-  \item{n}{This is the number of bootstrapped samples to draw, and is
-    usually equal to the number of rows in \code{X}.}
+  \item{n}{This is the number of bootstrapped replications.}
+  \item{Method}{When \code{Method="weights"} (which is the default),
+    a matrix of row weights is returned. Otherwise, a function is
+    accepted. The function specifies the statistic to be
+    bootstrapped. The first argument of the function should be a matrix
+    of data, and the second argument should be a vector of weights.}
   \item{Status}{This determines the periodicity of status messages. When
     \code{Status=100}, for example, a status message is displayed every
-    100 samples. Otherwise, \code{Status} defaults to \code{NULL}, and
-    status messages are not displayed.}
+    100 replications. Otherwise, \code{Status} defaults to \code{NULL},
+    and status messages are not displayed.}
 }
 \details{
   The term, `bootstrap', comes from the German novel \emph{Adventures of
@@ -32,38 +36,66 @@ BayesianBootstrap(X, n=1000, Status=NULL)
 
   The data, \eqn{\textbf{X}}{X}, are assumed to be independent and
   identically distributed (IID), and to be a representative sample of
-  the larger (bootstrapped) population. The data are randomly sampled
-  with replacement \eqn{n} times. Posterior distributions of interest
-  are then estimated given the sampled (bootstrapped) data.
+  the larger (bootstrapped) population. Given that the data has \eqn{N}
+  rows in one bootstrap replication, the row weights are sampled from a
+  Dirichlet distribution with all \eqn{N} concentration parameters equal
+  to \eqn{1} (a uniform distribution over an open standard \eqn{N-1}
+  simplex). The distributions of a parameter inferred from considering
+  many samples of weights are interpretable as posterior distributions
+  on that parameter.
 
   Just as with the frequentist bootstrap, inappropriate use of the
   Bayesian bootstrap can lead to inappropriate inferences. The Bayesian
-  bootstrap violates the Likelihood Principle, because the evaluation of
+  bootstrap violates the likelihood principle, because the evaluation of
   a statistic of interest depends on data sets other than the observed
-  data set.
+  data set. For more information on the likelihood principle, see
+  \url{www.bayesian-inference.com/likelihood.shtml#likelihoodprinciple}.
 
   The \code{BayesianBootstrap} function has many uses, including
-  imputation (with this variation: \code{\link{ABB}}), validation,
   creating test statistics on the population data given the observed
-  data, and more.
+  data (supported here), imputation (with this variation:
+  \code{\link{ABB}}), validation, and more.
 }
 \value{
-  This function returns a \eqn{n \times J}{n x J} matrix of samples,
-  where \eqn{n} is specified by the user and \eqn{J} is the number of
-  columns in \eqn{\textbf{X}}{X}.
+  When \code{Method="weights"}, this function returns a
+  \eqn{N \times n}{S x J} matrix of weights, where the number of rows
+  \eqn{N} is equal to the number of rows in \code{X}.
+
+  For statistics, a matrix or array is returned, depending on the number
+  of dimensions. The replicates are indexed by row in a matrix or in
+  the first dimension of the array.
 }
 \references{
   Rubin, D.B. (1981). "The Bayesian Bootstrap". The Annals of
   Statistics, 9(1), p. 130--134.
 }
-\author{Statisticat, LLC. \email{statisticat@gmail.com}}
+\author{Bogumil Kaminski, \email{bkamins@sgh.waw.pl} and
+  Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{
   \code{\link{ABB}},
   \code{\link{LaplaceApproximation}}, and
   \code{\link{LaplacesDemon}}.
 }
 \examples{
-X <- matrix(runif(100), 10, 10)
-X.B <- BayesianBootstrap(X, n=10)
+#Example 1: Samples
+x <- 1:2
+BB <- BayesianBootstrap(X=x, n=100, Method="weights"); BB
+
+#Example 2: Mean, Univariate
+x <- 1:2
+BB <- BayesianBootstrap(X=x, n=100, Method=weighted.mean); BB
+
+#Example 3: Mean, Multivariate
+data(demonsnacks)
+BB <- BayesianBootstrap(X=demonsnacks, n=100,
+     Method=function(x,w) apply(x, 2, weighted.mean, w=w)); BB
+
+#Example 4: Correlation
+dye <- c(1.15, 1.70, 1.42, 1.38, 2.80, 4.70, 4.80, 1.41, 3.90)
+efp <- c(1.38, 1.72, 1.59, 1.47, 1.66, 3.45, 3.87, 1.31, 3.75)
+X <- matrix(c(dye,efp), length(dye), 2)
+colnames(X) <- c("dye","efp")
+BB <- BayesianBootstrap(X=X, n=100,
+     Method=function(x,w) cov.wt(x, w, cor=TRUE)$cor); BB
 }
 \keyword{Utility}

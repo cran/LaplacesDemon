@@ -94,7 +94,8 @@ plot.demonoid <- function(x, BurnIn=1, Data=NULL, PDF=FALSE,
           if({colnames(x$Monitor)[j] == "LP"} &
                {max(x$Monitor[BurnIn:nn,j]) > x$Monitor[BurnIn,j]} &
                {x$Algorithm %in% c("Adaptive Metropolis-within-Gibbs",
-               "Componentwise Hit-And-Run","Metropolis-within-Gibbs",
+               "Componentwise Hit-And-Run Metropolis",
+               "Metropolis-within-Gibbs",
                "Reversible-Jump",
                "Sequential Adaptive Metropolis-within-Gibbs",
                "Sequential Metropolis-within-Gibbs",

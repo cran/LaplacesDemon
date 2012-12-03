@@ -109,7 +109,7 @@ ABB(X, K=1)
   Nonresponse". Journal of the American Statistical Association, 81,
   p. 366--374.
 }
-\author{Statisticat, LLC \email{statisticat@gmail.com}}
+\author{Statisticat, LLC \email{software@bayesian-inference.com}}
 \seealso{
   \code{\link{BayesianBootstrap}} and
   \code{\link{LaplacesDemon}}.

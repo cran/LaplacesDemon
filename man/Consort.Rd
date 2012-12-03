@@ -99,7 +99,7 @@
   Carlo: Can We Trust the Third Significant Figure?". Statistical
   Science, 23, p. 250--260.
 }
-\author{Statisticat, LLC. \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{
   \code{\link{ESS}},
   \code{\link{Geweke.Diagnostic}},

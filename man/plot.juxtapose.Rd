@@ -26,7 +26,7 @@
 
   For more information, see the \code{\link{Juxtapose}} function.
 }
-\author{Statisticat, LLC. \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{
   \code{\link{Juxtapose}}}
 \keyword{Plot}

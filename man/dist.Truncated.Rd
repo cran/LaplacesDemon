@@ -11,7 +11,7 @@
   generation for truncated distributions.
 }
 \usage{
-dtrunc(x, spec, a=-Inf, b=Inf, ...)
+dtrunc(x, spec, a=-Inf, b=Inf, log=FALSE, ...)
 extrunc(spec, a=-Inf, b=Inf, ...)
 ptrunc(x, spec, a=-Inf, b=Inf, ...)
 qtrunc(p, spec, a=-Inf, b=Inf, ...)
@@ -29,6 +29,8 @@ vartrunc(spec, a=-Inf, b=Inf, ...)
     to negative infinity.}
   \item{b}{This is the upper bound of truncation, which defaults
     to infinity.}
+  \item{log}{Logical. If \code{log=TRUE}, then the logarithm of the
+    density is returned.}
   \item{\dots}{Additional arguments pertain to the probability
     distribution specified in the \code{spec} argument.}
 }
@@ -44,9 +46,14 @@ vartrunc(spec, a=-Inf, b=Inf, ...)
   are truncated to the interval \eqn{[a,b]}, such as \eqn{p(\theta) \in
   [a,b]}{p(theta) in [a,b]}.
 
-  In \code{LaplaceApproximation} or \code{LaplacesDemon}, \code{dtrunc}
-  is often used in conjunction with the \code{interval} function to
-  truncate prior probability distributions.
+  The \code{dtrunc} function is often used in conjunction with the
+  \code{\link{interval}} function to truncate prior probability
+  distributions in the model specification function for use with these
+  numerical approximation functions: \code{\link{LaplaceApproximation}},
+  \code{\link{LaplacesDemon}}, and \code{\link{PMC}}.
+
+  The R code of Nadarajah and Kotz (2006) has been modified to work with
+  log-densities.
 }
 \value{
   \code{dtrunc} gives the density,
@@ -64,12 +71,13 @@ vartrunc(spec, a=-Inf, b=Inf, ...)
 \seealso{
   \code{\link{interval}},
   \code{\link{is.proper}},
-  \code{\link{LaplaceApproximation}}, and
-  \code{\link{LaplacesDemon}}.
+  \code{\link{LaplaceApproximation}},
+  \code{\link{LaplacesDemon}}, and
+  \code{\link{PMC}}.
 }
 \examples{
 library(LaplacesDemon)
-x <- seq(-3, 3, by = 0.1)
+x <- seq(-0.5, 0.5, by = 0.1)
 y <- dtrunc(x, "norm", a=-0.5, b=0.5, mean=0, sd=2)
 }
 \keyword{Distribution}

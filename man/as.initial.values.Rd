@@ -3,14 +3,12 @@
 \title{Initial Values}
 \description{
   This function returns the most recent posterior samples from an object
-  of class \code{demonoid}, the most recent posterior samples from the
-  chain with the lowest deviance in an object of class
-  \code{demonoid.hpc}, the posterior modes of an object of class
-  \code{laplace}, the posterior means of an object of class \code{pmc}
-  with one mixture component, or the latest means of the importance
-  sampling distribution of an object of class \code{pmc} with multiple
-  mixture components. The returned values are intended to be the initial
-  values for future updates.
+  of class \code{demonoid} or \code{demonoid.hpc}, the posterior modes
+  of an object of class \code{laplace}, the posterior means of an object
+  of class \code{pmc} with one mixture component, or the latest means of
+  the importance sampling distribution of an object of class \code{pmc}
+  with multiple mixture components. The returned values are intended to
+  be the initial values for future updates.
 }
 \usage{
 as.initial.values(x)
@@ -30,11 +28,12 @@ as.initial.values(x)
   to change the previous initial values to the latest values.
 }
 \value{
-  The returned value is a vector (or matrix in the case of PMC with
-  multiple mixture components) of the latest values, which may now be
-  used as initial values for a future update.
+  The returned value is a vector (or matrix in the case of an object of
+  class \code{demonoid.hpc}, or \code{pmc} with multiple mixture
+  components) of the latest values, which may now be used as initial
+  values for a future update.
 }
-\author{Statisticat, LLC. \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{
   \code{\link{LaplaceApproximation}},
   \code{\link{LaplacesDemon}},

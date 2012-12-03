@@ -149,7 +149,7 @@ Importance(object, Model, Data, Categorical=FALSE, Discrep, d=0)
   Discussion)". Journal of the Royal Statistical Society, B 64,
   p. 583--639.
 }
-\author{Statisticat, LLC. \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{
   \code{\link{is.importance}},
   \code{\link{LaplaceApproximation}},

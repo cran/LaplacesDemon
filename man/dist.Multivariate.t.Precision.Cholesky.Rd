@@ -87,7 +87,7 @@ parameterization is faster than the traditional parameterization.
   \code{dmvtpc} gives the density and 
   \code{rmvtpc} generates random deviates.
 }
-\author{Statisticat, LLC. \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{
   \code{\link{chol}},
   \code{\link{dwishartc}},

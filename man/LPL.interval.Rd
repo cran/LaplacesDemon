@@ -92,7 +92,9 @@ LPL.interval(Prior, Posterior, prob=0.95, plot=FALSE, PDF=FALSE)
   Compared with probability intervals, the LPL interval is slightly less
   convenient to calculate. Although the prior distribution is specified
   within the \code{Model} specification function, the user must specify
-  it for the \code{LPL.interval} function as well.
+  it for the \code{LPL.interval} function as well. A comparison of the
+  quantile-based probability interval, HPD interval, and LPL interval is
+  available here: \url{www.bayesian-inference.com/credible.shtml}.
 }
 \value{
   A matrix is returned with one row and two columns. The row represents
@@ -108,7 +110,7 @@ LPL.interval(Prior, Posterior, prob=0.95, plot=FALSE, PDF=FALSE)
   Bernardo, J.M. and Rueda, R. (2002). "Bayesian Hypothesis Testing: A
   Reference Approach". International Statistical Review, 70, p. 351--372.
 }
-\author{Statisticat, LLC. \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{
   \code{\link{KLD}},
   \code{\link{p.interval}},

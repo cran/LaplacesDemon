@@ -48,7 +48,9 @@
   
   The purpose of a posterior predictive check is to assess how well (or
   poorly) the model fits the data, or to assess discrepancies between
-  the model and the data.
+  the model and the data. For more information on posterior predictive
+  checks, see
+  \url{www.bayesian-inference.com/posteriorpredictivechecks.shtml}.
 
   When \eqn{\textbf{y}}{y} is continuous and known, this function
   estimates the predictive concordance between \eqn{\textbf{y}}{y} and
@@ -265,7 +267,7 @@
   Discussion)". Journal of the Royal Statistical Society, B 64,
   p. 583--639.
 }
-\author{Statisticat, LLC. \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{
   \code{\link{PMC}},
   \code{\link{predict.pmc}}, and

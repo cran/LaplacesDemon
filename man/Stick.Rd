@@ -67,7 +67,7 @@ Stick(theta)
   Sethuraman, J. (1994). "A Constructive Definition of Dirichlet
   Priors". Statistica Sinica, 4, p. 639--650.
 }
-\author{Statisticat, LLC. \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{
   \code{\link{ddirichlet}},
   \code{\link{dmvpolya}}, and 

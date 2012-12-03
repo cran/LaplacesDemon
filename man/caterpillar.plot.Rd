@@ -55,7 +55,7 @@
   color of the median and quantile line differs by chain; the first
   chain is black and additional chains appear beneath.
 }
-\author{Statisticat, LLC. \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{
   \code{\link{LaplaceApproximation}},
   \code{\link{LaplacesDemon}},

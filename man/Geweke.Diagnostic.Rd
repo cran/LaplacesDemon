@@ -27,7 +27,8 @@
 \usage{Geweke.Diagnostic(x)}
 \arguments{
   \item{x}{This required argument is a vector or matrix of posterior
-    samples.}
+    samples. Each column vector in a matrix is a chain to be assessed.
+    A minimum of 100 samples are required.}
 }
 \details{
   The \code{Geweke.Diagnostic} is one of the criteria in the

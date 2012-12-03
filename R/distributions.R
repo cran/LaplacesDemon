@@ -885,7 +885,22 @@ rmvcpc <- function(n=1, mu, U)
 
 dmvl <- function(x, mu, Sigma, log=FALSE)
      {
-     return(dmvpe(x, mu, Sigma, kappa=0.5, log))
+     if(!is.matrix(x)) x <- rbind(x)
+     if(!is.matrix(mu)) mu <- rep(mu, each=nrow(x))
+     if(missing(Sigma)) Sigma <- diag(ncol(x))
+     if(!is.matrix(Sigma)) Sigma <- matrix(Sigma)
+     Sigma <- as.symmetric.matrix(Sigma)
+     if(!is.positive.definite(Sigma)) 
+         stop("Matrix Sigma is not positive-definite.")
+     k <- nrow(Sigma)
+     Omega <- as.inverse(Sigma)
+     ss <- x - mu
+     z <- rowSums({ss %*% Omega} * ss)
+     dens <- log(2 / ((2*pi)^(k/2) * sqrt(det(Sigma)))) +
+          log((sqrt(pi / (2*sqrt(2*z))) * exp(-sqrt(2*z))) /
+          sqrt(z/2)^(k/2 - 1))
+     if(log == FALSE) dens <- exp(dens)
+     return(dens)
      }
 rmvl <- function(n, mu, Sigma)
      {
@@ -898,7 +913,7 @@ rmvl <- function(n, mu, Sigma)
      if(n > nrow(mu)) mu <- matrix(mu, n, k, byrow=TRUE)
      e <- matrix(rexp(n, 1), n, k)
      z <- rmvn(n, rep(0, k), Sigma)
-     x <- e*mu + sqrt(e)*z
+     x <- mu + sqrt(e)*z
      return(x)
      }
 
@@ -908,7 +923,19 @@ rmvl <- function(n, mu, Sigma)
 
 dmvlc <- function(x, mu, U, log=FALSE)
      {
-     return(dmvpec(x, mu, U, kappa=0.5, log))
+     if(!is.matrix(x)) x <- rbind(x)
+     if(!is.matrix(mu)) mu <- rep(mu, each=nrow(x))
+     if(missing(U)) stop("Upper triangular U is required.")
+     k <- ncol(U)
+     Sigma <- t(U) %*% U
+     Omega <- as.inverse(Sigma)
+     ss <- x - mu
+     z <- rowSums({ss %*% Omega} * ss)
+     dens <- log(2 / ((2*pi)^(k/2) * sqrt(det(Sigma)))) +
+          log((sqrt(pi / (2*sqrt(2*z))) * exp(-sqrt(2*z))) /
+          sqrt(z/2)^(k/2 - 1))
+     if(log == FALSE) dens <- exp(dens)
+     return(dens)
      }
 rmvlc <- function(n, mu, U)
      {
@@ -918,7 +945,7 @@ rmvlc <- function(n, mu, U)
      if(n > nrow(mu)) mu <- matrix(mu, n, k, byrow=TRUE)
      e <- matrix(rexp(n, 1), n, k)
      z <- rmvnc(n, rep(0, k), U)
-     x <- e*mu + sqrt(e)*z
+     x <- mu + sqrt(e)*z
      return(x)
      }
 
@@ -1072,6 +1099,12 @@ dmvpolya <- function(x, alpha, log=FALSE)
           (sum(log(factorial(x + alpha - 1)) - log(factorial(alpha - 1))))
      if(log == FALSE) dens <- exp(dens)
      return(dens)
+     }
+rmvpolya <- function(n=1, alpha)
+     {
+     p <- rdirichlet(n, alpha)
+     x <- rcat(n,p)
+     return(x)
      }
 
 ###########################################################################
@@ -1643,14 +1676,14 @@ pst <- function(q, mu=0, sigma=1, nu=10, lower.tail=TRUE, log.p=FALSE)
      NN <- max(length(q), length(mu), length(sigma), length(nu))
      q <- rep(q, len=NN); mu <- rep(mu, len=NN)
      sigma <- rep(sigma, len=NN); nu <- rep(nu, len=NN)
-     if(length(nu) > 1) cdf <- ifelse(nu > 1000000,
+     if(length(nu) > 1) p <- ifelse(nu > 1000000,
           pnorm(q, mu, sigma, lower.tail=lower.tail, log.p=log.p),
           pt({q-mu}/sigma, df=nu, lower.tail=lower.tail, log.p=log.p))
-     else cdf <- if(nu > 1000000) {pnorm(q, mu, sigma,
+     else p <- if(nu > 1000000) {pnorm(q, mu, sigma,
           lower.tail=lower.tail, log.p=log.p)}
           else {pt({q-mu}/sigma, df=nu, lower.tail=lower.tail,
                log.p=log.p)}
-     return(cdf)
+     return(p)
      }
 qst <- function(p, mu=0, sigma=1, nu=10, lower.tail=TRUE, log.p=FALSE)
      {
@@ -1711,8 +1744,8 @@ pstp <- function(q, mu=0, tau=1, nu=10, lower.tail=TRUE, log.p=FALSE)
      NN <- max(length(q), length(mu), length(tau), length(nu))
      q <- rep(q, len=NN); mu <- rep(mu, len=NN)
      tau <- rep(tau, len=NN); nu <- rep(nu, len=NN)
-     cdf <- pst(q, mu, sqrt(1/tau), nu, lower.tail, log.p)
-     return(cdf)
+     p <- pst(q, mu, sqrt(1/tau), nu, lower.tail, log.p)
+     return(p)
      }
 qstp <- function(p, mu=0, tau=1, nu=10, lower.tail=TRUE, log.p=FALSE)
      {
@@ -1744,59 +1777,68 @@ rstp <- function(n, mu=0, tau=1, nu=10)
 #                                                                         #
 # These functions are similar to those from Nadarajah, S. and Kotz, S.    #
 # (2006). R Programs for Computing Truncated Distributions. Journal of    #
-# Statistical Software, 16, Code Snippet 2, 1-8.                          #
+# Statistical Software, 16, Code Snippet 2, 1-8. These functions have     #
+# corrected to work with log-densities.                                   #
 ###########################################################################
 
-dtrunc <- function(x, spec, a=-Inf, b=Inf, ...)
+dtrunc <- function(x, spec, a=-Inf, b=Inf, log=FALSE, ...)
      {
      if(a >= b) stop("Lower bound a is not less than upper bound b.")
-     tt <- rep(0, length(x))
+     if(any(x < a) | any(x > b))
+          stop("At least one instance of (x < a) or (x > b) found.")
+     dens <- rep(0, length(x))
      g <- get(paste("d", spec, sep=""), mode="function")
      G <- get(paste("p", spec, sep=""), mode="function")
-     tt[x>=a & x<=b] <- g(x[x>=a & x<=b], ...) / (G(b, ...) - G(a, ...))
-     return(tt)
+     if(log == TRUE) {
+          dens <- g(x, log=TRUE, ...) - log(G(b, ...) - G(a, ...))
+          }
+     else {
+          dens <- g(x, ...) / (G(b, ...) - G(a, ...))}
+     return(dens)
      }
 extrunc <- function(spec, a=-Inf, b=Inf, ...)
      {
-     if(a >= b) stop("Lower bound a is not less than upper bound b.")
-     f <- function(x) x * dtrunc(x, spec, a=a, b=b, ...)
+     f <- function(x) x * dtrunc(x, spec, a=a, b=b, log=FALSE, ...)
      return(integrate(f, lower=a, upper=b)$value)
      }
 ptrunc <- function(x, spec, a=-Inf, b=Inf, ...)
      {
      if(a >= b) stop("Lower bound a is not less than upper bound b.")
-     tt <- x
+     if(any(x < a) | any(x > b))
+          stop("At least one instance of (x < a) or (x > b) found.")
+     p <- x
      aa <- rep(a, length(x))
      bb <- rep(b, length(x))
      G <- get(paste("p", spec, sep=""), mode="function")
-     tt <- G(apply(cbind(apply(cbind(x, bb), 1, min), aa), 1, max), ...)
-     tt <- tt - G(aa, ...)
-     tt <- tt / {G(bb, ...) - G(aa, ...)}
-     return(tt)
+     p <- G(apply(cbind(apply(cbind(x, bb), 1, min), aa), 1, max), ...)
+     p <- p - G(aa, ...)
+     p <- p / {G(bb, ...) - G(aa, ...)}
+     return(p)
      }
 qtrunc <- function(p, spec, a=-Inf, b=Inf, ...)
      {
+     if(any(p < 0) || any(p > 1)) stop("p must be in [0,1].")
      if(a >= b) stop("Lower bound a is not less than upper bound b.")
-     tt <- p
+     q <- p
      G <- get(paste("p", spec, sep=""), mode="function")
      Gin <- get(paste("q", spec, sep=""), mode="function")
-     tt <- Gin(G(a, ...) + p*{G(b, ...) - G(a, ...)}, ...)
-     return(tt)
+     q <- Gin(G(a, ...) + p*{G(b, ...) - G(a, ...)}, ...)
+     return(q)
      }
 rtrunc <- function(n, spec, a=-Inf, b=Inf, ...)
      {
      if(a >= b) stop("Lower bound a is not less than upper bound b.")
      x <- u <- runif(n)
-     x <- qtrunc(u, spec, a = a, b = b,...)
+     x <- qtrunc(u, spec, a=a, b=b,...)
      return(x)
      }
 vartrunc <- function(spec, a=-Inf, b=Inf, ...)
      {
-     if(a >= b) stop("Lower bound a is not less than upper bound b.")
-     ex <- extrunc(spec, a = a, b = b, ...)
-     f <- function(x) {x - ex}^2 * dtrunc(x, spec, a = a, b = b, ...)
-     tt <- integrate(f, lower = a, upper = b)$value
-     return(tt)
+     ex <- extrunc(spec, a=a, b=b, ...)
+     f <- function(x) {
+          {x - ex}^2 * dtrunc(x, spec, a=a, b=b, log=FALSE, ...)}
+     sigma2 <- integrate(f, lower=a, upper=b)$value
+     return(sigma2)
      }
 
 ###########################################################################

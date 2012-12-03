@@ -41,7 +41,7 @@
   \code{\link{LaplaceApproximation}}, then plots are produced of
   selected parameters and all monitored variables.
 }
-\author{Statisticat, LLC. \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{\code{\link{LaplaceApproximation}}}
 \examples{### See the LaplaceApproximation function for an example.}
 \keyword{Plot}

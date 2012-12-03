@@ -29,11 +29,11 @@ p.interval(obj, HPD=TRUE, MM=TRUE, prob=0.95, plot=FALSE, PDF=FALSE, \dots)
     is an interval that contains 95\% of a posterior probability
     distribution.}
   \item{plot}{Logical. When \code{plot=TRUE}, each kernel density is
-    plotted and shaded black, and the area under the curve outside the
-    probability interval is shaded gray. A vertical, red, dotted line is
-    added at zero. The \code{plot} argument defaults to
-    \code{FALSE}. All plots treat the distribution as if it were
-    unimodal (see below).}
+    plotted and shaded gray, and the area under the curve within the
+    probability interval is shaded black. If the kernel density is
+    considered to be multimodal, then up to three intervals are shaded
+    black. A vertical, red, dotted line is added at zero. The
+    \code{plot} argument defaults to \code{FALSE}.}
   \item{PDF}{Logical. When \code{PDF=TRUE}, and only when
     \code{plot=TRUE}, plots are saved as a .pdf file in the working
     directory.}
@@ -102,12 +102,14 @@ p.interval(obj, HPD=TRUE, MM=TRUE, prob=0.95, plot=FALSE, PDF=FALSE, \dots)
   bimodal, Gaussian distribution with means -10 and 10, variances of 1
   and 1, and a 95\% probability interval is specified. In this case,
   there is not enough density between these two distant modes to have
-  one probability interval.
+  only one probability interval.
 
   The user should also consider \code{\link{LPL.interval}}, since it is
   invariant to reparameterization like the quantile-based probability
   interval, but could be one- or two-tailed, whichever is more
-  appropriate, like the HPD interval.
+  appropriate, like the HPD interval. A comparison of the quantile-based
+  probability interval, HPD interval, and LPL interval is available
+  here: \url{www.bayesian-inference.com/credible.shtml}.
 }
 \value{
   A matrix is returned with rows corresponding to the parameters (or
@@ -123,7 +125,7 @@ p.interval(obj, HPD=TRUE, MM=TRUE, prob=0.95, plot=FALSE, PDF=FALSE, \dots)
   Bayesian Approach to Interval Estimation". Sociedad de Estadistica e
   Investigacion Operativa, 14, 2, p. 317--384.
 }
-\author{Statisticat, LLC \email{statisticat@gmail.com}}
+\author{Statisticat, LLC \email{software@bayesian-inference.com}}
 \seealso{
   \code{\link{is.multimodal}},
   \code{\link{joint.pr.plot}},

@@ -150,7 +150,7 @@ Model.Spec.Time(Model, Initial.Values, Data, n=1000)
   Roberts, G.O. and Rosenthal, J.S. (2009). "Examples of Adaptive
   MCMC". Computational Statistics and Data Analysis, 18, p. 349--367.
 }
-\author{Statisticat, LLC. \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{
   \code{\link{.C}},
   \code{\link{.Fortran}},

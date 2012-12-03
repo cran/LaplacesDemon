@@ -37,7 +37,7 @@ as.covar(x)
   covariance, which may now be used as an initial proposal covariance
   matrix or matrices for a future update.
 }
-\author{Statisticat, LLC \email{statisticat@gmail.com}}
+\author{Statisticat, LLC \email{software@bayesian-inference.com}}
 \seealso{
   \code{\link{LaplaceApproximation}},
   \code{\link{LaplacesDemon}},

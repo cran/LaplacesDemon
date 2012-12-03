@@ -106,7 +106,7 @@ CSF(x, name, method="Quantiles", quantiles=c(0.025,0.500,0.975), output=FALSE)
   Cusum Path Plots: A Simple Diagnostic Idea''. Statistics and
   Computing, 8(3), p. 275--286. 
 }
-\author{Statisticat, LLC. \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{
   \code{\link{ESS}},
   \code{\link{Geweke.Diagnostic}},

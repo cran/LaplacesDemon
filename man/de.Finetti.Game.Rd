@@ -37,7 +37,7 @@ de.Finetti.Game(width)
   subjective probability of the participant regarding the possible event
   in the near future.
 }
-\author{Statisticat, LLC. \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{
   \code{\link{elicit}}
 }

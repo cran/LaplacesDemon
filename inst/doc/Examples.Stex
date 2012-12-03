@@ -14,7 +14,7 @@
 \Plaintitle{LaplacesDemon Examples} %% without formatting
 \Shorttitle{Examples} %% a short title (if necessary)
 
-\Abstract{The \pkg{LaplacesDemon} package in \proglang{R} enables Bayesian inference with any Bayesian model, provided the user specifies the likelihood. This vignette is a compendium of examples of how to specify different model forms.
+\Abstract{The \pkg{LaplacesDemon} package is a complete environment for Bayesian inference within \proglang{R}. Virtually any probability model may be specified. This vignette is a compendium of examples of how to specify different model forms.
 }
 \Keywords{Bayesian, Bayesian Inference, Laplace's Demon, LaplacesDemon, R, 
 Statisticat}
@@ -31,8 +31,8 @@ Statisticat}
 \Address{
   Statisticat, LLC\\
   Farmington, CT\\
-  E-mail: \email{statisticat@gmail.com}\\
-  URL: \url{http://www.statisticat.com/laplacesdemon.shtml}
+  E-mail: \email{software@bayesian-inference.com}\\
+  URL: \url{http://www.bayesian-inference.com/software.shtml}
 }
 
 %% for those who use Sweave please include the following line (with % symbols):
@@ -49,7 +49,7 @@ Initial values are usually hard-coded in the examples, though the Parameter-Gene
 
 Notation in this vignette follows these standards: Greek letters represent parameters, lower case letters represent indices, lower case bold face letters represent scalars or vectors, probability distributions are represented with calligraphic font, upper case letters represent index limits, and upper case bold face letters represent matrices.
 
-This vignette will grow over time as examples of more methods become included. Contributed examples are welcome. Please send contributed examples or discovered errors in a similar format in an email to \email{statisticat@gmail.com} for review and testing. All accepted contributions are, of course, credited.
+This vignette will grow over time as examples of more methods become included. Contributed examples are welcome. Please send contributed examples or discovered errors in a similar format in an email to \email{software@bayesian-inference.com} for review and testing. All accepted contributions are, of course, credited.
 
 \begin{center} \Large{\textbf{Contents}} \end{center}
 \begin{itemize}
@@ -4100,21 +4100,21 @@ MyData <- list(J=J, PGF=PGF, mon.names=mon.names, parm.names=parm.names, \\
 \subsection{Form}
 $$\textbf{y}_i \sim \mathcal{CAT}(P_{i,1:J})$$
 $$P_{,J} = 1 - Q_{,(J-1)}$$
-$$P_{,j} = Q_{,j} - Q_{,(j-1)}, \quad j=2,\dots,(J-1)$$
+$$P_{,j} = |Q_{,j} - Q_{,(j-1)}|, \quad j=2,\dots,(J-1)$$
 $$P_{,1} = Q_{,1}$$
 $$Q = \frac{1}{1 + \exp(\mu)}$$
-$$\mu_{,j} = \delta_j + \textbf{X} \beta, \quad \in [-5,5]$$
+$$\mu_{,j} = \delta_j - \textbf{X} \beta, \quad \in [-5,5]$$
 $$\beta_k \sim \mathcal{N}(0, 1000), \quad k=1,\dots,K$$
-$$\delta_j \sim \mathcal{N}(0, 1000) \in [(j-1),j], \quad j=1,\dots,(J-1)$$
+$$\delta_j \sim \mathcal{N}(0, 1) \in [(j-1),j] \in [-5,5], \quad j=1,\dots,(J-1)$$
 \subsection{Data}
 \code{data(demonsnacks) \\
 N <- nrow(demonsnacks) \\
 J <- 3 \#Number of categories in y \\
+X <- as.matrix(demonsnacks[,c(1,3:10)]) \\
 K <- ncol(demonsnacks) \#Number of columns in design matrix X \\
 y <- log(demonsnacks$Calories) \\
 y <- ifelse(y < 4.5669, 1, ifelse(y > 5.5268, 3, 2)) \#Discretize \\
-X <- cbind(1, as.matrix(demonsnacks[,c(1,3:10)])) \\
-for (k in 2:K) \{X[,k] <- CenterScale(X[,k])\} \\
+for (k in 1:K) \{X[,k] <- CenterScale(X[,k])\} \\
 mon.names <- "LP" \\
 parm.names <- as.parm.names(list(beta=rep(0,K), delta=rep(0,J-1))) \\
 PGF <- function(Data) \\
@@ -4131,19 +4131,19 @@ MyData <- list(J=J, K=K, N=N, PGF=PGF, X=X, mon.names=mon.names, \\
 \hspace*{0.27 in} \{ \\
 \hspace*{0.27 in} \#\#\# Parameters \\
 \hspace*{0.27 in} beta <- parm[1:Data$K] \\
-\hspace*{0.27 in} delta <- parm[-(1:Data$K)] \\
+\hspace*{0.27 in} delta <- interval(parm[-(1:Data$K)], -5, 5) \\
 \hspace*{0.27 in} delta[-1] <- ifelse(delta[-1] < delta[-length(delta)], \\
 \hspace*{0.62 in} delta[-length(delta)], delta[-1]) \\
 \hspace*{0.27 in} parm[-(1:Data$K)] <- delta \\
 \hspace*{0.27 in} \#\#\# Log(Prior Densities) \\
 \hspace*{0.27 in} beta.prior <- sum(dnormv(beta, 0, 1000, log=TRUE)) \\
-\hspace*{0.27 in} delta.prior <- sum(dnormv(delta, 0, 1000, log=TRUE)) \\
+\hspace*{0.27 in} delta.prior <- sum(dtrunc(delta, "norm", a=-5, b=5, log=TRUE, \\
+\hspace*{0.62 in} mean=0, sd=1) \\
 \hspace*{0.27 in} \#\#\# Log-Likelihood \\
-\hspace*{0.27 in} mu <- matrix(delta, Data$N, Data$J-1, byrow=TRUE) + \\
+\hspace*{0.27 in} mu <- matrix(delta, Data$N, Data$J-1, byrow=TRUE) - \\
 \hspace*{0.62 in} matrix(tcrossprod(Data$X, t(beta)), Data$N, Data$J-1) \\
-\hspace*{0.27 in} mu <- interval(mu, -5, 5, reflect=FALSE) \\
 \hspace*{0.27 in} P <- Q <- invlogit(mu) \\
-\hspace*{0.27 in} P[,-1] <- Q[,-1] - Q[,-(Data$J-1)] \\
+\hspace*{0.27 in} P[,-1] <- abs(Q[,-1] - Q[,-(Data$J-1)]) \\
 \hspace*{0.27 in} P <- cbind(P, 1 - Q[,(Data$J-1)]) \\
 \hspace*{0.27 in} LL <- sum(dcat(Data$y, P, log=TRUE)) \\
 \hspace*{0.27 in} \#\#\# Log-Posterior \\
@@ -4347,7 +4347,7 @@ MyData <- list(J=J, N=N, PGF=PGF, X=X, mon.names=mon.names, \\
 \code{Initial.Values <- c(rep(0,J), log(1))}
 
 \section{Revision, Normal} \label{revision.normal}
-This example provides both an analytic solution and numerical approximation of the revision of a normal distribution. Given a normal prior distribution ($\alpha$) and data distribution ($\beta$), the posterior ($\gamma$) is the revised normal distribution. This is an introductory example of Bayesian inference, and allows the user to experiment numerical approximation, such as with MCMC in \code{LaplacesDemon}. Note that, regardless of the data sample size $N$ in this example, Laplace Approximation is inappropriate due to asymptotics since the data ($\beta$) is perceived by the algorithm as a single datum rather than a collection of data. MCMC, on the other hand, is biased only by the effective number of samples taken of the posterior. \\
+This example provides both an analytic solution and numerical approximation of the revision of a normal distribution. Given a normal prior distribution ($\alpha$) and data distribution ($\beta$), the posterior ($\gamma$) is the revised normal distribution. This is an introductory example of Bayesian inference, and allows the user to experiment with numerical approximation, such as with MCMC in \code{LaplacesDemon}. Note that, regardless of the data sample size $N$ in this example, Laplace Approximation is inappropriate due to asymptotics since the data ($\beta$) is perceived by the algorithm as a single datum rather than a collection of data. MCMC, on the other hand, is biased only by the effective number of samples taken of the posterior. \\
 \code{\#\#\# Analytic Solution \\
 prior.mu <- 0 \\
 prior.sigma <- 10 \\

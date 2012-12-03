@@ -58,7 +58,7 @@
   so the user can verify the distribution of importance weights and the
   mixture probabilities have become stable.
 }
-\author{Statisticat, LLC. \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{
   \code{\link{ESS}} and
   \code{\link{PMC}}.}

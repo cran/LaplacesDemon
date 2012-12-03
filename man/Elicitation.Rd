@@ -8,8 +8,8 @@
   (Savage, 1971). The \code{elicit} function elicits personal opinion
   and the \code{delicit} function estimates probability density to be
   used with model specification in the
-  \code{\link{LaplaceApproximation}} or \code{\link{LaplacesDemon}}
-  functions.
+  \code{\link{LaplaceApproximation}}, \code{\link{LaplacesDemon}},
+  \code{\link{LaplacesDemon.hpc}}, or \code{\link{PMC}} functions.
 }
 \usage{
 delicit(theta, x, a=-Inf, b=Inf, log=FALSE)
@@ -96,12 +96,14 @@ elicit(n, cats, cat.names, show.plot=FALSE)
   Expectations". Journal of the American Statistical Association,
   66(336), p. 783--801.
 }
-\author{Statisticat, LLC. \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{
   \code{\link{de.Finetti.Game}},
   \code{\link{KLD}},
-  \code{\link{LaplaceApproximation}}, and
-  \code{\link{LaplacesDemon}}.
+  \code{\link{LaplaceApproximation}},
+  \code{\link{LaplacesDemon}},
+  \code{\link{LaplacesDemon.hpc}}, and
+  \code{\link{PMC}}.
 }
 \examples{
 library(LaplacesDemon)

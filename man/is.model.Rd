@@ -45,7 +45,7 @@ is.model(Model, Initial.Values, Data)
   when \code{Model} meets minimum criteria of a model specification
   function, and \code{FALSE} otherwise.
 }
-\author{Statisticat, LLC. \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{
   \code{\link{LaplacesDemon}}.
 }

@@ -87,6 +87,7 @@ Juxtapose <- function(x)
           else if(alg == "Hamiltonian Monte Carlo with Dual-Averaging")
                alg <- "HMCDA"
           else if(alg == "Hit-And-Run Metropolis") alg <- "HARM"
+          else if(alg == "Independence Metropolis") alg <- "IM"
           else if(alg == "Metropolis-within-Gibbs") alg <- "MWG"
           else if(alg == "No-U-Turn Sampler") alg <- "NUTS"
           else if(alg == "Reversible-Jump") alg <- "RJ"

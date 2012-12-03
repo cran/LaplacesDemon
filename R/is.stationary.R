@@ -15,14 +15,16 @@ is.stationary <- function(x)
        options(warn=-1)
        test <- try(as.vector(Geweke.Diagnostic(x)), silent=TRUE)
        options(warn=0)
-       if(!inherits(test, "try-error") & (test > -2) & (test < 2))
-            stationary <- TRUE}
+       if(!inherits(test, "try-error") & is.finite(test))
+            if((test > -2) & (test < 2)) stationarity <- TRUE
+       }
   else if(is.matrix(x)) {
        options(warn=-1)
        test <- try(as.vector(Geweke.Diagnostic(x)), silent=TRUE)
        options(warn=0)
-       if(!inherits(test, "try-error") & all(test > -2) & all(test < 2))
-            stationary <- TRUE}
+       if(!inherits(test, "try-error") & all(is.finite(test)))
+            if(all(test > -2) & all(test < 2)) stationary <- TRUE
+       }
   else if(identical(class(x), "demonoid")) {
        if(x$Rec.BurnIn.Thinned < nrow(x$Posterior1)) stationary <- TRUE}
   else if(identical(class(x), "laplace")) {

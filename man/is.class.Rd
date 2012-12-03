@@ -89,7 +89,7 @@ is.pmc.val(x)
   The \code{is.pmc.val} function returns a logical value indicating
   whether or not the supplied object is of class \code{pmc.val}.
 }
-\author{Statisticat, LLC. \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{
   \code{\link{BayesFactor}},
   \code{\link{class}},

@@ -67,6 +67,9 @@ special cases, depending on the kurtosis or \eqn{\kappa}{kappa}
 parameter. A multivariate uniform occurs as
 \eqn{\kappa \rightarrow \infty}{kappa -> infinity}.
 
+If the goal is to use a multivariate Laplace distribution, the
+\code{dmvlc} function will perform faster and more accurately.
+
 In practice, \eqn{\textbf{U}}{U} is fully unconstrained for proposals
 when its diagonal is log-transformed. The diagonal is exponentiated
 after a proposal and before other calculations. The Cholesky
@@ -90,7 +93,7 @@ in the MNM package.
   Family of Distributions". Communications in Statistics, Part A - Theory
   and Methods [Split from: J(CommStat)], 31(12), p. 2167--2182.
 }
-\author{Statisticat, LLC. \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{
   \code{\link{chol}},
   \code{\link{dlaplace}},

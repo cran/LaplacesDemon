@@ -78,7 +78,7 @@ freedom \eqn{\nu=1}{nu=1}, this is the multivariate Cauchy distribution.
   \code{dmvtp} gives the density and 
   \code{rmvtp} generates random deviates.
 }
-\author{Statisticat, LLC. \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{
   \code{\link{dwishart}},
   \code{\link{dmvc}},

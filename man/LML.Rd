@@ -50,14 +50,15 @@ LML(Model=NULL, Data=NULL, Modes=NULL, theta=NULL, LL=NULL, method="NSIS")
 }
 \details{
   Generally, a user of \code{\link{LaplaceApproximation}},
-  \code{\link{LaplacesDemon}}, or \code{\link{LaplacesDemon.hpc}} does
-  not need to use the \code{LML} function, because these methods already
-  include it. However, \code{LML} may be called by the user, should the
-  user desire to estimate the logarithm of the marginal likelihood with
-  a different method, or with non-stationary chains. The
-  \code{\link{LaplacesDemon}} and \code{\link{LaplacesDemon.hpc}}
-  functions only call \code{LML} when all parameters are stationary, and
-  only with non-adaptive algorithms (DRM, MWG, RWM, t-walk, or SMG).
+  \code{\link{LaplacesDemon}}, \code{\link{LaplacesDemon.hpc}}, or
+  \code{\link{PMC}} does not need to use the \code{LML} function,
+  because these methods already include it. However, \code{LML} may be
+  called by the user, should the user desire to estimate the logarithm
+  of the marginal likelihood with a different method, or with
+  non-stationary chains. The \code{\link{LaplacesDemon}} and
+  \code{\link{LaplacesDemon.hpc}} functions only call \code{LML} when
+  all parameters are stationary, and only with non-adaptive algorithms
+  (CHARM, DRM, HARM, MWG, RWM, t-walk, or SMG).
 
   The \code{HME} method, where HME stands for harmonic mean estimator,
   of Newton-Raftery (1994) is the easiest, and therefore fastest,
@@ -92,8 +93,9 @@ LML(Model=NULL, Data=NULL, Modes=NULL, theta=NULL, LL=NULL, method="NSIS")
   function in the \code{MargLikArrogance} package. After \code{HME},
   this is the fastest method available here. The
   \code{\link{LaplaceApproximation}} function uses \code{NSIS} when it
-  has converged and \code{sir=TRUE}. The \code{\link{LaplacesDemon}} and
-  \code{\link{LaplacesDemon.hpc}} functions use \code{NSIS}.
+  has converged and \code{sir=TRUE}. The \code{\link{LaplacesDemon}},
+  \code{\link{LaplacesDemon.hpc}}, and \code{\link{PMC}} functions use
+  \code{NSIS}.
 
   The Laplace-Metropolis Estimator (LME) is the logarithmic form of
   equation 4 in Lewis and Raftery (1997). In a non-hierarchical model,
@@ -145,13 +147,14 @@ LML(Model=NULL, Data=NULL, Modes=NULL, theta=NULL, LL=NULL, method="NSIS")
   Inference by the Weighted Likelihood Bootstrap". Journal of the
   Royal Statistical Society, Series B 3, p. 3--48.
 }
-\author{Statisticat, LLC. \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{
   \code{\link{BayesFactor}},
   \code{\link{is.proper}},
   \code{\link{LaplaceApproximation}},
-  \code{\link{LaplacesDemon}}, and
-  \code{\link{LaplacesDemon.hpc}}.
+  \code{\link{LaplacesDemon}},
+  \code{\link{LaplacesDemon.hpc}}, and
+  \code{\link{PMC}}.
 }
 \examples{
 ### If a model object were created and called Fit, then:

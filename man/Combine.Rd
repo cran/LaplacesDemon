@@ -111,7 +111,7 @@ Combine(x, Data, Thinning=1)
   information on an object of class \code{demonoid}, see the
   \code{LaplacesDemon} function.
 }
-\author{Statisticat, LLC. \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{\code{\link{caterpillar.plot}},
   \code{\link{Gelman.Diagnostic}},
   \code{\link{LaplacesDemon}}, 

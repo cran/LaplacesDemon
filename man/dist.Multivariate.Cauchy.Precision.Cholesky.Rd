@@ -41,9 +41,9 @@ rmvcpc(n=1, mu, U)
   \item Parameter 1: location vector \eqn{\mu}{mu}
   \item Parameter 2: positive-definite \eqn{k \times k}{k x k} precision
   matrix \eqn{\Omega}{Omega}
-  \item Mean: \eqn{E(\theta) = }{E(theta) = }
+  \item Mean: \eqn{E(\theta) = \mu}{E(theta) = mu}
   \item Variance: \eqn{var(\theta) = }{var(theta) = }
-  \item Mode: \eqn{mode(\theta) = }{mode(theta) = }
+  \item Mode: \eqn{mode(\theta) = \mu}{mode(theta) = mu}
 }
 
 The multivariate Cauchy distribution is a multidimensional extension
@@ -76,7 +76,7 @@ parameterization is faster than the traditional parameterization.
   \code{dmvcpc} gives the density and 
   \code{rmvcpc} generates random deviates.
 }
-\author{Statisticat, LLC. \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{
   \code{\link{chol}},
   \code{\link{dcauchy}},

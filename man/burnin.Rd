@@ -52,7 +52,7 @@ burnin(x, method="Geweke")
   S Brooks, A Gelman, G Jones, and M Xiao-Li (eds.), "Handbook of
   Markov Chain Monte Carlo", p. 3--48. Chapman \& Hall, Boca Raton, FL.
 }
-\author{Statisticat, LLC. \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{
   \code{\link{Geweke.Diagnostic}} and
   \code{\link{LaplacesDemon}}.

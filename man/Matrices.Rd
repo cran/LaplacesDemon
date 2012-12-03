@@ -61,9 +61,9 @@ upper.triangle(x, diag=FALSE)
     correlation matrix are in the interval \eqn{[-1,1]}.}
   \item{restrict}{Logical. If \code{TRUE}, then \code{x[1,1]} is
     restricted to 1. This is useful in multinomial probit, for
-    example. Be aware that a global variable, \code{LaplacesDemonMatrix}, is
-    created so \code{as.parm.matrix} can keep track of changes from
-    iteration to iteration.}
+    example. The variable, \code{LaplacesDemonMatrix}, is
+    created in a new environment, \code{LDEnv} so \code{as.parm.matrix}
+    can keep track of changes from iteration to iteration.}
   \item{chol}{Logical. If \code{TRUE}, then x is an upper-triangular
     matrix.}
   \item{file}{This is the name of the file from which the data will be
@@ -114,16 +114,15 @@ upper.triangle(x, diag=FALSE)
   diagonal, and the lower-triangular is filled in, completing the
   matrix. Second, \code{as.parm.matrix} checks for
   positive-definiteness. If matrix \code{x} is positive-definite, then
-  the matrix is stored as a global variable,
-  \code{LaplacesDemonMatrix}. If matrix \code{x} is not
-  positive-definite, then the global variable,
-  \code{LaplacesDemonMatrix}, is sought as a replacement. If the global
-  variable exists, then it is used to replace the matrix. If not, then
-  the matrix is replaced with an identity matrix. Back in the model
-  specification, after using \code{as.parm.matrix}, it is recommended
-  that the user also pass the resulting matrix back into the \code{parm}
-  vector, so the sampler or algorithm knows that the elements of the
-  matrix have changed.
+  the matrix is stored as a variable called \code{LaplacesDemonMatrix}
+  in a new environment called \code{LDEnv}. If matrix \code{x} is not
+  positive-definite, then \code{LaplacesDemonMatrix} in \code{LDEnv} is
+  sought as a replacement. If this variable exists, then it is used to
+  replace the matrix. If not, then the matrix is replaced with an
+  identity matrix. Back in the model specification, after using
+  \code{as.parm.matrix}, it is recommended that the user also pass the
+  resulting matrix back into the \code{parm} vector, so the sampler or
+  algorithm knows that the elements of the matrix have changed.
 
   The \code{as.positive.definite} function returns the nearest
   positive-definite matrix for a matrix that is square and symmetric
@@ -232,7 +231,7 @@ upper.triangle(x, diag=FALSE)
   Problem from Finance". IMA Journal of Numerical Analysis, 22,
   p. 329--343.
 }
-\author{Statisticat, LLC. \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{
   \code{\link{Cov2Prec}},
   \code{\link{cov2cor}},

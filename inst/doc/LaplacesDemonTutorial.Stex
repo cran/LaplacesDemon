@@ -7,11 +7,11 @@
 %\VignetteDepends{LaplacesDemon}
 
 \author{Statisticat, LLC}
-\title{\includegraphics[height=1in,keepaspectratio]{LDlogo} \\ \pkg{LaplacesDemon}: An \proglang{R} Package for Bayesian Inference}
+\title{\includegraphics[height=1in,keepaspectratio]{LDlogo} \\ \pkg{LaplacesDemon}: A Complete Environment for Bayesian Inference within \proglang{R}}
 
 %% for pretty printing and a nice hypersummary also set:
 \Plainauthor{Statisticat} %% comma-separated
-\Plaintitle{LaplacesDemon: An R Package for Bayesian Inference} %% without formatting
+\Plaintitle{LaplacesDemon: A Complete Environment for Bayesian Inference within R} %% without formatting
 \Shorttitle{LaplacesDemon} %% a short title (if necessary)
 
 \Abstract{
@@ -32,8 +32,8 @@
 \Address{
  Statisticat, LLC\\
  Farmington, CT\\
- E-mail: \email{statisticat@gmail.com}\\
- URL: \url{http://www.statisticat.com/laplacesdemon.shtml}
+ E-mail: \email{software@bayesian-inference.com}\\
+ URL: \url{http://www.bayesian-inference.com/software.shtml}
 }
 
 %% for those who use Sweave please include the following line (with % symbols):
@@ -52,7 +52,7 @@ In 1814, Laplace published his ``Essai Philosophique sur les Probabilites'', whi
 
 The `intellect' has been referred to by future biographers as Laplace's Demon. In this quote, Laplace expresses his philosophical belief in hard determinism and his wish for a computational machine that is capable of estimating the universe.
 
-This article is an introduction to an \proglang{R} \citep{rdct:r} package called \pkg{LaplacesDemon} \citep{r:laplacesdemon}, which was designed without consideration for hard determinism, but instead with a lofty goal toward facilitating high-dimensional Bayesian (or Laplacian) inference\footnote{Even though the \pkg{LaplacesDemon} package is dedicated to Bayesian inference, frequentist inference may be used instead with the same functions by omitting the prior distributions and maximizing the likelihood.}, posing as its own intellect that is capable of impressive analysis. The \pkg{LaplacesDemon} \proglang{R} package is often referred to as Laplace's Demon. This article guides the user through installation, data, specifying a model, initial values, updating Laplace's Demon, summarizing and plotting output, posterior predictive checks, general suggestions, discusses independence and observability, high performance computing, covers details of the algorithms, software comparisons, and discusses large data sets and speed.
+This article is an introduction to an \proglang{R} \citep{rdct:r} package called \pkg{LaplacesDemon} \citep{r:laplacesdemon}, which was designed without consideration for hard determinism, but instead with a lofty goal toward facilitating high-dimensional Bayesian (or Laplacian) inference\footnote{Even though the \pkg{LaplacesDemon} package is dedicated to Bayesian inference, frequentist inference may be used instead with the same functions by omitting the prior distributions and maximizing the likelihood.}, posing as its own intellect that is capable of impressive analysis. The \pkg{LaplacesDemon} \proglang{R} package is often referred to as Laplace's Demon. This article guides the user through installation, data, specifying a model, initial values, updating Laplace's Demon, summarizing and plotting output, posterior predictive checks, general suggestions, discusses independence and observability, high performance computing, covers details of the algorithms, software comparisons, discusses large data sets and speed, and introduces \url{www.bayesian-inference.com}.
 
 Herein, it is assumed that the reader has basic familiarity with Bayesian inference, numerical approximation, and \proglang{R}. If any part of this assumption is violated, then suggested sources include the vignette entitled ``Bayesian Inference'' that comes with the \pkg{LaplacesDemon} package, \citet{gelman04}, and \citet{crawley07}.
 
@@ -498,6 +498,7 @@ The \code{Importance} function is not presented here in detail, but is a useful 
 These posterior predictive checks indicate that there is plenty of room to improve this model.
 
 \section{General Suggestions} \label{generalsuggestions}
+
 Following are general suggestions on how best to use Laplace's Demon:
 
 \begin{itemize}
@@ -512,7 +513,7 @@ Following are general suggestions on how best to use Laplace's Demon:
 \item When speed is a concern, such as with complex models, there may be things in the \code{Model} function that can be commented out, such as sometimes calculating \code{yhat}. The model can be updated without some features, that can be un-commented and used for posterior predictive checks. By commenting out things that are strictly unnecessary to updating, the model will update more quickly. Other helpful hints for speed are found in the documentation for the \code{Model.Spec.Time} function.
 \item If Laplace's Demon is exploring areas of the state space that the user knows \textit{a priori} should not be explored, then the parameters may be constrained in the \code{Model} function before being passed back to the \code{LaplacesDemon} function. Simply change the parameter of interest as appropriate and place the constrained value back in the \code{parm} vector.
 \item \code{Demonic Suggestion} is intended as an aid, not an infallible replacement for critical thinking. As with anything else, its suggestions are based on assumptions, and it is the responsibility of the user to check those assumptions. For example, the \code{Geweke.Diagnostic} may indicate stationarity (lack of a trend) when it does not exist, and this most likely occurs when too few thinned samples remain. Or, the \code{Demonic Suggestion} may indicate that the next update may need to run for a million iterations in a complex model, requiring weeks to complete.
-\item Use a two-phase approach with MCMC (unless using a non-adaptive algorithm such as the HARM algorithm), where the first phase consists of using an adaptive algorithm (usually AHMC, AMWG, AMM, AM, DRAM, HMCDA. NUTS, RAM, SAMWG, or USAMWG) to achieve stationary samples that seem to have converged to the target distributions (convergence can never be determined with MCMC, but some instances of non-convergence can be observed). Once it is believed that convergence has occurred, use a non-adaptive algorithm, such as CHARM, DRM, HARM, HMC, HMCDA, MWG, NUTS, RWM, SMWG, THMC, or USMWG. The final samples should again be checked for signs of non-convergence. If satisfactory, then the non-adaptive algorithm should have estimated the logarithm of the marginal likelihood (LML). This is most easily checked with the \code{is.proper} function, which considers the joint posterior distribution to be proper if it can verify that the LML is finite.
+\item Use a two-phase approach with MCMC (unless using a non-adaptive algorithm such as the HARM algorithm), where the first phase consists of using an adaptive algorithm (usually AHMC, AMWG, AMM, AM, DRAM, HMCDA. NUTS, RAM, SAMWG, or USAMWG) to achieve stationary samples that seem to have converged to the target distributions (convergence can never be determined with MCMC, but some instances of non-convergence can be observed). Once it is believed that convergence has occurred, use a non-adaptive algorithm, such as CHARM, DRM, HARM, HMC, HMCDA, IM, MWG, NUTS, RWM, SMWG, THMC, or USMWG. The final samples should again be checked for signs of non-convergence. If satisfactory, then the non-adaptive algorithm should have estimated the logarithm of the marginal likelihood (LML). This is most easily checked with the \code{is.proper} function, which considers the joint posterior distribution to be proper if it can verify that the LML is finite.
 \item The desirable number of final, thinned samples for inference depends on the required precision of the inferential goal. A good, general goal is to end up with 1,000 thinned samples \citep[p. 295]{gelman04}, where the ESS is at least 100 (and more is desirable). See the \code{ESS} function for more information.
 \item Disagreement exists in MCMC literature as to whether to update one, long chain \citep{geyer92, geyer11}, or multiple, long chains with different, randomized initial values \citep{gelman92}. Multiple chains are enabled with an extension function called \code{LaplacesDemon.hpc}, which uses parallel processing. The \code{Gelman.Diagnostic} function may be used to compare multiple chains. Samples from multiple chains may be put together with the \code{Combine} function.
 \item After MCMC seems to have converged, consider updating the model again, this time with Population Monte Carlo (PMC). PMC may improve the model fit obtained with MCMC, and should reduce the variance of the marginal posterior distributions, which is desirable for predictive modeling.
@@ -546,11 +547,11 @@ The \code{LaplacesDemon} function is extended with the \code{LaplacesDemon.hpc} 
 
 An example of using \code{LaplacesDemon.hpc} is to simultaneously update three chains as an aid to checking MCMC convergence, as Gelman recommends \citep{gelman92}. Aside from aiding convergence, another benefit of parallelization is that more posterior samples are updated in the same time-frame as a non-parallel implementation. A multicore computer, such as a quad-core, will yield more posterior samples (which is valuable only if it converges, because it does not process more iterations), but a large computer cluster will yield many orders more. If multiple CPUs are available, then it only makes sense to use them...all.
 
-It is important to note two current limitations with \code{LaplacesDemon.hpc}. First, multiple chains must begin with the same, rather than dispersed, initial values. This is only a limitation until it can be programmed to accept dispersed initial values. Second, during parallel processing, \code{Status} messages do not appear. Once submitted, the user must wait until it finishes without knowing its status.
+It is important to note that \code{Status} messages do not appear during parallel processing. Once submitted, the user must wait until it finishes without knowing its status.
 
-After updating a model with \code{LaplacesDemon.hpc}, the \code{plot} function may be applied so that multiple chains may be viewed simultaneously, and this is helpful when comparing samplers for a specific model. If this looks good, then the \code{Gelman.Diagnostic} function may be applied to assess convergence. Otherwise, the \code{as.initial.values} function may be used to extract the latest values from the first chain and use these to begin the next update. Once results seem acceptable, the \code{Combine} function may be used to combine the posterior samples of multiple chains into one \code{demonoid} object, from which the remaining facilities of the \pkg{LaplacesDemon} package are available.
+After updating a model with \code{LaplacesDemon.hpc}, the \code{plot} function may be applied so that multiple chains may be viewed simultaneously, and this is helpful when comparing samplers for a specific model. If this looks good, then the \code{Gelman.Diagnostic} function may be applied to assess convergence. Otherwise, the \code{as.initial.values} function may be used to extract the latest values from the chains and use these to begin the next update. Once results seem acceptable, the \code{Combine} function may be used to combine the posterior samples of multiple chains into one \code{demonoid} object, from which the remaining facilities of the \pkg{LaplacesDemon} package are available.
 
-One of many attractive possible future HPC extensions is to include the inter-chain adaptive (INCA) approach for adaptive MCMC \citep{craiu09, solonen12}. INCA uses parallel chains that are independent, except that they share the adaptive component, and this sharing speeds convergence. Recent attempts at coding this have been unsuccessful due to unfamiliarity with how best to utilize package \pkg{parallel}. Another goal is to parallelize PMC. If you know how to extend the MCMC algorithms in \code{LaplacesDemon} with INCA, or how to incorporate dispersed initial values, then please email \url{statisticat@gmail.com}.
+One of many attractive possible future HPC extensions is to include the inter-chain adaptive (INCA) approach for adaptive MCMC \citep{craiu09, solonen12}. INCA uses parallel chains that are independent, except that they share the adaptive component, and this sharing speeds convergence. Recent attempts at coding this have been unsuccessful due to unfamiliarity with how best to utilize package \pkg{parallel}. Another goal is to parallelize PMC. If you know how to extend the MCMC algorithms in \code{LaplacesDemon} with INCA, then please email \url{software@bayesian-inference.com}.
 
 \section{Details} \label{details}
 The \pkg{LaplacesDemon} package uses three broad types of numerical approximation algorithms: Importance Sampling (IS), Laplace Approximation, and Markov chain Monte Carlo (MCMC). Approximate Bayesian Computation (ABC) may be estimated within each. These numerical approximation algorithms are introduced below.
@@ -724,6 +725,14 @@ The acceptance rate seems to be higher when HARM is far from the target, and ten
 
 The HARM algorithm is able to traverse complex spaces with bounded sets in one iteration. As such, HARM may work well with multimodal posteriors due to potentially good mode-switching behavior. However, HARM may have difficulty sampling regions of high probability that are spike-shaped or near constraints, and this difficulty is likely to be more problematic in high dimensions. HARM is not adaptive, and may be used as a final algorithm.
 
+\subsubsection{Independence Metropolis} \label{im}
+
+Proposed by \citet{hastings70} and popularized by \citet{tierney94}, the Independence Metropolis (IM) algorithm (also called the independence sampler) is an algorithm in which the proposal distribution does not depend on the previous state or iteration. The proposal distribution must be a good approximation of the target distribution for the IM algorithm to peform well, and the proposal distribution should have slightly heavier tails than the target distribution. IM is used most often to obtain additional posterior samples given an algorithm that has already converged.
+
+The usual approach to IM is to update the model with Laplace Approximation, and then supply the posterior mode and covariance to the IM algorithm. The posterior mode vector of Laplace Approximation becomes the \code{mu} argument in the algorithm specifications for IM. The covariance matrix from Laplace Approximation is expanded by multiplying it by 1.1 so that it has heavier tails. Each iteration, IM draws from a multivariate normal distribution as the proposal distribution. Alternatively, posterior means and covariances may be used from other algorithms, such as other MCMC algorithms.
+
+Since IM is non-adaptive and uses a proposal distribution that remains fixed for all iterations, it may be used as a final algorithm.
+
 \subsubsection{Metropolis-within-Gibbs} \label{mwg}
 Metropolis-within-Gibbs (MWG) was proposed as a hybrid algorithm that combines Metropolis-Hastings and Gibbs sampling, and was suggested in \citet{tierney94}. The idea was to substitute a Metropolis step when Gibbs sampling fails. However, Gibbs sampling is not included in this version or most versions, making it an algorithm with a misleading name. Without Gibbs sampling, the more honest name would be componentwise random-walk Metropolis, but the more common name is MWG.
 
@@ -788,7 +797,7 @@ In this implementation, the user specifies initial values for two chains, \code{
 
 The authors have provided the t-walk algorithm in \proglang{R} code as well as other languages. It is called the ``t-walk'' for ``traverse'' or ``thoughtful'' walk, as opposed to RWM. Where adaptive algorithms are designed to adapt to the scale and correlation structure of target distributions, the t-walk is invariant to this structure. The step-size and direction continuously ``adjust'' to the local structure. Since it is technically non-adaptive, it may also be used as a final algorithm. The t-walk uses one of four proposal distributions or `moves' per iteration, with the following probabilities: traverse (p=0.4918), walk (p=0.4918), hop (p=0.0082), and blow (p=0.0082).
 
-The t-walk has four specification arguments, three of which are tuning parameters. The authors recommend using the default values. The first specification argument is \code{SIV}, and was explained previously. The $n_1$ specification argument affects the size of the subset of each set of points to adjust, and relates to the number of parameters. For example, if $n_1=4$ and a model has $J=100$ parameters, then there is a $p(0.04) = 4 / 100$ probability that a point is moved that affects each parameter, though this affects only one of two chains per iteration. Put another way, there is a 40\% chance that each parameter changes each iteration, and a 50\% chance each iteration that the observed chain is selected. The traverse specification argument, $a_t$, affects the traverse move, which helps when some parameters are highly correlated, and the correlation structure may change through the state-space. The traverse move is associated with an acceptance rate that decreases as the number of parameters increases, and is the reason that $n_1$ is used to select a subset of parameters each iteration. Finally, the walk specification argument, $a_w$, affects the walk move. The authors recommend keeping these specification arguments in $n_1 \in [2,20]$, $a_t \in [2,10]$, and $a_w \in [0.3,2]$. The hop and blow moves do not have specifications, but help with multimodality, ensure irreducibility, and prevent the two chains from collapsing together. The hop move is centered on the primary chain, and the blow move is centered on the secondary chain.
+The t-walk has four specification arguments, three of which are tuning parameters. The authors recommend using the default values. The first specification argument is \code{SIV}, and was explained previously. The $n_1$ specification argument affects the size of the subset of each set of points to adjust, and relates to the number of parameters. For example, if $n_1=4$ and a model has $J=100$ parameters, then there is a $p(0.04) = 4 / 100$ probability that a point is moved that affects each parameter, though this affects only one of two chains per iteration. Put another way, there is a 4\% chance that each parameter changes each iteration, and a 50\% chance each iteration that the observed chain is selected. The traverse specification argument, $a_t$, affects the traverse move, which helps when some parameters are highly correlated, and the correlation structure may change through the state-space. The traverse move is associated with an acceptance rate that decreases as the number of parameters increases, and is the reason that $n_1$ is used to select a subset of parameters each iteration. Finally, the walk specification argument, $a_w$, affects the walk move. The authors recommend keeping these specification arguments in $n_1 \in [2,20]$, $a_t \in [2,10]$, and $a_w \in [0.3,2]$. The hop and blow moves do not have specifications, but help with multimodality, ensure irreducibility, and prevent the two chains from collapsing together. The hop move is centered on the primary chain, and the blow move is centered on the secondary chain.
 
 Testing in \pkg{LaplacesDemon} with the default specifications suggests the t-walk is very promising, but due to the subset of proposals, it is important to note that the reported acceptance rate indicates the proportion of iterations in which moves were accepted, but that only a subset of parameters changed, and only one chain is selected each iteration. Therefore, a user who updates a high-dimensional model should find that parameter values change much less frequently, and this requires more iterations.
 
@@ -872,9 +881,25 @@ For example, a Gibbs sampling algorithm with uncorrelated target distributions s
 
 A lower-level language can be much faster for MCMC, but only when the model specification function is vectorized, which is currently not the case, citing examples such as BUGS, JAGS, SAS, and Stan. That style of software is fast only with small sample sizes. Computationally, the future of MCMC algorithms should be in vectorizing model specifications in lower-level languages. And here's the trick: software developers must make it feasible for an ordinary user to specify a model with vast flexibility when unfamiliar with the lower-level language. Until that day arrives, Laplace's Demon currently leads the way in general-purpose Bayesian inference for users not specialized in vectorization with lower-level languages.
 
+\section{Bayesian-Inference.com} \label{bayesianinferencecom}
+
+Many additional things may be found at \url{www.bayesian-inference.com}.
+
+\begin{itemize}
+\item A Bayesian forum is available at \url{www.bayesian-inference.com/forum} to discuss all things Bayesian, including \pkg{LaplacesDemon}.
+\item Bayesian information is being compiled under \url{www.bayesian-inference.com/bayesian.shtml}.
+\item Bayesian news is aggregated daily as ``The Bayesian Bulletin'': \url{www.bayesian-inference.com/newsbayesian.shtml}.
+\item Consulting services are available here: \url{www.bayesian-inference.com/consulting.shtml}.
+\item Merchandise may be found at \url{www.bayesian-inference.com/merchandise.shtml}, such as \pkg{LaplacesDemon} t-shirts, coffee mugs, and more.
+\item \pkg{LaplacesDemon} screencasts are available at \url{www.bayesian-inference.com/softwarescreencasts.shtml}.
+\item Opinion polls for Bayesian inference and \pkg{LaplacesDemon} are here: \url{www.bayesian-inference.com/polls.shtml}.
+\item Technical support services are available at \url{www.bayesian-inference.com/support.shtml}.
+\item And, the home of \pkg{LaplacesDemon} is \url{www.bayesian-inference.com/software.shtml}.
+\end{itemize}
+
 \section{Conclusion} \label{conclusion}
 
-The \pkg{LaplacesDemon} package is a significant contribution toward Bayesian inference in \proglang{R}. In turn, contributions toward the development of Laplace's Demon are welcome. Please send an email to \email{statisticat@gmail.com} with constructive criticism, reports of software bugs, or offers to contribute to Laplace's Demon.
+The \pkg{LaplacesDemon} package is a significant contribution toward Bayesian inference in \proglang{R}. In turn, contributions toward the development of Laplace's Demon are welcome. Please send an email to \email{software@bayesian-inference.com} with constructive criticism, reports of software bugs, or offers to contribute to Laplace's Demon.
 
 \bibliography{References}
 

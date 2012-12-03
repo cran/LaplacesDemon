@@ -54,7 +54,7 @@ LaplacesDemon <- function(Model, Data, Initial.Values, Covar=NULL,
           cat("'Thinning' has been changed to ", Thinning, ".\n",
                sep="")}
      if(Algorithm %in% c("AHMC","AM","AMM","AMWG","CHARM","DRAM","DRM",
-          "Experimental","HARM","HMC","HMCDA","MWG","NUTS","RAM",
+          "Experimental","HARM","HMC","HMCDA","IM","MWG","NUTS","RAM",
           "RJ","RWM","SAMWG","SMWG","THMC","twalk","USAMWG",
           "USMWG")) {
           if(Algorithm == "AHMC") {
@@ -183,6 +183,17 @@ LaplacesDemon <- function(Model, Data, Initial.Values, Covar=NULL,
                          if(lambda < epsilon) lambda <- epsilon}
                Adaptive <- Iterations + 1
                DR <- 1
+               Periodicity <- Iterations + 1}
+          if(Algorithm == "IM") {
+               Algorithm <- "Independence Metropolis"
+               if(missing(Specs)) stop("The Specs argument is required.")
+               if(length(Specs) != 1) stop("The Specs argument is incorrect.")
+               if(all(Specs[["mu"]] == Specs[[1]])) {
+                    mu <- as.vector(Specs[[1]])
+                    if(length(mu) != length(Initial.Values))
+                         stop("length(mu) != length(Initial.Values).")}
+               Adaptive <- Iterations + 1
+               DR <- 0
                Periodicity <- Iterations + 1}
           if(Algorithm == "MWG") {
                Algorithm <- "Metropolis-within-Gibbs"
@@ -562,6 +573,11 @@ LaplacesDemon <- function(Model, Data, Initial.Values, Covar=NULL,
                Periodicity, Status, Thinning, Acceptance, Dev, DiagCovar,
                Iden.Mat, LIV, Mon, Mo0, post, ScaleF, thinned, tuning,
                VarCov)}
+     else if(Algorithm == "Independence Metropolis") {
+          mcmc.out <- IM(Model, Data, Adaptive, DR, Iterations,
+               Periodicity, Status, Thinning, Acceptance, Dev, DiagCovar,
+               Iden.Mat, LIV, Mon, Mo0, post, ScaleF, thinned, tuning,
+               VarCov, mu)}
      else if(Algorithm == "Metropolis-within-Gibbs") {
           mcmc.out <- MWG(Model, Data, Adaptive, DR, Iterations,
                Periodicity, Status, Thinning, Acceptance, Dev, DiagCovar,
@@ -784,9 +800,11 @@ LaplacesDemon <- function(Model, Data, Initial.Values, Covar=NULL,
           colnames(thinned) <- Data$parm.names}
      ### Logarithm of the Marginal Likelihood
      LML <- list(LML=NA, VarCov=NA)
-     if(({Algorithm == "Delayed Rejection Metropolis"} |
-          {Algorithm == "Hit-And-Run"} | 
-          {Algorithm == "Hamiltonian Monte Carlo"} | 
+     if(({Algorithm == "Componentwise Hit-And-Run Metropolis"} |
+          {Algorithm == "Delayed Rejection Metropolis"} |
+          {Algorithm == "Hit-And-Run Metropolis"} | 
+          {Algorithm == "Hamiltonian Monte Carlo"} |
+          {Algorithm == "Independence Metropolis"} |
           {Algorithm == "Metropolis-within-Gibbs"} |
           {Algorithm == "No-U-Turn Sampler"} | 
           {Algorithm == "Random-Walk Metropolis"} |
@@ -1588,6 +1606,67 @@ HMCDA <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
           Mon=Mon,
           thinned=thinned,
           VarCov=VarCov)
+     return(out)
+     }
+IM <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
+     Status, Thinning, Acceptance, Dev, DiagCovar, Iden.Mat, LIV, Mon,
+     Mo0, post, ScaleF, thinned, tuning, VarCov, mu)
+     {
+     VarCov <- as.positive.definite(as.symmetric.matrix(VarCov * 1.1))
+     Omega <- as.inverse(VarCov)
+     d <- eigen(VarCov, symmetric=TRUE)$values
+     for (iter in 1:Iterations) {
+          ### Print Status
+          if(iter %% Status == 0) cat("Iteration: ", iter, sep="")
+          ### Current Posterior
+          if(iter > 1) post[iter,] <- post[iter-1,]
+          ### Save Thinned Samples
+          if(iter %% Thinning == 0) {
+               thinned <- rbind(thinned, post[iter,])
+               Dev <- rbind(Dev, Mo0[[2]])
+               Mon <- rbind(Mon, Mo0[[3]])}
+          ### Propose new parameter values
+          MVN.rand <- rnorm(LIV, 0, 1)
+          MVNz <- try(matrix(MVN.rand,1,LIV) %*% chol(VarCov),
+               silent=TRUE)
+          if(!inherits(MVNz, "try-error")) {
+               if(iter %% Status == 0) 
+                   cat(",   Proposal: Multivariate\n")
+               MVNz <- as.vector(MVNz)
+               prop <- as.vector(t(mu + t(MVNz)))}
+          else {prop <- as.vector(post[iter,])}
+          ### Log-Posterior of the proposed state
+          Mo1 <- Model(prop, Data)
+          if(!is.finite(Mo1[[1]])) Mo1 <- Mo0
+          if(!is.finite(Mo1[[2]])) Mo1 <- Mo0
+          if(any(!is.finite(Mo1[[3]]))) Mo1 <- Mo0
+          ### Importance Densities (dmvn)
+          ss <- prop - mu
+          z <- rowSums({ss %*% Omega} * ss)
+          d1 <- sum(-0.5 * (LIV * log(2*pi) + sum(log(d))) - (0.5*z))
+          ss <- post[iter,] - mu
+          z <- rowSums({ss %*% Omega} * ss)
+          d0 <- sum(-0.5 * (LIV * log(2*pi) + sum(log(d))) - (0.5*z))
+          ### Accept/Reject
+          log.u <- log(runif(1))
+          log.alpha <- Mo1[[1]] - Mo0[[1]] + d1 - d0
+          if(!is.finite(log.alpha)) log.alpha <- 0
+          if(log.u < log.alpha) {
+               Mo0 <- Mo1
+               post[iter,] <- Mo1[[5]]
+               Acceptance <- Acceptance + 1
+               if(iter %% Thinning == 0) {
+                    Dev[nrow(Dev),] <- Mo1[[2]]
+                    Mon[nrow(Mon),] <- Mo1[[3]]}
+               }
+          }
+     ### Output
+     out <- list(Acceptance=Acceptance,
+          Dev=Dev,
+          DiagCovar=DiagCovar,
+          Mon=Mon,
+          thinned=thinned,
+          VarCov=cov(post))
      return(out)
      }
 MWG <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,

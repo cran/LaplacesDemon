@@ -19,7 +19,7 @@ is.constant(x)
   The \code{is.constant} function returns a logical result, reporting
   \code{TRUE} when a vector is a constant, or \code{FALSE} otherwise.
 }
-\author{Statisticat, LLC. \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{
   \code{\link{unique}}
 }

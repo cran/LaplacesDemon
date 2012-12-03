@@ -28,7 +28,7 @@ joint.pr.plot(x, y, quantiles=c(0.25,0.50,0.75,0.95))
   This function is often used to plot posterior distributions of
   samples, such as from the \code{\link{LaplacesDemon}} function.
 }
-\author{Statisticat, LLC. \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{
   \code{\link{LaplacesDemon}} and
   \code{\link{p.interval}}

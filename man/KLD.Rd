@@ -91,7 +91,7 @@ KLD(px, py, base)
   Kullback, S. and Leibler, R.A. (1951). "On Information and
   Sufficiency". The Annals of Mathematical Statistics, 22(1), p. 79--86.
 }
-\author{Statisticat, LLC. \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{
   \code{\link{LPL.interval}}
 }

@@ -47,7 +47,7 @@ KS.Diagnostic(x)
   Convergence Assessment for MCMC Model Selection". Journal of
   Computational and Graphical Statistics. 12(1), p. 1--22.
 }
-\author{Statisticat, LLC. \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{
   \code{\link{is.stationary}},
   \code{\link{ks.test}}, and

@@ -31,7 +31,7 @@ is.data(Data)
   \code{TRUE} if \code{Data} meets minimum requirements to be considered
   data in this package, and \code{FALSE} otherwise.
 }
-\author{Statisticat, LLC. \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{
   \code{\link{LaplaceApproximation}} and
   \code{\link{LaplacesDemon}}.

@@ -17,12 +17,10 @@ as.initial.values <- function(x)
           initial.values <- as.vector(x$Posterior1[x$Thinned.Samples,])
      else if(identical(class(x), "demonoid.hpc")) {
           Chains <- length(x)
-          Deviance <- list()
-          for (i in 1:Chains) {Deviance[[i]] <- x[[i]][["Deviance"]]}
-          j <- which.min(sapply(Deviance, function(x)
-               {min(x[length(x)])}))
-          cat("\nChain",j,"has the lowest deviance.\n")
-          initial.values <- as.vector(x[[j]][["Posterior1"]][x[[j]][["Thinned.Samples"]],])}
+          LIV <- x[[1]][["Parameters"]]
+          initial.values <- matrix(0, Chains, LIV)
+          for (i in 1:Chains) {
+               initial.values[i,] <- as.vector(x[[i]][["Posterior1"]][x[[i]][["Thinned.Samples"]],])}}
      else if(identical(class(x), "laplace"))
           initial.values <- as.vector(x$Summary1[,"Mode"])
      else if(x$M == 1)

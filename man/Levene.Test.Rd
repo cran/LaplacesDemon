@@ -79,7 +79,7 @@ Levene.Test(x, Method="U", G=NULL, Data=NULL)
   (Eds.), Contributions to Probability and Statistics, p. 278--292.
   Stanford, CA: Stanford University Press.
 }
-\author{Statisticat, LLC. \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{
   \code{\link{LaplaceApproximation}},
   \code{\link{LaplacesDemon}},

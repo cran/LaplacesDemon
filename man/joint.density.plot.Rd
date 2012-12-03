@@ -46,7 +46,7 @@ joint.density.plot(x, y, Title=NULL, contour=TRUE, color=FALSE, Trace=NULL)
   plotted. This `joint trace plot' may show behavior of the MCMC
   algorithm to the user.
 }
-\author{Statisticat, LLC. \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{\code{\link{IAT}},
   \code{\link{LaplacesDemon}}, and
   \code{\link{PosteriorChecks}}

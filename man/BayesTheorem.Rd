@@ -114,7 +114,8 @@ BayesTheorem(PrA, PrBA)
     Demon does not increase the probability of going to Hell.
 
     For an introduction to model-based Bayesian inference, see the
-    accompanying vignette entitled ``Bayesian Inference''.
+    accompanying vignette entitled ``Bayesian Inference'' or
+    \url{www.bayesian-inference.com/bayesian.shtml}.
 }
 \references{
   Bayes, T. and Price, R. (1763). "An Essay Towards Solving a Problem in
@@ -123,7 +124,7 @@ BayesTheorem(PrA, PrBA)
   Transactions of the Royal Statistical Society of London, 53,
   p. 370--418.
 }
-\author{Statisticat, LLC. \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{
   \code{\link{LaplaceApproximation}} and
   \code{\link{LaplacesDemon}}

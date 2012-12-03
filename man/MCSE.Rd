@@ -113,7 +113,7 @@ MCSS(x, a)
   Output Analysis for Markov chain Monte Carlo". Journal of the American
   Statistical Association, 101, 1, p. 1537--1547.
 }
-\author{Statisticat, LLC. \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{
   \code{\link{Consort}},
   \code{\link{ESS}},

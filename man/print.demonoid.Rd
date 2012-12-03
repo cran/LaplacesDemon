@@ -17,7 +17,7 @@
   \code{print(Fit[[2]])} when the \code{demonoid.hpc} object is named
   \code{Fit}, for example.
 }
-\author{Statisticat, LLC. \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{
   \code{\link{Consort}},
   \code{\link{LaplacesDemon}}, and

@@ -4,6 +4,9 @@
 # These are utility functions for matrices.                               #
 ###########################################################################
 
+#Test, I'm replacing 6 occurences of .GlobalEnv with LDEnv
+#I must create and test for LDEnv
+
 as.indicator.matrix <- function(x)
      {
      n <- length(x)
@@ -72,27 +75,28 @@ as.parm.matrix <- function(x, k, parm, Data, a=-Inf, b=Inf, restrict=FALSE,
           X[lower.tri(X)] <- t(X)[lower.tri(X)]
           }
      if(!is.symmetric.matrix(X)) X <- as.symmetric.matrix(X)
+     if(!exists("LDEnv")) LDEnv <- new.env()
      if(restrict == FALSE) {
           if(is.positive.definite(X)) {
                assign("LaplacesDemonMatrix", as.vector(X[upper.tri(X,
-                    diag=TRUE)]), envir=.GlobalEnv)}
+                    diag=TRUE)]), envir=LDEnv)}
           else {
-               if(exists("LaplacesDemonMatrix", envir=.GlobalEnv)) {
+               if(exists("LaplacesDemonMatrix", envir=LDEnv)) {
                     X[upper.tri(X,
                          diag=TRUE)] <- as.vector(get("LaplacesDemonMatrix",
-                         envir=.GlobalEnv))
+                         envir=LDEnv))
                     X[lower.tri(X)] <- t(X)[lower.tri(X)]}
                else {X <- diag(k)}}
           }
      if(restrict == TRUE) {
           if(is.positive.definite(X)) {
                assign("LaplacesDemonMatrix", as.vector(X[upper.tri(X,
-                    diag=TRUE)][-1]), envir=.GlobalEnv)}
+                    diag=TRUE)][-1]), envir=LDEnv)}
           else {
-               if(exists("LaplacesDemonMatrix", envir=.GlobalEnv)) {
+               if(exists("LaplacesDemonMatrix", envir=LDEnv)) {
                     X[upper.tri(X, diag=TRUE)] <- c(1,
                          as.vector(get("LaplacesDemonMatrix",
-                         envir=.GlobalEnv)))
+                         envir=LDEnv)))
                     X[lower.tri(X)] <- t(X)[lower.tri(X)]
                     if(!is.symmetric.matrix(X)) X <- as.symmetric.matrix(X)
                     }

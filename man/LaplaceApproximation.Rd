@@ -294,7 +294,7 @@ LaplaceApproximation(Model, parm, Data, Interval=1.0E-6,
   Functions". Journal of the American Statistical Association,
   84(407), p. 710--716.
 }
-\author{Statisticat, LLC \email{statisticat@gmail.com}}
+\author{Statisticat, LLC \email{software@bayesian-inference.com}}
 \seealso{
   \code{\link{BayesFactor}},
   \code{\link{LaplacesDemon}},

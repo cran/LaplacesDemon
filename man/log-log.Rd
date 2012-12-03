@@ -37,7 +37,7 @@ loglog(p)
   \code{invcloglog} and \code{invloglog} return probability \code{p},
   and \code{loglog} returns \code{x}.
 }
-\author{Statisticat, LLC. \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{\code{\link{LaplacesDemon}}}
 \examples{
 x <- -5:5

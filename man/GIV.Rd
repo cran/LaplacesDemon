@@ -23,11 +23,11 @@ GIV(Model, Data, n=1000, PGF=FALSE)
     randomly without respect to a user-specified function.}
 }
 \details{
-  Initial values are required for optimization algorithms. A user may
-  specify initial values, or use the \code{GIV} function for random
-  generation. Initial values determined by the user may fail to produce
-  a finite posterior in complicated models, and the \code{GIV} function
-  is here to help.
+  Initial values are required for optimization or sampling algorithms. A
+  user may specify initial values, or use the \code{GIV} function for
+  random generation. Initial values determined by the user may fail to
+  produce a finite posterior in complicated models, and the \code{GIV}
+  function is here to help.
 
   \code{GIV} has several uses. First, the
   \code{\link{LaplaceApproximation}} and \code{\link{LaplacesDemon}}
@@ -36,8 +36,13 @@ GIV(Model, Data, n=1000, PGF=FALSE)
   model specification function, \code{Model}, to check for potential
   problems. Third, the user may prefer to randomly generate acceptable
   initial values. Lastly, \code{GIV} is recommended when running
-  multiple chains (such as for later use with the
-  \code{Gelman.Diagnostic}) for dispersed starting locations.
+  multiple or parallel chains with the \code{\link{LaplacesDemon.hpc}}
+  function (such as for later use with the \code{Gelman.Diagnostic}) for
+  dispersed starting locations. For dispersed starting locations,
+  \code{GIV} should be run once for each parallel chain, and the results
+  should be stored per row in a matrix of initial values. For more
+  information, see the \code{LaplacesDemon.hpc} documentation for
+  initial values.
 
   It is strongly recommended that the user specifies a
   Parameter-Generating Function (PGF), and includes this function in the
@@ -58,7 +63,7 @@ GIV(Model, Data, n=1000, PGF=FALSE)
   be so far from zero (as determined by the variance of 1000), and may
   instead prefer
 
-  \code{PGF <- function(Data) return(c(rnormv(5,0,10),rhalfcauchy(1,25)))}
+  \code{PGF <- function(Data) return(c(rnormv(5,0,10),rhalfcauchy(1,5)))}
 
   When \code{PGF=FALSE}, initial values are attempted to be constrained
   to the interval \eqn{[-100,100]}. This is done to prevent numeric
@@ -106,12 +111,13 @@ GIV(Model, Data, n=1000, PGF=FALSE)
   associated parameter in \code{Data$parm.names}. When \code{GIV} fails
   to find acceptable initial values, each returned element is \code{NA}.
 }
-\author{Statisticat, LLC. \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{
   \code{\link{as.initial.values}},
   \code{\link{Gelman.Diagnostic}},
   \code{\link{LaplaceApproximation}},
-  \code{\link{LaplacesDemon}}, and
+  \code{\link{LaplacesDemon}},
+  \code{\link{LaplacesDemon.hpc}}, and
   \code{\link{PMC}}.
 }
 \examples{
@@ -125,7 +131,7 @@ J <- ncol(X)
 for (j in 2:J) {X[,j] <- CenterScale(X[,j])}
 mon.names <- c("LP","sigma")
 parm.names <- as.parm.names(list(beta=rep(0,J), log.sigma=0))
-PGF <- function(Data) return(c(rnormv(Data$J,0,1000), rhalfcauchy(1,25)))
+PGF <- function(Data) return(c(rnormv(Data$J,0,10), rhalfcauchy(1,5)))
 MyData <- list(J=J, PGF=PGF, X=X, mon.names=mon.names,
      parm.names=parm.names, y=y)
 

@@ -80,7 +80,7 @@ is.proper(f,a,b,tol)
   distribution integrates to 1 within its specified limits. \code{TRUE}
   is returned for proper univariate probability distributions.
 }
-\author{Statisticat, LLC. \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{
   \code{\link{dnormv}},
   \code{\link{integrate}},

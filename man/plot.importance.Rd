@@ -43,7 +43,7 @@
   Selection". Journal of the Royal Statistical Society, B 57,
   p. 247--262.
 }
-\author{Statisticat, LLC \email{statisticat@gmail.com}}
+\author{Statisticat, LLC \email{software@bayesian-inference.com}}
 \seealso{
   \code{\link{Importance}}}
 \keyword{Plot}

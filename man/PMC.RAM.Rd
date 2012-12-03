@@ -108,7 +108,7 @@ PMC.RAM(Model, Data, Iterations, Thinning, M, N)
     a number of iterations, specified thinning, mixture components, and
     number of samples.}
 }
-\author{Statisticat, LLC. \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{
   \code{\link{LML}},
   \code{\link{object.size}}, and

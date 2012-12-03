@@ -48,6 +48,9 @@
   length of \code{y} or \code{Y} must be equal to the vectorized length
   of \code{yhat}, the fourth component of the returned list of the
   \code{Model} function.
+
+  For more information on posterior predictive checks, see
+  \url{www.bayesian-inference.com/posteriorpredictivechecks.shtml}.
 }
 \value{
   This function returns an object of class \code{laplace.ppc} (where
@@ -69,7 +72,7 @@
     posterior samples. Samples are obtained with the sampling importance
     resampling algorithm, \code{\link{SIR}}.}
 }
-\author{Statisticat, LLC. \email{statisticat@gmail.com}}
+\author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{
   \code{\link{LaplaceApproximation}},
   \code{\link{SIR}}.
