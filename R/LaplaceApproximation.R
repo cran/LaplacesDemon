@@ -69,19 +69,21 @@ LaplaceApproximation <- function(Model, parm, Data, Interval=1.0E-6,
      m.old <- Model(parm, Data)
      if(!is.list(m.old)) stop("Model must return a list.")
      if(length(m.old) != 5) stop("Model must return five components.")
-     if(length(m.old[[1]]) > 1) stop("Multiple joint posteriors exist!")
-     if(!identical(length(parm), length(m.old[[5]])))
+     if(any(names(m.old) != c("LP","Dev","Monitor","yhat","parm")))
+          stop("Name mismatch in returned list of Model function.")
+     if(length(m.old[["LP"]]) > 1) stop("Multiple joint posteriors exist!")
+     if(!identical(length(parm), length(m.old[["parm"]])))
           stop("The number of initial values and parameters differs.")
-     if(!is.finite(m.old[[1]])) {
+     if(!is.finite(m.old[["LP"]])) {
           cat("Generating initial values due to a non-finite posterior.\n")
           if(!is.null(Data$PGF))
                Initial.Values <- GIV(Model, Data, PGF=TRUE)
           else Initial.Values <- GIV(Model, Data)
           m.old <- Model(Initial.Values, Data)
           }
-     if(!is.finite(m.old[[1]]))
+     if(!is.finite(m.old[["LP"]]))
           stop("The posterior is non-finite.")
-     if(!is.finite(m.old[[2]]))
+     if(!is.finite(m.old[["Dev"]]))
           stop("The deviance is non-finite.")
      ####################  Begin Laplace Approximation  ###################
      cat("Laplace Approximation begins...\n")
@@ -132,8 +134,8 @@ LaplaceApproximation <- function(Model, parm, Data, Interval=1.0E-6,
           dev <- rep(0, nrow(posterior))
           for (i in 1:nrow(posterior)) {
                mod <- Model(posterior[i,], Data)
-               dev[i] <- mod[[2]]
-               Mon[i,] <- mod[[3]]
+               dev[i] <- mod[["Dev"]]
+               Mon[i,] <- mod[["Monitor"]]
                }
           colnames(Mon) <- Data$mon.names}
      else {
@@ -208,8 +210,8 @@ LaplaceApproximation <- function(Model, parm, Data, Interval=1.0E-6,
           Initial.Values = parm,
           Iterations = iter,
           LML = LML[[1]],
-          LP.Final = as.vector(Model(parm.new, Data)[[1]]),
-          LP.Initial = Model(parm, Data)[[1]],
+          LP.Final = as.vector(Model(parm.new, Data)[["LP"]]),
+          LP.Initial = Model(parm, Data)[["LP"]],
           Minutes = round(as.vector(time2[3] - time1[3]) / 60, 2),
           Monitor = Mon,
           Posterior = posterior,
@@ -226,10 +228,10 @@ LaplaceApproximation <- function(Model, parm, Data, Interval=1.0E-6,
 AGA <- function(Model, parm, Data, Interval, Iterations, Stop.Tolerance,
      LA.call, m.old)
      {
-     Dev <- matrix(m.old[[2]],1,1)
+     Dev <- matrix(m.old[["Dev"]],1,1)
      parm <- as.vector(parm)
      parm.len <- length(parm)
-     parm.old <- m.old[[5]]
+     parm.old <- m.old[["parm"]]
      parm.new <- parm.old - 0.1 #First step
      names(parm.new) <- Data$parm.names
      tol.new <- tol.old <- sqrt(sum({parm.new - parm.old}^2))
@@ -254,10 +256,10 @@ AGA <- function(Model, parm, Data, Interval, Iterations, Stop.Tolerance,
                     parm.temp[j,] <- parm.old + step.size[j] * approx.grad
                     parm.temp[j,] <- ifelse(!is.finite(parm.temp[j,]),
                          parm.old, parm.temp[j,])
-                    lujpd[j] <- Model(parm.temp[j,], Data)[[1]]
+                    lujpd[j] <- Model(parm.temp[j,], Data)[["LP"]]
                     }
                lujpd <- ifelse(!is.finite(lujpd), -1.0E+200, lujpd)
-               if(max(lujpd) > m.old[[1]]) {
+               if(max(lujpd) > m.old[["LP"]]) {
                     Step.Size <- step.size[which.max(lujpd)]
                     parm.new <- parm.temp[which.max(lujpd),]}
                else {parm.new <- parm.old}
@@ -267,15 +269,15 @@ AGA <- function(Model, parm, Data, Interval, Iterations, Stop.Tolerance,
           parm.new <- parm.old + Step.Size * approx.grad
           parm.new <- ifelse(!is.finite(parm.new), parm.old, parm.new)
           m.new <- Model(parm.new, Data)
-          tol.new <- sqrt(sum({m.new[[5]] - parm.old}^2))
-          if(!is.finite(m.new[[1]])) {
+          tol.new <- sqrt(sum({m.new[["parm"]] - parm.old}^2))
+          if(!is.finite(m.new[["LP"]])) {
                parm.new <- parm.old
                tol.new <- 0}
-          parm.new <- m.new[[5]]
+          parm.new <- m.new[["parm"]]
           post <- rbind(post, parm.new)
-          Dev <- rbind(Dev, m.new[[2]])
+          Dev <- rbind(Dev, m.new[["Dev"]])
           ### Adaptive Step Size
-          if(m.new[[1]] <= m.old[[1]]) {
+          if(m.new[["LP"]] <= m.old[["LP"]]) {
                Step.Size <- Step.Size * 0.999
                if(Step.Size < 1.0E-8) Step.Size <- 1.0E-8
                parm.new <- parm.old
@@ -292,19 +294,18 @@ AGA <- function(Model, parm, Data, Interval, Iterations, Stop.Tolerance,
 LBFGS <- function(Model, parm, Data, Interval, Iterations, Stop.Tolerance,
      LA.call, m.old)
      {
-     Dev <- matrix(m.old[[2]],1,1)
+     Dev <- matrix(m.old[["Dev"]],1,1)
      parm <- as.vector(parm)
      parm.len <- length(parm)
-     parm.new <- parm.old <- m.old[[5]]
+     parm.new <- parm.old <- m.old[["parm"]]
      names(parm.new) <- Data$parm.names
      tol <- sqrt(sum({parm.new - parm.old}^2))
      post <- matrix(parm.new, 1, parm.len)
      ModelWrapper <- function(parm.new) {
-          out <- Model(parm.new, Data)[[1]]
+          out <- Model(parm.new, Data)[["LP"]]
           return(out)
           }
-     for (iter in 1:Iterations)
-          {
+     for (iter in 1:Iterations) {
           parm.old <- parm.new
           ### Print Status
           if(iter %% round(Iterations / 10) == 0) {
@@ -313,12 +314,12 @@ LBFGS <- function(Model, parm, Data, Interval, Iterations, Stop.Tolerance,
           Fit <- optim(par=parm.new, fn=ModelWrapper,
                method="L-BFGS-B", control=list(fnscale=-1, maxit=1))
           m.new <- Model(Fit$par, Data)
-          tol <- sqrt(sum({m.new[[5]] - parm.old}^2))
-          if(!is.finite(m.new[[1]]) | {m.new[[1]] < m.old[[1]]}) {
+          tol <- sqrt(sum({m.new[["parm"]] - parm.old}^2))
+          if(!is.finite(m.new[["LP"]]) | {m.new[["LP"]] < m.old[["LP"]]}) {
                m.new <- m.old}
-          parm.new <- m.new[[5]]
+          parm.new <- m.new[["parm"]]
           post <- rbind(post, parm.new)
-          Dev <- rbind(Dev, m.new[[2]])
+          Dev <- rbind(Dev, m.new[["Dev"]])
           if(tol <= Stop.Tolerance) break
           }
      Dev <- Dev[-1,]; post <- post[-1,]
@@ -331,18 +332,17 @@ LBFGS <- function(Model, parm, Data, Interval, Iterations, Stop.Tolerance,
 Rprop <- function(Model, parm, Data, Interval, Iterations, Stop.Tolerance,
      LA.call, m.old)
      {
-     Dev <- matrix(m.old[[2]],1,1)
+     Dev <- matrix(m.old[["Dev"]],1,1)
      parm <- as.vector(parm)
      parm.len <- length(parm)
      approx.grad.old <- approx.grad.new <- rep(0, parm.len)
-     parm.old <- m.old[[5]]
+     parm.old <- m.old[["parm"]]
      parm.new <- parm.old - 0.1 #First step
      names(parm.new) <- Data$parm.names
      tol.new <- tol.old <- sqrt(sum({parm.new - parm.old}^2))
      post <- matrix(parm.new, 1, parm.len)
      Step.Size <- rep(0.0125, parm.len)
-     for (iter in 1:Iterations)
-          {
+     for (iter in 1:Iterations) {
           approx.grad.old <- approx.grad.new
           tol.old <- tol.new
           parm.old <- parm.new
@@ -361,19 +361,19 @@ Rprop <- function(Model, parm, Data, Interval, Iterations, Stop.Tolerance,
           ### Propose new state based on weighted approximate gradient
           parm.new <- parm.old + (Step.Size * approx.grad.new)
           m.new <- Model(parm.new, Data)
-          tol.new <- sqrt(sum({m.new[[5]] - parm.old}^2))
-          if(!is.finite(m.new[[1]]) | {m.new[[1]] < m.old[[1]]}) {
+          tol.new <- sqrt(sum({m.new[["parm"]] - parm.old}^2))
+          if(!is.finite(m.new[[1]]) | {m.new[["LP"]] < m.old[["LP"]]}) {
                p.order <- sample(1:length(parm.new))
                parm.temp <- parm.old
                for (i in 1:length(p.order)) {
                     parm.temp[p.order[i]] <- parm.new[p.order[i]]
                     m.new <- Model(parm.temp, Data)
-                    if(m.new[[1]] < m.old[[1]])
+                    if(m.new[["LP"]] < m.old[["LP"]])
                          parm.temp[p.order[i]] <- parm.old[p.order[i]]}
                m.new <- Model(parm.temp, Data)}
-          parm.new <- m.new[[5]]
+          parm.new <- m.new[["parm"]]
           post <- rbind(post, parm.new)
-          Dev <- rbind(Dev, m.new[[2]])
+          Dev <- rbind(Dev, m.new[["Dev"]])
           if(tol.new <= Stop.Tolerance) break
           }
      Dev <- Dev[-1,]; post <- post[-1,]

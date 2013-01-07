@@ -1,6 +1,6 @@
 \name{is.constant}
 \alias{is.constant}
-\title{is.constant}
+\title{Logical Check of a Constant}
 \description{
   This function provides a logical test of whether or not a vector is a
   constant.

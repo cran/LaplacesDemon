@@ -27,7 +27,7 @@ partial(Model, parm, Data, Interval=1e-6)
 
   \deqn{\log(x+y) = \log(x) + \log(1 + \exp(\log(y) - \log(x)))}{log(x+y) =
     log(x) + log(1 + exp(log(y) - log(x)))}
-  \deqn{\log(x-y) = \log(x) + \log(1 - \exp(\log(y) - \log(x)))}{log(x+y) =
+  \deqn{\log(x-y) = \log(x) + \log(1 - \exp(\log(y) - \log(x)))}{log(x-y) =
     log(x) + log(1 - exp(log(y) - log(x)))}
   
   The \code{partial} function estimates partial derivatives of

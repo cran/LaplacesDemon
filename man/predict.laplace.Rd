@@ -50,7 +50,7 @@
   \code{Model} function.
 
   For more information on posterior predictive checks, see
-  \url{www.bayesian-inference.com/posteriorpredictivechecks.shtml}.
+  \url{http://www.bayesian-inference.com/posteriorpredictivechecks}.
 }
 \value{
   This function returns an object of class \code{laplace.ppc} (where

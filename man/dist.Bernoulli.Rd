@@ -3,7 +3,7 @@
 \alias{pbern}
 \alias{qbern}
 \alias{rbern}
-\title{The Bernoulli Distribution}
+\title{Bernoulli Distribution}
 \description{
   These functions provide the density, distribution function, quantile
   function, and random generation for the Bernoulli distribution.

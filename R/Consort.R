@@ -35,6 +35,10 @@ Consort <- function(object=NULL)
           Acc.Rate.Low <- 0.10
           Acc.Rate.High <- 0.90
           }
+     else if(object$Algorithm == "Slice Sampler") {
+          Acc.Rate.Low <- 1
+          Acc.Rate.High <- 1
+          }
      else if(object$Algorithm == "Hamiltonian Monte Carlo") {
           L <- substr(object$Call, 1, nchar(object$Call))
           L <- strsplit(L, " ")
@@ -97,8 +101,8 @@ Consort <- function(object=NULL)
      MCSE.temp2 <- sum(!is.finite(MCSE.temp))
      MCSE.temp <- ifelse(is.finite(MCSE.temp), MCSE.temp, 0)
      MCSE.tot <- 0
-     if(MCSE.temp2 < object$Parameters) {
-          MCSE.tot <- sum(MCSE.temp < MCSE.crit)}
+     if(MCSE.temp2 < object$Parameters)
+          MCSE.tot <- sum(MCSE.temp < MCSE.crit)
      ### Check ESS
      ESS.temp <- object$Summary2[1:object$Parameters,4]
      ESS.temp <- ifelse(!is.finite(ESS.temp), 0, ESS.temp)
@@ -106,8 +110,8 @@ Consort <- function(object=NULL)
      ESS.crit <- 100
      ### Check Stationarity
      Stationarity <- FALSE
-     if(object$Rec.BurnIn.Thinned < object$Thinned.Samples) {
-          Stationarity <- TRUE}
+     if(object$Rec.BurnIn.Thinned < object$Thinned.Samples)
+          Stationarity <- TRUE
      ### Check Diminishing Adaptation (If Adaptive)
      if(nrow(object$CovarDHis) > 1) {
           Dim.Adapt <- as.vector(lm(rowMeans(diff(object$CovarDHis)) ~ c(1:nrow(diff(object$CovarDHis))))$coef[2]) <= 0
@@ -228,6 +232,7 @@ Consort <- function(object=NULL)
                Alg <- "HMCDA"
           else if(object$Algorithm == "Hit-And-Run Metropolis") Alg <- "HARM"
           else if(object$Algorithm == "Independence Metropolis") Alg <- "IM"
+          else if(object$Algorithm == "Interchain Adaptation") Alg <- "INCA"
           else if(object$Algorithm == "Metropolis-within-Gibbs") Alg <- "MWG"
           else if(object$Algorithm == "No-U-Turn Sampler") Alg <- "NUTS"
           else if(object$Algorithm == "Robust Adaptive Metropolis") Alg <- "RAM"
@@ -235,6 +240,7 @@ Consort <- function(object=NULL)
           else if(object$Algorithm == "Reversible-Jump") Alg <- "RJ"
           else if(object$Algorithm == "Sequential Adaptive Metropolis-within-Gibbs") Alg <- "SAMWG"
           else if(object$Algorithm == "Sequential Metropolis-within-Gibbs") Alg <- "SMWG"
+          else if(object$Algorithm == "Slice Sampler") Alg <- "Slice"
           else if(object$Algorithm == "Tempered Hamiltonian Monte Carlo") Alg <- "THMC"
           else if(object$Algorithm == "t-walk") Alg <- "t-walk"
           else if(object$Algorithm == "Updating Sequential Adaptive Metropolis-within-Gibbs") Alg <- "USAMWG"
@@ -330,6 +336,16 @@ Consort <- function(object=NULL)
                cat("     Algorithm=\"CHARM\", ",
                     "Specs=NULL)\n\n", sep="")
                }
+          if(Alg == "Slice") {
+               ### Slice
+               cat(oname, " <- LaplacesDemon(Model, Data=", dname,
+                    ", Initial.Values,\n", sep="")
+               cat("     Covar=NULL, Iterations=",
+                    Rec.Iterations, ", Status=", Rec.Status, ", ",
+                    "Thinning=", Rec.Thinning, ",\n", sep="")
+               cat("     Algorithm=\"Slice\", ",
+                    "Specs=list(m=m, w=w))\n\n", sep="")
+               }
           if({(Alg == "DRAM") & Dim.Adapt & Fast & !Ready} |
              {(Alg == "DRAM") & Dim.Adapt & !Fast & !Ready}) {
                ### DRAM
@@ -405,6 +421,21 @@ Consort <- function(object=NULL)
                cat("     Algorithm=\"IM\", ",
                     "Specs=list(mu=apply(", oname,
                     "$Posterior1, 2, mean)))\n\n", sep="")
+               }
+          if(Alg == "INCA") {
+               ### INCA
+               library(parallel)
+               detectedcores <- detectCores()
+               cat(oname, " <- LaplacesDemon.hpc(Model, Data=", dname,
+                    ", Initial.Values,\n", sep="")
+               cat("     Covar=", oname, "$Covar, Iterations=",
+                    Rec.Iterations, ", Status=", Rec.Status, ", ",
+                    "Thinning=", Rec.Thinning, ",\n", sep="")
+               cat("     Algorithm=\"INCA\", ",
+                    "Specs=list(Adaptive=", Rec.Adaptive, ", Periodicity=",
+                    Rec.Periodicity, "),\n", sep="")
+               cat("     Chains=",detectedcores,", CPUs=",detectedcores,", Packages=NULL, Dyn.libs=NULL)\n\n",
+                    sep="")
                }
           if({(Alg == "AMWG") & Dim.Adapt & Fast & Ready} |
              {(Alg == "AMWG") & Dim.Adapt & !Fast & Ready} |

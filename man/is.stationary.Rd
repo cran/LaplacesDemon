@@ -1,6 +1,6 @@
 \name{is.stationary}
 \alias{is.stationary}
-\title{Stationarity}
+\title{Logical Check of Stationarity}
 \description{
   This function returns \code{TRUE} if the object is stationary
   according to the \code{\link{Geweke.Diagnostic}} function, and

@@ -8,8 +8,6 @@
 #I don't know how to 'shut up' the makeCluster function...
 #no luck with capture.output, sink, or invisible
 
-#I'd like to send different sets of initial values to different clusters.
-
 LaplacesDemon.hpc <- function(Model, Data, Initial.Values, Covar=NULL,
      Iterations=100000, Status=1000, Thinning=100, Algorithm="RWM",
      Specs=NULL, Chains=2, CPUs=2, Packages=NULL, Dyn.libs=NULL)
@@ -44,15 +42,27 @@ LaplacesDemon.hpc <- function(Model, Data, Initial.Values, Covar=NULL,
                on.exit(sapply(Dyn.libs,
                     function(x) dyn.unload(paste(wd, x, sep = "/"))))}
           LaplacesDemon(Model, Data, Initial.Values[x,],
-                        Covar, Iterations, Status, Thinning,
-                        Algorithm, Specs)
+               Covar, Iterations, Status, Thinning,
+               Algorithm, Specs)
           }
      cat("\nStatus messages are not displayed for parallel processing.")
      cat("\nLaplace's Demon is beginning parallelization...\n")
-     LaplacesDemon.out <- clusterApply(cl, 1:Chains, demon.wrapper, Model,
-          Data, Initial.Values, Covar, Iterations, Status, Thinning,
-          Algorithm, Specs)
+     if(Algorithm == "INCA") {
+          ### Start hpc server
+          system(paste("Rscript -e 'library(parallel);library(LaplacesDemon);server_Listening(n=",CPUs,")'", sep=""), wait=FALSE)
+          cat("Start hpc server...\n")
+          ### Connect each process to server_Listening
+          clusterEvalQ(cl, {Sys.sleep(runif(1, 0.1, 1)); con <- socketConnection("localhost", 19009, blocking=TRUE, open="r+")})
+          cat("\nOpen connections to hpc server...")}
+     LaplacesDemon.out <- clusterApply(cl, 1:Chains, demon.wrapper,
+          Model, Data, Initial.Values, Covar, Iterations, Status,
+          Thinning, Algorithm, Specs)
      class(LaplacesDemon.out) <- "demonoid.hpc"
+     if(Algorithm == "INCA") {
+          ### Stop server_Listening
+          clusterEvalQ(cl, {close(con)})
+          cat("\nClose connections to hpc server...")
+          }
      return(LaplacesDemon.out)
      }
 

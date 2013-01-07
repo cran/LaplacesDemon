@@ -50,7 +50,7 @@
   poorly) the model fits the data, or to assess discrepancies between
   the model and the data. For more information on posterior predictive
   checks, see
-  \url{www.bayesian-inference.com/posteriorpredictivechecks.shtml}.
+  \url{http://www.bayesian-inference.com/posteriorpredictivechecks}.
 
   When \eqn{\textbf{y}}{y} is continuous and known, this function
   estimates the predictive concordance between \eqn{\textbf{y}}{y} and

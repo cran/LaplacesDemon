@@ -312,7 +312,7 @@ library(LaplacesDemon)
 ##############################  Demon Data  ###############################
 data(demonsnacks)
 y <- log(demonsnacks$Calories)
-X <- cbind(1, as.matrix(demonsnacks[,c(7,8,10)]))
+X <- cbind(1, as.matrix(demonsnacks[,c(7,8)]))
 J <- ncol(X)
 for (j in 2:J) {X[,j] <- CenterScale(X[,j])}
 mon.names <- c("sigma","mu[1]")
@@ -346,7 +346,7 @@ Model <- function(parm, Data)
 Initial.Values <- rep(0,J+1)
 
 Fit <- LaplaceApproximation(Model, Initial.Values, Data=MyData,
-     Iterations=1000, Method="AGA")
+     Iterations=500, Method="AGA")
 Fit
 print(Fit)
 PosteriorChecks(Fit)

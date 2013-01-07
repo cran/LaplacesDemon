@@ -1,7 +1,7 @@
 \name{dist.Inverse.Gaussian}
 \alias{dinvgaussian}
 \alias{rinvgaussian}
-\title{The Inverse Gaussian Distribution}
+\title{Inverse Gaussian Distribution}
 \description{
   This is the density function and random generation from the inverse
   gaussian distribution.

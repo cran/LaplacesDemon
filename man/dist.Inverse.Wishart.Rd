@@ -1,7 +1,7 @@
 \name{dist.Inverse.Wishart}
 \alias{dinvwishart}
 \alias{rinvwishart}
-\title{The Inverse Wishart Distribution}
+\title{Inverse Wishart Distribution}
 \description{
   These functions provide the density and random number generation
      for the inverse Wishart distribution.

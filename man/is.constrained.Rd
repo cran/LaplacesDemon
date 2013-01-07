@@ -1,6 +1,6 @@
 \name{is.constrained}
 \alias{is.constrained}
-\title{is.constrained}
+\title{Logical Check of Constraints}
 \description{
   This function provides a logical test of constraints for each initial
   value or parameter for a model specification, given data.

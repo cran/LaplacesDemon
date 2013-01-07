@@ -1,6 +1,6 @@
 \name{is.model}
 \alias{is.model}
-\title{is.model}
+\title{Logical Check of a Model}
 \description{
   This function provides a logical test of whether or not a \code{Model}
   specification function meets mininum requirements to be considered as

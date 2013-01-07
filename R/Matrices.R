@@ -4,9 +4,6 @@
 # These are utility functions for matrices.                               #
 ###########################################################################
 
-#Test, I'm replacing 6 occurences of .GlobalEnv with LDEnv
-#I must create and test for LDEnv
-
 as.indicator.matrix <- function(x)
      {
      n <- length(x)

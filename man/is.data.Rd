@@ -1,6 +1,6 @@
 \name{is.data}
 \alias{is.data}
-\title{is.data}
+\title{Logical Check of Data}
 \description{
   This function provides a logical test of whether or not a given list
   of data meets minimum criteria to be considered data for

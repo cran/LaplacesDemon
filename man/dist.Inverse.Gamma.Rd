@@ -1,7 +1,7 @@
 \name{dist.Inverse.Gamma}
 \alias{dinvgamma}
 \alias{rinvgamma}
-\title{The Inverse Gamma Distribution}
+\title{Inverse Gamma Distribution}
 \description{
   This is the density function and random generation from the inverse
   gamma distribution.

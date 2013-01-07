@@ -318,7 +318,7 @@ Initial.Values <- GIV(Model, MyData, PGF=TRUE)
 
 ########################  Population Monte Carlo  #########################
 Fit <- PMC(Model, MyData, Initial.Values, Covar=NULL, Iterations=5,
-     Thinning=1, alpha=NULL, M=1, N=1000)
+     Thinning=1, alpha=NULL, M=1, N=100)
 Fit
 print(Fit)
 PosteriorChecks(Fit)

@@ -99,6 +99,7 @@ plot.demonoid <- function(x, BurnIn=1, Data=NULL, PDF=FALSE,
                "Reversible-Jump",
                "Sequential Adaptive Metropolis-within-Gibbs",
                "Sequential Metropolis-within-Gibbs",
+               "Slice Sampler",
                "Updating Sequential Adaptive Metropolis-within-Gibbs",
                "Updating Sequential Metropolis-within-Gibbs")}) {
                plot(BurnIn:nn, x$Monitor[BurnIn:nn,j],

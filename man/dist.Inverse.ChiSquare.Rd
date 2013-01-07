@@ -1,10 +1,10 @@
 \name{dist.Inverse.ChiSquare}
 \alias{dinvchisq}
 \alias{rinvchisq}
-\title{(Scaled) Inverse-Chi-Squared Distribution}
+\title{(Scaled) Inverse Chi-Squared Distribution}
 \description{
   This is the density function and random generation for the (scaled)
-  inverse-chi-squared distribution.
+  inverse chi-squared distribution.
 }
 \usage{
 dinvchisq(x, df, scale, log=FALSE)
@@ -41,12 +41,12 @@ rinvchisq(n, df, scale=1/df)
   \item Mode: \eqn{mode(\theta) = }{mode(theta) = }
 }
 
-The inverse-chi-squared distribution, also called the
-inverted-chi-square distribution, is the multiplicate inverse of the
+The inverse chi-squared distribution, also called the
+inverted chi-square distribution, is the multiplicate inverse of the
 chi-squared distribution. If \eqn{x} has the chi-squared distribution
 with \eqn{\nu}{nu} degrees of freedom, then \eqn{1 / x} has the
-inverse-chi-squared distribution with \eqn{\nu}{nu} degrees of freedom,
-and \eqn{\nu / x}{nu / x} has the inverse-chi-squared distribution with
+inverse chi-squared distribution with \eqn{\nu}{nu} degrees of freedom,
+and \eqn{\nu / x}{nu / x} has the inverse chi-squared distribution with
 \eqn{\nu}{nu} degrees of freedom.
 
 These functions are similar to those in the GeoR package.

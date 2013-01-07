@@ -1,7 +1,7 @@
 \name{dist.Inverse.Wishart.Cholesky}
 \alias{dinvwishartc}
 \alias{rinvwishartc}
-\title{The Inverse Wishart Distribution: Cholesky Parameterization}
+\title{Inverse Wishart Distribution: Cholesky Parameterization}
 \description{
   These functions provide the density and random number generation
   for the inverse Wishart distribution with the Cholesky

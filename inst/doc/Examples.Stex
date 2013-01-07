@@ -32,7 +32,7 @@ Statisticat}
   Statisticat, LLC\\
   Farmington, CT\\
   E-mail: \email{software@bayesian-inference.com}\\
-  URL: \url{http://www.bayesian-inference.com/software.shtml}
+  URL: \url{http://www.bayesian-inference.com/software}
 }
 
 %% for those who use Sweave please include the following line (with % symbols):
@@ -47,7 +47,7 @@ To conserve space, the examples are not worked out in detail, and only the minim
 
 Initial values are usually hard-coded in the examples, though the Parameter-Generating Function (PGF) is also specified. It is recommended to generate initial values with the \code{GIV} function according to the user-specified \code{PGF}.
 
-Notation in this vignette follows these standards: Greek letters represent parameters, lower case letters represent indices, lower case bold face letters represent scalars or vectors, probability distributions are represented with calligraphic font, upper case letters represent index limits, and upper case bold face letters represent matrices.
+Notation in this vignette follows these standards: Greek letters represent parameters, lower case letters represent indices, lower case bold face letters represent scalars or vectors, probability distributions are represented with calligraphic font, upper case letters represent index limits, and upper case bold face letters represent matrices. More information on notation is available at \url{http://www.bayesian-inference.com/notation}.
 
 This vignette will grow over time as examples of more methods become included. Contributed examples are welcome. Please send contributed examples or discovered errors in a similar format in an email to \email{software@bayesian-inference.com} for review and testing. All accepted contributions are, of course, credited.
 
@@ -121,6 +121,7 @@ This vignette will grow over time as examples of more methods become included. C
 \item Negative Binomial Regression \ref{negbin.reg}
 \item Normal, Multilevel \ref{norm.ml}
 \item Ordinal Logit \ref{ordinal.logit}
+\item Ordinal Probit \ref{ordinal.probit}
 \item Panel, Autoregressive Poisson \ref{panel.ap}
 \item Poisson Regression \ref{poisson.reg}
 \item Poisson Regression, Overdispersed \ref{poisson.gamma} \ref{negbin.reg}
@@ -2857,7 +2858,7 @@ Sigma <- as.positive.definite(Sigma) \\
 gamma <- runif(J,-1,1) \\
 beta <- matrix(NA,G,J) \\
 for (g in 1:G) \{beta[g,] <- rmvn(1, gamma, Sigma)\} \\
-m <- rcat(N, rep(1,G)) \#\#\# Multilevel group indicator \\
+m <- rcat(N, rep(1/G,G)) \#\#\# Multilevel group indicator \\
 y <- rowSums(beta[m,] * X) + rnorm(N,0,0.1) \\
 S <- diag(J) \\
 mon.names <- c("LP","sigma") \\
@@ -4132,8 +4133,7 @@ MyData <- list(J=J, K=K, N=N, PGF=PGF, X=X, mon.names=mon.names, \\
 \hspace*{0.27 in} \#\#\# Parameters \\
 \hspace*{0.27 in} beta <- parm[1:Data$K] \\
 \hspace*{0.27 in} delta <- interval(parm[-(1:Data$K)], -5, 5) \\
-\hspace*{0.27 in} delta[-1] <- ifelse(delta[-1] < delta[-length(delta)], \\
-\hspace*{0.62 in} delta[-length(delta)], delta[-1]) \\
+\hspace*{0.27 in} delta <- delta[order(delta)] \\
 \hspace*{0.27 in} parm[-(1:Data$K)] <- delta \\
 \hspace*{0.27 in} \#\#\# Log(Prior Densities) \\
 \hspace*{0.27 in} beta.prior <- sum(dnormv(beta, 0, 1000, log=TRUE)) \\
@@ -4143,6 +4143,65 @@ MyData <- list(J=J, K=K, N=N, PGF=PGF, X=X, mon.names=mon.names, \\
 \hspace*{0.27 in} mu <- matrix(delta, Data$N, Data$J-1, byrow=TRUE) - \\
 \hspace*{0.62 in} matrix(tcrossprod(Data$X, t(beta)), Data$N, Data$J-1) \\
 \hspace*{0.27 in} P <- Q <- invlogit(mu) \\
+\hspace*{0.27 in} P[,-1] <- abs(Q[,-1] - Q[,-(Data$J-1)]) \\
+\hspace*{0.27 in} P <- cbind(P, 1 - Q[,(Data$J-1)]) \\
+\hspace*{0.27 in} LL <- sum(dcat(Data$y, P, log=TRUE)) \\
+\hspace*{0.27 in} \#\#\# Log-Posterior \\
+\hspace*{0.27 in} LP <- LL + beta.prior + delta.prior \\
+\hspace*{0.27 in} Modelout <- list(LP=LP, Dev=-2*LL, Monitor=LP, yhat=rcat(nrow(P), P) \\
+\hspace*{0.62 in} parm=parm) \\
+\hspace*{0.27 in} return(Modelout) \\
+\hspace*{0.27 in} \} \\
+}
+\subsection{Initial Values}
+\code{Initial.Values <- c(rep(0,K), seq(from=-1, to=1, len=(J-1)))}
+
+\section{Ordinal Probit} \label{ordinal.probit}
+\subsection{Form}
+$$\textbf{y}_i \sim \mathcal{CAT}(P_{i,1:J})$$
+$$P_{,J} = 1 - Q_{,(J-1)}$$
+$$P_{,j} = |Q_{,j} - Q_{,(j-1)}|, \quad j=2,\dots,(J-1)$$
+$$P_{,1} = Q_{,1}$$
+$$Q = \phi(\mu)$$
+$$\mu_{,j} = \delta_j - \textbf{X} \beta, \quad \in [-5,5]$$
+$$\beta_k \sim \mathcal{N}(0, 1000), \quad k=1,\dots,K$$
+$$\delta_j \sim \mathcal{N}(0, 1) \in [(j-1),j] \in [-5,5], \quad j=1,\dots,(J-1)$$
+\subsection{Data}
+\code{data(demonsnacks) \\
+N <- nrow(demonsnacks) \\
+J <- 3 \#Number of categories in y \\
+X <- as.matrix(demonsnacks[,c(1,3:10)]) \\
+K <- ncol(demonsnacks) \#Number of columns in design matrix X \\
+y <- log(demonsnacks$Calories) \\
+y <- ifelse(y < 4.5669, 1, ifelse(y > 5.5268, 3, 2)) \#Discretize \\
+for (k in 1:K) \{X[,k] <- CenterScale(X[,k])\} \\
+mon.names <- "LP" \\
+parm.names <- as.parm.names(list(beta=rep(0,K), delta=rep(0,J-1))) \\
+PGF <- function(Data) \\
+\hspace*{0.27 in} \{ \\
+\hspace*{0.27 in} delta <- rnorm(Data$J-1,0,1) \\
+\hspace*{0.27 in} delta <- delta[order(delta)] \\
+\hspace*{0.27 in} return(c(rnormv(Data$K,0,10), delta)) \\
+\hspace*{0.27 in} \} \\
+MyData <- list(J=J, K=K, N=N, PGF=PGF, X=X, mon.names=mon.names, \\
+     parm.names=parm.names, y=y) \\
+}
+\subsection{Model}
+\code{Model <- function(parm, Data) \\
+\hspace*{0.27 in} \{ \\
+\hspace*{0.27 in} \#\#\# Parameters \\
+\hspace*{0.27 in} beta <- parm[1:Data$K] \\
+\hspace*{0.27 in} delta <- interval(parm[-(1:Data$K)], -5, 5) \\
+\hspace*{0.27 in} delta <- delta[order(delta)] \\
+\hspace*{0.27 in} parm[-(1:Data$K)] <- delta \\
+\hspace*{0.27 in} \#\#\# Log(Prior Densities) \\
+\hspace*{0.27 in} beta.prior <- sum(dnormv(beta, 0, 1000, log=TRUE)) \\
+\hspace*{0.27 in} delta.prior <- sum(dtrunc(delta, "norm", a=-5, b=5, log=TRUE, \\
+\hspace*{0.62 in} mean=0, sd=1) \\
+\hspace*{0.27 in} \#\#\# Log-Likelihood \\
+\hspace*{0.27 in} mu <- matrix(delta, Data$N, Data$J-1, byrow=TRUE) - \\
+\hspace*{0.62 in} matrix(tcrossprod(Data$X, t(beta)), Data$N, Data$J-1) \\
+\hspace*{0.27 in} P <- Q <- pnorm(mu) \\
 \hspace*{0.27 in} P[,-1] <- abs(Q[,-1] - Q[,-(Data$J-1)]) \\
 \hspace*{0.27 in} P <- cbind(P, 1 - Q[,(Data$J-1)]) \\
 \hspace*{0.27 in} LL <- sum(dcat(Data$y, P, log=TRUE)) \\
@@ -4490,7 +4549,7 @@ MyData <- list(J=J, PGF=PGF, S=S, T=T, Y=Y, CG=CG, CW=CW, IG=IG, IW=IW, \\
 \hspace*{0.27 in} \#\#\# Parameters \\
 \hspace*{0.27 in} alpha <- parm[1:3] \\
 \hspace*{0.27 in} beta <- parm[4:6] \\
-\hspace*{0.27 in} U <- as.parm.matrix(U, Data$J, parm, Data, diag=TRUE) \\
+\hspace*{0.27 in} U <- as.parm.matrix(U, Data$J, parm, Data, chol=TRUE) \\
 \hspace*{0.27 in} diag(U) <- exp(diag(U)) \\
 \hspace*{0.27 in} \#\#\# Log(Prior Densities) \\
 \hspace*{0.27 in} alpha.prior <- sum(dnormv(alpha, 0, 1000, log=TRUE)) \\

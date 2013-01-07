@@ -239,7 +239,7 @@ upper.triangle(x, diag=FALSE)
   \code{\link{LaplaceApproximation}},
   \code{\link{LaplacesDemon}},
   \code{\link{lower.tri}},
-  \code{\link{Prec2Cov}}
+  \code{\link{Prec2Cov}},
   \code{\link{solve}}, and
   \code{\link{upper.tri}}.
 }

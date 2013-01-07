@@ -73,7 +73,7 @@ The 'Strength of Evidence' aids in the interpretation (Jeffreys, 1961).
 
 A table for the interpretation of the strength of evidence for Bayes
 factors is available at
-\url{www.bayesian-inference.com/bayesfactors.shtml}.
+\url{http://www.bayesian-inference.com/bayesfactors}.
 
 Each Bayes factor, \code{B}, is the posterior odds in favor of the
 hypothesis divided by the prior odds in favor of the hypothesis, where

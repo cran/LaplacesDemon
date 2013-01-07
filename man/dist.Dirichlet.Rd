@@ -1,7 +1,7 @@
 \name{dist.Dirichlet}
 \alias{ddirichlet}
 \alias{rdirichlet}
-\title{The Dirichlet Distribution}
+\title{Dirichlet Distribution}
 \description{
   This is the density function and random generation from the Dirichlet
   distribution.

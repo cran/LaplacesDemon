@@ -1,10 +1,10 @@
 \name{dist.Wishart}
 \alias{dwishart}
 \alias{rwishart}
-\title{The Wishart Distribution}
+\title{Wishart Distribution}
 \description{
   These functions provide the density and random number generation
-     for the Wishart distribution.
+  for the Wishart distribution.
 }
 \usage{
    dwishart(Omega, nu, S, log=FALSE)

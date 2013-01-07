@@ -1,6 +1,6 @@
 \name{is.proper}
 \alias{is.proper}
-\title{Propriety}
+\title{Logical Check of Propriety}
 \description{
   This function provides a logical check of the propriety of a
   univariate prior probability distribution or the joint posterior

@@ -31,17 +31,17 @@ Combine <- function(x, Data, Thinning=1)
      LIV <- x[[1]]$Parameters
      ### Combine
      thinned <- x[[1]]$Posterior1
-     Dev <- x[[1]]$Deviance
+     Dev <- matrix(x[[1]]$Deviance)
      Mon <- x[[1]]$Monitor
      for (i in 2:len.x) {
           thinned <- rbind(thinned, x[[i]]$Posterior1)
-          Dev <- rbind(Dev, x[[i]]$Deviance)
+          Dev <- rbind(Dev, matrix(x[[i]]$Deviance))
           Mon <- rbind(Mon, x[[i]]$Monitor)
           }
      ### Thinning
      if(Thinning > 1) {
           thinned <- Thin(thinned, By=Thinning)
-          Dev <- Thin(Dev, By=Thinning)
+          Dev <- matrix(Thin(Dev, By=Thinning))
           Mon <- Thin(Mon, By=Thinning)}
      ### Assess Stationarity
      cat("\nAssessing Stationarity\n")
@@ -83,7 +83,6 @@ Combine <- function(x, Data, Thinning=1)
           ESS6 <- ESS(Mon[BurnIn:nrow(thinned),]) }
      ### Posterior Summary Table 1: All Thinned Samples
      cat("Creating Summaries\n")
-     Mon <- as.matrix(Mon)
      Num.Mon <- ncol(Mon)
      Summ1 <- matrix(NA, LIV, 7, dimnames=list(Data$parm.names,
           c("Mean","SD","MCSE","ESS","LB","Median","UB")))
@@ -91,16 +90,16 @@ Combine <- function(x, Data, Thinning=1)
      Summ1[,2] <- apply(thinned, 2, sd)
      Summ1[,3] <- 0
      Summ1[,4] <- ESS1
-     Summ1[,5] <- apply(thinned, 2, quantile, c(0.025))
-     Summ1[,6] <- apply(thinned, 2, quantile, c(0.500))
-     Summ1[,7] <- apply(thinned, 2, quantile, c(0.975))
+     Summ1[,5] <- apply(thinned, 2, quantile, c(0.025), na.rm=TRUE)
+     Summ1[,6] <- apply(thinned, 2, quantile, c(0.500), na.rm=TRUE)
+     Summ1[,7] <- apply(thinned, 2, quantile, c(0.975), na.rm=TRUE)
      for (i in 1:ncol(thinned)) {
           temp <- try(MCSE(thinned[,i]), silent=TRUE)
           if(!inherits(temp, "try-error")) Summ1[i,3] <- temp
           else Summ1[i,3] <- MCSE(thinned[,i], method="sample.variance")}
      Deviance <- rep(NA,7)
      Deviance[1] <- mean(Dev)
-     Deviance[2] <- sd(Dev)
+     Deviance[2] <- sd(as.vector(Dev))
      temp <- try(MCSE(as.vector(Dev)), silent=TRUE)
      if(inherits(temp, "try-error"))
           temp <- MCSE(as.vector(Dev), method="sample.variance")
@@ -113,8 +112,8 @@ Combine <- function(x, Data, Thinning=1)
      for (j in 1:Num.Mon) {
           Monitor <- rep(NA,7)
           Monitor[1] <- mean(Mon[,j])
-          Monitor[2] <- sd(Mon[,j])
-          temp <- try(MCSE(Mon[,j]), silent=TRUE)
+          Monitor[2] <- sd(as.vector(Mon[,j]))
+          temp <- try(MCSE(as.vector(Mon[,j])), silent=TRUE)
           if(inherits(temp, "try-error"))
                temp <- MCSE(Mon[,j], method="sample.variance")
           Monitor[3] <- temp
@@ -172,7 +171,7 @@ Combine <- function(x, Data, Thinning=1)
                temp <- try(MCSE(as.vector(Mon[,j])), silent=TRUE)
                if(inherits(temp, "try-error"))
                     temp <- MCSE(as.vector(Mon[,j]),
-                         method="sample.variance")
+                    method="sample.variance")
                Monitor[3] <- temp
                Monitor[4] <- ESS6[j]
                Monitor[5] <- as.numeric(quantile(Mon2[,j],
@@ -191,16 +190,23 @@ Combine <- function(x, Data, Thinning=1)
           colnames(thinned) <- Data$parm.names}
      ### Logarithm of the Marginal Likelihood
      LML <- list(LML=NA, VarCov=NA)
-     if(({Algorithm == "Delayed Rejection Metropolis"} |
-          {Algorithm == "Metropolis-within-Gibbs"} | 
+     if(({Algorithm == "Componentwise Hit-And-Run Metropolis"} |
+          {Algorithm == "Componentwise Slice"} |
+          {Algorithm == "Delayed Rejection Metropolis"} |
+          {Algorithm == "Hit-And-Run Metropolis"} | 
+          {Algorithm == "Hamiltonian Monte Carlo"} |
+          {Algorithm == "Independence Metropolis"} |
+          {Algorithm == "Metropolis-within-Gibbs"} |
+          {Algorithm == "No-U-Turn Sampler"} | 
           {Algorithm == "Random-Walk Metropolis"} |
+          {Algorithm == "Reversible-Jump"} |
           {Algorithm == "Sequential Metropolis-within-Gibbs"} |
+          {Algorithm == "Tempered Hamiltonian Monte Carlo"} | 
           {Algorithm == "t-walk"}) &
           {BurnIn < nrow(thinned)}) {
           cat("Estimating Log of the Marginal Likelihood\n")
           LML <- LML(theta=thinned2,
-               LL=as.vector(Dev2)*(-1/2),
-               method="NSIS")}
+               LL=as.vector(Dev2)*(-1/2), method="NSIS")}
      ### Compile Output
      cat("Creating Output\n")
      LaplacesDemon.out <- list(Acceptance.Rate=round(Acceptance.Rate/Iterations,7),

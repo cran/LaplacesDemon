@@ -4,19 +4,17 @@
 # This is a collection of functions to facilitate math.                   #
 ###########################################################################
 
-logadd <- function(x, add=TRUE)
+logadd <- function (x, add=TRUE) 
      {
      x <- as.vector(x)
      x <- sort(x[is.finite(x)], decreasing=TRUE)
      x <- c(x[1], x[which(x != x[1])])
      if(length(x) == 1) return(x)
      n <- length(x)
-     y <- sum(exp(x[-1] - x[1]))
-     if(add == TRUE) z <- x[1] + log(1 + y)
-     else {
-          z <- x[1]
-          for (i in 2:n) z <- z + log(1 - exp(x[i] - x[1]))
-          }
+     if(add == TRUE)
+          z <- x[1] + log(1 + sum(exp(x[-1] - x[1])))
+     else 
+          z <- x[1] + sum(log(1 - exp(x[-1] - x[1])))
      return(z)
      }
 partial <- function(Model, parm, Data, Interval=1e-6)

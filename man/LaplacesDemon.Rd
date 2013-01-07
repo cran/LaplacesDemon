@@ -139,6 +139,7 @@ LaplacesDemon.hpc(Model, Data, Initial.Values, Covar=NULL,
     \item Hamiltonian Monte Carlo with Dual-Averaging (HMCDA)
     \item Hit-And-Run Metropolis (HARM)
     \item Independence Metropolis (IM)
+    \item Interchain Adaptation (INCA)
     \item Metropolis-within-Gibbs (MWG)
     \item No-U-Turn Sampler (NUTS)
     \item Random-Walk Metropolis (RWM)
@@ -146,6 +147,7 @@ LaplacesDemon.hpc(Model, Data, Initial.Values, Covar=NULL,
     \item Robust Adaptive Metropolis (RAM)
     \item Sequential Adaptive Metropolis-within-Gibbs (SAMWG)
     \item Sequential Metropolis-within-Gibbs (SMWG)
+    \item Slice Sampler (Slice)
     \item Tempered Hamiltonian Monte Carlo (THMC)
     \item t-walk (twalk)
     \item Updating Sequential Adaptive Metropolis-within-Gibbs (USAMWG)
@@ -154,7 +156,7 @@ LaplacesDemon.hpc(Model, Data, Initial.Values, Covar=NULL,
 
   It is a goal for the documentation in the \pkg{LaplacesDemon} to be
   extensive. However, details of MCMC algorithms are best explored
-  online at \url{www.bayesian-inference.com/mcmc.shtml}, as well
+  online at \url{http://www.bayesian-inference.com/mcmc}, as well
   as in the "LaplacesDemon Tutorial" vignette, and the "Bayesian
   Inference" vignette. Algorithm specifications (\code{Specs}) are
   listed below:
@@ -215,6 +217,11 @@ LaplacesDemon.hpc(Model, Data, Initial.Values, Covar=NULL,
     \item \code{lambda} is a scalar trajectory length in HMCDA.
     \item \code{Lmax} is a scalar maximum for \code{L} (see above) in
     HMCDA.
+    \item \code{m} is a scalar (or vector equal in length to the number
+    of initial values) integer in [1,Inf] in which each element
+    indicates the maximum number of steps for creating the slice
+    interval. It is used by the Slice algorithm, and defaults to
+    infinity.
     \item \code{mu} is a vector that is equal in length to the initial
     values. This vector will be used as the mean of the proposal
     distribution, and is usually the posterior mode of a
@@ -259,12 +266,17 @@ LaplacesDemon.hpc(Model, Data, Initial.Values, Covar=NULL,
     Roberts and Rosenthal (2009). The two mixture components are
     adaptive multivariate and static/symmetric univariate proposals. The
     mixture is determined at each iteration with mixture weight
-    \code{w}. A higher value of \code{w} is associated with more
-    static/symmetric univariate proposals, and a lower \code{w} is
-    associated with more adaptive multivariate proposals. AMM will be
-    unable to include the multivariate mixture component until it has
-    accumulated some history, and models with more parameters will take
-    longer to be able to use adaptive multivariate proposals.
+    \code{w}. This argument has different interpretations in different
+    algorithms. In the AMM algorithm, a higher value of \code{w} is
+    associated with more static/symmetric univariate proposals, and a
+    lower \code{w} is associated with more adaptive multivariate
+    proposals. AMM will be unable to include the multivariate mixture
+    component until it has accumulated some history, and models with
+    more parameters will take longer to be able to use adaptive
+    multivariate proposals. In the Slice algorithm, this argument may be a
+    scalar or a vector equal in length the number of initial values, and
+    each element indicates the step size used for creating theslice
+    interval.
   }
 }
 \value{
@@ -337,17 +349,17 @@ LaplacesDemon.hpc(Model, Data, Initial.Values, Covar=NULL,
     Hit-And-Run (CHARM), Delayed Rejection Metropolis (DRM),
     Hamiltonian Monte Carlo (HMC), Hit-And-Run (HARM),
     Metropolis-within-Gibbs (MWG), No-U-Turn Sampler (NUTS),
-    Random-Walk Metropolis (RWM), Tempered Hamiltonian Monte Carlo
-    (THMC) or t-walk (twalk). \code{LML} is estimated with nonparametric
-    self-normalized importance sampling (NSIS), given LL and the
-    marginal posterior samples of the parameters. \code{LML} is useful
-    for comparing multiple models with the \code{\link{BayesFactor}}
-    function.}
+    Random-Walk Metropolis (RWM), Slice Sampling (Slice), Tempered
+    Hamiltonian Monte Carlo (THMC), or t-walk (twalk). \code{LML} is
+    estimated with nonparametric self-normalized importance sampling
+    (NSIS), given LL and the marginal posterior samples of the
+    parameters. \code{LML} is useful for comparing multiple models with
+    the \code{\link{BayesFactor}} function.}
   \item{Minutes}{This indicates the number of minutes that
-    \code{LaplacesDemon} was running, and this includes the initial
-    checks as well as time it took the
-    \code{\link{LaplaceApproximation}} function, assessing stationarity,
-    effective sample size (ESS), and creating summaries.}
+    \code{LaplacesDemon} was running, and includes the initial checks as
+    well as time it took the \code{\link{LaplaceApproximation}}
+    function, assessing stationarity, effective sample size (ESS), and
+    creating summaries.}
   \item{Model}{This contains the model specification \code{Model}.}
   \item{Monitor}{This is a vector or matrix of one or more monitored
     variables, which are variables that were specified in the
@@ -407,6 +419,10 @@ LaplacesDemon.hpc(Model, Data, Initial.Values, Covar=NULL,
   \item{Thinning}{This is the value of the \code{Thinning} argument.}
 }
 \references{
+  Craiu, R.V., Rosenthal, J., and Yang, C. (2009). "Learn From Thy
+  Neighbor: Parallel-Chain and Regional Adaptive MCMC". Journal of the
+    American Statistical Assocation, 104(488), p. 1454--1466.
+  
   Christen, J.A. and Fox, C. (2010). "A General Purpose Sampling
   Algorithm for Continuous Distributions (the t-walk)". Bayesian
   Analysis, 5(2), p. 263--282.
@@ -423,10 +439,10 @@ LaplacesDemon.hpc(Model, Data, Initial.Values, Covar=NULL,
   p. 711--732.
 
   Haario, H., Laine, M., Mira, A., and Saksman, E. (2006). "DRAM:
-  Efficient Adaptive MCMC". Statistical Computing, 16, p. 339-354.
+  Efficient Adaptive MCMC". Statistical Computing, 16, p. 339--354.
      
   Haario, H., Saksman, E., and Tamminen, J. (2001). "An Adaptive
-  Metropolis Algorithm". Bernoulli, 7, p. 223-242.
+  Metropolis Algorithm". Bernoulli, 7, p. 223--242.
 
   Hoffman, M.D. and Gelman. A. (2012). "The No-U-Turn Sampler: Adaptively
   Setting Path Lengths in Hamiltonian Monte Carlo". Journal of Machine
@@ -441,10 +457,13 @@ LaplacesDemon.hpc(Model, Data, Initial.Values, Covar=NULL,
 
   Metropolis, N., Rosenbluth, A.W., Rosenbluth, M.N., and Teller,
   E. (1953). "Equation of State Calculations by Fast Computing
-  Machines". Journal of Chemical Physics, 21, p. 1087-1092.
+  Machines". Journal of Chemical Physics, 21, p. 1087--1092.
 
   Mira, A. (2001). "On Metropolis-Hastings Algorithms with Delayed
-  Rejection". Metron, Vol. LIX, n. 3-4, p. 231-241.
+  Rejection". Metron, Vol. LIX, n. 3-4, p. 231--241.
+
+  Neal, R.M. (2003). "Slice Sampling" (with discussion), Annals of
+  Statistics, 31(3), p. 705--767.
 
   Roberts, G.O. and Rosenthal, J.S. (2009). "Examples of Adaptive
   MCMC". Computational Statistics and Data Analysis, 18, p. 349--367.
@@ -459,7 +478,8 @@ LaplacesDemon.hpc(Model, Data, Initial.Values, Covar=NULL,
   Vihola, M. (2011). "Robust Adaptive Metropolis Algorithm with Coerced
   Acceptance Rate". Statistics and Computing. Springer, Netherlands.
 }
-\author{Statisticat, LLC \email{software@bayesian-inference.com}}
+\author{Statisticat, LLC \email{software@bayesian-inference.com},
+     Silvere Vialet-Chabrand \email{silvere@vialet-chabrand.com}}
 \seealso{
   \code{\link{as.initial.values}},
   \code{\link{as.parm.names}},
@@ -601,6 +621,13 @@ Importance(Fit, Model, MyData, Discrep="Chi-Square")
 #     Covar=Fit$Covar, Iterations=1000, Status=100, Thinning=1,
 #     Algorithm="IM", Specs=list(mu=Fit$Summary1[,1]))
 
+#########################  Interchain Adaptation  #########################
+#Initial.Values <- rbind(Initial.Values, GIV(Model, MyData, PGF=TRUE))
+#Fit <- LaplacesDemon.hpc(Model, Data=MyData, Initial.Values,
+#     Covar=NULL, Iterations=1000, Status=100, Thinning=1,
+#     Algorithm="INCA", Specs=list(Adaptive=500, Periodicity=10),
+#     Chains=2, CPUs=2, Packages=NULL, Dyn.libs=NULL)
+
 #######################  Metropolis-within-Gibbs  #########################
 #Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
 #     Covar=NULL, Iterations=1000, Status=100, Thinning=1,
@@ -645,6 +672,12 @@ Importance(Fit, Model, MyData, Discrep="Chi-Square")
 #     Covar=NULL, Iterations=1000, Status=100, Thinning=1,
 #     Algorithm="SMWG", Specs=list(Dyn=Dyn))
 
+#############################  Slice Sampler  #############################
+#m <- Inf; w <- 1
+#Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
+#     Covar=NULL, Iterations=1000, Status=100, Thinning=1,
+#     Algorithm="Slice", Specs=list(m=m, w=w))
+
 ###################  Tempered Hamiltonian Monte Carlo  ####################
 #Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
 #     Covar=NULL, Iterations=1000, Status=100, Thinning=1,
@@ -680,8 +713,10 @@ Importance(Fit, Model, MyData, Discrep="Chi-Square")
 \keyword{Delayed Rejection Adaptive Metropolis}
 \keyword{Delayed Rejection Metropolis}
 \keyword{Hamiltonian Monte Carlo}
+\keyword{High Performance Computing}
 \keyword{Hit-And-Run}
 \keyword{Independence Metropolis}
+\keyword{Interchain Adaptation}
 \keyword{MCMC}
 \keyword{Metropolis-within-Gibbs}
 \keyword{Multiple Chains}
@@ -693,6 +728,7 @@ Importance(Fit, Model, MyData, Discrep="Chi-Square")
 \keyword{Random-Walk Metropolis}
 \keyword{Sequential Adaptive Metropolis-within-Gibbs}
 \keyword{Sequential Metropolis-within-Gibbs}
+\keyword{Slice Sampling}
 \keyword{Tempered Hamiltonian Monte Carlo}
 \keyword{t-walk}
 \keyword{Updating Sequential Adaptive Metropolis-within-Gibbs}

@@ -17,8 +17,8 @@
 \Abstract{
 \pkg{LaplacesDemon}, usually referred to as Laplace's Demon, is a contributed \proglang{R} package for Bayesian inference, and is freely available on the Comprehensive \proglang{R} Archive Network (CRAN). Laplace's Demon is a complete environment for Bayesian inference. The user may build any kind of probability model with a user-specified model function. The model may be updated with Laplace Approximation, numerous MCMC algorithms, and PMC. After updating, a variety of facilities are available, including MCMC diagnostics, posterior predictive checks, and validation. Laplace's Demon seeks to be generalizable and user-friendly to Bayesians, especially Laplacians.
 }
-\Keywords{Adaptive, AM, Bayesian, Delayed Rejection, DR, DRAM, DRM, Gradient Ascent, HARM, Hamiltonian, High Performance Computing, Hit-And-Run, HMC, HPC, Importance Sampling, Laplace Approximation, LaplacesDemon, Laplace's Demon, Markov chain Monte Carlo, MCMC, Metropolis, Metropolis-within-Gibbs, No-U-Turn Sampler, NUTS, Optimization, Parallel, \proglang{R}, PMC, Random Walk, Random-Walk, Resilient Backpropagation, Reversible-Jump, Statisticat, t-walk}
-\Plainkeywords{adaptive, am, bayesian, delayed rejection, dr, dram, drm, gradient ascent, harm, hamiltonian, high performance computing, hit-and-run, hmc, hpc, importance sampling, laplace approximation, laplacesdemon, laplace's demon, markov chain monte carlo, mcmc, metropolis, metropolis-within-gibbs, no-u-turn sampler, nuts, optimization, parallel, pmc, r, random walk, random-walk, resilient backpropagation, reversible-jump, statisticat, t-walk}
+\Keywords{Adaptive, AM, Bayesian, Delayed Rejection, DR, DRAM, DRM, Gradient Ascent, HARM, Hamiltonian, High Performance Computing, Hit-And-Run, HMC, HPC, Importance Sampling, INCA, Laplace Approximation, LaplacesDemon, Laplace's Demon, Markov chain Monte Carlo, MCMC, Metropolis, Metropolis-within-Gibbs, No-U-Turn Sampler, NUTS, Optimization, Parallel, \proglang{R}, PMC, Random Walk, Random-Walk, Resilient Backpropagation, Reversible-Jump, Slice, Statisticat, t-walk}
+\Plainkeywords{adaptive, am, bayesian, delayed rejection, dr, dram, drm, gradient ascent, harm, hamiltonian, high performance computing, hit-and-run, hmc, hpc, importance sampling, inca, laplace approximation, laplacesdemon, laplace's demon, markov chain monte carlo, mcmc, metropolis, metropolis-within-gibbs, no-u-turn sampler, nuts, optimization, parallel, pmc, r, random walk, random-walk, resilient backpropagation, reversible-jump, slice, statisticat, t-walk}
 
 %% publication information
 %% NOTE: Typically, this can be left commented and will be filled out by the technical editor
@@ -33,14 +33,14 @@
  Statisticat, LLC\\
  Farmington, CT\\
  E-mail: \email{software@bayesian-inference.com}\\
- URL: \url{http://www.bayesian-inference.com/software.shtml}
+ URL: \url{http://www.bayesian-inference.com/software}
 }
 
 %% for those who use Sweave please include the following line (with % symbols):
 %% need no \usepackage{Sweave.sty}
 
 \begin{document}
-Bayesian inference is named after Reverend Thomas Bayes (1702-1761) for developing Bayes' theorem, which was published posthumously after his death \citep{bayes63}. This was the first instance of what would be called inverse probability\footnote{`Inverse probability' refers to assigning a probability distribution to an unobserved variable, and is in essence, probability in the opposite direction of the usual sense. Bayes' theorem has been referred to as ``the principle of inverse probability''. Terminology has changed, and the term `Bayesian probability' has displaced `inverse probability'. The adjective ``Bayesian'' was introduced by R. A. Fisher as a derogatory term.}.
+Bayesian inference is named after Reverend Thomas Bayes (1701-1761) for developing Bayes' theorem, which was published posthumously after his death \citep{bayes63}. This was the first instance of what would be called inverse probability\footnote{`Inverse probability' refers to assigning a probability distribution to an unobserved variable, and is in essence, probability in the opposite direction of the usual sense. Bayes' theorem has been referred to as ``the principle of inverse probability''. Terminology has changed, and the term `Bayesian probability' has displaced `inverse probability'. The adjective ``Bayesian'' was introduced by R. A. Fisher as a derogatory term.}.
 
 Unaware of Bayes, Pierre-Simon Laplace (1749-1827) independently developed Bayes' theorem and first published his version in 1774, eleven years after Bayes, in one of Laplace's first major works \citep[p. 366--367]{laplace74}. In 1812, Laplace introduced a host of new ideas and mathematical techniques in his book, \emph{Theorie Analytique des Probabilites} \citep{laplace12}. Before Laplace, probability theory was solely concerned with developing a mathematical analysis of games of chance. Laplace applied probabilistic ideas to many scientific and practical problems. Although Laplace is not the father of probability, Laplace may be considered the father of the field of probability.
 
@@ -551,7 +551,7 @@ It is important to note that \code{Status} messages do not appear during paralle
 
 After updating a model with \code{LaplacesDemon.hpc}, the \code{plot} function may be applied so that multiple chains may be viewed simultaneously, and this is helpful when comparing samplers for a specific model. If this looks good, then the \code{Gelman.Diagnostic} function may be applied to assess convergence. Otherwise, the \code{as.initial.values} function may be used to extract the latest values from the chains and use these to begin the next update. Once results seem acceptable, the \code{Combine} function may be used to combine the posterior samples of multiple chains into one \code{demonoid} object, from which the remaining facilities of the \pkg{LaplacesDemon} package are available.
 
-One of many attractive possible future HPC extensions is to include the inter-chain adaptive (INCA) approach for adaptive MCMC \citep{craiu09, solonen12}. INCA uses parallel chains that are independent, except that they share the adaptive component, and this sharing speeds convergence. Recent attempts at coding this have been unsuccessful due to unfamiliarity with how best to utilize package \pkg{parallel}. Another goal is to parallelize PMC. If you know how to extend the MCMC algorithms in \code{LaplacesDemon} with INCA, then please email \url{software@bayesian-inference.com}.
+Another attractive use of HPC is with the Interchain Adaptive (INCA) algorithm \citep{craiu09, solonen12}. INCA uses parallel chains that are independent, except that they share the adaptive component, and this sharing speeds convergence. For more information, see \ref{inca}.
 
 \section{Details} \label{details}
 The \pkg{LaplacesDemon} package uses three broad types of numerical approximation algorithms: Importance Sampling (IS), Laplace Approximation, and Markov chain Monte Carlo (MCMC). Approximate Bayesian Computation (ABC) may be estimated within each. These numerical approximation algorithms are introduced below.
@@ -608,7 +608,7 @@ Markov chain Monte Carlo (MCMC) algorithms are also called samplers. There are a
 
 While designing Laplace's Demon, the primary goal in numerical approximation was generalization. The most generalizable MCMC algorithm is the Metropolis-Hastings (MH) generalization of the RWM algorithm. The MH algorithm extended RWM to include asymmetric proposal distributions. Having no need of asymmetric proposals, Laplace's Demon uses variations of the original RWM algorithm, which use symmetric proposal distributions, specifically Gaussian proposals (and sometimes others, such as in the RAM algorithm of \citet{vihola11}). For years, the main disadvantage of the RWM and MH algorithms was that the proposal variance (see below) had to be tuned manually, and therefore other MCMC algorithms have become popular because they do not need to be tuned.
 
-Gibbs sampling became popular for Bayesian inference, though it requires conditional sampling of conjugate distributions, so it is precluded from non-conjugate sampling in its purest form. Gibbs sampling also suffers under high correlations \citep{gilks96}. Due to these limitations, Gibbs sampling is less generalizable than RWM, though RWM and other algorithms are not immune to problems with correlation. Slice sampling samples a distribution by sampling uniformly from the region under the plot of its density function, and is more appropriate with bounded distributions that cannot approach infinity.
+Gibbs sampling became popular for Bayesian inference, though it requires conditional sampling of conjugate distributions, so it is precluded from non-conjugate sampling in its purest form. Gibbs sampling also suffers under high correlations \citep{gilks96}. Due to these limitations, Gibbs sampling is less generalizable than RWM, though RWM and other algorithms are not immune to problems with correlation. The original slice sampling algorithm of \citet{neal97} is a special case of Gibbs sampling that samples a distribution by sampling uniformly from the region under the plot of its density function, and is more appropriate with bounded distributions that cannot approach infinity, though the improved slice sampler of \citet{neal03} is available here (see \ref{slice}).
 
 There are valid ways to tune the RWM algorithm as it updates. This is known by many names, including adaptive Metropolis and adaptive MCMC, among others. A brief discussion follows of MCMC algorithms in \pkg{LaplacesDemon}.
 
@@ -733,6 +733,20 @@ The usual approach to IM is to update the model with Laplace Approximation, and 
 
 Since IM is non-adaptive and uses a proposal distribution that remains fixed for all iterations, it may be used as a final algorithm.
 
+\subsubsection{Interchain Adaptation} \label{inca}
+
+The Interchain Adaptation (INCA) algorithm of \citet{craiu09} is an extension of the Adaptive Metropolis (AM) algorithm of \citet{haario01}. \citet{craiu09} refer to INCA as inter-chain adaptation and inter-chain adaptive MCMC. INCA uses parallel chains that are independent, except that they share the adaptive component, and this sharing speeds convergence. Since parallel chains are a defining feature of INCA, this algorithm works only with \code{LaplacesDemon.hpc}, not \code{LaplacesDemon}.
+
+As with the AM algorithm, the proposal covariance matrix is set equal to the historical (or sample) covariance matrix. Ample pre-adaptive iterations are recommended \citep{craiu09}, and initial values should be dispersed to aid in discovering multimodal marginal posterior distributions. After adaptation begins, INCA combines the historical covariance matrices from all parallel chains during each adaptation. Each chain learns from experience as in AM, and in INCA, each chain also learns from the other parallel chains.
+
+\citet{solonen12} found a dramatic reduction in the number of iterations to convergence when INCA used 10 parallel chains, compared against a single-chain AM algorithm. Similar improvements have been noted in the \pkg{LaplacesDemon} package, though more time is required per iteration.
+
+The \code{Gelman.Diagnostic} is recommended by \citet{craiu09} to determine when the parallel chains have stopped sharing different information about the target distributions. The exchange of information between chains decreases as the number of iterations increases.
+
+This implementation of INCA uses a server function that is built into \code{LaplacesDemon.hpc}. If the connection to this server fails, then the user must kill the process and then close all open connections with the \code{closeAllConnections} function.
+
+Since INCA is an adaptive algorithm, the final algorithm should be RWM.
+
 \subsubsection{Metropolis-within-Gibbs} \label{mwg}
 Metropolis-within-Gibbs (MWG) was proposed as a hybrid algorithm that combines Metropolis-Hastings and Gibbs sampling, and was suggested in \citet{tierney94}. The idea was to substitute a Metropolis step when Gibbs sampling fails. However, Gibbs sampling is not included in this version or most versions, making it an algorithm with a misleading name. Without Gibbs sampling, the more honest name would be componentwise random-walk Metropolis, but the more common name is MWG.
 
@@ -782,6 +796,17 @@ The Sequential Adaptive Metropolis-within-Gibbs (SAMWG) algorithm is for state-s
 
 \subsubsection{Sequential Metropolis-within-Gibbs} \label{smwg}
 The Sequential Metropolis-within-Gibbs (SMWG) algorithm is the non-adaptive version of the SAMWG algorithm, and is used for final sampling of state-space models (SSMs).
+
+\subsubsection{Slice Sampling} \label{slice}
+Slice sampling was introduced in \citet{neal97} and improved in \citet{neal03}. In slice sampling, a distribution is sampled by sampling uniformly from the region under the plot of its density function. Here, slice sampling uses two phases as follows. First, an interval is created for the slice, and second, rejection sampling is performed within this interval.
+
+The Slice algorithm implemented here is componentwise and based on figures 3 and 5 in \citet{neal03}, in which the slice is replaced with an interval $I$ that contains most of the slice. For each parameter, an interval $I$ is created and expanded by the ``stepping out'' procedure with step size $w$ until the interval is larger than the slice, and the number of steps $m$ may be limited by the user. The original slice sampler is inappropriate for the unbounded interval (-$\infty$, $\infty$), and this improved version allows this unbounded interval by replacing the slice with the created interval $I$. This algorithm adaptively changes the scale, though it is not an adaptive algorithm in the sense that it retains the Markov property.
+
+This form of Slice has two algorithm specifications: $m$ and $w$. The number of steps $m$ to increase interval $I$ defaults to $\infty$, and may otherwise be an integer. If a scalar is entered, then it will be applied to all parameters, or a vector may be entered so that each parameter may be specified. The step size $w$ defaults to 1 and may otherwise be in the interval (0, $\infty$). As with $m$, $w$ may be a scalar or vector.
+
+The lower and upper bounds of interval $I$ default to ($-\infty$, $\infty$), and adjust automatically to constrained parameters. Once the interval is constructed, a proposal is drawn randomly from within the interval until the proposal is accepted, and the interval is otherwise shrunk. The acceptance rate of this Slice algorithm is 1, though multiple model evalutations occur per iteration.
+
+This componentwise Slice algorithm has been noted to be more efficient than Metropolis updates, may be easier to implement than Gibbs sampling, and is attractive for routine and automated use \citep{neal03}. Since Slice is not an adaptive algorithm, it is acceptable as a final algorithm.
 
 \subsubsection{Tempered Hamiltonian Monte Carlo} \label{thmc}
 The Tempered Hamiltonian Monte Carlo (THMC) algorithm is an extension of the HMC algorithm to include another algorithm specification: \code{Temperature}. The \code{Temperature} must be positive. When greater than 1, the algorithm should explore more diffuse distributions, and may be helpful with multimodal distributions.
@@ -834,7 +859,7 @@ In models with highly-correlated parameters, algorithms with multivariate propos
 
 State-space models (SSMs), or dynamic linear models (DLMs), are a special consideration. The \pkg{LaplacesDemon} package has algorithms in the AMWG family specifically for SSMs, such as SAMWG, SMWG, USAMWG, and USMWG. Recommendations vary with model dimension and the correlation of parameters. If correlation is not problematic, then SAMWG is recommended. If correlation is problematic, then AMM is recommended for models with small dimensions, and CHARM or HARM is recommended for models with large dimensions.
 
-Models with multimodal marginal posterior distributions are potentially troublesome for any numerical approximation algorithm, though MCMC may be better suited in general. Recommended strategies include using the CHARM or HARM algorithms, or parallel\footnote{Parallel chains are enabled with the \code{LaplacesDemon.hpc} function.} RAM chains specified with the t-distribution. If the dimension is too large for a proposal covariance matrix to be practical, then replace the RAM algorithm with parallel t-walk chains. Another alternative algorithm is THMC, though tuning is difficult. Parallel chains increase the chances that different chains may settle on different modes, and it is hoped that t-distributed proposals assist a chain in mode-switching behavior, rather than becoming confined only to one mode. Although parallel chains may be helpful in finding multiple modes, when the chains are combined with the \code{Combine} function for inference, each mode probably is not represented in a proportion correct for the distribution. For this reason, single-chain CHARM or HARM is recommended first. Consider updating the model with PMC, with multiple mixture components, after MCMC is finished. Unlike MCMC with parallel chains, the proportion of each mode will be correctly represented with PMC.
+Models with multimodal marginal posterior distributions are potentially troublesome for any numerical approximation algorithm, though MCMC may be better suited in general. Recommended strategies include using the CHARM or HARM algorithms, or parallel\footnote{Parallel chains are enabled with the \code{LaplacesDemon.hpc} function.} INCA chains, or RAM chains specified with the t-distribution. If the dimension is too large for a proposal covariance matrix to be practical, then replace the INCA or RAM algorithm with parallel t-walk chains. Another alternative algorithm is THMC, though tuning is difficult. Parallel chains increase the chances that different chains may settle on different modes, and it is hoped that t-distributed proposals assist a chain in mode-switching behavior, rather than becoming confined only to one mode. Although parallel chains may be helpful in finding multiple modes, when the chains are combined with the \code{Combine} function for inference, each mode probably is not represented in a proportion correct for the distribution. For this reason, single-chain CHARM or HARM is recommended first. Consider updating the model with PMC, with multiple mixture components, after MCMC is finished. Unlike MCMC with parallel chains, the proportion of each mode will be correctly represented with PMC.
 
 Regardless of the model or algorithm, parallel chains are recommended in general, provided the user has multiple CPUs and enough random-access memory (RAM). However, it is best to begin with a single chain, until the user is confident in the model specification. Parallel chains produce more posterior samples upon convergence than single chains in roughly the same amount of time, and may facilitate the discovery of multimodal marginal posterior distributions that would otherwise have been overlooked.
 
@@ -883,18 +908,18 @@ A lower-level language can be much faster for MCMC, but only when the model spec
 
 \section{Bayesian-Inference.com} \label{bayesianinferencecom}
 
-Many additional things may be found at \url{www.bayesian-inference.com}.
+Many additional things may be found at \url{http://www.bayesian-inference.com}.
 
 \begin{itemize}
-\item A Bayesian forum is available at \url{www.bayesian-inference.com/forum} to discuss all things Bayesian, including \pkg{LaplacesDemon}.
-\item Bayesian information is being compiled under \url{www.bayesian-inference.com/bayesian.shtml}.
-\item Bayesian news is aggregated daily as ``The Bayesian Bulletin'': \url{www.bayesian-inference.com/newsbayesian.shtml}.
-\item Consulting services are available here: \url{www.bayesian-inference.com/consulting.shtml}.
-\item Merchandise may be found at \url{www.bayesian-inference.com/merchandise.shtml}, such as \pkg{LaplacesDemon} t-shirts, coffee mugs, and more.
-\item \pkg{LaplacesDemon} screencasts are available at \url{www.bayesian-inference.com/softwarescreencasts.shtml}.
-\item Opinion polls for Bayesian inference and \pkg{LaplacesDemon} are here: \url{www.bayesian-inference.com/polls.shtml}.
-\item Technical support services are available at \url{www.bayesian-inference.com/support.shtml}.
-\item And, the home of \pkg{LaplacesDemon} is \url{www.bayesian-inference.com/software.shtml}.
+\item A Bayesian forum is available at \url{http://www.bayesian-inference.com/forum} to discuss all things Bayesian, including \pkg{LaplacesDemon}.
+\item Bayesian information is being compiled under \url{http://www.bayesian-inference.com/bayesian}.
+\item Bayesian news is aggregated daily as ``The Bayesian Bulletin'': \url{http://www.bayesian-inference.com/newsbayesian}.
+\item Consulting services are available here: \url{http://www.bayesian-inference.com/consulting}.
+\item Merchandise may be found at \url{http://www.bayesian-inference.com/merchandise}, such as \pkg{LaplacesDemon} t-shirts, coffee mugs, and more.
+\item \pkg{LaplacesDemon} screencasts are available at \url{http://www.bayesian-inference.com/softwarescreencasts}.
+\item Opinion polls for Bayesian inference and \pkg{LaplacesDemon} are here: \url{http://www.bayesian-inference.com/polls}.
+\item Technical support services are available at \url{http://www.bayesian-inference.com/support}.
+\item And, the home of \pkg{LaplacesDemon} is \url{http://www.bayesian-inference.com/software}.
 \end{itemize}
 
 \section{Conclusion} \label{conclusion}

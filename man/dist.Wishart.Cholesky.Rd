@@ -1,10 +1,10 @@
 \name{dist.Wishart.Cholesky}
 \alias{dwishartc}
 \alias{rwishartc}
-\title{The Wishart Distribution: Cholesky Parameterization}
+\title{Wishart Distribution: Cholesky Parameterization}
 \description{
   These functions provide the density and random number generation
-     for the Wishart distribution with the Cholesky parameterization.
+  for the Wishart distribution with the Cholesky parameterization.
 }
 \usage{
    dwishartc(U, nu, S, log=FALSE)

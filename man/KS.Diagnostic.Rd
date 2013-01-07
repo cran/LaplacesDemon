@@ -1,6 +1,6 @@
 \name{KS.Diagnostic}
 \alias{KS.Diagnostic}
-\title{Kolmogorov-Smirnov Diagnostic}
+\title{Kolmogorov-Smirnov Convergence Diagnostic}
 \description{
   The Kolmogorov-Smirnov test is a nonparametric test of stationarity
   that has been applied as an MCMC diagnostic (Brooks et al, 2003), such

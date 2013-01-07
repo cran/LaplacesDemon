@@ -31,7 +31,7 @@
  Statisticat, LLC\\
  Farmington, CT\\
  E-mail: \email{software@bayesian-inference.com}\\
- URL: \url{http://www.bayesian-inference.com/software.shtml}
+ URL: \url{http://www.bayesian-inference.com/software}
 }
 
 %% for those who use Sweave please include the following line (with % symbols):
@@ -53,7 +53,7 @@ This article is intended as an approachable introduction to Bayesian inference, 
 
 \section{Bayes' Theorem} \label{bayestheorem}
 
-Bayes' theorem shows the relation between two conditional probabilities that are the reverse of each other. This theorem is named after Reverend Thomas Bayes (1702-1761), and is also referred to as Bayes' law or Bayes' rule \citep{bayes63}\footnote{\citet{stigler83} suggests the earliest discoverer of Bayes' theorem was Nicholas Saunderson (1682-1739), a blind mathematician/optician, who at age 29 became the Lucasian Professor of Mathematics at Cambridge. This position was previously held by Isaac Newton.}. Bayes' theorem expresses the conditional probability, or `posterior probability', of an event $A$ after $B$ is observed in terms of the `prior probability' of $A$, prior probability of $B$, and the conditional probability of $B$ given $A$. Bayes' theorem is valid in all common interpretations of probability. The two (related) examples below should be sufficient to introduce Bayes' theorem.
+Bayes' theorem shows the relation between two conditional probabilities that are the reverse of each other. This theorem is named after Reverend Thomas Bayes (1701-1761), and is also referred to as Bayes' law or Bayes' rule \citep{bayes63}\footnote{\citet{stigler83} suggests the earliest discoverer of Bayes' theorem was Nicholas Saunderson (1682-1739), a blind mathematician/optician, who at age 29 became the Lucasian Professor of Mathematics at Cambridge. This position was previously held by Isaac Newton.}. Bayes' theorem expresses the conditional probability, or `posterior probability', of an event $A$ after $B$ is observed in terms of the `prior probability' of $A$, prior probability of $B$, and the conditional probability of $B$ given $A$. Bayes' theorem is valid in all common interpretations of probability. The two (related) examples below should be sufficient to introduce Bayes' theorem.
 
 \subsection{Bayes' Theorem, Example 1} \label{bayestheorem1}
 
@@ -202,7 +202,7 @@ A popular objective Bayeisan criticism against WIPs is that there is no precise,
 
 A vague prior, also called a diffuse prior\footnote{Some sources refer to diffuse priors as flat priors.}, is difficult to define, after considering WIPs. The first formal move from vague to weakly informative priors is \citet{lambert05}. After conjugate priors were introduced \citep{raiffa61}, most applied Bayesian modeling has used vague priors, parameterized to approximate the concept of uninformative priors (better considered as least informative priors, see section \ref{lips}). For more information on conjugate priors, see section \ref{conjugacy}.
 
-Typically, a vague prior is a conjugate prior with a large scale parameter. However, vague priors can pose problems when the sample size is small. Most problems with vague priors and small sample size are associated with scale, rather than location, parameters. The problem can be particularly acute in random-effects models, and the term random-effects is used rather loosely here to imply exchangeable, hierarchical, and multilevel structures. A vague prior is defined here as usually being a conjugate prior that is intended to approximate an uninformative prior (or actually, a least informative prior), and without the goals of regularization and stabilization.
+Typically, a vague prior is a conjugate prior with a large scale parameter. However, vague priors can pose problems when the sample size is small. Most problems with vague priors and small sample size are associated with scale, rather than location, parameters. The problem can be particularly acute in random-effects models, and the term random-effects is used rather loosely here to imply exchangeable\footnote{For more information on exchangeability, see \url{http://www.bayesian-inference.com/exchangeability}.}, hierarchical, and multilevel structures. A vague prior is defined here as usually being a conjugate prior that is intended to approximate an uninformative prior (or actually, a least informative prior), and without the goals of regularization and stabilization.
 
 \subsection{Least Informative Priors} \label{lips}
 
@@ -216,7 +216,7 @@ $$\theta \sim \mathcal{U}(-\infty, \infty)$$
 
 where $\theta$ is uniformly-distributed from negative infinity to positive infinity. Although this seems to allow the posterior distribution to be affected soley by the data with no impact from prior information, this should generally be avoided because this probability distribution is improper, meaning it will not integrate to one since the integral of the assumed $p(\theta)$ is infinity (which violates the assumption that the probabilities sum to one). This may cause the posterior to be improper, which invalidates the model.
 
-Reverend Thomas Bayes (1702-1761) was the first to use inverse probability \citep{bayes63}, and used a flat prior for his billiard example so that all possible values of $\theta$ are equally likely \textit{a priori} \citep[p. 34-36]{gelman04}. Pierre-Simon Laplace (1749-1827) also used the flat prior to estimate the proportion of female births in a population, and for all estimation problems presented or justified as a reasonable expression of ignorance. Laplace's use of this prior distribution was later referred to as the `principle of indifference' or `principle of insufficient reason', and is now called the flat prior \citep[p. 39]{gelman04}. Laplace was aware that it was not truly uninformative, and used it as a LIP.
+Reverend Thomas Bayes (1701-1761) was the first to use inverse probability \citep{bayes63}, and used a flat prior for his billiard example so that all possible values of $\theta$ are equally likely \textit{a priori} \citep[p. 34-36]{gelman04}. Pierre-Simon Laplace (1749-1827) also used the flat prior to estimate the proportion of female births in a population, and for all estimation problems presented or justified as a reasonable expression of ignorance. Laplace's use of this prior distribution was later referred to as the `principle of indifference' or `principle of insufficient reason', and is now called the flat prior \citep[p. 39]{gelman04}. Laplace was aware that it was not truly uninformative, and used it as a LIP.
 
 Another problem with the flat prior is that it is not invariant to transformation. For example, a flat prior on a standard deviation parameter is not also flat for its variance or precision.
 
@@ -306,7 +306,7 @@ The data $\textbf{y}$ affects the posterior distribution $p(\Theta | \textbf{y})
 
 \subsection{Terminology: From Inverse Probability to Bayesian Probability} \label{terminology}
 
-A gambler's dispute in 1654 led to the creation of a mathematical theory of probability by two famous French mathematicians, Blaise Pascal and Pierre de Fermat. Reverend Thomas Bayes (1702-1761) discovered Bayes' theorem, published posthumously in 1763, in which he was the first to use inverse probability \citep{bayes63}. `Inverse probability' refers to assigning a probability distribution to an unobserved variable, and is in essence, probability in the opposite direction of the usual sense.
+A gambler's dispute in 1654 led to the creation of a mathematical theory of probability by two famous French mathematicians, Blaise Pascal and Pierre de Fermat. Reverend Thomas Bayes (1701-1761) discovered Bayes' theorem, published posthumously in 1763, in which he was the first to use inverse probability \citep{bayes63}. `Inverse probability' refers to assigning a probability distribution to an unobserved variable, and is in essence, probability in the opposite direction of the usual sense.
 
 For example, the probability of obtaining heads on the next coin flip in a Bayesian context would be the predicted probability, $p(\textbf{y}^{new} | \textbf{y}, \theta)$, but to estimate this predicted probability, the probability distribution of $\theta$ must first be estimated, using coin toss data $\textbf{y}$ to estimate the parameter $\theta$ by the likelihood function $p(\textbf{y} | \theta)$, which contains the likelihood $p(\theta | \textbf{y})$, where $\theta$ is estimated from the data, $\textbf{y}$. Therefore, the data, $\textbf{y}$, is used to estimate the most probable $\theta$ that would lead to a data-generating process for $\textbf{y}$.
 

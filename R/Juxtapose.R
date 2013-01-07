@@ -79,6 +79,7 @@ Juxtapose <- function(x)
           else if(alg == "Adaptive-Mixture Metropolis") alg <- "AMM"
           else if(alg == "Adaptive Metropolis-within-Gibbs") alg <- "AMWG"
           else if(alg == "Componentwise Hit-And-Run Metropolis") alg <- "CHARM"
+          else if(alg == "Componentwise Slice") alg <- "CS"
           else if(alg == "Delayed Rejection Adaptive Metropolis")
                alg <- "DRAM"
           else if(alg == "Delayed Rejection Metropolis") alg <- "DRM"
@@ -88,6 +89,7 @@ Juxtapose <- function(x)
                alg <- "HMCDA"
           else if(alg == "Hit-And-Run Metropolis") alg <- "HARM"
           else if(alg == "Independence Metropolis") alg <- "IM"
+          else if(alg == "Interchain Adaptation") alg <- "INCA"
           else if(alg == "Metropolis-within-Gibbs") alg <- "MWG"
           else if(alg == "No-U-Turn Sampler") alg <- "NUTS"
           else if(alg == "Reversible-Jump") alg <- "RJ"

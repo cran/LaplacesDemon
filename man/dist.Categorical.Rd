@@ -2,7 +2,7 @@
 \alias{dcat}
 \alias{qcat}
 \alias{rcat}
-\title{The Categorical Distribution}
+\title{Categorical Distribution}
 \description{
   This is the density and random deviates function for the categorical
   distribution with probabilities parameter \eqn{p}.

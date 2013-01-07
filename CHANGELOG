@@ -1,3 +1,17 @@
+2012-12-26 LaplacesDemon: Added the Slice algorithm
+2012-12-26 LaplacesDemon: Sped up thinning by replacing rbind, thanks to
+           Stefan Humer, shumer@wu.ac.at
+2012-12-17 Added INDEX file
+2012-12-10 Vignette Examples: Reintroduced Ordinal Probit
+2012-12-04 Added server_Listening: This is not called by the user, but is
+           for INCA, authored by Silvere Vialet-Chabrand, 
+           silvere@vialet-chabrand.com
+2012-12-04 LaplacesDemon.hpc: Added functionality for the INCA algorithm, 
+           authored by Silvere Vialet-Chabrand, silvere@vialet-chabrand.com
+2012-12-04 LaplacesDemon: Added the INCA algorithm, authored by 
+           Silvere Vialet-Chabrand, silvere@vialet-chabrand.com
+2012-12-10 Vignette Examples: Reintroduced Ordinal Probit
+2012-12-04 DESCRIPTION: Added ByteCompile: TRUE
 2012-11-30 LaplacesDemon: Added the IM algorithm
 2012-11-28 p.interval: now plots disjoint HPD intervals
 2012-11-28 dmvl, dmvlc, rmvl, rmvlc: Fixed bug reported by 
@@ -7,10 +21,11 @@
 2012-11-16 Vignette Examples: Fixed bug with ordinal logit
 2012-11-15 p.interval: Fixed bug with multimodal intervals
 2012-11-10 Email Address: Changed to software@bayesian-inference.com
-2012-11-10 URL is now http://www.bayesian-inference/software.shtml
+2012-11-10 URL is now http://www.bayesian-inference/software
 2012-11-09 as.initial.values: Now returns a matrix for demonoid.hpc
 2012-11-09 LaplacesDemon.hpc: Dispersed initial values are now allowed, 
-           solution provided by Silvere Vialet-Chabrand, svialet@nancy.inra.fr 
+           solution provided by Silvere Vialet-Chabrand, 
+           silvere@vialet-chabrand.com
 2012-11-06 dtrunc: Fixed bug reported by Bilal Barakat, bilal.barakat@oeaw.ac.at
 2012-11-02 summary.demonoid.ppc: Corrected a discrepancy between L-criterions
 2012-11-02 summary.laplace.ppc: Corrected a discrepancy between L-criterions

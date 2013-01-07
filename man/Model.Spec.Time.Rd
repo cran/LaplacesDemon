@@ -28,6 +28,15 @@ Model.Spec.Time(Model, Initial.Values, Data, n=1000)
   the \code{LaplacesDemon} package should attempt to reduce the run-time
   of the model specification, usually by testing alternate forms of code
   for speed.
+
+  Every function in the LaplacesDemon package is byte-compiled, which is
+  a recent option in R. This reduces run-time, thanks to Tierney's
+  compiler package in base R. The model specification, however, is
+  specified by the user, and should be byte-compiled. The reduction in
+  run-time may range from mild to dramatic, depending on the model. It
+  is highly recommended that users concerned with run-time activate the
+  compiler package and use the \code{cmpfun} function, as per the
+  example below.
   
   A model specification function that is optimized for speed and
   involves many records may result in a model update run-time that is
@@ -83,7 +92,7 @@ Model.Spec.Time(Model, Initial.Values, Data, n=1000)
   speed of their model specification. For example, the Adaptive
   Metropolis-within-Gibbs (AMWG) of Roberts and Rosenthal (2009) is
   currently the adaptive MCMC algorithm of choice in general in many
-  cases, but this choice is conditional on run-time. While the other
+  cases, but this choice is conditional on run-time. While other
   MCMC algorithms in \code{LaplacesDemon} evaluate the model
   specification function once per iteration, componentwise algorithms
   such as in the MWG family evaluate it once per parameter per
@@ -110,7 +119,8 @@ Model.Spec.Time(Model, Initial.Values, Data, n=1000)
     \item Replace exponents with multiplied terms, such as \code{x^2}
     with \code{x*x}.
     \item Replace \code{mean(x)} with \code{sum(x)/length(x)}.
-    \item Replace parentheses (when possible) with curly brackets.
+    \item Replace parentheses (when possible) with curly brackets, such
+    as \code{x*(a+b)} with \code{x*\{a+b\}}.
     \item Replace \code{tcrossprod(Data$X, t(beta))} with
     \code{Data$X \%*\% beta} when there are few predictors, and avoid
     \code{tcrossprod(beta, Data$X)}, which is always slowest.
@@ -163,5 +173,55 @@ Model.Spec.Time(Model, Initial.Values, Data, n=1000)
   \code{\link{max.col}},
   \code{\link{PMC}}, and
   \code{\link{system.time}}.
+}
+\examples{
+# The accompanying Examples vignette is a compendium of examples.
+####################  Load the LaplacesDemon Library  #####################
+library(LaplacesDemon)
+
+##############################  Demon Data  ###############################
+data(demonsnacks)
+y <- log(demonsnacks$Calories)
+X <- cbind(1, as.matrix(demonsnacks[,c(7,8,10)]))
+J <- ncol(X)
+for (j in 2:J) {X[,j] <- CenterScale(X[,j])}
+mon.names <- c("LP","sigma")
+parm.names <- as.parm.names(list(beta=rep(0,J), log.sigma=0))
+PGF <- function(Data) return(c(rnormv(Data$J,0,10),
+     log(rhalfcauchy(1,25))))
+MyData <- list(J=J, PGF=PGF, X=X, mon.names=mon.names,
+     parm.names=parm.names, y=y)
+
+##########################  Model Specification  ##########################
+Model <- function(parm, Data)
+     {
+     ### Parameters
+     beta <- parm[1:Data$J]
+     sigma <- exp(parm[Data$J+1])
+     ### Log of Prior Densities
+     beta.prior <- sum(dnormv(beta, 0, 1000, log=TRUE))
+     sigma.prior <- dhalfcauchy(sigma, 25, log=TRUE)
+     ### Log-Likelihood
+     mu <- tcrossprod(Data$X, t(beta))
+     LL <- sum(dnorm(Data$y, mu, sigma, log=TRUE))
+     ### Log-Posterior
+     LP <- LL + beta.prior + sigma.prior
+     Modelout <- list(LP=LP, Dev=-2*LL, Monitor=c(LP,sigma),
+          yhat=rnorm(length(mu), mu, sigma), parm=parm)
+     return(Modelout)
+     }
+
+set.seed(666)
+
+############################  Initial Values  #############################
+Initial.Values <- GIV(Model, MyData, PGF=TRUE)
+
+############################  Model.Spec.Time  ############################
+### Not byte-compiled
+Model.Spec.Time(Model, Initial.Values, MyData)
+### Byte-compiled
+library(compiler)
+Model <- cmpfun(Model)
+Model.Spec.Time(Model, Initial.Values, MyData)
 }
 \keyword{Utility}

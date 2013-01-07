@@ -1,7 +1,7 @@
 \name{dist.Inverse.Beta}
 \alias{dinvbeta}
 \alias{rinvbeta}
-\title{The Inverse Beta Distribution}
+\title{Inverse Beta Distribution}
 \description{
   This is the density function and random generation from the inverse
   beta distribution.
