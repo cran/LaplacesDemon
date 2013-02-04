@@ -362,7 +362,7 @@ Rprop <- function(Model, parm, Data, Interval, Iterations, Stop.Tolerance,
           parm.new <- parm.old + (Step.Size * approx.grad.new)
           m.new <- Model(parm.new, Data)
           tol.new <- sqrt(sum({m.new[["parm"]] - parm.old}^2))
-          if(!is.finite(m.new[[1]]) | {m.new[["LP"]] < m.old[["LP"]]}) {
+          if(!is.finite(m.new[["LP"]]) | {m.new[["LP"]] < m.old[["LP"]]}) {
                p.order <- sample(1:length(parm.new))
                parm.temp <- parm.old
                for (i in 1:length(p.order)) {

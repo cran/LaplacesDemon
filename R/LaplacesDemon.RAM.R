@@ -5,7 +5,8 @@
 # required to update a given model and data in LaplacesDemon.             #
 ###########################################################################
 
-LaplacesDemon.RAM <- function(Model, Data, Iterations, Thinning)
+LaplacesDemon.RAM <- function(Model, Data, Iterations, Thinning,
+     Algorithm="RWM")
      {
      if(missing(Model))
           stop("The Model argument is required.")
@@ -14,8 +15,17 @@ LaplacesDemon.RAM <- function(Model, Data, Iterations, Thinning)
      Const <- 1048600
      LIV <- length(Data$parm.names)
      LM <- length(Data$mon.names)
-     Covar <- as.vector(object.size(matrix(runif(LIV*LIV), LIV, LIV))) /
-          Const
+     Covar <- 0
+     if(Algorithm %in% c("AM","AMM","DRAM","DRM","IM","INCA","RWM",
+          "RAM")) {
+          ### Covariance is required
+          Covar <- Covar + as.vector(object.size(matrix(runif(LIV*LIV),
+          LIV, LIV))) / Const
+          }
+     else if(Algorithm %in% c("AM","AMM","AMWG","DRAM","DRM","INCA",
+          "MWG","RWM","SAMWG","SMWG","USAMWG","USMWG")) {
+          ### Variance is required
+          Covar <- Covar + as.vector(object.size(runif(LIV))) / Const}
      Data <- as.vector(object.size(Data)) / Const
      Deviance <- as.vector(object.size(runif(round(Iterations /
           Thinning)))) / Const
@@ -23,11 +33,17 @@ LaplacesDemon.RAM <- function(Model, Data, Iterations, Thinning)
      Model <- as.vector(object.size(Model)) / Const
      Monitor <- as.vector(object.size(matrix(runif(Iterations*LM),
           round(Iterations / Thinning), LM))) / Const
-     post <- as.vector(object.size(matrix(runif(Iterations*LIV),
-          Iterations, LIV))) / Const
+     post <- 0
+     if(Algorithm %in% c("AHMC","AM","DRAM","INCA","NUTS"))
+          post <- as.vector(object.size(matrix(runif(Iterations*LIV),
+               Iterations, LIV))) / Const
      Posterior1 <- as.vector(object.size(matrix(runif(round(Iterations /
           Thinning)), round(Iterations / Thinning), LIV))) / Const
+     Posterior2 <- as.vector(object.size(matrix(runif(round(Iterations /
+          Thinning)), round(Iterations / Thinning), LIV))) / Const
      Summary1 <- as.vector(object.size(matrix(runif((LIV+1+LM)*7),
+          LIV+1+LM, 7))) / Const
+     Summary2 <- as.vector(object.size(matrix(runif((LIV+1+LM)*7),
           LIV+1+LM, 7))) / Const
      mem.list <- list(Covar=Covar,
           Data=Data,
@@ -37,9 +53,11 @@ LaplacesDemon.RAM <- function(Model, Data, Iterations, Thinning)
           Monitor=Monitor,
           post=post,
           Posterior1=Posterior1,
+          Posterior2=Posterior2,
           Summary1=Summary1,
+          Summary2=Summary2,
           Total=sum(Covar,Data,Deviance,Initial.Values,Model,Monitor,
-               post,Posterior1,Summary1))
+               post,Posterior1,Posterior2,Summary1,Summary2))
      return(mem.list)
      }
 

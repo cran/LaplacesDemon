@@ -2,13 +2,17 @@
 \alias{as.covar}
 \title{Proposal Covariance}
 \description{
-  This function returns the most recent covariance matrix from an object
-  of class \code{demonoid} or \code{laplace}, the most recent covariance
-  matrix from the chain with the lowest deviance in an object of class
-  \code{demonoid.hpc}, and a number of covariance matrices of an object
-  of class \code{pmc} equal to the number of mixture components. The
-  returned covariance matrix or matrices are intended to be the initial
-  proposal covariance matrix or matrices for future updates.
+  This function returns the most recent covariance matrix or a list of
+  blocking covariance matrices from an object of class \code{demonoid},
+  the most recent covariance matrix from \code{laplace}, the most
+  recent covariance matrix from the chain with the lowest deviance in
+  an object of class \code{demonoid.hpc}, and a number of covariance
+  matrices of an object of class \code{pmc} equal to the number of
+  mixture components. The returned covariance matrix or matrices are
+  intended to be the initial proposal covariance matrix or matrices for
+  future updates. A variance vector from an object of class
+  \code{demonoid} or \code{demonoid.hpc} is converted to a covariance
+  matrix.
 }
 \usage{
 as.covar(x)

@@ -14,8 +14,20 @@ as.covar <- function(x)
         !identical(class(x), "laplace") &
         !identical(class(x), "pmc"))
           stop("The class of x is unknown.")
-     if(identical(class(x), "demonoid"))
-          covar <- x$Covar
+     if(identical(class(x), "demonoid")) {
+          if(is.matrix(x$Covar)) {
+               covar <- x$Covar
+               }
+          else if(is.vector(x$Covar)) {
+               covar <- diag(length(x$Covar))
+               diag(covar) <- x$Covar
+               }
+          else {
+               covar <- x$Covar
+               if(is.list(x$Covar))
+                    cat("\nThe covariance matrix is blocked.\n")
+               }
+          }
      else if(identical(class(x), "demonoid.hpc")) {
           Chains <- length(x)
           Deviance <- list()
@@ -23,7 +35,19 @@ as.covar <- function(x)
           j <- which.min(sapply(Deviance, function(x)
                {min(x[length(x)])}))
           cat("\nChain",j,"has the lowest deviance.\n")
-          covar <- x[[j]]$Covar}
+          if(is.matrix(x[[j]]$Covar)) {
+               covar <- x[[j]]$Covar
+               }
+          else if(is.vector(x$Covar)) {
+               covar <- diag(length(x$Covar))
+               diag(covar) <- x$Covar
+               }
+          else {
+               covar <- x$Covar
+               if(is.list(x$Covar))
+                    cat("\nThe covariance matrix is blocked.\n")
+               }
+          }
      else if(identical(class(x), "laplace"))
           covar <- x$Covar
      else covar <- x$Covar[,,x$Iterations,]

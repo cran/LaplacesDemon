@@ -222,7 +222,7 @@ Another problem with the flat prior is that it is not invariant to transformatio
 
 \subsubsection{Hierarchical Prior} \label{hierarchicalpriors}
 
-A hierarchical prior is a prior in which the parameters of the prior distribution are estimated from data via hyperpriors, rather than with subjective information \citep{gelman08}. Subjective Bayesians prefer the hierarchical prior as the LIP, and the hyperparameters are usually specified as WIPs. Hierarchical priors are presented later in more detail in the section entitled `Hierarchical Bayes'.
+A hierarchical prior is a prior in which the parameters of the prior distribution are estimated from data via hyperpriors, rather than with subjective information \citep{gelman08}. Parameters of hyperprior distributions are called hyperparameters. Subjective Bayesians prefer the hierarchical prior as the LIP, and the hyperparameters are usually specified as WIPs. Hierarchical priors are presented later in more detail in the section entitled `Hierarchical Bayes'.
 
 \subsubsection{Jeffreys Prior} \label{jeffreysprior}
 
@@ -258,7 +258,7 @@ Although improper prior distributions can be used, it is good practice to avoid 
 
 \section{Hierarchical Bayes} \label{hierarchicalbayes}
 
-Prior distributions may be estimated within the model via hyperprior distributions, which are usually vague and nearly flat. Using hyperprior distributions to estimate prior distributions is known as hierarchical Bayes. In theory, this process could continue further, using hyper-hyperprior distributions to estimate the hyperprior distributions. Estimating priors through hyperpriors, and from the data, is a method to elicit the optimal prior distributions. One of many natural uses for hierarchical Bayes is multilevel modeling.
+Prior distributions may be estimated within the model via hyperprior distributions, which are usually vague and nearly flat. Parameters of hyperprior distributions are called hyperparameters. Using hyperprior distributions to estimate prior distributions is known as hierarchical Bayes. In theory, this process could continue further, using hyper-hyperprior distributions to estimate the hyperprior distributions. Estimating priors through hyperpriors, and from the data, is a method to elicit the optimal prior distributions. One of many natural uses for hierarchical Bayes is multilevel modeling.
 
 Recall that the unnormalized joint posterior distribution (equation \ref{jointposterior}) is proportional to the likelihood times the prior distribution
 

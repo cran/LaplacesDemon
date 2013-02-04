@@ -57,6 +57,10 @@ PosteriorChecks(x, Parms)
   than AMWG in \code{\link{LaplacesDemon}}. Posterior correlation may be
   plotted with the \code{\link{plotMatrix}} function.
 
+  If an algorithm allows blocking parameters, then posterior correlation
+  may be used to group parameters into blocks, where each block consists
+  of highly correlated parameters.
+
   After a user is convinced of the applicability of the current MCMC
   algorithm, and that the chains have converged, \code{PosteriorChecks}
   is often used to identify multimodal marginal posterior distributions

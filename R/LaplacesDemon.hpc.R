@@ -18,9 +18,17 @@ LaplacesDemon.hpc <- function(Model, Data, Initial.Values, Covar=NULL,
      if(CPUs > detectedCores) {
           cat("\nOnly", detectedCores, "will be used.\n")
           CPUs <- detectedCores}
+     if(is.vector(Initial.Values)) {
+          Initial.Values <- matrix(Initial.Values, Chains,
+               length(Initial.Values), byrow=TRUE)
+          cat("\nWarning: initial values were a vector, and are now a")
+          cat("\n", Chains, "x", length(Initial.Values), "matrix.\n")}
+     if(Algorithm == "INCA" && Chains != CPUs) {
+          Chains <- CPUs
+          cat("\nINCA:", Chains, "chains will be used\n")}
      cat("\nLaplace's Demon is preparing environments for CPUs...")
      cat("\n##################################################\n")
-     cl <- makeCluster(detectedCores)
+     cl <- makeCluster(CPUs)
      cat("\n##################################################\n")
      on.exit({stopCluster(cl); cat("\n\nLaplace's Demon has finished.\n")})
      varlist <- unique(c(ls(), ls(envir=.GlobalEnv),
@@ -51,8 +59,20 @@ LaplacesDemon.hpc <- function(Model, Data, Initial.Values, Covar=NULL,
           ### Start hpc server
           system(paste("Rscript -e 'library(parallel);library(LaplacesDemon);server_Listening(n=",CPUs,")'", sep=""), wait=FALSE)
           cat("Start hpc server...\n")
-          ### Connect each process to server_Listening
-          clusterEvalQ(cl, {Sys.sleep(runif(1, 0.1, 1)); con <- socketConnection("localhost", 19009, blocking=TRUE, open="r+")})
+          ### Export chain number
+          clusterExport(cl, varlist="Chains", envir=environment())
+          ### Connect each process to server_Listening with 0.5s time delay
+          clusterEvalQ(cl, con <- NULL)
+          doCon <- function(i) {
+               Sys.sleep(i/2)
+               con <<- socketConnection("localhost", 19009, blocking=TRUE,
+                    open="r+")}
+          clusterExport(cl, varlist="doCon", envir=environment())
+          expr <- NULL
+          for (i in 1:CPUs) {
+               tmp <- parse(text=paste("doCon(", i,")", sep=""))
+               expr <- c(expr, tmp)}
+          clusterApply(cl, expr, eval, env=.GlobalEnv)
           cat("\nOpen connections to hpc server...")}
      LaplacesDemon.out <- clusterApply(cl, 1:Chains, demon.wrapper,
           Model, Data, Initial.Values, Covar, Iterations, Status,

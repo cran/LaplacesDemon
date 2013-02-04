@@ -123,6 +123,7 @@ This vignette will grow over time as examples of more methods become included. C
 \item Ordinal Logit \ref{ordinal.logit}
 \item Ordinal Probit \ref{ordinal.probit}
 \item Panel, Autoregressive Poisson \ref{panel.ap}
+\item Penalized Spline Regression \ref{pspline}
 \item Poisson Regression \ref{poisson.reg}
 \item Poisson Regression, Overdispersed \ref{poisson.gamma} \ref{negbin.reg}
 \item Poisson-Gamma Regression \ref{poisson.gamma}
@@ -145,8 +146,9 @@ This vignette will grow over time as examples of more methods become included. C
 \item State Space Model (SSM), Stochastic Volatility (SV) \ref{sv}
 \item Stochastic Volatility (SV) \ref{sv}
 \item T-test \ref{anova.one.way}
-\item Threshold Autoregression (TAR) \ref{tar}
 \item TARCH(1) \ref{tarch}
+\item Threshold Autoregression (TAR) \ref{tar}
+\item Time Varying AR(1) with Chebyshev Series \ref{tvarcs}
 \item Variable Selection, BAL \ref{bal}
 \item Variable Selection, RJ \ref{rj}
 \item Variable Selection, SSVS \ref{ssvs}
@@ -4279,6 +4281,64 @@ MyData <- list(N=N, PGF=PGF, T=T, Y=Y, mon.names=mon.names, \\
 \subsection{Initial Values}
 \code{Initial.Values <- c(rep(0,N), 0, log(1), 0, 0)}
 
+\section{Penalized Spline Regression} \label{pspline}
+This example applies penalized splines to one predictor in a linear regression. The user selects the degree of the polynomial, $D$, and the number of knots, $K$.
+\subsection{Form}
+$$\textbf{y} \sim \mathcal{N}(\mu, \sigma^2_1)$$
+$$\mu = \textbf{X} \beta + \textbf{S}$$
+$$\textbf{S} = \textbf{Z} \gamma$$
+\[\textbf{Z}_{i,k} = \left\{
+\begin{array}{l l}
+  (\textbf{x}_i - k)^D & \quad \mbox{if $\textbf{Z}_{i,k} > 0$}\\ 
+  0 \\ \end{array} \right. \]
+$$\beta_d \sim \mathcal{N}(0, 1000), \quad d=1,\dots,(D+1)$$
+$$\gamma_k \sim \mathcal{N}(0, \sigma^2_2), \quad k=1,\dots,K$$
+$$\sigma_j \sim \mathcal{HC}(25), \quad j=1,\dots,2$$
+\subsection{Data}
+\code{N <- 100 \\
+x <- 1:N \\
+y <- sin(2*pi*x/N) + runif(N,-1,1) \\
+K <- 10 \#Number of knots \\
+D <- 2 \#Degree of polynomial \\
+x <- CenterScale(x) \\
+k <- as.vector(quantile(x, probs=(1:K / (K+1)))) \\
+X <- cbind(1, matrix(x, N, D)) \\
+for (d in 1:D) \{X[,d+1] <- X[,d+1]\textasciicircum d\} \\
+Z <- matrix(x, N, K) - matrix(k, N, K, byrow=TRUE) \\
+Z <- ifelse(Z > 0, Z, 0); Z <- Z\textasciicircum D \\
+mon.names <- c("LP", paste("S[", 1:nrow(X) ,"]", sep="")) \\
+parm.names <- as.parm.names(list(beta=rep(0,1+D), gamma=rep(0,K), \\
+\hspace*{0.27 in} log.sigma=rep(0,2))) \\
+PGF <- function(Data) return(c(rnormv(1+Data$D,0,10), rnorm(Data$K,0,10), \\
+\hspace*{0.27 in} log(rhalfcauchy(2,25)))) \\
+MyData <- list(D=D, K=K, N=N, PGF=PGF, Z=Z, X=X, mon.names=mon.names, \\
+\hspace*{0.27 in} parm.names=parm.names, y=y) \\
+}
+\subsection{Model}
+\code{Model <- function(parm, Data) \\
+\hspace*{0.27 in} \{ \\
+\hspace*{0.27 in} \#\#\# Parameters \\
+\hspace*{0.27 in} beta <- parm[grep("beta", Data$parm.names)] \\
+\hspace*{0.27 in} gamma <- parm[grep("gamma", Data$parm.names)] \\
+\hspace*{0.27 in} sigma <- exp(parm[grep("log.sigma", Data$parm.names)]) \\
+\hspace*{0.27 in} \#\#\# Log(Prior Densities) \\
+\hspace*{0.27 in} beta.prior <- sum(dnormv(beta, 0, 1000, log=TRUE)) \\
+\hspace*{0.27 in} gamma.prior <- sum(dnorm(gamma, 0, sigma[2], log=TRUE)) \\
+\hspace*{0.27 in} sigma.prior <- sum(dhalfcauchy(sigma, 25, log=TRUE)) \\
+\hspace*{0.27 in} \#\#\# Log-Likelihood \\
+\hspace*{0.27 in} S <- as.vector(tcrossprod(Data$Z, t(gamma))) \\
+\hspace*{0.27 in} mu <- as.vector(tcrossprod(Data$X, t(beta))) + S \\
+\hspace*{0.27 in} LL <- sum(dnorm(Data$y, mu, sigma[1], log=TRUE)) \\
+\hspace*{0.27 in} \#\#\# Log-Posterior \\
+\hspace*{0.27 in} LP <- LL + beta.prior + gamma.prior + sigma.prior \\
+\hspace*{0.27 in} Modelout <- list(LP=LP, Dev=-2*LL, Monitor=c(LP,S), \\
+\hspace*{0.62 in} yhat=rnorm(length(mu), mu, sigma[1]), parm=parm) \\
+\hspace*{0.27 in} return(Modelout) \\
+     \} \\
+}
+\subsection{Initial Values}
+\code{Initial.Values <- c(rep(0,1+D), rep(0,K), c(1,1))}
+
 \section{Poisson Regression} \label{poisson.reg}
 \subsection{Form}
 $$\textbf{y} \sim \mathcal{P}(\lambda)$$
@@ -5302,6 +5362,70 @@ Dyn <- matrix(paste("theta[",1:T,"]",sep=""), T, 1) \\
 \subsection{Initial Values}
 \code{Initial.Values <- rep(0,T+4)}
 
+\section{TARCH(1)} \label{tarch}
+In this TARCH example, there are two regimes, one for positive residuals in the previous time-period, and the other for negative. The TARCH parameters are the $\theta$ vector.
+\subsection{Form}
+$$\textbf{y}_t \sim \mathcal{N}(\mu_t, \sigma^2_t), \quad t=2,\dots,T$$
+$$\sigma^2_t = \omega + \theta_1 \delta_{t-1} \epsilon^2_{t-1} + \theta_2 (1-\delta_{t-1}) \epsilon^2_{t-1}, \quad t=2,\dots,T$$
+\[\delta_t = \left\{ 
+\begin{array}{l l}
+  1 & \quad \mbox{if $\epsilon_t > 0$}\\
+  0 \\ \end{array} \right. \]
+$$\epsilon = \textbf{y} - \mu$$
+$$\mu_t = \alpha + \phi \textbf{y}_{t-1}, \quad t=2,\dots,T$$
+$$\alpha \sim \mathcal{N}(0, 1000)$$
+$$\phi \sim \mathcal{U}(-1, 1)$$
+$$\omega \sim \mathcal{HC}(25)$$
+$$\theta_j \sim \mathcal{U}(0, 1), \quad j=1,\dots,2$$
+\subsection{Data}
+\code{T <- 20 \\
+phi <- 0.8 \\
+epsilon <- rnorm(T) \\
+epsilon <- ifelse(epsilon < 0, epsilon * 2, epsilon) \\
+y <- rep(0,T) \\
+for (t in 2:T) \{y[t] <- phi*y[t-1] + epsilon[t]\} \\
+mon.names <- c("LP","ynew","sigma2.new") \\
+parm.names <- as.parm.names(list(alpha=0, phi=0, log.omega=0, \\
+\hspace*{0.27 in} theta=rep(0,2))) \\
+PGF <- function(Data) return(c(rnormv(1,0,1000), runif(1,-1,1), \\
+\hspace*{0.27 in} log(rhalfcauchy(1,25)), runif(2))) \\
+MyData <- list(PGF=PGF, T=T, mon.names=mon.names, parm.names=parm.names, y=y) \\
+}
+\subsection{Model}
+\code{Model <- function(parm, Data) \\
+\hspace*{0.27 in} \{ \\
+\hspace*{0.27 in} \#\#\# Parameters \\
+\hspace*{0.27 in} alpha <- parm[1] \\
+\hspace*{0.27 in} parm[2] <- phi <- interval(parm[2], -1, 1) \\
+\hspace*{0.27 in} omega <- exp(parm[3]) \\
+\hspace*{0.27 in} parm[4:5] <- theta <- interval(parm[4:5], 0.001, 0.999) \\
+\hspace*{0.27 in} \#\#\# Log(Prior Densities) \\
+\hspace*{0.27 in} alpha.prior <- dnormv(alpha, 0, 1000, log=TRUE) \\
+\hspace*{0.27 in} phi.prior <- dunif(phi, -1, 1, log=TRUE) \\
+\hspace*{0.27 in} omega.prior <- dhalfcauchy(omega, 25, log=TRUE) \\
+\hspace*{0.27 in} theta.prior <- sum(dunif(theta, 0, 1, log=TRUE)) \\
+\hspace*{0.27 in} \#\#\# Log-Likelihood \\
+\hspace*{0.27 in} mu <- alpha + c(0, Data$y[-Data$T]) * phi \\
+\hspace*{0.27 in} epsilon <- Data$y - mu \\
+\hspace*{0.27 in} delta <- (epsilon > 0) * 1 \\
+\hspace*{0.27 in} sigma2 <- omega + theta[1] * c(0,delta[-Data$T]) * \\
+\hspace*{0.62 in} c(0, epsilon[-Data$T]\textasciicircum 2) \\
+\hspace*{0.27 in} sigma2[-1] <- sigma2[-1] + theta[2] * (1 - delta[-Data$T]) * \\
+\hspace*{0.62 in} epsilon[-Data$T]\textasciicircum 2 \\
+\hspace*{0.27 in} sigma2.new <- omega + theta[1] * delta[Data$T] * epsilon[Data$T]\textasciicircum 2 + \\
+\hspace*{0.62 in} theta[2] * (1 - delta[Data$T]) * epsilon[Data$T]\textasciicircum 2 \\
+\hspace*{0.27 in} ynew <- rnormv(1, alpha + Data$y[Data$T] * phi, sigma2.new) \\
+\hspace*{0.27 in} LL <- sum(dnormv(Data$y[-1], mu[-1], sigma2[-1], log=TRUE)) \\
+\hspace*{0.27 in} \#\#\# Log-Posterior \\
+\hspace*{0.27 in} LP <- LL + alpha.prior + phi.prior + omega.prior + theta.prior \\
+\hspace*{0.27 in} Modelout <- list(LP=LP, Dev=-2*LL, Monitor=c(LP, ynew, sigma2.new), \\
+\hspace*{0.62 in} yhat=rnormv(length(mu), mu, sigma2), parm=parm) \\
+\hspace*{0.27 in} return(Modelout) \\
+\hspace*{0.27 in} \} \\
+}
+\subsection{Initial Values}
+\code{Initial.Values <- c(0, 0, 1, 0.5, 0.5)}
+
 \section{Threshold Autoregression (TAR)} \label{tar}
 \subsection{Form}
 $$\textbf{y}_t \sim \mathcal{N}(\nu_t, \sigma^2), \quad t=1,\dots,T$$
@@ -5385,69 +5509,58 @@ MyData <- list(PGF=PGF, T=T, mon.names=mon.names, parm.names=parm.names, y=y) \\
 \subsection{Initial Values}
 \code{Initial.Values <- c(rep(0,4), T/2, log(1))}
 
-\section{TARCH(1)} \label{tarch}
-In this TARCH example, there are two regimes, one for positive residuals in the previous time-period, and the other for negative. The TARCH parameters are the $\theta$ vector.
+\section{Time Varying AR(1) with Chebyshev Series} \label{tvarcs}
+This example consists of a first-order autoregressive model, AR(1), with a time-varying parameter (TVP) $\phi$, that is a Chebyshev series constructed from a linear combination of orthonormal Chebyshev time polynomials (CTPs) and parameter vector $\beta$. The user creates basis matrix \textbf{P}, specifying polynomial degree $D$ and time $T$. Each column is a CTP of a different degree, and the first column is restricted to 1, the linear basis. CTPs are very flexible for TVPs, and estimate quickly because each is orthogonal, unlike simple polynomials and splines.
 \subsection{Form}
-$$\textbf{y}_t \sim \mathcal{N}(\mu_t, \sigma^2_t), \quad t=2,\dots,T$$
-$$\sigma^2_t = \omega + \theta_1 \delta_{t-1} \epsilon^2_{t-1} + \theta_2 (1-\delta_{t-1}) \epsilon^2_{t-1}, \quad t=2,\dots,T$$
-\[\delta_t = \left\{ 
-\begin{array}{l l}
-  1 & \quad \mbox{if $\epsilon_t > 0$}\\
-  0 \\ \end{array} \right. \]
-$$\epsilon = \textbf{y} - \mu$$
-$$\mu_t = \alpha + \phi \textbf{y}_{t-1}, \quad t=2,\dots,T$$
+$$\textbf{y}_t \sim \mathcal{N}(\mu_t, \sigma^2), \quad t=1,\dots,T$$
+$$\mu_t = \alpha + \phi_{t-1} \textbf{y}_{t-1}$$
+$$\phi_t = \textbf{P} \beta$$
 $$\alpha \sim \mathcal{N}(0, 1000)$$
-$$\phi \sim \mathcal{U}(-1, 1)$$
-$$\omega \sim \mathcal{HC}(25)$$
-$$\theta_j \sim \mathcal{U}(0, 1), \quad j=1,\dots,2$$
+$$\beta_d \sim \mathcal{N}(0, 1000), \quad d=1,\dots,(D+1)$$
+$$\sigma \sim \mathcal{HC}(25)$$
 \subsection{Data}
-\code{T <- 20 \\
-phi <- 0.8 \\
-epsilon <- rnorm(T) \\
-epsilon <- ifelse(epsilon < 0, epsilon * 2, epsilon) \\
+\code{D <- 6 \#Maximum degree of Chebyshev time polynomials \\
+T <- 100 \\
+P <- matrix(1, T, D+1) \\
+for (d in 1:D) \{P[,d+1] <- sqrt(2)*cos(d*pi*(c(1:T)-0.5)/T)\} \\
+alpha.orig <- 0; alpha.orig \\
+beta.orig <- runif(D+1,-0.3,0.3); beta.orig \\
+phi.orig <- tcrossprod(P, t(beta.orig)) \\
+e <- rnorm(T,0,1) \\
 y <- rep(0,T) \\
-for (t in 2:T) \{y[t] <- phi*y[t-1] + epsilon[t]\} \\
-mon.names <- c("LP","ynew","sigma2.new") \\
-parm.names <- as.parm.names(list(alpha=0, phi=0, log.omega=0, \\
-\hspace*{0.27 in} theta=rep(0,2))) \\
-PGF <- function(Data) return(c(rnormv(1,0,1000), runif(1,-1,1), \\
-\hspace*{0.27 in} log(rhalfcauchy(1,25)), runif(2))) \\
-MyData <- list(PGF=PGF, T=T, mon.names=mon.names, parm.names=parm.names, y=y) \\
+for (t in 2:T) \{y[t] <- alpha.orig + phi.orig[t-1]*y[t-1] + e[t]\} \\
+mon.names <- c("LP", "sigma", "ynew", as.parm.names(list(phi=rep(0,T-1)))) \\
+parm.names <- as.parm.names(list(alpha=0, beta=rep(0,D+1), log.sigma=0)) \\
+PGF <- function(Data) return(c(rnormv(D+2,0,10), log(rhalfcauchy(1,5)))) \\
+MyData <- list(D=D, P=P, PGF=PGF, T=T, mon.names=mon.names, \\
+\hspace*{0.27 in} parm.names=parm.names, y=y) \\
 }
 \subsection{Model}
 \code{Model <- function(parm, Data) \\
 \hspace*{0.27 in} \{ \\
 \hspace*{0.27 in} \#\#\# Parameters \\
 \hspace*{0.27 in} alpha <- parm[1] \\
-\hspace*{0.27 in} parm[2] <- phi <- interval(parm[2], -1, 1) \\
-\hspace*{0.27 in} omega <- exp(parm[3]) \\
-\hspace*{0.27 in} parm[4:5] <- theta <- interval(parm[4:5], 0.001, 0.999) \\
+\hspace*{0.27 in} beta <- parm[1+1:(Data$D+1)] \\
+\hspace*{0.27 in} sigma <- exp(parm[Data$D+3]) \\
 \hspace*{0.27 in} \#\#\# Log(Prior Densities) \\
 \hspace*{0.27 in} alpha.prior <- dnormv(alpha, 0, 1000, log=TRUE) \\
-\hspace*{0.27 in} phi.prior <- dunif(phi, -1, 1, log=TRUE) \\
-\hspace*{0.27 in} omega.prior <- dhalfcauchy(omega, 25, log=TRUE) \\
-\hspace*{0.27 in} theta.prior <- sum(dunif(theta, 0, 1, log=TRUE)) \\
+\hspace*{0.27 in} beta.prior <- sum(dnormv(beta, 0, 1000, log=TRUE)) \\
+\hspace*{0.27 in} sigma.prior <- dhalfcauchy(sigma, 25, log=TRUE) \\
 \hspace*{0.27 in} \#\#\# Log-Likelihood \\
-\hspace*{0.27 in} mu <- alpha + c(0, Data$y[-Data$T]) * phi \\
-\hspace*{0.27 in} epsilon <- Data$y - mu \\
-\hspace*{0.27 in} delta <- (epsilon > 0) * 1 \\
-\hspace*{0.27 in} sigma2 <- omega + theta[1] * c(0,delta[-Data$T]) * \\
-\hspace*{0.62 in} c(0, epsilon[-Data$T]\textasciicircum 2) \\
-\hspace*{0.27 in} sigma2[-1] <- sigma2[-1] + theta[2] * (1 - delta[-Data$T]) * \\
-\hspace*{0.62 in} epsilon[-Data$T]\textasciicircum 2 \\
-\hspace*{0.27 in} sigma2.new <- omega + theta[1] * delta[Data$T] * epsilon[Data$T]\textasciicircum 2 + \\
-\hspace*{0.62 in} theta[2] * (1 - delta[Data$T]) * epsilon[Data$T]\textasciicircum 2 \\
-\hspace*{0.27 in} ynew <- rnormv(1, alpha + Data$y[Data$T] * phi, sigma2.new) \\
-\hspace*{0.27 in} LL <- sum(dnormv(Data$y[-1], mu[-1], sigma2[-1], log=TRUE)) \\
+\hspace*{0.27 in} phi <- tcrossprod(Data$P[-Data$T,], t(beta)) \\
+\hspace*{0.27 in} mu <- c(alpha, alpha + phi*Data$y[-Data$T]) \\
+\hspace*{0.27 in} ynew <- rnorm(1, alpha + tcrossprod(Data$P[Data$T,], t(beta))* \\
+\hspace*{0.62 in} Data$y[Data$T], sigma) \\
+\hspace*{0.27 in} LL <- sum(dnorm(Data$y, mu, sigma, log=TRUE)) \\
 \hspace*{0.27 in} \#\#\# Log-Posterior \\
-\hspace*{0.27 in} LP <- LL + alpha.prior + phi.prior + omega.prior + theta.prior \\
-\hspace*{0.27 in} Modelout <- list(LP=LP, Dev=-2*LL, Monitor=c(LP, ynew, sigma2.new), \\
-\hspace*{0.62 in} yhat=rnormv(length(mu), mu, sigma2), parm=parm) \\
+\hspace*{0.27 in} LP <- LL + alpha.prior + beta.prior + sigma.prior \\
+\hspace*{0.27 in} Modelout <- list(LP=LP, Dev=-2*LL, Monitor=c(LP,sigma,ynew,phi), \\
+\hspace*{0.62 in} yhat=rnorm(length(mu), mu, sigma), parm=parm) \\
 \hspace*{0.27 in} return(Modelout) \\
 \hspace*{0.27 in} \} \\
 }
 \subsection{Initial Values}
-\code{Initial.Values <- c(0, 0, 1, 0.5, 0.5)}
+\code{Initial.Values <- c(rep(0,D+2), log(1))}
 
 \section{Variable Selection, BAL} \label{bal}
 This approach to variable selection is one of several forms of the Bayesian Adaptive Lasso (BAL). The lasso applies shrinkage to exchangeable scale parameters, $\gamma$, for the regression effects, $\beta$.

@@ -83,6 +83,7 @@ Juxtapose <- function(x)
           else if(alg == "Delayed Rejection Adaptive Metropolis")
                alg <- "DRAM"
           else if(alg == "Delayed Rejection Metropolis") alg <- "DRM"
+          else if(alg == "Differential Evolution Markov Chain") alg <- "DEMC"
           else if(alg == "Experimental") alg <- "Exper"
           else if(alg == "Hamiltonian Monte Carlo") alg <- "HMC"
           else if(alg == "Hamiltonian Monte Carlo with Dual-Averaging")

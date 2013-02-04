@@ -85,10 +85,10 @@ PMC <- function(Model, Data, Initial.Values, Covar=NULL, Iterations=10,
           M0 <- Model(as.vector(Initial.Values[m,]), Data)
           if(!is.list(M0)) stop("Model must return a list.")
           if(length(M0) != 5) stop("Model must return five components.")
-          if(length(M0[[1]]) > 1) stop("Multiple joint posteriors exist!")
-          if(!identical(length(M0[[3]]), length(Data$mon.names)))
+          if(length(M0[["LP"]]) > 1) stop("Multiple joint posteriors exist!")
+          if(!identical(length(M0[["Monitor"]]), length(Data$mon.names)))
                stop("Length of mon.names differs from length of monitors.")
-          if(any(!is.finite(c(M0[[1]],M0[[2]],M0[[5]]))))
+          if(any(!is.finite(c(M0[["LP"]],M0[["Dev"]],M0[["parm"]]))))
                stop("Model produces non-finite results.")}
      ### Looking for apply functions and for loops
      as.character.function <- function(x, ... )
@@ -147,10 +147,10 @@ PMC <- function(Model, Data, Initial.Values, Covar=NULL, Iterations=10,
                     stop("Bad draws from importance distribution.")
                for (i in 1:N) {
                     mod <- Model(post[i,,iter,m], Data)
-                    if(all(is.finite(c(mod[[1]],mod[[2]],mod[[5]]))))
+                    if(all(is.finite(c(mod[["LP"]],mod[["Dev"]],mod[["parm"]]))))
                          M0 <- mod
-                    LP[i,iter,m] <- M0[[1]]
-                    post[i,,iter,m] <- M0[[5]]}
+                    LP[i,iter,m] <- M0[["LP"]]
+                    post[i,,iter,m] <- M0[["parm"]]}
                ### Proposal Sampling Distribution H(theta) ~ MVT
                LH[,iter,m] <- dmvt(post[,,iter,m], mu[iter,,m],
                     S, nu, log=TRUE)
@@ -236,8 +236,8 @@ PMC <- function(Model, Data, Initial.Values, Covar=NULL, Iterations=10,
      colnames(Mon) <- Data$mon.names
      for (i in 1:nrow(Posterior2)) {
           temp <- Model(Posterior2[i,], Data)
-          Dev[i] <- temp[[2]]
-          Mon[i,] <- temp[[3]]}
+          Dev[i] <- temp[["Dev"]]
+          Mon[i,] <- temp[["Monitor"]]}
      ### Posterior Summary Table
      cat("Creating Summaries\n")
      Summ <- matrix(NA, LIV, 7, dimnames=list(Data$parm.names,

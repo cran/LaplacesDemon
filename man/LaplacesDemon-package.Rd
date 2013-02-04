@@ -10,13 +10,13 @@ within R.
   \tabular{ll}{
     Package: \tab LaplacesDemon\cr
     Type: \tab Package\cr
-    Version: \tab 13.01.07\cr
-    Date: \tab 2013-01-07\cr
+    Version: \tab 13.02.04\cr
+    Date: \tab 2013-02-04\cr
     License: \tab GPL-2\cr
   }
   The goal of LaplacesDemon, often referred to as Laplace's Demon, is to
   provide a complete and self-contained Bayesian environment within R.
-  For example, this package includes over twenty MCMC algorithms, Laplace
+  For example, this package includes dozens of MCMC algorithms, Laplace
   Approximation with multiple optimization algorithms, PMC, over 80
   examples in the ``Examples'' vignette, dozens of additional
   probability distributions, numerous MCMC diagnostics, Bayes factors,

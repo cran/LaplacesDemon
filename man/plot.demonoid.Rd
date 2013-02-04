@@ -57,9 +57,7 @@
   target distribution. Visual inspection of a trace plot cannot
   verify convergence, but apparent non-stationarity or poor mixing can
   certainly suggest non-convergence. A red, smoothed line also appears
-  to aid visual inspection. If a componentwise algorithm is used,
-  \code{LP} is increasing and monitored, then the y-axis is limited so
-  that trending may be seen, despite negative outliers.
+  to aid visual inspection.
 
   Kernel density plots depict the marginal posterior distribution.
   There is no distributional assumption about this density.

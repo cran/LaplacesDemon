@@ -95,7 +95,9 @@ LML(Model=NULL, Data=NULL, Modes=NULL, theta=NULL, LL=NULL, method="NSIS")
   \code{\link{LaplaceApproximation}} function uses \code{NSIS} when it
   has converged and \code{sir=TRUE}. The \code{\link{LaplacesDemon}},
   \code{\link{LaplacesDemon.hpc}}, and \code{\link{PMC}} functions use
-  \code{NSIS}.
+  \code{NSIS}. At least 301 stationary samples are required, and the
+  number of parameters cannot exceed half the number of stationary
+  samples.
 
   The Laplace-Metropolis Estimator (LME) is the logarithmic form of
   equation 4 in Lewis and Raftery (1997). In a non-hierarchical model,

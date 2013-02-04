@@ -90,21 +90,22 @@ Consort <- function(object=NULL)
           cat("     Covar=NULL, Iterations=100000, Status=1000, ",
                "Thinning=100,\n", sep="")
           cat("     Algorithm=\"AMM\", Specs=list(Adaptive=500, ",
-               "Periodicity=100, w=0.05))\n\n", sep="")
+               "B=NULL, Periodicity=100, w=0.05))\n\n", sep="")
           stop("Try the above code before consorting again.")}
      if(any(object$Acceptance.Rate < Acc.Rate.Low)) {Acc.Rate.Level <- 1}
      else if(any(object$Acceptance.Rate > Acc.Rate.High)) {Acc.Rate.Level <- 3}
+     LIV <- object$Parameters
      ### Check MCSE
      MCSE.crit <- 0.0627
      MCSE.temp <- object$Summary2[1:object$Parameters,3] /
-          object$Summary2[1:object$Parameters,2]
+          object$Summary2[1:LIV,2]
      MCSE.temp2 <- sum(!is.finite(MCSE.temp))
      MCSE.temp <- ifelse(is.finite(MCSE.temp), MCSE.temp, 0)
      MCSE.tot <- 0
-     if(MCSE.temp2 < object$Parameters)
+     if(MCSE.temp2 < LIV)
           MCSE.tot <- sum(MCSE.temp < MCSE.crit)
      ### Check ESS
-     ESS.temp <- object$Summary2[1:object$Parameters,4]
+     ESS.temp <- object$Summary2[1:LIV,4]
      ESS.temp <- ifelse(!is.finite(ESS.temp), 0, ESS.temp)
      ESS.min <- min(ESS.temp)
      ESS.crit <- 100
@@ -121,10 +122,10 @@ Consort <- function(object=NULL)
      Rec.Iterations <- trunc(object$Rec.Thinning / object$Thinning *
           object$Iterations)
      if(any(object$Acceptance.Rate == 0)) {
-          Rec.Adaptive <- round(object$Parameters * 1/1.0E-7)
+          Rec.Adaptive <- round(LIV * 1/1.0E-7)
           Rec.Periodicity <- round(object$Rec.Thinning * 1/1.0E-7)}
      else if(all(object$Acceptance.Rate > 0)) {
-          Rec.Adaptive <- round(object$Parameters *
+          Rec.Adaptive <- round(LIV *
                1/mean(object$Acceptance.Rate))
           Rec.Periodicity <- round(object$Rec.Thinning *
                1/mean(object$Acceptance.Rate))}
@@ -159,7 +160,7 @@ Consort <- function(object=NULL)
      else {
           cat("2. The acceptance rate (", max(object$Acceptance.Rate),
                ") is above ", Acc.Rate.High, ".\n", sep="")}
-     if(MCSE.tot < object$Parameters) {
+     if(MCSE.tot < LIV) {
           cat("3. At least one target MCSE is >= ",
                MCSE.crit * 100,"% of its marginal posterior\n", sep="")
           cat("   standard deviation.\n")}
@@ -178,15 +179,19 @@ Consort <- function(object=NULL)
      if(Stationarity == FALSE) {
           cat("5. At least one target distribution is not ",
                "stationary.\n\n", sep="")}
-     else {
+     else if(Stationarity == TRUE & object$Rec.BurnIn.Thinned > 1) {
           cat("5. Each target distribution became stationary by\n")
           cat("   ", object$Rec.BurnIn.Thinned,
                " iterations.\n\n", sep="")}
+     else {
+          cat("5. Each target distribution became stationary by\n")
+          cat("   ", object$Rec.BurnIn.Thinned,
+               " iteration.\n\n", sep="")}
 
      ### Determine if Laplace's Demon is appeased...
      Appeased <- FALSE
      if({object$Adaptive > object$Iterations} &
-          {Acc.Rate.Level == 2} & {MCSE.tot >= object$Parameters} &
+          {Acc.Rate.Level == 2} & {MCSE.tot >= LIV} &
           {ESS.min >= ESS.crit} & {Stationarity == TRUE}) {
           Appeased <- TRUE
           cat("Laplace's Demon has been appeased, and suggests\n")
@@ -197,7 +202,8 @@ Consort <- function(object=NULL)
      else {
           if(Dim.Adapt == FALSE) {
                cat("WARNING: Diminishing adaptation did not occur.\n")
-               if({object$Algorithm != "No-U-Turn Sampler"} &
+               if({object$Algorithm != "Interchain Adaptation"} &
+                  {object$Algorithm != "No-U-Turn Sampler"} &
                   {object$Algorithm != "Sequential Adaptive Metropolis-within-Gibbs"} &
                   {object$Algorithm != "Updating Sequential Adaptive Metropolis-within-Gibbs"})
                     cat("         A new algorithm will be suggested.\n\n")}
@@ -207,15 +213,16 @@ Consort <- function(object=NULL)
                " console,\n", sep="")
           cat("and running it.\n\n")
 
-          cat("Initial.Values <- as.initial.values(", oname, ")\n", sep="")
+          if(object$Algorithm != "Interchain Adaptation")
+               cat("Initial.Values <- as.initial.values(", oname, ")\n", sep="")
           if({object$Algorithm == "Adaptive Metropolis-within-Gibbs"} |
               {object$Algorithm == "Metropolis-within-Gibbs"}) 
                Time <- object$Iterations / object$Minutes
-          else Time <- object$Iterations / object$Minutes / object$Parameters
+          else Time <- object$Iterations / object$Minutes / LIV
           if(Time >= 100) Fast <- TRUE
           else Fast <- FALSE
 
-          if({Acc.Rate.Level == 2} & {MCSE.tot >= object$Parameters} &
+          if({Acc.Rate.Level == 2} & {MCSE.tot >= LIV} &
           {ESS.min >= ESS.crit} & {Stationarity == TRUE}) Ready <- TRUE
           else Ready <- FALSE
 
@@ -226,6 +233,7 @@ Consort <- function(object=NULL)
           else if(object$Algorithm == "Componentwise Hit-And-Run Metropolis") Alg <- "CHARM"
           else if(object$Algorithm == "Delayed Rejection Adaptive Metropolis") Alg <- "DRAM"
           else if(object$Algorithm == "Delayed Rejection Metropolis") Alg <- "DRM"
+          else if(object$Algorithm == "Differential Evolution Markov Chain") Alg <- "DEMC"
           else if(object$Algorithm == "Experimental") Alg <- "Exper"
           else if(object$Algorithm == "Hamiltonian Monte Carlo") Alg <- "HMC"
           else if(object$Algorithm == "Hamiltonian Monte Carlo with Dual-Averaging")
@@ -245,6 +253,11 @@ Consort <- function(object=NULL)
           else if(object$Algorithm == "t-walk") Alg <- "t-walk"
           else if(object$Algorithm == "Updating Sequential Adaptive Metropolis-within-Gibbs") Alg <- "USAMWG"
           else Alg <- "USMWG"
+
+          Componentwise <- 0
+          if(Alg %in% c("AMWG","CHARM","MWG","RJ","SAMWG","SMWG","Slice",
+               "USAMWG","USMWG"))
+               Componentwise <- 1
 
           if({(Alg == "AHMC") & Dim.Adapt & !Ready} |
              {(Alg == "HMC") & Dim.Adapt & !Ready}) {
@@ -289,6 +302,8 @@ Consort <- function(object=NULL)
              {(Alg == "RWM") & Dim.Adapt & Fast & !Ready} |
              {(Alg == "RWM") & Dim.Adapt & !Fast & !Ready}) {
                ### AMM
+               Blocks <- "NULL"
+               #Blocks <- strsplit(as.vector(strsplit(as.character(object$Call), "=")[10][[1]][[3]]), ",")[[1]][1]
                if(Rec.Status > Rec.Iterations) Rec.Status <- Rec.Iterations
                cat(oname, " <- LaplacesDemon(Model, Data=", dname,
                     ", Initial.Values,\n", sep="")
@@ -296,8 +311,9 @@ Consort <- function(object=NULL)
                     Rec.Iterations, ", Status=", Rec.Status, ", ",
                     "Thinning=", Rec.Thinning, ",\n", sep="")
                cat("     Algorithm=\"AMM\", ",
-                    "Specs=list(Adaptive=", Rec.Adaptive, ", Periodicity=",
-                    Rec.Periodicity, ", w=0.05))\n\n", sep="")
+                    "Specs=list(Adaptive=", Rec.Adaptive,
+                    ", B=", Blocks, ", Periodicity=", Rec.Periodicity,
+                    ", w=0.05))\n\n", sep="")
                }
           if({(Alg == "AM") & !Dim.Adapt & Fast & Ready} |
              {(Alg == "AM") & !Dim.Adapt & Fast & !Ready} |
@@ -310,8 +326,15 @@ Consort <- function(object=NULL)
              {(Alg == "RAM") & !Dim.Adapt & Fast & Ready} |
              {(Alg == "RAM") & !Dim.Adapt & Fast & !Ready}) {
                ### AMWG
-               if({Alg != "AMWG"} & {Alg != "MWG"}) {
-                    Rec.Status <- trunc(Rec.Status / object$Parameters)}
+               if(Componentwise == 0) {
+                    Rec.Iterations <- max(nrow(object$Posterior1),
+                         trunc(Rec.Iterations / LIV))
+                    Rec.Status <- trunc(interval(trunc(Rec.Status / LIV),
+                         1, Rec.Iterations))
+                    Rec.Thinning <- trunc(Rec.Iterations /
+                         nrow(object$Posterior1))
+                    Rec.Iterations <- nrow(object$Posterior1) *
+                         Rec.Thinning}
                cat(oname, " <- LaplacesDemon(Model, Data=", dname,
                     ", Initial.Values,\n", sep="")
                cat("     Covar=", oname, "$Covar, Iterations=",
@@ -328,6 +351,15 @@ Consort <- function(object=NULL)
              {(Alg == "AMWG") & !Dim.Adapt & !Fast & !Ready} | 
              {(Alg == "HARM") & Acc.Rate.Level == 1}) {
                ### CHARM
+               if(Componentwise == 0) {
+                    Rec.Iterations <- max(nrow(object$Posterior1),
+                         trunc(Rec.Iterations / LIV))
+                    Rec.Status <- trunc(interval(trunc(Rec.Status / LIV),
+                         1, Rec.Iterations))
+                    Rec.Thinning <- trunc(Rec.Iterations /
+                         nrow(object$Posterior1))
+                    Rec.Iterations <- nrow(object$Posterior1) *
+                         Rec.Thinning}
                cat(oname, " <- LaplacesDemon(Model, Data=", dname,
                     ", Initial.Values,\n", sep="")
                cat("     Covar=NULL, Iterations=",
@@ -336,15 +368,17 @@ Consort <- function(object=NULL)
                cat("     Algorithm=\"CHARM\", ",
                     "Specs=NULL)\n\n", sep="")
                }
-          if(Alg == "Slice") {
-               ### Slice
+          if(Alg == "DEMC" & Dim.Adapt & !Ready) {
+               ### DEMC
+               Nc <- max(3, round(LIV * 0.03))
                cat(oname, " <- LaplacesDemon(Model, Data=", dname,
                     ", Initial.Values,\n", sep="")
                cat("     Covar=NULL, Iterations=",
                     Rec.Iterations, ", Status=", Rec.Status, ", ",
                     "Thinning=", Rec.Thinning, ",\n", sep="")
-               cat("     Algorithm=\"Slice\", ",
-                    "Specs=list(m=m, w=w))\n\n", sep="")
+               cat("     Algorithm=\"DEMC\", ",
+                    "Specs=list(Nc=", Nc, ", Z=", oname, "$Posterior1, ",
+                    "gamma=NULL, w=0.1))\n\n", sep="")
                }
           if({(Alg == "DRAM") & Dim.Adapt & Fast & !Ready} |
              {(Alg == "DRAM") & Dim.Adapt & !Fast & !Ready}) {
@@ -358,8 +392,8 @@ Consort <- function(object=NULL)
                     "Specs=list(Adaptive=", Rec.Adaptive, ", Periodicity=",
                     Rec.Periodicity, "))\n\n", sep="")
                }
-          if({(Alg == "DRM") & Dim.Adapt & Fast & !Ready} |
-             {(Alg == "DRM") & Dim.Adapt & !Fast & !Ready}) {
+          if({(Alg == "DRM") & Dim.Adapt & Fast & Ready} |
+             {(Alg == "DRM") & Dim.Adapt & !Fast & Ready}) {
                ### DRM
                cat(oname, " <- LaplacesDemon(Model, Data=", dname,
                     ", Initial.Values,\n", sep="")
@@ -424,7 +458,7 @@ Consort <- function(object=NULL)
                }
           if(Alg == "INCA") {
                ### INCA
-               library(parallel)
+               library(parallel, quietly=TRUE)
                detectedcores <- detectCores()
                cat(oname, " <- LaplacesDemon.hpc(Model, Data=", dname,
                     ", Initial.Values,\n", sep="")
@@ -514,6 +548,17 @@ Consort <- function(object=NULL)
                cat("     Algorithm=\"RWM\", ",
                     "Specs=NULL)\n\n", sep="")
                }
+          if({(Alg == "DEMC") & Dim.Adapt & Fast & Ready} |
+             {(Alg == "DEMC") & Dim.Adapt & !Fast & Ready}) {
+               ### RWM from DEMC
+               cat(oname, " <- LaplacesDemon(Model, Data=", dname,
+                    ", Initial.Values,\n", sep="")
+               cat("     Covar=cov(", oname, "$Posterior2), Iterations=",
+                    Rec.Iterations, ", Status=", Rec.Status, ", ",
+                    "Thinning=", Rec.Thinning, ",\n", sep="")
+               cat("     Algorithm=\"RWM\", ",
+                    "Specs=NULL)\n\n", sep="")
+               }
           if({(Alg == "SAMWG") & !Ready} |
              {(Alg == "SMWG") & !Ready}) {
                ### SAMWG
@@ -537,6 +582,16 @@ Consort <- function(object=NULL)
                cat("     Algorithm=\"SMWG\", ",
                     "Specs=list(Dyn=Dyn))\n\n", sep="")
                }
+          if(Alg == "Slice") {
+               ### Slice
+               cat(oname, " <- LaplacesDemon(Model, Data=", dname,
+                    ", Initial.Values,\n", sep="")
+               cat("     Covar=NULL, Iterations=",
+                    Rec.Iterations, ", Status=", Rec.Status, ", ",
+                    "Thinning=", Rec.Thinning, ",\n", sep="")
+               cat("     Algorithm=\"Slice\", ",
+                    "Specs=list(m=m, w=w))\n\n", sep="")
+               }
           if(Alg == "THMC") {
                ### THMC
                if(L > 1) {
@@ -555,7 +610,8 @@ Consort <- function(object=NULL)
                cat("     L=", L, ", Temperature=", Temperature,
                     "))\n\n", sep="")
                }
-          if(Alg == "t-walk") {
+          if(Alg == "t-walk" |
+           {(Alg == "DEMC") & !Dim.Adapt}) {
                ### twalk
                cat(oname, " <- LaplacesDemon(Model, Data=", dname,
                     ", Initial.Values,\n", sep="")
@@ -574,4 +630,3 @@ Consort <- function(object=NULL)
      }
 
 #End
-

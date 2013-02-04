@@ -13,7 +13,8 @@ plotMatrix <- function(x, col=colorRampPalette(c("red","black","green"))(100),
           x <- x$B
           title <- "Bayes Factors"}
      else if(identical(class(x), "demonoid")) {
-          if(is.null(x$Covar)) stop("Covar=NULL.")
+          if(is.null(x$Covar) | is.list(x$Covar) | is.vector(x$Covar))
+               stop("Covar=NULL.")
           x <- x$Covar
           title <- "Covariance"}
      else if(identical(class(x), "laplace")) {

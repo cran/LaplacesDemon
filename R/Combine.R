@@ -19,10 +19,48 @@ Combine <- function(x, Data, Thinning=1)
                sum(sapply(x, with, Iterations)),5)
      Adaptive <- round(mean(sapply(x, with, Adaptive)))
      Algorithm <- x[[1]]$Algorithm
-     Covar <- matrix(rowSums(sapply(x, with, Covar) *
+     if(is.matrix(x[[1]]$Covar)) {
+          if(sum(dim(x[[1]]$Covar) > 2)) {
+               Covar <- matrix(rowSums(sapply(x, with, Covar) *
+                    sapply(x, with, Iterations)) /
+                    sum(sapply(x, with, Iterations)),
+                    nrow(x[[1]]$Covar), ncol(x[[1]]$Covar))}
+          else {
+               Covar <- matrix(sum(sapply(x, with, Covar) *
+                    sapply(x, with, Iterations)) /
+                    sum(sapply(x, with, Iterations)),
+                    nrow(x[[1]]$Covar), ncol(x[[1]]$Covar))
+               }
+          }
+     else if(is.vector(x[[1]]$Covar)) {
+          Covar <- sum(sapply(x, with, Covar) *
                sapply(x, with, Iterations)) /
-               sum(sapply(x, with, Iterations)),
-               nrow(x[[1]]$Covar), ncol(x[[1]]$Covar))
+               sum(sapply(x, with, Iterations))
+          }
+     else {
+          Covar <- list(NULL)
+          for (i in 1:length(x[[1]]$Covar)) {
+               if(is.matrix(x[[1]]$Covar[[i]])) {
+                    if(sum(dim(x[[1]]$Covar[[i]]) > 2)) {
+                         Covar[[i]] <- matrix(rowSums(sapply(x, with, Covar[[i]]) *
+                              sapply(x, with, Iterations)) /
+                              sum(sapply(x, with, Iterations)),
+                              nrow(x[[1]]$Covar[[i]]), ncol(x[[1]]$Covar[[i]]))
+                         }
+                    else {
+                         Covar[[i]] <- matrix(sum(sapply(x, with, Covar[[i]]) *
+                              sapply(x, with, Iterations)) /
+                              sum(sapply(x, with, Iterations)),
+                              nrow(x[[1]]$Covar[[i]]), ncol(x[[1]]$Covar[[i]]))
+                         }
+                    }
+               else if(is.vector(x[[1]]$Covar[[i]])) {
+                    Covar[[i]] <- sum(sapply(x, with, Covar[[i]]) *
+                         sapply(x, with, Iterations)) /
+                         sum(sapply(x, with, Iterations))
+                    }
+               }
+          }
      Iterations <- sum(sapply(x, with, Iterations))
      Model <- x[[1]]$Model
      Minutes <- max(sapply(x, with, Minutes))
@@ -209,10 +247,10 @@ Combine <- function(x, Data, Thinning=1)
                LL=as.vector(Dev2)*(-1/2), method="NSIS")}
      ### Compile Output
      cat("Creating Output\n")
-     LaplacesDemon.out <- list(Acceptance.Rate=round(Acceptance.Rate/Iterations,7),
+     LaplacesDemon.out <- list(Acceptance.Rate=Acceptance.Rate,
           Adaptive=Adaptive,
           Algorithm=Algorithm,
-          Call=match.call(),
+          Call=x[[1]]$Call,
           Covar=Covar,
           CovarDHis=x[[len.x]]$CovarDHis,
           Deviance=as.vector(Dev),

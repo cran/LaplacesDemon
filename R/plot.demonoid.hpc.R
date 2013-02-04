@@ -38,7 +38,8 @@ plot.demonoid.hpc <- function(x, BurnIn=1, Data=NULL, PDF=FALSE,
                          grep(Parms[i], colnames(x[[1]]$Posterior1)))}}
           Posterior <- list()
           for (i in 1:Chains) {
-               Posterior[[i]] <- x[[i]][["Posterior1"]][,keepcols]}
+               Posterior[[i]] <- matrix(x[[i]][["Posterior1"]][,keepcols],
+                    nn, length(keepcols))}
           }
      if(PDF == TRUE) {
           pdf("LaplacesDemon.Plots.pdf")
@@ -148,7 +149,7 @@ plot.demonoid.hpc <- function(x, BurnIn=1, Data=NULL, PDF=FALSE,
           else {plot(0,0, main=paste(Data$mon.names[j], "is a constant."))}
           }
      rm(Monitor)
-     #### Proposal Variance (Adaptive Algorithms only)
+     #### Diminishing Adaptation
      if(nrow(x[[1]]$CovarDHis) > 1) {
           Diff <- abs(diff(x[[1]]$CovarDHis))
           adaptchange <- matrix(NA, nrow(Diff), 3)

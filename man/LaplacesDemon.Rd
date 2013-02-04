@@ -60,18 +60,18 @@ LaplacesDemon.hpc(Model, Data, Initial.Values, Covar=NULL,
     \code{Initial.Values=as.initial.values(Fit)}. Initial values may be
     generated randomly with the \code{\link{GIV}} function.}
   \item{Covar}{This argument defaults to \code{NULL}, but may otherwise
-    accept a \eqn{K \times K}{K x K} proposal covariance matrix for the
-    first adaptation of the proposal covariances, where \eqn{K} is the
-    number of dimensions (or parameters). The proposal covariance matrix
-    will be re-estimated with each adaptation according to the entire
-    history of all chains. When the model is updated for the first time,
-    \code{Covar=NULL} should be used, unless there is a better estimate
-    at the variance of each target distribution as well as the
-    associated covariances. Once Laplace's Demon has finished updating,
-    it may be desired to continue updating where it left off, in which
-    case the proposal covariance matrix from the last run can be input
-    into the next run. The covariance matrix may also be input from the
-    \code{\link{LaplaceApproximation}} function, if used.}
+    accept a \eqn{K \times K}{K x K} proposal covariance matrix
+    (where \eqn{K} is the number of dimensions or parameters), a
+    variance vector, or a list of covariance matrices (for blocking).
+    When the model is updated for the first time and prior variance or
+    covariance is unknown, then \code{Covar=NULL} should be used. Some
+    algorithms require covariance, some only require variance, and some
+    require neither. Laplace's Demon automatically converts the user
+    input to the required form. Once Laplace's Demon has finished
+    updating, it may be desired to continue updating where it left off,
+    in which case the proposal covariance matrix from the last run can
+    be input into the next run. The covariance matrix may also be input
+    from the \code{\link{LaplaceApproximation}} function, if used.}
   \item{Iterations}{This required argument accepts integers larger than
     10, and determines the number of iterations that Laplace's Demon
     will update the parameters while searching for target
@@ -135,6 +135,7 @@ LaplacesDemon.hpc(Model, Data, Initial.Values, Covar=NULL,
     \item Componentwise Hit-And-Run Metropolis (CHARM)
     \item Delayed Rejection Adaptive Metropolis (DRAM)
     \item Delayed Rejection Metropolis (DRM)
+    \item Differential Evolution Markov Chain (DEMC)
     \item Hamiltonian Monte Carlo (HMC)
     \item Hamiltonian Monte Carlo with Dual-Averaging (HMCDA)
     \item Hit-And-Run Metropolis (HARM)
@@ -186,6 +187,10 @@ LaplacesDemon.hpc(Model, Data, Initial.Values, Covar=NULL,
     distribution of model size for the RJ algorithm.
     \item \code{bin.p} is the scalar probability parameter for a
     binomial prior distribution of model size for the RJ algorithm.
+    \item \code{B} is a list of blocked parameters. Each component of
+    the list represents a block of parameters, and contains a vector in
+    which each element is the position of the associated parameter in
+    parm.names. This function is used by the AMM algorithm.
     \item \code{Begin} indicates the time-period in which to begin
     updating (filtering or predicting) in the USAMWG and USMWG
     algorithms.
@@ -209,8 +214,10 @@ LaplacesDemon.hpc(Model, Data, Initial.Values, Covar=NULL,
     and USMWG algorithms. Posterior samples before the time-period
     specified in the \code{Begin} argument are not updated, and are used
     instead from \code{Fit}.
-    \item \code{gamma} controls the decay of adaptation in RAM. It is in
-    the interval (0.5,1], and 0.66 is recommended.
+    \item \code{gamma} controls the step size in DEMC or the decay of
+    adaptation in RAM. In DEMC, it is positive and defaults to
+    2.38/sqrt(2J) when NULL, where J is the length of initial values.
+    For RAM, it is in the interval (0.5,1], and 0.66 is recommended.
     \item \code{L} is a scalar number of leapfrog steps in AHMC, HMC, and
     THMC. When \code{L=1}, the algorithm reduces to Langevin Monte Carlo
     (LMC).
@@ -226,6 +233,8 @@ LaplacesDemon.hpc(Model, Data, Initial.Values, Covar=NULL,
     values. This vector will be used as the mean of the proposal
     distribution, and is usually the posterior mode of a
     previously-updated \code{\link{LaplaceApproximation}}.
+    \item \code{Nc} is the number of (un-parallelized) parallel chains
+    in DEMC, and must be at least 3.
     \item \code{n1} affects the size of the subset of each set of points
     to adjust, and is used in twalk. It relates to the number of
     parameters, and \code{n1=4} is recommended. If adjusted, it is
@@ -261,22 +270,31 @@ LaplacesDemon.hpc(Model, Data, Initial.Values, Covar=NULL,
     down the momentum in the last half. \code{Temperature} must be
     positive. When greater than 1, THMC should explore more diffuse
     distributions, and may be helpful with multimodal distributions.
-    \item \code{w} is a mixture weight for the AMM algorithm. It is in
-    the interval (0,1], and is recommended to use \code{w=0.05}, as per
-    Roberts and Rosenthal (2009). The two mixture components are
-    adaptive multivariate and static/symmetric univariate proposals. The
-    mixture is determined at each iteration with mixture weight
-    \code{w}. This argument has different interpretations in different
-    algorithms. In the AMM algorithm, a higher value of \code{w} is
-    associated with more static/symmetric univariate proposals, and a
-    lower \code{w} is associated with more adaptive multivariate
-    proposals. AMM will be unable to include the multivariate mixture
-    component until it has accumulated some history, and models with
-    more parameters will take longer to be able to use adaptive
-    multivariate proposals. In the Slice algorithm, this argument may be a
+    \item \code{w} is used in AMM, DEMC, and Slice. It is a mixture
+    weight for both the AMM and DEMC algorithms, and in these algorithms
+    it is in the interval (0,1]. For AMM, it is recommended to use
+    \code{w=0.05}, as per Roberts and Rosenthal (2009). The two mixture
+    components in AMM are adaptive multivariate and static/symmetric
+    univariate proposals. The mixture is determined at each iteration
+    with mixture weight \code{w}. In the AMM algorithm, a higher value
+    of \code{w} is associated with more static/symmetric univariate
+    proposals, and a lower \code{w} is associated with more adaptive
+    multivariate proposals. AMM will be unable to include the
+    multivariate mixture component until it has accumulated some
+    history, and models with more parameters will take longer to be
+    able to use adaptive multivariate proposals. In DEMC, it indicates
+    the probability that each iteration uses a snooker update, rather
+    than a projection update, and the recommended default is
+    \code{w=0.1}. In the Slice algorithm, this argument may be a
     scalar or a vector equal in length the number of initial values, and
-    each element indicates the step size used for creating theslice
+    each element indicates the step size used for creating the slice
     interval.
+    \item \code{Z} accepts a \eqn{T \times J}{T x J} matrix or \eqn{T
+    \times J \times Nc}{T x J x Nc} array of thinned samples for \eqn{T}
+    thinned iterations, \eqn{J} parameters, and \eqn{Nc} chains for
+    DEMC. \code{Z} defaults to \code{NULL}. The matrix of thinned
+    posterior samples from a previous run may be used, in which case the
+    samples are copied across the chains.
   }
 }
 \value{
@@ -304,12 +322,14 @@ LaplacesDemon.hpc(Model, Data, Initial.Values, Covar=NULL,
   \item{Algorithm}{This reports the specific algorithm used.}
   \item{Call}{This is the matched call of \code{LaplacesDemon}.}
   \item{Covar}{This stores the \eqn{K \times K}{K x K} proposal
-    covariance matrix of the most recent adaptation, where \eqn{K} is
-    the dimension or number of parameters or initial values. If the
-    model is updated in the future, then this matrix can be used to
-    start the next update where the last update left off. Only the
-    diagonal of this matrix is reported in the associated \code{print}
-    function.}
+    covariance matrix (where \eqn{K} is the dimension or number of
+    parameters), variance vector, or list of covariance matrices.
+    If variance or covariance is used for adaptation, then this
+    covariance is returned. Otherwise, the variance of the samples of
+    each parameter is returned. If the model is updated in the future,
+    then this vector, matrix, or list can be used to start the next
+    update where the last update left off. Only the diagonal of this
+    matrix is reported in the associated \code{print} function.}
   \item{CovarDHis}{This \eqn{N \times K}{N x K} matrix stores the
     diagonal of the proposal covariance matrix of each adaptation in
     each of \eqn{N} rows for \eqn{K} dimensions, where the dimension is
@@ -475,6 +495,10 @@ LaplacesDemon.hpc(Model, Data, Initial.Values, Covar=NULL,
   Points Uniformly Distributed Over Bounded Region". Operations
   Research, 32, p. 1296--1308.
 
+  Ter Braak, C.J.F. and Vrugt, J.A. (2008). "Differential Evolution
+  Markov Chain with Snooker Updater and Fewer Chains", Statistics and
+  Computing, 18(4), p. 435--446.
+
   Vihola, M. (2011). "Robust Adaptive Metropolis Algorithm with Coerced
   Acceptance Rate". Statistics and Computing. Springer, Netherlands.
 }
@@ -585,7 +609,8 @@ Importance(Fit, Model, MyData, Discrep="Chi-Square")
 ######################  Adaptive-Mixture Metropolis  ######################
 #Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
 #     Covar=NULL, Iterations=1000, Status=100, Thinning=1,
-#     Algorithm="AMM", Specs=list(Adaptive=500, Periodicity=10, w=0.05))
+#     Algorithm="AMM", Specs=list(Adaptive=500, B=NULL, Periodicity=10,
+#     w=0.05))
 
 #################  Componentwise Hit-And-Run Metropolis  ##################
 #Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
@@ -601,6 +626,11 @@ Importance(Fit, Model, MyData, Discrep="Chi-Square")
 #Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
 #     Covar=NULL, Iterations=1000, Status=100, Thinning=1,
 #     Algorithm="DRM", Specs=NULL)
+
+##################  Differential Evolution Markov Chain  ##################
+#Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
+#     Covar=NULL, Iterations=1000, Status=100, Thinning=1,
+#     Algorithm="DEMC", Specs=list(Nc=3, PCIV=NULL, gamma=NULL, w=0.1))
 
 #######################  Hamiltonian Monte Carlo  #########################
 #Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
@@ -619,7 +649,8 @@ Importance(Fit, Model, MyData, Discrep="Chi-Square")
 ### Approximation.
 #Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
 #     Covar=Fit$Covar, Iterations=1000, Status=100, Thinning=1,
-#     Algorithm="IM", Specs=list(mu=Fit$Summary1[,1]))
+#     Algorithm="IM",
+#     Specs=list(mu=Fit$Summary1[1:length(Initial.Values),1]))
 
 #########################  Interchain Adaptation  #########################
 #Initial.Values <- rbind(Initial.Values, GIV(Model, MyData, PGF=TRUE))
@@ -712,6 +743,7 @@ Importance(Fit, Model, MyData, Discrep="Chi-Square")
 \keyword{Bayesian Inference}
 \keyword{Delayed Rejection Adaptive Metropolis}
 \keyword{Delayed Rejection Metropolis}
+\keyword{Differential Evolution Markov Chain}
 \keyword{Hamiltonian Monte Carlo}
 \keyword{High Performance Computing}
 \keyword{Hit-And-Run}

@@ -13,8 +13,9 @@ as.initial.values <- function(x)
         !identical(class(x), "laplace") &
         !identical(class(x), "pmc"))
           stop("The class of x is unknown.")
-     if(identical(class(x), "demonoid"))
+     if(identical(class(x), "demonoid")) {
           initial.values <- as.vector(x$Posterior1[x$Thinned.Samples,])
+          }
      else if(identical(class(x), "demonoid.hpc")) {
           Chains <- length(x)
           LIV <- x[[1]][["Parameters"]]
