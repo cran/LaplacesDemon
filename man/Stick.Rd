@@ -61,11 +61,11 @@ Stick(theta)
 }
 \references{
   Ishwaran, H. and James, L. (2001). "Gibbs Sampling Methods for Stick
-  Breaking Priors". Journal of the American Statistical Association,
-  96(453), p. 161--173.
+  Breaking Priors". \emph{Journal of the American Statistical
+  Association}, 96(453), p. 161--173.
   
   Sethuraman, J. (1994). "A Constructive Definition of Dirichlet
-  Priors". Statistica Sinica, 4, p. 639--650.
+  Priors". \emph{Statistica Sinica}, 4, p. 639--650.
 }
 \author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{

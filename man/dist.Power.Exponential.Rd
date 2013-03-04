@@ -80,11 +80,11 @@ These functions are similar to those in the \code{normalp} package.
 }
 \references{
   Lunetta, G. (1963). "Di una Generalizzazione dello Schema della Curva
-  Normale". Annali della Facolt`a di Economia e Commercio di Palermo, 17,
-  p. 237--244.
+  Normale". \emph{Annali della Facolt`a di Economia e Commercio di
+  Palermo}, 17, p. 237--244.
 
   Subbotin, M.T. (1923). "On the Law of Frequency of Errors".
-  Matematicheskii Sbornik, 31, p. 296--301.
+  \emph{Matematicheskii Sbornik}, 31, p. 296--301.
 }
 \seealso{
   \code{\link{dlaplace}},

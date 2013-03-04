@@ -8,13 +8,13 @@
   convergence plots.
 }
 \usage{
-\method{plot}{pmc}(x, BurnIn=1, Data, PDF=FALSE, Parms, \dots)
+\method{plot}{pmc}(x, BurnIn=0, Data, PDF=FALSE, Parms, \dots)
 }
 \arguments{
   \item{x}{This required argument is an object of class \code{pmc}.}
-  \item{BurnIn}{This argument requires a positive integer that indicates
-    a number of iterations to discard as burn-in for the purposes of
-    plotting.}
+  \item{BurnIn}{This argument requires zero or a positive integer that
+    indicates the number of iterations to discard as burn-in for the
+    purposes of plotting.}
   \item{Data}{This required argument must receive the list of data that
     was supplied to \code{\link{PMC}} to create the object of class
     \code{pmc}.}

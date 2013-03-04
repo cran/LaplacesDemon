@@ -78,13 +78,13 @@ in the MNM package.
 \references{
   Gomez, E., Gomez-Villegas, M.A., and Marin, J.M. (1998). "A
   Multivariate Generalization of the Power Exponential Family of
-  Distributions". Communications in Statistics-Theory and Methods, 27(3),
-  p. 589--600.
+  Distributions". \emph{Communications in Statistics-Theory and
+  Methods}, 27(3), p. 589--600.
 
   Sanchez-Manzano, E.G., Gomez-Villegas, M.A., and Marn-Diazaraque,
   J.M. (2002). "A Matrix Variate Generalization of the Power Exponential
-  Family of Distributions". Communications in Statistics, Part A - Theory
-  and Methods [Split from: J(CommStat)], 31(12), p. 2167--2182.
+  Family of Distributions". \emph{Communications in Statistics, Part A -
+  Theory and Methods} [Split from: J(CommStat)], 31(12), p. 2167--2182.
 }
 \author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{

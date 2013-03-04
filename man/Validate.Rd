@@ -116,11 +116,11 @@ Validate(object, Model, Data, plot=FALSE, PDF=FALSE)
 \references{
   Ando, T. (2007). "Bayesian Predictive Information Criterion for
   the Evaluation of Hierarchical Bayesian and Empirical Bayes Models".
-  Biometrika, 94 (2), p. 443--458.
+  \emph{Biometrika}, 94(2), p. 443--458.
   
   Spiegelhalter, D.J., Best, N.G., Carlin, B.P., and van der Linde, A.
   (2002). "Bayesian Measures of Model Complexity and Fit (with
-  Discussion)". Journal of the Royal Statistical Society, B 64,
+  Discussion)". \emph{Journal of the Royal Statistical Society}, B 64,
   p. 583--639.
 }
 \author{Statisticat, LLC. \email{software@bayesian-inference.com}}

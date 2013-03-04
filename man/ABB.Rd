@@ -87,27 +87,27 @@ ABB(X, K=1)
 \references{
   Parzen, M., Lipsitz, S.R., and Fitzmaurice, G.M. (2005). "A Note on
   Reducing the Bias of the Approximate Bayesian Bootstrap Imputation
-  Variance Estimator". Biometrika (2005), 92, 4, pp. 971--974.
+  Variance Estimator". \emph{Biometrika}, 92, 4, p. 971--974.
 
   Rosenbaum, P.R. and Rubin, D.B. (1983). "The Central Role of the
   Propensity Score in Observational Studies for Causal
-  Effects". Biometrika, 70, p. 41--55.
+  Effects". \emph{Biometrika}, 70, p. 41--55.
 
   Rosenbaum, P.R. and Rubin, D.B. (1984). "Reducing Bias in
   Observational Studies Using Subclassification in the Propensity
-  Score". Journal of the American Statistical Association, 79,
+  Score". \emph{Journal of the American Statistical Association}, 79,
   p. 516--524.
 
-  Rubin, D.B. (1981). "The Bayesian Bootstrap". Annals of Statistics,
-  9, p. 130--134.
+  Rubin, D.B. (1981). "The Bayesian Bootstrap". \emph{Annals of
+  Statistics}, 9, p. 130--134.
 
   Rubin, D.B. (1987). "Multiple Imputation for Nonresponse in
   Surveys". John Wiley and Sons: New York, NY.
 
   Rubin, D.B. and Schenker, N. (1986). "Multiple Imputation for Interval
   Estimation from Simple Random Samples with Ignorable
-  Nonresponse". Journal of the American Statistical Association, 81,
-  p. 366--374.
+  Nonresponse". \emph{Journal of the American Statistical Association},
+  81, p. 366--374.
 }
 \author{Statisticat, LLC \email{software@bayesian-inference.com}}
 \seealso{

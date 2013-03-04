@@ -44,8 +44,8 @@ KS.Diagnostic(x)
 }
 \references{
   Brooks, S.P., Giudici, P., and Philippe, A. (2003). "Nonparametric
-  Convergence Assessment for MCMC Model Selection". Journal of
-  Computational and Graphical Statistics. 12(1), p. 1--22.
+  Convergence Assessment for MCMC Model Selection". \emph{Journal of
+  Computational and Graphical Statistics}. 12(1), p. 1--22.
 }
 \author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{

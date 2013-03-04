@@ -1,5 +1,6 @@
 \name{is.class}
 \alias{is.bayesfactor}
+\alias{is.bmk}
 \alias{is.demonoid}
 \alias{is.demonoid.hpc}
 \alias{is.demonoid.ppc}
@@ -17,6 +18,7 @@
 }
 \usage{
 is.bayesfactor(x)
+is.bmk(x)
 is.demonoid(x)
 is.demonoid.hpc(x)
 is.demonoid.ppc(x)
@@ -58,6 +60,9 @@ is.pmc.val(x)
 \value{
   The \code{is.bayesfactor} function returns a logical value indicating
   whether or not the supplied object is of class \code{bayesfactor}.
+
+  The \code{is.bmk} function returns a logical value indicating
+  whether or not the supplied object is of class \code{bmk}.
   
   The \code{is.demonoid} function returns a logical value indicating
   whether or not the supplied object is of class \code{demonoid}.
@@ -92,6 +97,7 @@ is.pmc.val(x)
 \author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{
   \code{\link{BayesFactor}},
+  \code{\link{BMK.Diagnostic}},
   \code{\link{class}},
   \code{\link{Importance}},
   \code{\link{Juxtapose}},

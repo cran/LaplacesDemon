@@ -54,8 +54,8 @@ IAT(x)
 }
 \references{
   Christen, J.A. and Fox, C. (2010). "A General Purpose Sampling
-  Algorithm for Continuous Distributions (the t-walk)". Bayesian
-  Analysis, 5(2), p. 263--282.
+  Algorithm for Continuous Distributions (the t-walk)". \emph{Bayesian
+  Analysis}, 5(2), p. 263--282.
 }
 \author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{

@@ -7,7 +7,7 @@
 # but has been modified to work with objects of class demonoid.           #
 ###########################################################################
 
-Gelman.Diagnostic <- function (x, confidence=0.95, transform=FALSE)
+Gelman.Diagnostic <- function(x, confidence=0.95, transform=FALSE)
      {
      Nchain <- length(x)
      if(Nchain < 2) stop("More than one chain is required.")
@@ -17,10 +17,8 @@ Gelman.Diagnostic <- function (x, confidence=0.95, transform=FALSE)
      for (i in 1:Nchain) {
           Burn[i] <- x[[i]]$Rec.BurnIn.Thinned
           Ntot[i] <- nrow(x[[i]]$Posterior1)
-          if(Burn[i] >= Ntot[i])
-               Niter[i] <- Ntot[i]
-          if(Burn[i] < Ntot[i])
-               Niter[i] <- Ntot[i] - Burn[i] + 1
+          if(Burn[i] >= Ntot[i]) Niter[i] <- Ntot[i]
+          if(Burn[i] < Ntot[i]) Niter[i] <- Ntot[i] - Burn[i]
           Nvar[i] <- x[[i]]$Parameters}
      if(length(unique(Ntot)) != 1)
           stop("Total number of iterations differs with demonoid objects.")
@@ -56,8 +54,13 @@ Gelman.Diagnostic <- function (x, confidence=0.95, transform=FALSE)
      if(transform == TRUE) x <- Gelman.Transform(x, Nvar, Nchain)
      S2 <- array(sapply(x, var, simplify=TRUE), dim=c(Nvar,Nvar,Nchain))
      W <- apply(S2, c(1,2), mean)
-     xbar <- matrix(sapply(x, apply, 2, mean, simplify=TRUE), nrow=Nvar,
-          ncol=Nchain)
+     if(Nvar > 1){
+          xbar <- matrix(sapply(x, apply, 2, mean, simplify=TRUE),
+               nrow=Nvar, ncol=Nchain)
+          }
+     else {
+          xbar <- matrix(sapply(x, mean, simplify=TRUE), nrow=Nvar,
+               ncol=Nchain)}
      B <- Niter * var(t(xbar))
      if(Nvar > 1) {
           CW <- chol(W)

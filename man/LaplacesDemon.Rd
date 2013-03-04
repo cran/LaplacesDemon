@@ -107,20 +107,21 @@ LaplacesDemon.hpc(Model, Data, Initial.Values, Covar=NULL,
   \item{Chains}{This argument is required only for
     \code{LaplacesDemon.hpc}, and indicates the number of parallel
     chains.}
-  \item{CPUs}{This argument is required only for
+  \item{CPUs}{This argument is required for parallel independent or
+    interactive chains in \code{LaplacesDemon} or
     \code{LaplacesDemon.hpc}, and indicates the number of central
     processing units (CPUs) of the computer or cluster. For example,
     when a user has a quad-core computer, \code{CPUs=4}.}
-  \item{Packages}{This optional argument is for use only with
-    \code{LaplacesDemon.hpc}, and defaults to \code{NULL}. This argument
-    accepts a vector of package names to load into each parallel chain.
-    If the \code{Model} specification depends on any packages, then
-    these package names need to be in this vector.}
-  \item{Dyn.libs}{This optional argument is for use only with
-    \code{LaplacesDemon.hpc}, and defaults to \code{NULL}. This argument
-    accepts a vector of the names of dynamic link libraries (shared
-    objects) to load into each parallel chain. The libraries must be
-    located in the working directory.}
+  \item{Packages}{This optional argument is for use with parallel
+    independent or interacting chains, and defaults to \code{NULL}. This
+    argument accepts a vector of package names to load into each
+    parallel chain. If the \code{Model} specification depends on any
+    packages, then these package names need to be in this vector.}
+  \item{Dyn.libs}{This optional argument is for use with parallel
+    independent or interacting chain, and defaults to \code{NULL}. This
+    argument accepts a vector of the names of dynamic link libraries
+    (shared objects) to load into each parallel chain. The libraries
+    must be located in the working directory.}
   \item{...}{Additional arguments are unused.}
 }
 \details{
@@ -132,6 +133,7 @@ LaplacesDemon.hpc(Model, Data, Initial.Values, Covar=NULL,
     \item Adaptive Metropolis (AM)
     \item Adaptive Metropolis-within-Gibbs (AMWG)
     \item Adaptive-Mixture Metropolis (AMM)
+    \item Affine-Invariant Ensemble Sampler (AIEC)
     \item Componentwise Hit-And-Run Metropolis (CHARM)
     \item Delayed Rejection Adaptive Metropolis (DRAM)
     \item Delayed Rejection Metropolis (DRM)
@@ -169,9 +171,12 @@ LaplacesDemon.hpc(Model, Data, Initial.Values, Covar=NULL,
     and is used in AM, AMM, and DRAM. These algorithms adapt according
     to an observed covariance matrix, and should sample before beginning
     to adapt.
-    \item \code{alpha.star} is the desired acceptance rate(s) in RAM, and
-    may be a scalar or a vector equal in length to the number of
-    targets. The recommended value is \code{alpha.star=0.234}.
+    \item \code{alpha.star} is the desired acceptance rate(s) in RAM,
+    and is optional in CHARM and HARM. It is a scalar in CHARM or HARM,
+    and in RAM it may be a scalar or a vector equal in length to the
+    number of targets. The recommended value for multivariate proposals
+    is \code{alpha.star=0.234}, or for componentwise proposals it is
+    \code{alpha.star=0.44}.
     \item \code{at} affects the traverse move in twalk. \code{at=6} is
     recommended. It helps when some parameters are highly correlated,
     and the correlation structure may change through the
@@ -183,6 +188,7 @@ LaplacesDemon.hpc(Model, Data, Initial.Values, Covar=NULL,
     \item \code{aw} affects the walk move in twalk, and \code{aw=1.5} is
     recommended. If adjusted, it is recommended to stay in the
     interval [0.3,2].
+    \item \code{beta} is a scale parameter for AIES, and defaults to 2.
     \item \code{bin.n} is the scalar size parameter for a binomial prior
     distribution of model size for the RJ algorithm.
     \item \code{bin.p} is the scalar probability parameter for a
@@ -216,8 +222,9 @@ LaplacesDemon.hpc(Model, Data, Initial.Values, Covar=NULL,
     instead from \code{Fit}.
     \item \code{gamma} controls the step size in DEMC or the decay of
     adaptation in RAM. In DEMC, it is positive and defaults to
-    2.38/sqrt(2J) when NULL, where J is the length of initial values.
-    For RAM, it is in the interval (0.5,1], and 0.66 is recommended.
+    \eqn{2.38 / \sqrt{2J}}{2.38/sqrt(2J)} when \code{NULL}, where
+    \eqn{J} is the length of initial values. For RAM, it is in the
+    interval (0.5,1], and 0.66 is recommended.
     \item \code{L} is a scalar number of leapfrog steps in AHMC, HMC, and
     THMC. When \code{L=1}, the algorithm reduces to Langevin Monte Carlo
     (LMC).
@@ -299,8 +306,9 @@ LaplacesDemon.hpc(Model, Data, Initial.Values, Covar=NULL,
 }
 \value{
   \code{LaplacesDemon} returns an object of class \code{demonoid}, and
-  \code{LaplacesDemon.hpc} returns an object that is a list of objects of
-  class \code{demonoid.hpc}, where the number of components in the list
+  \code{LaplacesDemon.hpc} returns an object of class
+  \code{demonoid.hpc} that is a list of objects of class
+  \code{demonoid}, where the number of components in the list
   is the number of parallel chains. Each object of class \code{demonoid} 
   is a list with the following components:
   \item{Acceptance.Rate}{This is the acceptance rate of the MCMC
@@ -352,7 +360,7 @@ LaplacesDemon.hpc(Model, Data, Initial.Values, Covar=NULL,
     Gelman et al. (2004).}
   \item{DIC2}{This is identical to \code{DIC1} above, except that it is
     calculated over only the samples that were considered by the
-    \code{Geweke.Diagnostic} to be stationary for all parameters. If
+    \code{BMK.Diagnostic} to be stationary for all parameters. If
     stationarity (or a lack of trend) is not estimated for all
     parameters, then \code{DIC2} is set to missing values.}
   \item{DR}{
@@ -394,9 +402,8 @@ LaplacesDemon.hpc(Model, Data, Initial.Values, Covar=NULL,
     number of parameters. This matrix includes all thinned samples.}
   \item{Posterior2}{This is a matrix equal to \code{Posterior1}, except
     that rows are included only if stationarity (a lack of trend) is
-    indicated by the \code{\link{Geweke.Diagnostic}} for all
-    parameters. If stationarity did not occur, then this matrix is
-    missing.}
+    indicated by the \code{\link{BMK.Diagnostic}} for all parameters.
+    If stationarity did not occur, then this matrix is missing.}
   \item{Rec.BurnIn.Thinned}{This is the recommended burn-in for the
     thinned samples, where the value indicates the first row that was
     stationary across all parameters, and previous rows are discarded
@@ -440,67 +447,76 @@ LaplacesDemon.hpc(Model, Data, Initial.Values, Covar=NULL,
 }
 \references{
   Craiu, R.V., Rosenthal, J., and Yang, C. (2009). "Learn From Thy
-  Neighbor: Parallel-Chain and Regional Adaptive MCMC". Journal of the
-    American Statistical Assocation, 104(488), p. 1454--1466.
+  Neighbor: Parallel-Chain and Regional Adaptive MCMC". \emph{Journal
+  of the American Statistical Assocation}, 104(488), p. 1454--1466.
   
   Christen, J.A. and Fox, C. (2010). "A General Purpose Sampling
-  Algorithm for Continuous Distributions (the t-walk)". Bayesian
-  Analysis, 5(2), p. 263--282.
+  Algorithm for Continuous Distributions (the t-walk)". \emph{Bayesian
+  Analysis}, 5(2), p. 263--282.
 
   Duane, S., Kennedy, A.D., Pendleton, B.J., and Roweth, D. (1987).
-  "Hybrid Monte Carlo". Physics Letters, B, 195, p. 216--222.
+  "Hybrid Monte Carlo". \emph{Physics Letters}, B, 195, p. 216--222.
    
   Gelman, A., Carlin, J., Stern, H., and Rubin, D. (2004). "Bayesian
   Data Analysis, Texts in Statistical Science, 2nd ed.". Chapman and
   Hall, London.
 
+  Goodman J, and Weare, J. (2010). "Ensemble Samplers with Affine
+  Invariance". \emph{Communications in Applied Mathematics and
+  Computational Science}, 5(1), p. 65--80.
+
   Green, P.J. (1995). "Reversible Jump Markov Chain Monte Carlo
-  Computation and Bayesian Model Determination". Biometrika, 82,
-  p. 711--732.
+  Computation and Bayesian Model Determination". \emph{Biometrika},
+  82, p. 711--732.
 
   Haario, H., Laine, M., Mira, A., and Saksman, E. (2006). "DRAM:
-  Efficient Adaptive MCMC". Statistical Computing, 16, p. 339--354.
+  Efficient Adaptive MCMC". \emph{Statistical Computing}, 16,
+  p. 339--354.
      
   Haario, H., Saksman, E., and Tamminen, J. (2001). "An Adaptive
-  Metropolis Algorithm". Bernoulli, 7, p. 223--242.
+  Metropolis Algorithm". \emph{Bernoulli}, 7, p. 223--242.
 
   Hoffman, M.D. and Gelman. A. (2012). "The No-U-Turn Sampler: Adaptively
-  Setting Path Lengths in Hamiltonian Monte Carlo". Journal of Machine
-  Learning Research, p. 1--30.
+  Setting Path Lengths in Hamiltonian Monte Carlo". \emph{Journal of
+  Machine Learning Research}, p. 1--30.
 
-  Kass, R.E. and Raftery, A.E. (1995). "Bayes Factors". Journal of the
-  American Statistical Association, 90(430), p. 773--795.
+  Kass, R.E. and Raftery, A.E. (1995). "Bayes Factors". \emph{Journal
+  of the American Statistical Association}, 90(430), p. 773--795.
 
   Lewis, S.M. and Raftery, A.E. (1997). "Estimating Bayes Factors via
-  Posterior Simulation with the Laplace-Metropolis Estimator". Journal
-  of the American Statistical Association, 92, p. 648--655.
+  Posterior Simulation with the Laplace-Metropolis Estimator".
+  \emph{Journal of the American Statistical Association}, 92,
+  p. 648--655.
 
   Metropolis, N., Rosenbluth, A.W., Rosenbluth, M.N., and Teller,
   E. (1953). "Equation of State Calculations by Fast Computing
-  Machines". Journal of Chemical Physics, 21, p. 1087--1092.
+  Machines". \emph{Journal of Chemical Physics}, 21, p. 1087--1092.
 
   Mira, A. (2001). "On Metropolis-Hastings Algorithms with Delayed
-  Rejection". Metron, Vol. LIX, n. 3-4, p. 231--241.
+  Rejection". \emph{Metron}, Vol. LIX, n. 3-4, p. 231--241.
 
-  Neal, R.M. (2003). "Slice Sampling" (with discussion), Annals of
-  Statistics, 31(3), p. 705--767.
+  Neal, R.M. (2003). "Slice Sampling" (with discussion), \emph{Annals of
+  Statistics}, 31(3), p. 705--767.
 
   Roberts, G.O. and Rosenthal, J.S. (2009). "Examples of Adaptive
-  MCMC". Computational Statistics and Data Analysis, 18, p. 349--367.
+  MCMC". \emph{Computational Statistics and Data Analysis}, 18,
+  p. 349--367.
   
   Rosenthal, J.S. (2007). "AMCMC: An R interface for adaptive MCMC".
-  Computational Statistics and Data Analysis, 51, p. 5467--5470.
+  \emph{Computational Statistics and Data Analysis}, 51,
+  p. 5467--5470.
 
   Smith, R.L. (1984). "Efficient Monte Carlo Procedures for Generating
-  Points Uniformly Distributed Over Bounded Region". Operations
-  Research, 32, p. 1296--1308.
+  Points Uniformly Distributed Over Bounded Region". \emph{Operations
+  Research}, 32, p. 1296--1308.
 
   Ter Braak, C.J.F. and Vrugt, J.A. (2008). "Differential Evolution
-  Markov Chain with Snooker Updater and Fewer Chains", Statistics and
-  Computing, 18(4), p. 435--446.
+  Markov Chain with Snooker Updater and Fewer Chains", \emph{Statistics
+  and Computing}, 18(4), p. 435--446.
 
   Vihola, M. (2011). "Robust Adaptive Metropolis Algorithm with Coerced
-  Acceptance Rate". Statistics and Computing. Springer, Netherlands.
+  Acceptance Rate". \emph{Statistics and Computing}. Springer,
+  Netherlands.
 }
 \author{Statisticat, LLC \email{software@bayesian-inference.com},
      Silvere Vialet-Chabrand \email{silvere@vialet-chabrand.com}}
@@ -508,10 +524,10 @@ LaplacesDemon.hpc(Model, Data, Initial.Values, Covar=NULL,
   \code{\link{as.initial.values}},
   \code{\link{as.parm.names}},
   \code{\link{BayesFactor}},
+  \code{\link{BMK.Diagnostic}},
   \code{\link{Combine}},
   \code{\link{Consort}},
   \code{\link{ESS}},
-  \code{\link{Geweke.Diagnostic}},
   \code{\link{GIV}},
   \code{\link{is.data}},
   \code{\link{is.model}},
@@ -528,13 +544,13 @@ library(LaplacesDemon)
 ##############################  Demon Data  ###############################
 data(demonsnacks)
 y <- log(demonsnacks$Calories)
-X <- cbind(1, as.matrix(demonsnacks[,c(7,8,10)]))
+X <- cbind(1, as.matrix(log(demonsnacks[,c(1,4,10)]+1)))
 J <- ncol(X)
 for (j in 2:J) {X[,j] <- CenterScale(X[,j])}
 mon.names <- c("LP","sigma")
 parm.names <- as.parm.names(list(beta=rep(0,J), log.sigma=0))
 PGF <- function(Data) return(c(rnormv(Data$J,0,10),
-     log(rhalfcauchy(1,25))))
+     log(rhalfcauchy(1,5))))
 MyData <- list(J=J, PGF=PGF, X=X, mon.names=mon.names,
      parm.names=parm.names, y=y)
 
@@ -572,23 +588,24 @@ Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
      Algorithm="HARM", Specs=NULL)
 Fit
 print(Fit)
-Consort(Fit)
-PosteriorChecks(Fit)
-caterpillar.plot(Fit, Parms="beta")
-BurnIn <- Fit$Rec.BurnIn.Thinned
-plot(Fit, BurnIn, MyData, PDF=FALSE)
-Pred <- predict(Fit, Model, MyData)
-summary(Pred, Discrep="Chi-Square")
-plot(Pred, Style="Covariates", Data=MyData)
-plot(Pred, Style="Density", Rows=1:9)
-plot(Pred, Style="ECDF")
-plot(Pred, Style="Fitted")
-plot(Pred, Style="Jarque-Bera")
-plot(Pred, Style="Predictive Quantiles")
-plot(Pred, Style="Residual Density")
-plot(Pred, Style="Residuals")
-Levene.Test(Pred)
-Importance(Fit, Model, MyData, Discrep="Chi-Square")
+#Consort(Fit)
+#plot(BMK.Diagnostic(Fit))
+#PosteriorChecks(Fit)
+#caterpillar.plot(Fit, Parms="beta")
+#BurnIn <- Fit$Rec.BurnIn.Thinned
+#plot(Fit, BurnIn, MyData, PDF=FALSE)
+#Pred <- predict(Fit, Model, MyData)
+#summary(Pred, Discrep="Chi-Square")
+#plot(Pred, Style="Covariates", Data=MyData)
+#plot(Pred, Style="Density", Rows=1:9)
+#plot(Pred, Style="ECDF")
+#plot(Pred, Style="Fitted")
+#plot(Pred, Style="Jarque-Bera")
+#plot(Pred, Style="Predictive Quantiles")
+#plot(Pred, Style="Residual Density")
+#plot(Pred, Style="Residuals")
+#Levene.Test(Pred)
+#Importance(Fit, Model, MyData, Discrep="Chi-Square")
 
 ##################  Adaptive Hamiltonian Monte Carlo  #####################
 #Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
@@ -612,10 +629,21 @@ Importance(Fit, Model, MyData, Discrep="Chi-Square")
 #     Algorithm="AMM", Specs=list(Adaptive=500, B=NULL, Periodicity=10,
 #     w=0.05))
 
+###################  Affine-Invariant Ensemble Sampler  ###################
+#Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
+#     Covar=NULL, Iterations=1000, Status=100, Thinning=1,
+#     Algorithm="AIES", Specs=list(Nc=2*length(Initial.Values), Z=NULL,
+#     beta=2, CPUs=1, Packages=NULL, Dyn.lib=NULL))
+
 #################  Componentwise Hit-And-Run Metropolis  ##################
 #Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
 #     Covar=NULL, Iterations=1000, Status=100, Thinning=1,
 #     Algorithm="CHARM", Specs=NULL)
+
+###########  Componentwise Hit-And-Run (Adaptive) Metropolis  #############
+#Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
+#     Covar=NULL, Iterations=1000, Status=100, Thinning=1,
+#     Algorithm="CHARM", Specs=list(alpha.star=0.44))
 
 #################  Delayed Rejection Adaptive Metropolis  #################
 #Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
@@ -630,7 +658,7 @@ Importance(Fit, Model, MyData, Discrep="Chi-Square")
 ##################  Differential Evolution Markov Chain  ##################
 #Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
 #     Covar=NULL, Iterations=1000, Status=100, Thinning=1,
-#     Algorithm="DEMC", Specs=list(Nc=3, PCIV=NULL, gamma=NULL, w=0.1))
+#     Algorithm="DEMC", Specs=list(Nc=3, Z=NULL, gamma=NULL, w=0.1))
 
 #######################  Hamiltonian Monte Carlo  #########################
 #Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
@@ -643,6 +671,11 @@ Importance(Fit, Model, MyData, Discrep="Chi-Square")
 #     Covar=NULL, Iterations=1000, Status=100, Thinning=1,
 #     Algorithm="HMCDA", Specs=list(A=500, delta=0.65, epsilon=NULL,
 #     Lmax=1000, lambda=0.1))
+
+##################  Hit-And-Run (Adaptive) Metropolis  ####################
+Fit <- LaplacesDemon(Model, Data=MyData, Initial.Values,
+     Covar=NULL, Iterations=1000, Status=100, Thinning=1,
+     Algorithm="HARM", Specs=list(alpha.star=0.234))
 
 ########################  Independence Metropolis  ########################
 ### Note: the mu and Covar arguments are populated from a previous Laplace
@@ -740,6 +773,7 @@ Importance(Fit, Model, MyData, Discrep="Chi-Square")
 \keyword{Adaptive Metropolis}
 \keyword{Adaptive-Mixture Metropolis}
 \keyword{Adaptive Metropolis-within-Gibbs}
+\keyword{Affine-Invariant Ensemble Sampler}
 \keyword{Bayesian Inference}
 \keyword{Delayed Rejection Adaptive Metropolis}
 \keyword{Delayed Rejection Metropolis}

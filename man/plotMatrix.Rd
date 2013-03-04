@@ -34,7 +34,7 @@ plotMatrix(x, col=colorRampPalette(c("red","black","green"))(100),
     numeric matrix. When \code{TRUE}, the parameters or variables
     are ordered using principal components analysis.}
   \item{zlim}{When \code{circle=FALSE}, the gradation scale may be
-    constrained by to an interval by \code{zlim}, such as
+    constrained to an interval by \code{zlim}, such as
     \code{zlim=c(-1,1)}, and only values within the interval are
     plotted.}
   \item{title}{This argument specifies the title of the plot, and the

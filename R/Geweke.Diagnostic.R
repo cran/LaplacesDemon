@@ -2,7 +2,7 @@
 # Geweke.Diagnostic                                                       #
 #                                                                         #
 # The purpose of the Geweke.Diagnostic function is to estimate            #
-# stationarity in samples according to Geweke's diagnostic.  Although the #
+# stationarity in samples according to Geweke's diagnostic. Although the  #
 # code is slightly different, it is essentially the same as the           #
 # geweke.diag function in the coda package.                               #
 ###########################################################################

@@ -5,7 +5,7 @@
 # demonoid.                                                               #
 ###########################################################################
 
-plot.demonoid <- function(x, BurnIn=1, Data=NULL, PDF=FALSE,
+plot.demonoid <- function(x, BurnIn=0, Data=NULL, PDF=FALSE,
      Parms=NULL, ...)
      {
      ### Initial Checks
@@ -13,7 +13,8 @@ plot.demonoid <- function(x, BurnIn=1, Data=NULL, PDF=FALSE,
      if(class(x) != "demonoid")
           stop("x must be of class demonoid.")
      if(is.null(Data)) stop("The Data argument is NULL.")
-     if(BurnIn >= nrow(x$Posterior1)) BurnIn <- 1
+     if(BurnIn >= nrow(x$Posterior1)) BurnIn <- 0
+     Stat.at <- BurnIn + 1
      ### Selecting Parms
      if(is.null(Parms)) {Posterior <- x$Posterior1}
      else {
@@ -40,21 +41,21 @@ plot.demonoid <- function(x, BurnIn=1, Data=NULL, PDF=FALSE,
      ### Plot Parameters
      for (j in 1:ncol(Posterior))
           {
-          plot(BurnIn:x$Thinned.Samples,
-               Posterior[BurnIn:x$Thinned.Samples,j],
+          plot(Stat.at:x$Thinned.Samples,
+               Posterior[Stat.at:x$Thinned.Samples,j],
                type="l", xlab="Iterations", ylab="Value",
                main=colnames(Posterior)[j])
-          panel.smooth(BurnIn:x$Thinned.Samples,
-               Posterior[BurnIn:x$Thinned.Samples,j], pch="")
-          plot(density(Posterior[BurnIn:x$Thinned.Samples,j]),
+          panel.smooth(Stat.at:x$Thinned.Samples,
+               Posterior[Stat.at:x$Thinned.Samples,j], pch="")
+          plot(density(Posterior[Stat.at:x$Thinned.Samples,j]),
                xlab="Value", main=colnames(Posterior)[j])
-          polygon(density(Posterior[BurnIn:x$Thinned.Samples,j]),
+          polygon(density(Posterior[Stat.at:x$Thinned.Samples,j]),
                col="black", border="black")
           abline(v=0, col="red", lty=2)
           ### Only plot an ACF if there's > 1 unique values
-          if(!is.constant(Posterior[BurnIn:x$Thinned.Samples,j])) {
-               z <- acf(Posterior[BurnIn:x$Thinned.Samples,j], plot=FALSE)
-               se <- 1/sqrt(length(Posterior[BurnIn:x$Thinned.Samples,j]))
+          if(!is.constant(Posterior[Stat.at:x$Thinned.Samples,j])) {
+               z <- acf(Posterior[Stat.at:x$Thinned.Samples,j], plot=FALSE)
+               se <- 1/sqrt(length(Posterior[Stat.at:x$Thinned.Samples,j]))
                plot(z$lag, z$acf, ylim=c(min(z$acf,-2*se),1), type="h",
                     main=colnames(Posterior)[j], xlab="Lag",
                     ylab="Correlation")
@@ -65,20 +66,20 @@ plot.demonoid <- function(x, BurnIn=1, Data=NULL, PDF=FALSE,
                "is a constant."))}
           }
      ### Plot Deviance
-     plot(BurnIn:length(x$Deviance),
-          x$Deviance[BurnIn:length(x$Deviance)],
+     plot(Stat.at:length(x$Deviance),
+          x$Deviance[Stat.at:length(x$Deviance)],
           type="l", xlab="Iterations", ylab="Value", main="Deviance")
-     panel.smooth(BurnIn:length(x$Deviance),
-          x$Deviance[BurnIn:length(x$Deviance)], pch="")
-     plot(density(x$Deviance[BurnIn:length(x$Deviance)]),
+     panel.smooth(Stat.at:length(x$Deviance),
+          x$Deviance[Stat.at:length(x$Deviance)], pch="")
+     plot(density(x$Deviance[Stat.at:length(x$Deviance)]),
           xlab="Value", main="Deviance")
-     polygon(density(x$Deviance[BurnIn:length(x$Deviance)]), col="black",
+     polygon(density(x$Deviance[Stat.at:length(x$Deviance)]), col="black",
                border="black")
      abline(v=0, col="red", lty=2)
      ### Only plot an ACF if there's > 1 unique values
-     if(!is.constant(x$Deviance[BurnIn:length(x$Deviance)])) {
-          z <- acf(x$Deviance[BurnIn:length(x$Deviance)], plot=FALSE)
-          se <- 1/sqrt(length(x$Deviance[BurnIn:length(x$Deviance)]))
+     if(!is.constant(x$Deviance[Stat.at:length(x$Deviance)])) {
+          z <- acf(x$Deviance[Stat.at:length(x$Deviance)], plot=FALSE)
+          se <- 1/sqrt(length(x$Deviance[Stat.at:length(x$Deviance)]))
           plot(z$lag, z$acf, ylim=c(min(z$acf,-2*se),1), type="h",
                main="Deviance", xlab="Lag", ylab="Correlation")
           abline(h=(2*se), col="red", lty=2)
@@ -91,19 +92,19 @@ plot.demonoid <- function(x, BurnIn=1, Data=NULL, PDF=FALSE,
           J <- ncol(x$Monitor); nn <- nrow(x$Monitor)}
      for (j in 1:J)
           {
-          plot(BurnIn:nn, x$Monitor[BurnIn:nn,j],
+          plot(Stat.at:nn, x$Monitor[Stat.at:nn,j],
                type="l", xlab="Iterations", ylab="Value",
                main=Data$mon.names[j])
-          panel.smooth(BurnIn:nn, x$Monitor[BurnIn:nn,j], pch="")
-          plot(density(x$Monitor[BurnIn:nn,j]),
+          panel.smooth(Stat.at:nn, x$Monitor[Stat.at:nn,j], pch="")
+          plot(density(x$Monitor[Stat.at:nn,j]),
                xlab="Value", main=Data$mon.names[j])
-          polygon(density(x$Monitor[BurnIn:nn,j]), col="black",
+          polygon(density(x$Monitor[Stat.at:nn,j]), col="black",
                border="black")
           abline(v=0, col="red", lty=2)
           ### Only plot an ACF if there's > 1 unique values
-          if(!is.constant(x$Monitor[BurnIn:nn,j])) {
-               z <- acf(x$Monitor[BurnIn:nn,j], plot=FALSE)
-               se <- 1/sqrt(length(x$Monitor[BurnIn:nn,j]))
+          if(!is.constant(x$Monitor[Stat.at:nn,j])) {
+               z <- acf(x$Monitor[Stat.at:nn,j], plot=FALSE)
+               se <- 1/sqrt(length(x$Monitor[Stat.at:nn,j]))
                plot(z$lag, z$acf, ylim=c(min(z$acf,-2*se),1), type="h",
                     main=Data$mon.names[j], xlab="Lag", ylab="Correlation")
                abline(h=(2*se), col="red", lty=2)

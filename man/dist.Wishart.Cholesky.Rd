@@ -97,19 +97,19 @@ et al. (2000).
 \references{
   Barnard, J., McCulloch, R., and Meng, X. (2000). "Modeling Covariance
   Matrices in Terms of Standard Deviations and Correlations, with
-  Application to Shrinkage". Statistica Sinica, 10, p. 1281--1311.
+  Application to Shrinkage". \emph{Statistica Sinica}, 10, p. 1281--1311.
   
   Bouriga, M. and Feron, O. (2011). "Estimation of Covariance Matrices
   Based on Hierarchical Inverse-Wishart Priors". URL:
   http://www.citebase.org/abstract?id=oai:arXiv.org:1106.3203.
   
   Daniels, M., and Kass, R. (1999). "Nonconjugate Bayesian Estimation of
-  Covariance Matrices and its use in Hierarchical Models". Journal of the
-  American Statistical Association, 94 (448), p. 1254--1263.
+  Covariance Matrices and its use in Hierarchical Models". \emph{Journal
+  of the American Statistical Association}, 94(448), p. 1254--1263.
 
   Wishart, J. (1928). "The Generalised Product Moment Distribution in
-  Samples from a Normal Multivariate Population". Biometrika, 20A (1-2),
-  p. 32--52.
+  Samples from a Normal Multivariate Population". \emph{Biometrika},
+  20A(1-2), p. 32--52.
 }
 \seealso{
   \code{\link{chol}},

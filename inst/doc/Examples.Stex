@@ -361,7 +361,7 @@ $$\beta_j \sim \mathcal{N}(0, 1000), \quad j=1,\dots,J$$
 \subsection{Data}
 \code{data(demonsnacks) \\
 y <- log(demonsnacks$Calories) \\
-X <- cbind(1, as.matrix(demonsnacks[,c(7,8,10)])) \\
+X <- cbind(1, as.matrix(log(demonsnacks[,c(1,4,10)]+1))) \\
 J <- ncol(X) \\
 for (j in 2:J) \{X[,j] <- CenterScale(X[,j])\} \\
 mon.names <- c("LP","sigma") \\
@@ -1248,7 +1248,7 @@ $$\sigma \sim \mathcal{HC}(25)$$
 \subsection{Data}
 \code{data(demonsnacks) \\
 y <- log(demonsnacks$Calories) \\
-X <- cbind(1, as.matrix(demonsnacks[,c(7,8,10)])) \\
+X <- cbind(1, as.matrix(log(demonsnacks[,c(1,4,10)]+1))) \\
 J <- ncol(X) \\
 for (j in 2:J) \{X[,j] <- CenterScale(X[,j])\} \\
 mon.names <- c("LP","sigma", as.parm.names(list(InvL=rep(0,N)))) \\
@@ -2100,9 +2100,9 @@ $$\Omega \sim \mathcal{W}_N(\textbf{S}), \quad \textbf{S} = \textbf{I}_J$$
 \subsection{Data}
 \code{data(demonsnacks) \\
 N <- nrow(demonsnacks) \\
-J <- 3 \\
 y <- log(demonsnacks$Calories) \\
-X <- as.matrix(demonsnacks[,c(7,8,10)]) \\
+X <- as.matrix(log(demonsnacks[,c(1,4,10)]+1)) \\
+J <- ncol(X) \\
 for (j in 1:J) \{X[,j] <- CenterScale(X[,j])\} \\
 S <- diag(J) \\
 mon.names <- "LP" \\
@@ -2798,7 +2798,7 @@ $$\tau \sim \mathcal{HC}(25)$$
 \subsection{Data}
 \code{data(demonsnacks) \\
 y <- log(demonsnacks$Calories) \\
-X <- cbind(1, as.matrix(demonsnacks[,c(7,8,10)])) \\
+X <- cbind(1, as.matrix(log(demonsnacks[,c(1,4,10)]+1))) \\
 J <- ncol(X) \\
 for (j in 2:J) \{X[,j] <- CenterScale(X[,j])\} \\
 mon.names <- c("LP","delta","sigma","tau") \\
@@ -3456,7 +3456,7 @@ alpha <- rep(1,M) \#Prior probability of mixing probabilities \\
 data(demonsnacks) \\
 N <- nrow(demonsnacks) \\
 y <- log(demonsnacks$Calories) \\
-X <- cbind(1, as.matrix(demonsnacks[,c(7,8,10)])) \\
+X <- cbind(1, as.matrix(log(demonsnacks[,c(1,4,10)]+1))) \\
 J <- ncol(X) \\
 for (j in 2:J) \{X[,j] <- CenterScale(X[,j])\} \\
 mon.names <- c("LP", as.parm.names(list(pi=rep(0,M), sigma=0))) \\
@@ -3528,7 +3528,7 @@ $$\gamma \sim \mathcal{G}(\alpha, \iota)$$
 data(demonsnacks) \\
 N <- nrow(demonsnacks) \\
 y <- log(demonsnacks$Calories) \\
-X <- cbind(1, as.matrix(demonsnacks[,c(7,8,10)])) \\
+X <- cbind(1, as.matrix(log(demonsnacks[,c(1,4,10)]+1))) \\
 J <- ncol(X) \\
 for (j in 2:J) \{X[,j] <- CenterScale(X[,j])\} \\
 mon.names <- c("LP", as.parm.names(list(pi=rep(0,M), sigma=0))) \\
@@ -4390,7 +4390,7 @@ $$\sigma \sim \mathcal{HC}(25)$$
 N <- nrow(demonsnacks) \\
 D <- 2 \#Degree of polynomial \\
 y <- log(demonsnacks$Calories) \\
-x <- demonsnacks[,7] \\
+x <- log(demonsnacks[,10]+1) \\
 mon.names <- "LP" \\
 parm.names <- as.parm.names(list(beta=rep(0,D+1), log.sigma=0)) \\
 PGF <- function(Data) return(c(rnormv(Data$D+1,0,1000), \\

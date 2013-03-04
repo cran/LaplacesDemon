@@ -34,8 +34,8 @@
     names with the \code{grep} function. For example, if the user specifies
     \code{Parms=c("eta", "tau")}, and if the parameter names are
     beta[1], beta[2], eta[1], eta[2], and tau, then all parameters will
-    be selected, because the string \code{eta} is within
-    \code{beta}. Since \code{grep} is used, string matching uses regular
+    be selected, because the string \code{eta} is within \code{beta}.
+    Since \code{grep} is used, string matching uses regular
     expressions, so beware of meta-characters, though these are
     acceptable: ".", "[", and "]".}
   \item{Title}{

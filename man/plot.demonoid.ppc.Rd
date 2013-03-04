@@ -287,14 +287,14 @@
 }
 \references{
   Durbin, J., and Watson, G.S. (1950). "Testing for Serial Correlation
-  in Least Squares Regression, I." Biometrika 37, p. 409--428.
+  in Least Squares Regression, I." \emph{Biometrika}, 37, p. 409--428.
   
   Jarque, C.M. and Bera, A.K. (1980). "Efficient Tests for Normality,
   Homoscedasticity and Serial Independence of Regression Residuals".
-  Economics Letters,  6(3), p. 255--259.
+  \emph{Economics Letters}, 6(3), p. 255--259.
 
   Mardia, K.V. (1970). "Measures of Multivariate Skewness and Kurtosis
-  with Applications". Biometrika, 57(3), p. 519--530.
+  with Applications". \emph{Biometrika}, 57(3), p. 519--530.
 }
 \author{Statisticat, LLC \email{software@bayesian-inference.com}}
 \seealso{

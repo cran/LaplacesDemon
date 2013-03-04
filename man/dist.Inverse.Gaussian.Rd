@@ -56,8 +56,8 @@ obvious from the fact that \eqn{\theta}{theta} must be positive.
 }
 \references{
   Schrodinger E. (1915). "Zur Theorie der Fall-und Steigversuche an
-  Teilchenn mit Brownscher Bewegung". Physikalische Zeitschrift, 16,
-  p. 289--295.
+  Teilchenn mit Brownscher Bewegung". \emph{Physikalische Zeitschrift},
+  16, p. 289--295.
 }
 \seealso{
   \code{\link{dnorm}},

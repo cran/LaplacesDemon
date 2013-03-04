@@ -12,6 +12,7 @@ export(ABB,
        BayesFactor,
        BayesianBootstrap,
        BayesTheorem,
+       BMK.Diagnostic,
        burnin,
        caterpillar.plot,
        CenterScale,
@@ -88,6 +89,7 @@ export(ABB,
        is.appeased,
        is.bayesfactor,
        is.bimodal,
+       is.bmk,
        is.constant,
        is.constrained,
        is.data,
@@ -126,6 +128,7 @@ export(ABB,
        logadd,
        logit,
        loglog,
+       LossMatrix,
        lower.triangle,
        LPL.interval,
        MCSE,
@@ -247,6 +250,7 @@ S3method("predict","pmc")
 S3method("print","demonoid")
 S3method("print","laplace")
 S3method("print","pmc")
+S3method("plot","bmk")
 S3method("plot","demonoid")
 S3method("plot","demonoid.hpc")
 S3method("plot","demonoid.ppc")

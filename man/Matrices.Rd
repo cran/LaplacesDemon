@@ -228,7 +228,7 @@ upper.triangle(x, diag=FALSE)
   Hall, London.
      
   Higham, N.J. (2002). "Computing the Nearest Correlation Matrix - a
-  Problem from Finance". IMA Journal of Numerical Analysis, 22,
+  Problem from Finance". \emph{IMA Journal of Numerical Analysis}, 22,
   p. 329--343.
 }
 \author{Statisticat, LLC. \email{software@bayesian-inference.com}}

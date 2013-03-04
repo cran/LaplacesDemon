@@ -29,18 +29,18 @@
 \references{
   Ando, T. (2007). "Bayesian Predictive Information Criterion for
   the Evaluation of Hierarchical Bayesian and Empirical Bayes Models".
-  Biometrika, 94 (2), p. 443--458.
+  \emph{Biometrika}, 94(2), p. 443--458.
 
   Gelfand, A. (1996). "Model Determination Using Sampling Based
   Methods". In Gilks, W., Richardson, S., Spiegehalter, D., Chapter 9 in
   Markov Chain Monte Carlo in Practice. Chapman \& Hall: Boca Raton, FL.
 
   Gelman, A., Meng, X.L., and Stern H. (1996). "Posterior Predictive
-  Assessment of Model Fitness via Realized Discrepancies". Statistica
-  Sinica, 6, p. 733--807.
+  Assessment of Model Fitness via Realized Discrepancies".
+  \emph{Statistica Sinica}, 6, p. 733--807.
   
   Laud, P.W. and Ibrahim, J.G. (1995). "Predictive Model
-  Selection". Journal of the Royal Statistical Society, B 57,
+  Selection". \emph{Journal of the Royal Statistical Society}, B 57,
   p. 247--262.
 }
 \author{Statisticat, LLC \email{software@bayesian-inference.com}}

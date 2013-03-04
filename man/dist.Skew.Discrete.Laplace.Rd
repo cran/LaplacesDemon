@@ -75,7 +75,7 @@ These functions are similar to those in the \code{DiscreteLaplace} package.
 }
 \references{
   Kozubowski, T.J. and Inusah, S. (2006). "A Skew Laplace Distribution
-  on Integers". AISM, 58, p. 555--571.
+  on Integers". \emph{AISM}, 58, p. 555--571.
 }
 \seealso{
   \code{\link{dalaplace}},

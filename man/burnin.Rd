@@ -8,16 +8,17 @@
   affected by its initial value.
 }
 \usage{
-burnin(x, method="Geweke")
+burnin(x, method="BMK")
 }
 \arguments{
   \item{x}{This is a vector or matrix of posterior samples for which a
     the number of burn-in iterations will be estimated.}
-  \item{method}{This argument defaults to \code{"Geweke"}, in which case
-    stationarity is estimated with the \code{\link{Geweke.Diagnostic}}
-    function. Alternatively, the \code{\link{KS.Diagnostic}} function
-    may be used when \code{method="KS"} to estimate stationarity with
-    the Kolmogorov-Smirnov test.}
+  \item{method}{This argument defaults to \code{"BMK"}, in which case
+    stationarity is estimated with the \code{\link{BMK.Diagnostic}}
+    function. Alternatively, the \code{\link{Geweke.Diagnostic}}
+    function may be used when \code{method="Geweke"} or the
+    \code{\link{KS.Diagnostic}} function may be used when
+    \code{method="KS"}.}
 }
 \details{
   Burn-in is a colloquial term for the initial iterations in a Markov
@@ -33,7 +34,7 @@ burnin(x, method="Geweke")
   burn-in iterations do not need to be discarded.
 
   In the \code{\link{LaplacesDemon}} function, stationarity is estimated
-  with the \code{\link{Geweke.Diagnostic}} function on all thinned
+  with the \code{\link{BMK.Diagnostic}} function on all thinned
   posterior samples of each chain, beginning at cumulative 10\% intervals
   relative to the total number of samples, and the lowest number in
   which all chains are stationary is considered the burn-in.
@@ -54,7 +55,9 @@ burnin(x, method="Geweke")
 }
 \author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{
-  \code{\link{Geweke.Diagnostic}} and
+  \code{\link{BMK.Diagnostic}},
+  \code{\link{Geweke.Diagnostic}},
+  \code{\link{KS.Diagnostic}},and
   \code{\link{LaplacesDemon}}.
 }
 \examples{

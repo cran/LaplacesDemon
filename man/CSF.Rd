@@ -17,7 +17,8 @@
   `hairy' (as opposed to smooth), though this is subjective and has been
   debated. The \code{LaplacesDemon} package neither supports nor
   contradicts the suggestion of mixing and `hairiness', but suggests
-  that CSF plots may be used to provide additional information about a chain.
+  that CSF plots may be used to provide additional information about a
+  chain.
 }
 \usage{
 CSF(x, name, method="Quantiles", quantiles=c(0.025,0.500,0.975), output=FALSE)
@@ -102,9 +103,9 @@ CSF(x, name, method="Quantiles", quantiles=c(0.025,0.500,0.975), output=FALSE)
   the cumulative samples of \code{x}.
 }
 \references{
-  Yu, B. and Myckland, P. (1997). ``Looking at Markov Samplers through
-  Cusum Path Plots: A Simple Diagnostic Idea''. Statistics and
-  Computing, 8(3), p. 275--286. 
+  Yu, B. and Myckland, P. (1997). "Looking at Markov Samplers through
+  Cusum Path Plots: A Simple Diagnostic Idea". \emph{Statistics and
+  Computing}, 8(3), p. 275--286. 
 }
 \author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{

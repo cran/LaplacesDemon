@@ -76,7 +76,7 @@ These functions are similar to those in the \code{HyperbolicDist} package.
 }
 \references{
   Fieller, N.J., Flenley, E.C., and Olbricht, W. (1992). "Statistics of
-  Particle Size Data". Applied Statistics, 41, p. 127--146.
+  Particle Size Data". \emph{Applied Statistics}, 41, p. 127--146.
 }
 \seealso{
   \code{\link{dalaplace}},

@@ -53,7 +53,7 @@ LaplacesDemon <- function(Model, Data, Initial.Values, Covar=NULL,
           Thinning <- 1
           cat("'Thinning' has been changed to ", Thinning, ".\n",
                sep="")}
-     if(Algorithm %in% c("AHMC","AM","AMM","AMWG","CHARM","DEMC",
+     if(Algorithm %in% c("AHMC","AIES","AM","AMM","AMWG","CHARM","DEMC",
           "DRAM","DRM","Experimental","HARM","HMC","HMCDA","IM","INCA",
           "MWG","NUTS","RAM","RJ","RWM","SAMWG","Slice","SMWG","THMC",
           "twalk","USAMWG","USMWG")) {
@@ -73,6 +73,48 @@ LaplacesDemon <- function(Model, Data, Initial.Values, Covar=NULL,
                Adaptive <- Iterations + 1
                DR <- 1
                if(Specs[["Periodicity"]] == Specs[[3]]) Periodicity <- Specs[[3]]}
+          if(Algorithm == "AIES") {
+               Algorithm <- "Affine-Invariant Ensemble Sampler"
+               if(missing(Specs)) stop("The Specs argument is required.")
+               if(length(Specs) != 6) stop("The Specs argument is incorrect.")
+               Adaptive <- Iterations + 1
+               DR <- 0
+               Periodicity <- Iterations + 1
+               if(Specs[["Nc"]] == Specs[[1]]) Nc <- abs(round(Specs[[1]]))
+               if(Nc < 3) Nc <- 3
+               if(is.null(Specs[[2]]) | all(Specs[["Z"]] == Specs[[2]])) {
+                    Z <- Specs[[2]]
+                    if(!is.null(Specs[[2]])) {
+                         if(is.matrix(Z)) {
+                              if(ncol(Z) != length(Initial.Values))
+                                   stop("Z has the wrong number of columns.")
+                              if(nrow(Z) != Nc)
+                                   stop("Z has the wrong number of rows.")
+                              }
+                         }
+                    }
+               if(Specs[["beta"]] == Specs[[3]]) {
+                    beta <- Specs[[3]]
+                    if(beta <= 1) {
+                         cat("\nbeta must be > 1. Changed to 2.\n")
+                         beta <- 2}
+                    if(length(beta) != 1) {
+                         cat("\nLength of beta is wrong. Changed to 1.\n")
+                         beta <- beta[1]}}
+               else {
+                    beta <- 2
+                    cat("\nbeta was misspecified and changed to 2.\n")}
+               if(Specs[["CPUs"]] == Specs[[4]])
+                    CPUs <- max(1, abs(round(Specs[[4]])))
+               if(CPUs > 1 & Nc %% 2 != 0)
+                    stop("For CPUs > 1, Nc must be even.")
+               Packages <- NULL
+               if(!is.null(Specs[["Packages"]]))
+                    Packages <- Specs[["Packages"]]
+               Dyn.libs <- NULL
+               if(!is.null(Specs[["Dyn.libs"]]))
+                    Dyn.libs <- Specs[["Dyn.libs"]]
+               }
           if(Algorithm == "AM") {
                Algorithm <- "Adaptive Metropolis"
                if(missing(Specs)) stop("The Specs argument is required.")
@@ -125,6 +167,19 @@ LaplacesDemon <- function(Model, Data, Initial.Values, Covar=NULL,
                     cat("\nPeriodicity was misspecified and changed to 50.\n")}}
           if(Algorithm == "CHARM") {
                Algorithm <- "Componentwise Hit-And-Run Metropolis"
+               if(missing(Specs) | is.null(Specs)) {
+                    alpha.star <- NA
+                    }
+               else {
+                    if(length(Specs) != 1)
+                         stop("The Specs argument is incorrect")
+                    if(Specs[["alpha.star"]] == Specs[[1]]) {
+                         alpha.star <- abs(Specs[[1]][1])
+                         if(alpha.star <= 0 | alpha.star >= 1) {
+                              cat("\nalpha.star not in (0,1), set to 0.44.\n")
+                              alpha.star <- 0.44}
+                         }
+                    }
                Adaptive <- Iterations + 1
                DR <- 0
                Periodicity <- Iterations + 1}
@@ -197,6 +252,19 @@ LaplacesDemon <- function(Model, Data, Initial.Values, Covar=NULL,
                Periodicity <- Iterations + 1}
           if(Algorithm == "HARM") {
                Algorithm <- "Hit-And-Run Metropolis"
+               if(missing(Specs) | is.null(Specs)) {
+                    alpha.star <- NA
+                    }
+               else {
+                    if(length(Specs) != 1)
+                         stop("The Specs argument is incorrect")
+                    if(Specs[["alpha.star"]] == Specs[[1]]) {
+                         alpha.star <- abs(Specs[[1]][1])
+                         if(alpha.star <= 0 | alpha.star >= 1) {
+                              cat("\nalpha.star not in (0,1), set to 0.234.\n")
+                              alpha.star <- 0.234}
+                         }
+                    }
                Adaptive <- Iterations + 1
                DR <- 0
                Periodicity <- Iterations + 1}
@@ -586,7 +654,7 @@ LaplacesDemon <- function(Model, Data, Initial.Values, Covar=NULL,
      if({all(Initial.Values == 0)} & {N >= 5*length(Initial.Values)}) {
           cat("\nLaplace Approximation will be used on initial values.\n")
           Fit.LA <- LaplaceApproximation(Model, Initial.Values, Data,
-               Method="Rprop", sir=FALSE)
+               Method="HAR", sir=FALSE)
           Covar <- 2.381204 * 2.381204 / length(Initial.Values) *
                Fit.LA$Covar
           Initial.Values <- Fit.LA$Summary1[1:length(Initial.Values),1]
@@ -611,9 +679,9 @@ LaplacesDemon <- function(Model, Data, Initial.Values, Covar=NULL,
           ### Algorithms that require both VarCov and tuning
           if(is.list(Covar) & Algorithm != "Adaptive-Mixture Metropolis") {
                Covar <- NULL}
-          else if(is.matrix(Covar)) {
+          else if(is.matrix(Covar) & !is.list(Covar)) {
                tuning <- sqrt(diag(Covar)); VarCov <- Covar}
-          else if(is.vector(Covar)) {
+          else if(is.vector(Covar) & !is.list(Covar)) {
                tuning <- abs(as.vector(Covar))
                if(length(tuning) != LIV)
                     tuning <- rep(ScaleF, LIV)
@@ -629,7 +697,7 @@ LaplacesDemon <- function(Model, Data, Initial.Values, Covar=NULL,
                for (i in 1:length(tuning)) {
                     tuning[[i]] <- sqrt(diag(tuning[[i]]))}
                VarCov <- Covar}
-          if(is.matrix(VarCov)) {
+          if(is.matrix(VarCov) & !is.list(VarCov)) {
                DiagCovar <- matrix(diag(VarCov), 1, LIV)}
           else if(is.list(VarCov)) {
                DiagCovar <- matrix(1, 1, LIV)
@@ -639,11 +707,11 @@ LaplacesDemon <- function(Model, Data, Initial.Values, Covar=NULL,
      else if(Algorithm %in% c("Independence Metropolis",
           "Robust Adaptive Metropolis")) {
           ### Algorithms that require VarCov, but not tuning
-          if(is.list(Covar) & Algorithm != "Adaptive-Mixture Metropolis") {
+          if(is.list(Covar)) {
                Covar <- NULL}
-          else if(is.matrix(Covar)) {
+          else if(is.matrix(Covar) & !is.list(Covar)) {
                VarCov <- Covar}
-          else if(is.vector(Covar)) {
+          else if(is.vector(Covar) & !is.list(Covar)) {
                VarCov <- matrix(0, LIV, LIV)
                diag(VarCov) <- abs(as.vector(Covar))
                }
@@ -651,7 +719,7 @@ LaplacesDemon <- function(Model, Data, Initial.Values, Covar=NULL,
                VarCov <- matrix(0, LIV, LIV)
                diag(VarCov) <- rep(ScaleF, LIV)}
           else if(is.list(Covar)) {VarCov <- Covar}
-          if(is.matrix(VarCov)) {
+          if(is.matrix(VarCov) & !is.list(VarCov)) {
                DiagCovar <- matrix(diag(VarCov), 1, LIV)}
           else if(is.list(VarCov)) {
                DiagCovar <- matrix(1, 1, LIV)
@@ -665,11 +733,11 @@ LaplacesDemon <- function(Model, Data, Initial.Values, Covar=NULL,
           "Updating Sequential Adaptive Metropolis-within-Gibbs",
           "Updating Sequential Metropolis-within-Gibbs")) {
           ### Algorithms that do not require VarCov, but require tuning
-          if(is.list(Covar) & Algorithm != "Adaptive-Mixture Metropolis") {
+          if(is.list(Covar)) {
                Covar <- NULL}
-          else if(is.matrix(Covar)) {
+          else if(is.matrix(Covar) & !is.list(Covar)) {
                tuning <- sqrt(diag(Covar))}
-          else if(is.vector(Covar)) {
+          else if(is.vector(Covar) & !is.list(Covar)) {
                tuning <- abs(as.vector(Covar))
                if(length(tuning) != length(Initial.Values))
                     tuning <- rep(ScaleF, LIV)}
@@ -691,6 +759,11 @@ LaplacesDemon <- function(Model, Data, Initial.Values, Covar=NULL,
           mcmc.out <- AHMC(Model, Data, Adaptive, DR, Iterations,
                Periodicity, Status, Thinning, Acceptance, Dev, DiagCovar,
                LIV, Mon, Mo0, ScaleF, thinned, epsilon, L)}
+     else if(Algorithm == "Affine-Invariant Ensemble Sampler") {
+          mcmc.out <- AIES(Model, Data, Adaptive, DR, Iterations,
+               Periodicity, Status, Thinning, Acceptance, Dev, DiagCovar,
+               LIV, Mon, Mo0, ScaleF, thinned, Nc, Z, beta, CPUs,
+               Packages, Dyn.libs)}
      else if(Algorithm == "Adaptive Metropolis") {
           mcmc.out <- AM(Model, Data, Adaptive, DR, Iterations,
                Periodicity, Status, Thinning, Acceptance, Dev, DiagCovar,
@@ -710,7 +783,7 @@ LaplacesDemon <- function(Model, Data, Initial.Values, Covar=NULL,
      else if(Algorithm == "Componentwise Hit-And-Run Metropolis") {
           mcmc.out <- CHARM(Model, Data, Adaptive, DR, Iterations,
                Periodicity, Status, Thinning, Acceptance, Dev, DiagCovar,
-               LIV, Mon, Mo0, ScaleF, thinned)}
+               LIV, Mon, Mo0, ScaleF, thinned, alpha.star)}
      else if(Algorithm == "Delayed Rejection Adaptive Metropolis") {
           mcmc.out <- DRAM(Model, Data, Adaptive, DR, Iterations,
                Periodicity, Status, Thinning, Acceptance, Dev, DiagCovar,
@@ -740,7 +813,7 @@ LaplacesDemon <- function(Model, Data, Initial.Values, Covar=NULL,
      else if(Algorithm == "Hit-And-Run Metropolis") {
           mcmc.out <- HARM(Model, Data, Adaptive, DR, Iterations,
                Periodicity, Status, Thinning, Acceptance, Dev, DiagCovar,
-               LIV, Mon, Mo0, ScaleF, thinned)}
+               LIV, Mon, Mo0, ScaleF, thinned, alpha.star)}
      else if(Algorithm == "Independence Metropolis") {
           mcmc.out <- IM(Model, Data, Adaptive, DR, Iterations,
                Periodicity, Status, Thinning, Acceptance, Dev, DiagCovar,
@@ -817,10 +890,11 @@ LaplacesDemon <- function(Model, Data, Initial.Values, Covar=NULL,
      thinned <- matrix(thinned[-1,], nrow(thinned)-1, ncol(thinned))
      Dev <- matrix(Dev[-1,], nrow(Dev)-1, 1)
      Mon <- matrix(Mon[-1,], nrow(Mon)-1, ncol(Mon))
-     if(is.matrix(VarCov)) {
+     if(is.matrix(VarCov) & !is.list(VarCov)) {
           colnames(VarCov) <- rownames(VarCov) <- Data$parm.names}
-     else if(is.vector(VarCov)) {
+     else if(is.vector(VarCov) & !is.list(VarCov)) {
           names(VarCov) <- Data$parm.names}
+     thinned.rows <- nrow(thinned)
      ### Warnings (After Updating)
      if(any(Acceptance == 0))
           cat("\nWARNING: All proposals were rejected.\n")
@@ -830,27 +904,23 @@ LaplacesDemon <- function(Model, Data, Initial.Values, Covar=NULL,
      Mon <- ifelse(!is.finite(Mon), 0, Mon)
      ### Assess Stationarity
      cat("\nAssessing Stationarity\n")
-     burn.start <- trunc(seq(from=1, to=nrow(thinned),
-          by=nrow(thinned)/10))
-     geweke <- matrix(9, length(burn.start), LIV)
-     geweke.ct <- rep(0, LIV)
-     options(warn=-1)
-     for (i in 1:length(burn.start)) {
-          thinned2 <- matrix(thinned[burn.start[i]:nrow(thinned),],
-               nrow(thinned)-burn.start[i]+1, ncol(thinned))
-          test <- try(as.vector(Geweke.Diagnostic(thinned2)), silent=TRUE)
-          if(!inherits(test, "try-error")) geweke[i,] <- as.vector(test)}
-     options(warn=0)
-     rm(thinned2)
-     geweke <- ifelse(!is.finite(geweke), 9, geweke)
-     geweke <- abs(geweke) < 2
-     for (j in 1:LIV) {geweke.ct[j] <- which(geweke[,j] == TRUE)[1]}
-     geweke.ct <- ifelse(is.na(geweke.ct), nrow(thinned), geweke.ct)
-     BurnIn <- burn.start[max(geweke.ct)]
-     BurnIn <- ifelse(is.na(BurnIn), nrow(thinned), BurnIn)
+     if(thinned.rows %% 10 == 0) thinned2 <- thinned
+     if(thinned.rows %% 10 != 0) thinned2 <- thinned[1:(10*trunc(thinned.rows/10)),]
+     HD <- BMK.Diagnostic(thinned2, batches=10)
+     Ind <- 1 * (HD > 0.5)
+     BurnIn <- thinned.rows
+     batch.list <- seq(from=1, to=nrow(thinned2), by=floor(nrow(thinned2)/10))
+     for (i in 1:9) {
+          if(sum(Ind[,i:9]) == 0) {
+               BurnIn <- batch.list[i] - 1
+               break
+               }
+          }
+     Stat.at <- BurnIn + 1
+     rm(batch.list, HD, Ind, thinned2)
      ### Assess Thinning and ESS Size for all parameter samples
      cat("Assessing Thinning and ESS\n")
-     acf.temp <- matrix(1, trunc(10*log10(nrow(thinned))), LIV)
+     acf.temp <- matrix(1, trunc(10*log10(thinned.rows)), LIV)
      ESS1 <- Rec.Thin <- rep(1, LIV)
      for (j in 1:LIV) {
           temp0 <- acf(thinned[,j], lag.max=nrow(acf.temp), plot=FALSE)
@@ -862,10 +932,10 @@ LaplacesDemon <- function(Model, Data, Initial.Values, Covar=NULL,
      ESS2 <- ESS(Dev)
      ESS3 <- ESS(Mon)
      ### Assess ESS for stationary samples
-     if(BurnIn < nrow(thinned)) {
-          ESS4 <- ESS(thinned[BurnIn:nrow(thinned),])
-          ESS5 <- ESS(Dev[BurnIn:nrow(thinned),])
-          ESS6 <- ESS(Mon[BurnIn:nrow(thinned),])}
+     if(Stat.at < thinned.rows) {
+          ESS4 <- ESS(thinned[Stat.at:thinned.rows,])
+          ESS5 <- ESS(Dev[Stat.at:thinned.rows,])
+          ESS6 <- ESS(Mon[Stat.at:thinned.rows,])}
      ### Posterior Summary Table 1: All Thinned Samples
      cat("Creating Summaries\n")
      Num.Mon <- ncol(Mon)
@@ -914,13 +984,13 @@ LaplacesDemon <- function(Model, Data, Initial.Values, Covar=NULL,
      ### Posterior Summary Table 2: Stationary Samples
      Summ2 <- matrix(NA, LIV, 7, dimnames=list(Data$parm.names,
           c("Mean","SD","MCSE","ESS","LB","Median","UB")))
-     if(BurnIn < nrow(thinned)) {
-          thinned2 <- matrix(thinned[BurnIn:nrow(thinned),],
-               nrow(thinned)-BurnIn+1, ncol(thinned))
-          Dev2 <- matrix(Dev[BurnIn:nrow(thinned),],
-               nrow(thinned)-BurnIn+1, ncol(Dev))
-          Mon2 <- matrix(Mon[BurnIn:nrow(thinned),],
-               nrow(thinned)-BurnIn+1, ncol(Mon))
+     if(Stat.at < thinned.rows) {
+          thinned2 <- matrix(thinned[Stat.at:thinned.rows,],
+               thinned.rows-Stat.at+1, ncol(thinned))
+          Dev2 <- matrix(Dev[Stat.at:thinned.rows,],
+               thinned.rows-Stat.at+1, ncol(Dev))
+          Mon2 <- matrix(Mon[Stat.at:thinned.rows,],
+               thinned.rows-Stat.at+1, ncol(Mon))
           Summ2[,1] <- colMeans(thinned2)
           Summ2[,2] <- apply(thinned2, 2, sd)
           Summ2[,3] <- 0
@@ -974,7 +1044,8 @@ LaplacesDemon <- function(Model, Data, Initial.Values, Covar=NULL,
           colnames(thinned) <- Data$parm.names}
      ### Logarithm of the Marginal Likelihood
      LML <- list(LML=NA, VarCov=NA)
-     if(({Algorithm == "Componentwise Hit-And-Run Metropolis"} |
+     if(({Algorithm == "Affine-Invariant Ensemble Sampler"} |
+          {Algorithm == "Componentwise Hit-And-Run Metropolis"} |
           {Algorithm == "Componentwise Slice"} |
           {Algorithm == "Delayed Rejection Metropolis"} |
           {Algorithm == "Hit-And-Run Metropolis"} | 
@@ -988,7 +1059,7 @@ LaplacesDemon <- function(Model, Data, Initial.Values, Covar=NULL,
           {Algorithm == "Slice Sampler"} | 
           {Algorithm == "Tempered Hamiltonian Monte Carlo"} | 
           {Algorithm == "t-walk"}) & 
-          {BurnIn < nrow(thinned)}) {
+          {Stat.at < thinned.rows}) {
           cat("Estimating Log of the Marginal Likelihood\n")
           LML <- LML(theta=thinned2,
                LL=as.vector(Dev2)*(-1/2), method="NSIS")}
@@ -1005,7 +1076,7 @@ LaplacesDemon <- function(Model, Data, Initial.Values, Covar=NULL,
           DIC1=c(mean(as.vector(Dev)),
                var(as.vector(Dev))/2,
                mean(as.vector(Dev)) + var(as.vector(Dev))/2),
-          DIC2=if(BurnIn < nrow(thinned)) {
+          DIC2=if(Stat.at < thinned.rows) {
                c(mean(as.vector(Dev2)),
                var(as.vector(Dev2))/2,
                mean(as.vector(Dev2)) +
@@ -1021,14 +1092,17 @@ LaplacesDemon <- function(Model, Data, Initial.Values, Covar=NULL,
           Parameters=LIV,
           Periodicity=Periodicity,
           Posterior1=thinned,
-          Posterior2=thinned[BurnIn:nrow(thinned),],
+          Posterior2=if(Stat.at < thinned.rows) {
+               thinned[Stat.at:thinned.rows,]}
+               else thinned[thinned.rows,],
           Rec.BurnIn.Thinned=BurnIn,
           Rec.BurnIn.UnThinned=BurnIn*Thinning,
           Rec.Thinning=min(1000, max(Rec.Thin)),
           Status=Status,
           Summary1=Summ1,
           Summary2=Summ2,
-          Thinned.Samples=nrow(thinned), Thinning=Thinning)
+          Thinned.Samples=thinned.rows,
+          Thinning=Thinning)
      class(LaplacesDemon.out) <- "demonoid"
      cat("\nLaplace's Demon has finished.\n")
      return(LaplacesDemon.out)
@@ -1048,9 +1122,10 @@ AHMC <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
           if(iter > 1) post[iter,] <- post[iter-1,]
           ### Save Thinned Samples
           if(iter %% Thinning == 0) {
-               thinned[(iter/Thinning+1),] <- post[iter,]
-               Dev[(iter/Thinning+1)] <- Mo0[["Dev"]]
-               Mon[(iter/Thinning+1),] <- Mo0[["Monitor"]]}
+               t.iter <- floor(iter / Thinning) + 1
+               thinned[t.iter,] <- post[iter,]
+               Dev[t.iter] <- Mo0[["Dev"]]
+               Mon[t.iter,] <- Mo0[["Monitor"]]}
           ### Propose new parameter values
           prop <- post[iter,]
           momentum0 <- rnorm(LIV)
@@ -1085,9 +1160,9 @@ AHMC <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
                gr0 <- gr1
                Acceptance <- Acceptance + 1
                if(iter %% Thinning == 0) {
-                    thinned[(iter/Thinning+1),] <- Mo1[["parm"]]
-                    Dev[(iter/Thinning+1)] <- Mo1[["Dev"]]
-                    Mon[(iter/Thinning+1),] <- Mo1[["Monitor"]]}
+                    thinned[t.iter,] <- Mo1[["parm"]]
+                    Dev[t.iter] <- Mo1[["Dev"]]
+                    Mon[t.iter,] <- Mo1[["Monitor"]]}
                }
           ### Adaptation
           if({iter > 10} & {iter %% Periodicity == 0}) {
@@ -1098,6 +1173,150 @@ AHMC <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
                eps.num <- which(acceptances > 7)
                epsilon[eps.num] <- epsilon[eps.num] * 1.2
                DiagCovar <- rbind(DiagCovar, epsilon)}
+          }
+     ### Output
+     out <- list(Acceptance=Acceptance,
+          Dev=Dev,
+          DiagCovar=DiagCovar,
+          Mon=Mon,
+          thinned=thinned,
+          VarCov=apply(thinned, 2, var))
+     return(out)
+     }
+AIES <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
+     Status, Thinning, Acceptance, Dev, DiagCovar, LIV, Mon, Mo0, ScaleF,
+     thinned, Nc, Z, beta, CPUs, Packages, Dyn.libs)
+     {
+     Mo0 <- list(Mo0=Mo0)
+     if(is.null(Z)) {
+          Z <- matrix(Mo0[[1]][["parm"]], Nc, LIV, byrow=TRUE)
+          for (i in 2:Nc) {
+               if(!is.null(Data$PGF)) {
+                    Z[i,] <- GIV(Model, Data, PGF=TRUE)
+                    }
+               else Z[i,] <- GIV(Model, Data)
+               }
+          }
+     for (i in 2:Nc) Mo0[[i]] <- Model(Z[i,], Data)
+     if(CPUs == 1) {
+          for (iter in 1:Iterations) {
+               ### Print Status
+               if(iter %% Status == 0) cat("Iteration: ", iter, sep="")
+               ### Save Thinned Samples
+               if(iter %% Thinning == 0) {
+                    t.iter <- floor(iter / Thinning) + 1
+                    thinned[t.iter,] <- Mo0[[1]][["parm"]]
+                    Dev[t.iter] <- Mo0[[1]][["Dev"]]
+                    Mon[t.iter,] <- Mo0[[1]][["Monitor"]]}
+               for (i in 1:Nc) {
+                    ### Propose new parameter values with stretch move
+                    z <- 1 / sqrt(runif(1, 1 / beta, beta))
+                    s <- sample(c(1:Nc)[-i], 1)
+                    prop <- Mo0[[s]][["parm"]] +
+                         z*(Mo0[[i]][["parm"]] - Mo0[[s]][["parm"]])
+                    if(i == 1 & iter %% Status == 0) 
+                         cat(",   Proposal: Multivariate\n")
+                    ### Log-Posterior of the proposed state
+                    Mo1 <- Model(prop, Data)
+                    if(!is.finite(Mo1[["LP"]])) Mo1 <- Mo0[[i]]
+                    if(!is.finite(Mo1[["Dev"]])) Mo1 <- Mo0[[i]]
+                    if(any(!is.finite(Mo1[["Monitor"]]))) Mo1 <- Mo0[[i]]
+                    ### Accept/Reject
+                    log.u <- log(runif(1))
+                    log.alpha <- (LIV-1)*log(z) + Mo1[["LP"]] -
+                         Mo0[[i]][["LP"]]
+                    if(!is.finite(log.alpha)) log.alpha <- 0
+                    if(log.u < log.alpha) {
+                         Mo0[[i]] <- Mo1
+                         if(i == 1) {
+                              Acceptance <- Acceptance + 1
+                              if(iter %% Thinning == 0) {
+                                   thinned[t.iter,] <- Mo1[["parm"]]
+                                   Dev[t.iter] <- Mo1[["Dev"]]
+                                   Mon[t.iter,] <- Mo1[["Monitor"]]}
+                              }
+                         }
+                    }
+               }
+          }
+     else {
+          library(parallel, quietly=TRUE)
+          detectedCores <- detectCores()
+          cat("\n\nCPUs Detected:", detectedCores,"\n")
+          if(CPUs > detectedCores) {
+               cat("\nOnly", detectedCores, "will be used.\n")
+               CPUs <- detectedCores}
+          cat("\nLaplace's Demon is preparing environments for CPUs...")
+          cat("\n##################################################\n")
+          cl <- makeCluster(CPUs)
+          cat("\n##################################################\n")
+          on.exit(stopCluster(cl))
+          varlist <- unique(c(ls(), ls(envir=.GlobalEnv),
+          ls(envir=parent.env(environment()))))
+          clusterExport(cl, varlist=varlist, envir=environment())
+          clusterSetRNGStream(cl)
+          wd <- getwd()
+          clusterExport(cl, varlist=c("Packages", "Dyn.libs", "wd"),
+               envir=environment())
+          model.wrapper <- function(x, ...)
+               {
+               if(!is.null(Packages)) {
+                    sapply(Packages,
+                         function(x) library(x, character.only=TRUE,
+                              quietly=TRUE))}
+               if(!is.null(Dyn.libs)) {
+                    sapply(Dyn.libs,
+                         function(x) dyn.load(paste(wd, x, sep = "/")))
+                    on.exit(sapply(Dyn.libs,
+                         function(x) dyn.unload(paste(wd, x, sep = "/"))))}
+               Model(prop[x,], Data)
+               }
+          prop <- Z
+          batch1 <- 1:(Nc/2)
+          batch2 <- batch1 + (Nc/2)
+          for (iter in 1:Iterations) {
+               ### Print Status
+               if(iter %% Status == 0) cat("Iteration: ", iter, sep="")
+               ### Save Thinned Samples
+               if(iter %% Thinning == 0) {
+                    t.iter <- floor(iter / Thinning) + 1
+                    thinned[t.iter,] <- Mo0[[1]][["parm"]]
+                    Dev[t.iter] <- Mo0[[1]][["Dev"]]
+                    Mon[t.iter,] <- Mo0[[1]][["Monitor"]]}
+               for (i in 1:Nc) {
+                    ### Propose new parameter values with stretch move
+                    z <- 1 / sqrt(runif(1, 1 / beta, beta))
+                    if(i <= (Nc/2)) s <- sample(batch2, 1)
+                    else s <- sample(batch1, 1)
+                    prop[i,] <- Mo0[[s]][["parm"]] +
+                         z*(Mo0[[i]][["parm"]] - Mo0[[s]][["parm"]])
+                    if(i == 1 & iter %% Status == 0) 
+                         cat(",   Proposal: Multivariate\n")}
+               ### Log-Posterior of the proposed state
+               Mo1 <- clusterApply(cl, 1:Nc, model.wrapper,
+                    Model, Data, prop)
+               for (i in 1:Nc) {
+                    if(!is.finite(Mo1[[i]][["LP"]])) Mo1[[i]] <- Mo0[[i]]
+                    if(!is.finite(Mo1[[i]][["Dev"]])) Mo1[[i]] <- Mo0[[i]]
+                    if(any(!is.finite(Mo1[[i]][["Monitor"]])))
+                         Mo1[[i]] <- Mo0[[i]]
+                    ### Accept/Reject
+                    log.u <- log(runif(1))
+                    log.alpha <- (LIV-1)*log(z) + Mo1[[i]][["LP"]] -
+                         Mo0[[i]][["LP"]]
+                    if(!is.finite(log.alpha)) log.alpha <- 0
+                    if(log.u < log.alpha) {
+                         Mo0[[i]] <- Mo1[[i]]
+                         if(i == 1) {
+                              Acceptance <- Acceptance + 1
+                              if(iter %% Thinning == 0) {
+                                   thinned[t.iter,] <- Mo1[[i]][["parm"]]
+                                   Dev[t.iter] <- Mo1[[i]][["Dev"]]
+                                   Mon[t.iter,] <- Mo1[[i]][["Monitor"]]}
+                              }
+                         }
+                    }
+               }
           }
      ### Output
      out <- list(Acceptance=Acceptance,
@@ -1121,9 +1340,10 @@ AM <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
           if(iter > 1) post[iter,] <- post[iter-1,]
           ### Save Thinned Samples
           if(iter %% Thinning == 0) {
-               thinned[(iter/Thinning+1),] <- post[iter,]
-               Dev[(iter/Thinning+1)] <- Mo0[["Dev"]]
-               Mon[(iter/Thinning+1),] <- Mo0[["Monitor"]]}
+               t.iter <- floor(iter / Thinning) + 1
+               thinned[t.iter,] <- post[iter,]
+               Dev[t.iter] <- Mo0[["Dev"]]
+               Mon[t.iter,] <- Mo0[["Monitor"]]}
           ### Propose new parameter values
           MVN.rand <- rnorm(LIV, 0, 1)
           MVNz <- try(matrix(MVN.rand,1,LIV) %*% chol(VarCov),
@@ -1154,9 +1374,9 @@ AM <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
                post[iter,] <- Mo1[["parm"]]
                Acceptance <- Acceptance + 1
                if(iter %% Thinning == 0) {
-                    thinned[(iter/Thinning+1),] <- Mo1[["parm"]]
-                    Dev[(iter/Thinning+1)] <- Mo1[["Dev"]]
-                    Mon[(iter/Thinning+1),] <- Mo1[["Monitor"]]}
+                    thinned[t.iter,] <- Mo1[["parm"]]
+                    Dev[t.iter] <- Mo1[["Dev"]]
+                    Mon[t.iter,] <- Mo1[["Monitor"]]}
                }
           ### Shrinkage of Adaptive Proposal Variance
           if({Adaptive < Iterations} & {Acceptance > 5} &
@@ -1197,9 +1417,10 @@ AMM <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
           if(iter %% Status == 0) cat("Iteration: ", iter, sep="")
           ### Save Thinned Samples
           if(iter %% Thinning == 0) {
-               thinned[(iter/Thinning+1),] <- Mo0[["parm"]]
-               Dev[(iter/Thinning+1)] <- Mo0[["Dev"]]
-               Mon[(iter/Thinning+1),] <- Mo0[["Monitor"]]}
+               t.iter <- floor(iter / Thinning) + 1
+               thinned[t.iter,] <- Mo0[["parm"]]
+               Dev[t.iter] <- Mo0[["Dev"]]
+               Mon[t.iter,] <- Mo0[["Monitor"]]}
           ### Propose new parameter values from a mixture
           if(is.null(prop.R) || runif(1) < w) {
                prop <- rnorm(LIV, Mo0[["parm"]], tuning)
@@ -1222,9 +1443,9 @@ AMM <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
                Mo0 <- Mo1
                Acceptance <- Acceptance + 1
                if(iter %% Thinning == 0) {
-                    thinned[(iter/Thinning+1),] <- Mo1[["parm"]]
-                    Dev[(iter/Thinning+1)] <- Mo1[["Dev"]]
-                    Mon[(iter/Thinning+1),] <- Mo1[["Monitor"]]}
+                    thinned[t.iter,] <- Mo1[["parm"]]
+                    Dev[t.iter] <- Mo1[["Dev"]]
+                    Mon[t.iter,] <- Mo1[["Monitor"]]}
                }
           ### Update Sample and Scatter Sum
           obs.sum <- obs.sum + Mo0[["parm"]]
@@ -1263,9 +1484,10 @@ AMM.B <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
           if(iter %% Status == 0) cat("Iteration: ", iter, sep="")
           ### Save Thinned Samples
           if(iter %% Thinning == 0) {
-               thinned[(iter/Thinning+1),] <- Mo0[["parm"]]
-               Dev[(iter/Thinning+1)] <- Mo0[["Dev"]]
-               Mon[(iter/Thinning+1),] <- Mo0[["Monitor"]]}
+               t.iter <- floor(iter / Thinning) + 1
+               thinned[t.iter,] <- Mo0[["parm"]]
+               Dev[t.iter] <- Mo0[["Dev"]]
+               Mon[t.iter,] <- Mo0[["Monitor"]]}
           ### Proceed by Block
           for (b in 1:B) {
                ### Propose new parameter values from a mixture
@@ -1294,9 +1516,9 @@ AMM.B <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
                     Mo0 <- Mo1
                     Acceptance <- Acceptance + length(Blocks[[b]]) / LIV
                     if(iter %% Thinning == 0) {
-                         thinned[(iter/Thinning+1),] <- Mo1[["parm"]]
-                         Dev[(iter/Thinning+1)] <- Mo1[["Dev"]]
-                         Mon[(iter/Thinning+1),] <- Mo1[["Monitor"]]}
+                         thinned[t.iter,] <- Mo1[["parm"]]
+                         Dev[t.iter] <- Mo1[["Dev"]]
+                         Mon[t.iter,] <- Mo1[["Monitor"]]}
                     }
                ### Update Sample and Scatter Sum
                obs.sum[[b]] <- obs.sum[[b]] + Mo0[["parm"]][Blocks[[b]]]
@@ -1333,9 +1555,10 @@ AMWG <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
                ",   Proposal: Componentwise\n", sep="")}
           ### Save Thinned Samples
           if(iter %% Thinning == 0) {
-               thinned[(iter/Thinning+1),] <- Mo0[["parm"]]
-               Dev[(iter/Thinning+1)] <- Mo0[["Dev"]]
-               Mon[(iter/Thinning+1),] <- Mo0[["Monitor"]]}
+               t.iter <- floor(iter / Thinning) + 1
+               thinned[t.iter,] <- Mo0[["parm"]]
+               Dev[t.iter] <- Mo0[["Dev"]]
+               Mon[t.iter,] <- Mo0[["Monitor"]]}
           ### Random-Scan Componentwise Estimation
           for (j in sample(LIV)) {
                ### Propose new parameter values
@@ -1351,9 +1574,9 @@ AMWG <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
                if(u == TRUE) Mo0 <- Mo1
                Acceptance[j] <- Acceptance[j] + u}
           if(iter %% Thinning == 0) {
-               thinned[(iter/Thinning+1),] <- Mo0[["parm"]]
-               Dev[(iter/Thinning+1)] <- Mo0[["Dev"]]
-               Mon[(iter/Thinning+1),] <- Mo0[["Monitor"]]}
+               thinned[t.iter,] <- Mo0[["parm"]]
+               Dev[t.iter] <- Mo0[["Dev"]]
+               Mon[t.iter,] <- Mo0[["Monitor"]]}
           ### Adapt the Proposal Variance
           if(iter %% Periodicity == 0) {
                size <- 1 / min(100, sqrt(iter))
@@ -1376,48 +1599,105 @@ AMWG <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
      }
 CHARM <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
      Status, Thinning, Acceptance, Dev, DiagCovar, LIV, Mon, Mo0, ScaleF,
-     thinned)
+     thinned, alpha.star)
      {
-     Acceptance <- matrix(0, 1, LIV)
-     for (iter in 1:Iterations) {
-          ### Print Status
-          if(iter %% Status == 0) {cat("Iteration: ", iter,
-               ",   Proposal: Componentwise\n", sep="")}
-          ### Save Thinned Samples
-          if(iter %% Thinning == 0) {
-               thinned[(iter/Thinning+1),] <- Mo0[["parm"]]
-               Dev[(iter/Thinning+1)] <- Mo0[["Dev"]]
-               Mon[(iter/Thinning+1),] <- Mo0[["Monitor"]]}
-          ### Random-Scan Componentwise Estimation
-          theta <- rnorm(LIV)
-          theta <- theta / sqrt(sum(theta*theta))
-          lambda <- runif(1)
-          for (j in sample(LIV)) {
-               ### Propose new parameter values
-               prop <- Mo0[["parm"]]
-               prop[j] <- prop[j] + lambda*theta[j]
-               ### Log-Posterior of the proposed state
-               Mo1 <- Model(prop, Data)
-               if(!is.finite(Mo1[["LP"]])) Mo1 <- Mo0
-               if(!is.finite(Mo1[["Dev"]])) Mo1 <- Mo0
-               if(any(!is.finite(Mo1[["Monitor"]]))) Mo1 <- Mo0
-               ### Accept/Reject
-               u <- log(runif(1)) < (Mo1[["LP"]] - Mo0[["LP"]])
-               if(u == TRUE) Mo0 <- Mo1
-               Acceptance[j] <- Acceptance[j] + u}
-          if(iter %% Thinning == 0) {
-               thinned[(iter/Thinning+1),] <- Mo0[["parm"]]
-               Dev[(iter/Thinning+1)] <- Mo0[["Dev"]]
-               Mon[(iter/Thinning+1),] <- Mo0[["Monitor"]]}
+     if(is.na(alpha.star)) {
+          Acceptance <- matrix(0, 1, LIV)
+          for (iter in 1:Iterations) {
+               ### Print Status
+               if(iter %% Status == 0) {cat("Iteration: ", iter,
+                    ",   Proposal: Componentwise\n", sep="")}
+               ### Save Thinned Samples
+               if(iter %% Thinning == 0) {
+                    t.iter <- floor(iter / Thinning) + 1
+                    thinned[t.iter,] <- Mo0[["parm"]]
+                    Dev[t.iter] <- Mo0[["Dev"]]
+                    Mon[t.iter,] <- Mo0[["Monitor"]]}
+               ### Random-Scan Componentwise Estimation
+               theta <- rnorm(LIV)
+               theta <- theta / sqrt(sum(theta*theta))
+               lambda <- runif(1)
+               for (j in sample(LIV)) {
+                    ### Propose new parameter values
+                    prop <- Mo0[["parm"]]
+                    prop[j] <- prop[j] + lambda*theta[j]
+                    ### Log-Posterior of the proposed state
+                    Mo1 <- Model(prop, Data)
+                    if(!is.finite(Mo1[["LP"]])) Mo1 <- Mo0
+                    if(!is.finite(Mo1[["Dev"]])) Mo1 <- Mo0
+                    if(any(!is.finite(Mo1[["Monitor"]]))) Mo1 <- Mo0
+                    ### Accept/Reject
+                    u <- log(runif(1)) < (Mo1[["LP"]] - Mo0[["LP"]])
+                    if(u == TRUE) Mo0 <- Mo1
+                    Acceptance[j] <- Acceptance[j] + u}
+               if(iter %% Thinning == 0) {
+                    thinned[t.iter,] <- Mo0[["parm"]]
+                    Dev[t.iter] <- Mo0[["Dev"]]
+                    Mon[t.iter,] <- Mo0[["Monitor"]]}
+               }
+          ### Output
+          out <- list(Acceptance=mean(as.vector(Acceptance)),
+               Dev=Dev,
+               DiagCovar=DiagCovar,
+               Mon=Mon,
+               thinned=thinned,
+               VarCov=apply(thinned, 2, var))
+          return(out)
           }
-     ### Output
-     out <- list(Acceptance=mean(as.vector(Acceptance)),
-          Dev=Dev,
-          DiagCovar=DiagCovar,
-          Mon=Mon,
-          thinned=thinned,
-          VarCov=apply(thinned, 2, var))
-     return(out)
+     else {
+          tau <- rep(1, LIV)
+          Acceptance <- matrix(0, 1, LIV)
+          DiagCovar <- matrix(tau, nrow(thinned), LIV)
+          for (iter in 1:Iterations) {
+               ### Print Status
+               if(iter %% Status == 0) {cat("Iteration: ", iter,
+                    ",   Proposal: Componentwise\n", sep="")}
+               ### Save Thinned Samples
+               if(iter %% Thinning == 0) {
+                    t.iter <- floor(iter / Thinning) + 1
+                    thinned[t.iter,] <- Mo0[["parm"]]
+                    Dev[t.iter] <- Mo0[["Dev"]]
+                    Mon[t.iter,] <- Mo0[["Monitor"]]}
+               ### Random-Scan Componentwise Estimation
+               theta <- rnorm(LIV)
+               theta <- theta / sqrt(sum(theta*theta))
+               lambda <- runif(1)
+               for (j in sample(LIV)) {
+                    ### Propose new parameter values
+                    prop <- Mo0[["parm"]]
+                    prop[j] <- prop[j] + tau[j]*lambda*theta[j]
+                    ### Log-Posterior of the proposed state
+                    Mo1 <- Model(prop, Data)
+                    if(!is.finite(Mo1[["LP"]])) Mo1 <- Mo0
+                    if(!is.finite(Mo1[["Dev"]])) Mo1 <- Mo0
+                    if(any(!is.finite(Mo1[["Monitor"]]))) Mo1 <- Mo0
+                    ### Accept/Reject
+                    u <- log(runif(1)) < (Mo1[["LP"]] - Mo0[["LP"]])
+                    if(u == TRUE) {
+                         Mo0 <- Mo1
+                         tau[j] <- tau[j] + (tau[j] / (alpha.star *
+                         (1 - alpha.star))) * (1 - alpha.star) / iter
+                         }
+                    else {
+                         tau[j] <- abs(tau[j] - (tau[j] / (alpha.star *
+                         (1 - alpha.star))) * alpha.star / iter)
+                         }
+                    Acceptance[j] <- Acceptance[j] + u}
+               if(iter %% Thinning == 0) {
+                    thinned[t.iter,] <- Mo0[["parm"]]
+                    Dev[t.iter] <- Mo0[["Dev"]]
+                    Mon[t.iter,] <- Mo0[["Monitor"]]
+                    DiagCovar[t.iter,] <- tau}
+               }
+          ### Output
+          out <- list(Acceptance=mean(as.vector(Acceptance)),
+               Dev=Dev,
+               DiagCovar=DiagCovar,
+               Mon=Mon,
+               thinned=thinned,
+               VarCov=apply(thinned, 2, var))
+          return(out)
+          }
      }
 DEMC <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
      Status, Thinning, Acceptance, Dev, DiagCovar, LIV, Mon, Mo0, ScaleF,
@@ -1516,9 +1796,10 @@ DRAM <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
           if(iter > 1) post[iter,] <- post[iter-1,]
           ### Save Thinned Samples
           if(iter %% Thinning == 0) {
-               thinned[(iter/Thinning+1),] <- post[iter,]
-               Dev[(iter/Thinning+1)] <- Mo0[["Dev"]]
-               Mon[(iter/Thinning+1),] <- Mo0[["Monitor"]]}
+               t.iter <- floor(iter / Thinning) + 1
+               thinned[t.iter,] <- post[iter,]
+               Dev[t.iter] <- Mo0[["Dev"]]
+               Mon[t.iter,] <- Mo0[["Monitor"]]}
           ### Propose new parameter values
           MVN.rand <- rnorm(LIV, 0, 1)
           MVNz <- try(matrix(MVN.rand,1,LIV) %*% chol(VarCov), silent=TRUE)
@@ -1548,9 +1829,9 @@ DRAM <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
                post[iter,] <- Mo1[["parm"]]
                Acceptance <- Acceptance + 1
                if(iter %% Thinning == 0) {
-                    thinned[(iter/Thinning+1),] <- Mo1[["parm"]]
-                    Dev[(iter/Thinning+1)] <- Mo1[["Dev"]]
-                    Mon[(iter/Thinning+1),] <- Mo1[["Monitor"]]}
+                    thinned[t.iter,] <- Mo1[["parm"]]
+                    Dev[t.iter] <- Mo1[["Dev"]]
+                    Mon[t.iter,] <- Mo1[["Monitor"]]}
                }
           ### Delayed Rejection: Second Stage Proposals
           else if(log.u >= log.alpha) {
@@ -1584,9 +1865,9 @@ DRAM <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
                     post[iter,] <- Mo2[["parm"]]
                     Acceptance <- Acceptance + 1
                     if(iter %% Thinning == 0) {
-                         thinned[(iter/Thinning+1),] <- Mo1[["parm"]]
-                         Dev[(iter/Thinning+1)] <- Mo1[["Dev"]]
-                         Mon[(iter/Thinning+1),] <- Mo1[["Monitor"]]}
+                         thinned[t.iter,] <- Mo1[["parm"]]
+                         Dev[t.iter] <- Mo1[["Dev"]]
+                         Mon[t.iter,] <- Mo1[["Monitor"]]}
                     }
                }
           ### Shrinkage of Adaptive Proposal Variance
@@ -1624,9 +1905,10 @@ DRM <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
           if(iter %% Status == 0) cat("Iteration: ", iter, sep="")
           ### Save Thinned Samples
           if(iter %% Thinning == 0) {
-               thinned[(iter/Thinning+1),] <- Mo0[["parm"]]
-               Dev[(iter/Thinning+1)] <- Mo0[["Dev"]]
-               Mon[(iter/Thinning+1),] <- Mo0[["Monitor"]]}
+               t.iter <- floor(iter / Thinning) + 1
+               thinned[t.iter,] <- Mo0[["parm"]]
+               Dev[t.iter] <- Mo0[["Dev"]]
+               Mon[t.iter,] <- Mo0[["Monitor"]]}
           ### Propose new parameter values
           MVN.rand <- rnorm(LIV, 0, 1)
           MVNz <- try(matrix(MVN.rand,1,LIV) %*% chol(VarCov),
@@ -1656,9 +1938,9 @@ DRM <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
                Mo0 <- Mo1
                Acceptance <- Acceptance + 1
                if(iter %% Thinning == 0) {
-                    thinned[(iter/Thinning+1),] <- Mo1[["parm"]]
-                    Dev[(iter/Thinning+1)] <- Mo1[["Dev"]]
-                    Mon[(iter/Thinning+1),] <- Mo1[["Monitor"]]}
+                    thinned[t.iter,] <- Mo1[["parm"]]
+                    Dev[t.iter] <- Mo1[["Dev"]]
+                    Mon[t.iter,] <- Mo1[["Monitor"]]}
                }
           ### Delayed Rejection: Second Stage Proposals
           else if(log.u >= log.alpha) {
@@ -1691,9 +1973,9 @@ DRM <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
                     Mo0 <- Mo2
                     Acceptance <- Acceptance + 1
                     if(iter %% Thinning == 0) {
-                         thinned[(iter/Thinning+1),] <- Mo1[["parm"]]
-                         Dev[(iter/Thinning+1)] <- Mo1[["Dev"]]
-                         Mon[(iter/Thinning+1),] <- Mo1[["Monitor"]]}
+                         thinned[t.iter,] <- Mo1[["parm"]]
+                         Dev[t.iter] <- Mo1[["Dev"]]
+                         Mon[t.iter,] <- Mo1[["Monitor"]]}
                     }
                }
           }
@@ -1708,48 +1990,103 @@ DRM <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
      }
 HARM <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
      Status, Thinning, Acceptance, Dev, DiagCovar, LIV, Mon, Mo0, ScaleF,
-     thinned)
+     thinned, alpha.star)
      {
-     for (iter in 1:Iterations) {
-          ### Print Status
-          if(iter %% Status == 0) cat("Iteration: ", iter, sep="")
-          ### Save Thinned Samples
-          if(iter %% Thinning == 0) {
-               thinned[(iter/Thinning+1),] <- Mo0[["parm"]]
-               Dev[(iter/Thinning+1)] <- Mo0[["Dev"]]
-               Mon[(iter/Thinning+1),] <- Mo0[["Monitor"]]}
-          ### Propose new parameter values
-          theta <- rnorm(LIV)
-          d <- theta / sqrt(sum(theta*theta))
-          prop <- Mo0[["parm"]] + runif(1) * d
-          if(iter %% Status == 0) 
-               cat(",   Proposal: Multivariate\n")
-          ### Log-Posterior of the proposed state
-          Mo1 <- Model(prop, Data)
-          if(!is.finite(Mo1[["LP"]])) Mo1 <- Mo0
-          if(!is.finite(Mo1[["Dev"]])) Mo1 <- Mo0
-          if(any(!is.finite(Mo1[["Monitor"]]))) Mo1 <- Mo0
-          ### Accept/Reject
-          log.u <- log(runif(1))
-          log.alpha <- Mo1[["LP"]] - Mo0[["LP"]]
-          if(!is.finite(log.alpha)) log.alpha <- 0
-          if(log.u < log.alpha) {
-               Mo0 <- Mo1
-               Acceptance <- Acceptance + 1
+     if(is.na(alpha.star)) {
+          for (iter in 1:Iterations) {
+               ### Print Status
+               if(iter %% Status == 0) cat("Iteration: ", iter, sep="")
+               ### Save Thinned Samples
                if(iter %% Thinning == 0) {
-                    thinned[(iter/Thinning+1),] <- Mo1[["parm"]]
-                    Dev[(iter/Thinning+1)] <- Mo1[["Dev"]]
-                    Mon[(iter/Thinning+1),] <- Mo1[["Monitor"]]}
+                    t.iter <- floor(iter / Thinning) + 1
+                    thinned[t.iter,] <- Mo0[["parm"]]
+                    Dev[t.iter] <- Mo0[["Dev"]]
+                    Mon[t.iter,] <- Mo0[["Monitor"]]}
+               ### Propose new parameter values
+               theta <- rnorm(LIV)
+               d <- theta / sqrt(sum(theta*theta))
+               prop <- Mo0[["parm"]] + runif(1) * d
+               if(iter %% Status == 0) 
+                    cat(",   Proposal: Multivariate\n")
+               ### Log-Posterior of the proposed state
+               Mo1 <- Model(prop, Data)
+               if(!is.finite(Mo1[["LP"]])) Mo1 <- Mo0
+               if(!is.finite(Mo1[["Dev"]])) Mo1 <- Mo0
+               if(any(!is.finite(Mo1[["Monitor"]]))) Mo1 <- Mo0
+               ### Accept/Reject
+               log.u <- log(runif(1))
+               log.alpha <- Mo1[["LP"]] - Mo0[["LP"]]
+               if(!is.finite(log.alpha)) log.alpha <- 0
+               if(log.u < log.alpha) {
+                    Mo0 <- Mo1
+                    Acceptance <- Acceptance + 1
+                    if(iter %% Thinning == 0) {
+                         thinned[t.iter,] <- Mo1[["parm"]]
+                         Dev[t.iter] <- Mo1[["Dev"]]
+                         Mon[t.iter,] <- Mo1[["Monitor"]]}
+                    }
                }
+          ### Output
+          out <- list(Acceptance=Acceptance,
+               Dev=Dev,
+               DiagCovar=DiagCovar,
+               Mon=Mon,
+               thinned=thinned,
+               VarCov=apply(thinned, 2, var))
+          return(out)
           }
-     ### Output
-     out <- list(Acceptance=Acceptance,
-          Dev=Dev,
-          DiagCovar=DiagCovar,
-          Mon=Mon,
-          thinned=thinned,
-          VarCov=apply(thinned, 2, var))
-     return(out)
+     else {
+          tau <- 1
+          DiagCovar <- matrix(tau, nrow(thinned), LIV)
+          for (iter in 1:Iterations) {
+               ### Print Status
+               if(iter %% Status == 0) cat("Iteration: ", iter, sep="")
+               ### Save Thinned Samples
+               if(iter %% Thinning == 0) {
+                    t.iter <- floor(iter / Thinning) + 1
+                    thinned[t.iter,] <- Mo0[["parm"]]
+                    Dev[t.iter] <- Mo0[["Dev"]]
+                    Mon[t.iter,] <- Mo0[["Monitor"]]}
+               ### Propose new parameter values
+               theta <- rnorm(LIV)
+               d <- theta / sqrt(sum(theta*theta))
+               prop <- Mo0[["parm"]] + runif(1,0,tau) * d
+               if(iter %% Status == 0) 
+                    cat(",   Proposal: Multivariate\n")
+               ### Log-Posterior of the proposed state
+               Mo1 <- Model(prop, Data)
+               if(!is.finite(Mo1[["LP"]])) Mo1 <- Mo0
+               if(!is.finite(Mo1[["Dev"]])) Mo1 <- Mo0
+               if(any(!is.finite(Mo1[["Monitor"]]))) Mo1 <- Mo0
+               ### Accept/Reject
+               log.u <- log(runif(1))
+               log.alpha <- Mo1[["LP"]] - Mo0[["LP"]]
+               if(!is.finite(log.alpha)) log.alpha <- 0
+               if(log.u < log.alpha) {
+                    Mo0 <- Mo1
+                    Acceptance <- Acceptance + 1
+                    tau <- tau + (tau / (alpha.star *
+                         (1 - alpha.star))) * (1 - alpha.star) / iter
+                    if(iter %% Thinning == 0) {
+                         thinned[t.iter,] <- Mo1[["parm"]]
+                         Dev[t.iter] <- Mo1[["Dev"]]
+                         Mon[t.iter,] <- Mo1[["Monitor"]]
+                         DiagCovar[t.iter,] <- tau}
+                    }
+               else {
+                    tau <- abs(tau - (tau / (alpha.star *
+                         (1 - alpha.star))) * alpha.star / iter)
+                    if(iter %% Thinning == 0) DiagCovar[t.iter,] <- tau}
+               }
+          ### Output
+          out <- list(Acceptance=Acceptance,
+               Dev=Dev,
+               DiagCovar=DiagCovar,
+               Mon=Mon,
+               thinned=thinned,
+               VarCov=apply(thinned, 2, var))
+          return(out)
+          }
      }
 HMC <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
      Status, Thinning, Acceptance, Dev, DiagCovar, LIV, Mon, Mo0, ScaleF,
@@ -1762,9 +2099,10 @@ HMC <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
                ",   Proposal: Multivariate\n", sep="")
           ### Save Thinned Samples
           if(iter %% Thinning == 0) {
-               thinned[(iter/Thinning+1),] <- Mo0[["parm"]]
-               Dev[(iter/Thinning+1)] <- Mo0[["Dev"]]
-               Mon[(iter/Thinning+1),] <- Mo0[["Monitor"]]}
+               t.iter <- floor(iter / Thinning) + 1
+               thinned[t.iter,] <- Mo0[["parm"]]
+               Dev[t.iter] <- Mo0[["Dev"]]
+               Mon[t.iter,] <- Mo0[["Monitor"]]}
           ### Propose new parameter values
           prop <- Mo0[["parm"]]
           momentum0 <- rnorm(LIV)
@@ -1798,9 +2136,9 @@ HMC <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
                gr0 <- gr1
                Acceptance <- Acceptance + 1
                if(iter %% Thinning == 0) {
-                    thinned[(iter/Thinning+1),] <- Mo1[["parm"]]
-                    Dev[(iter/Thinning+1)] <- Mo1[["Dev"]]
-                    Mon[(iter/Thinning+1),] <- Mo1[["Monitor"]]}
+                    thinned[t.iter,] <- Mo1[["parm"]]
+                    Dev[t.iter] <- Mo1[["Dev"]]
+                    Mon[t.iter,] <- Mo1[["Monitor"]]}
                }
           }
      ### Output
@@ -1875,9 +2213,10 @@ HMCDA <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
      for (iter in 1:Iterations) {
           ### Save Thinned Samples
           if(iter %% Thinning == 0) {
-               thinned[(iter/Thinning+1),] <- Mo0[["parm"]]
-               Dev[(iter/Thinning+1)] <- Mo0[["Dev"]]
-               Mon[(iter/Thinning+1),] <- Mo0[["Monitor"]]}
+               t.iter <- floor(iter / Thinning) + 1
+               thinned[t.iter,] <- Mo0[["parm"]]
+               Dev[t.iter] <- Mo0[["Dev"]]
+               Mon[t.iter,] <- Mo0[["Monitor"]]}
           ### Propose new parameter values
           prop <- Mo0[["parm"]]
           momentum1 <- momentum0 <- runif(LIV)
@@ -1912,9 +2251,9 @@ HMCDA <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
                gr0 <- gr1
                Acceptance <- Acceptance + 1
                if(iter %% Thinning == 0) {
-                    thinned[(iter/Thinning+1),] <- Mo1[["parm"]]
-                    Dev[(iter/Thinning+1)] <- Mo1[["Dev"]]
-                    Mon[(iter/Thinning+1),] <- Mo1[["Monitor"]]}
+                    thinned[t.iter,] <- Mo1[["parm"]]
+                    Dev[t.iter] <- Mo1[["Dev"]]
+                    Mon[t.iter,] <- Mo1[["Monitor"]]}
                }
           ### Adaptation
           if(iter > 1) {
@@ -1949,9 +2288,10 @@ IM <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
           if(iter %% Status == 0) cat("Iteration: ", iter, sep="")
           ### Save Thinned Samples
           if(iter %% Thinning == 0) {
-               thinned[(iter/Thinning+1),] <- Mo0[["parm"]]
-               Dev[(iter/Thinning+1)] <- Mo0[["Dev"]]
-               Mon[(iter/Thinning+1),] <- Mo0[["Monitor"]]}
+               t.iter <- floor(iter / Thinning) + 1
+               thinned[t.iter,] <- Mo0[["parm"]]
+               Dev[t.iter] <- Mo0[["Dev"]]
+               Mon[t.iter,] <- Mo0[["Monitor"]]}
           ### Propose new parameter values
           MVN.rand <- rnorm(LIV, 0, 1)
           MVNz <- try(matrix(MVN.rand,1,LIV) %*% chol(VarCov2),
@@ -1982,9 +2322,9 @@ IM <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
                Mo0 <- Mo1
                Acceptance <- Acceptance + 1
                if(iter %% Thinning == 0) {
-                    thinned[(iter/Thinning+1),] <- Mo1[["parm"]]
-                    Dev[(iter/Thinning+1)] <- Mo1[["Dev"]]
-                    Mon[(iter/Thinning+1),] <- Mo1[["Monitor"]]}
+                    thinned[t.iter,] <- Mo1[["parm"]]
+                    Dev[t.iter] <- Mo1[["Dev"]]
+                    Mon[t.iter,] <- Mo1[["Monitor"]]}
                }
           }
      ### Output
@@ -2015,9 +2355,10 @@ INCA <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
           if(iter > 1) post[iter,] <- post[iter-1,]
           ### Save Thinned Samples
           if(iter %% Thinning == 0) {
-               thinned[(iter/Thinning+1),] <- post[iter,]
-               Dev[(iter/Thinning+1)] <- Mo0[["Dev"]]
-               Mon[(iter/Thinning+1),] <- Mo0[["Monitor"]]}
+               t.iter <- floor(iter / Thinning) + 1
+               thinned[t.iter,] <- post[iter,]
+               Dev[t.iter] <- Mo0[["Dev"]]
+               Mon[t.iter,] <- Mo0[["Monitor"]]}
           ### Propose new parameter values
           MVN.rand <- rnorm(LIV, 0, 1)
           MVNz <- try(matrix(MVN.rand,1,LIV) %*% chol(VarCov),
@@ -2048,9 +2389,9 @@ INCA <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
                post[iter,] <- Mo1[["parm"]]
                Acceptance <- Acceptance + 1
                if(iter %% Thinning == 0) {
-                    thinned[(iter/Thinning+1),] <- Mo1[["parm"]]
-                    Dev[(iter/Thinning+1)] <- Mo1[["Dev"]]
-                    Mon[(iter/Thinning+1),] <- Mo1[["Monitor"]]}}
+                    thinned[t.iter,] <- Mo1[["parm"]]
+                    Dev[t.iter] <- Mo1[["Dev"]]
+                    Mon[t.iter,] <- Mo1[["Monitor"]]}}
           ### Shrinkage of Adaptive Proposal Variance
           if({Adaptive < Iterations} & {Acceptance > 5} &
                {Acceptance / iter < 0.05}) {
@@ -2100,9 +2441,10 @@ MWG <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
                ",   Proposal: Componentwise\n", sep="")}
           ### Save Thinned Samples
           if(iter %% Thinning == 0) {
-               thinned[(iter/Thinning+1),] <- Mo0[["parm"]]
-               Dev[(iter/Thinning+1)] <- Mo0[["Dev"]]
-               Mon[(iter/Thinning+1),] <- Mo0[["Monitor"]]}
+               t.iter <- floor(iter / Thinning) + 1
+               thinned[t.iter,] <- Mo0[["parm"]]
+               Dev[t.iter] <- Mo0[["Dev"]]
+               Mon[t.iter,] <- Mo0[["Monitor"]]}
           ### Random-Scan Componentwise Estimation
           for (j in sample(LIV)) {
                ### Propose new parameter values
@@ -2118,9 +2460,9 @@ MWG <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
                if(u == TRUE) Mo0 <- Mo1
                Acceptance[j] <- Acceptance[j] + u}
           if(iter %% Thinning == 0) {
-               thinned[(iter/Thinning+1),] <- Mo0[["parm"]]
-               Dev[(iter/Thinning+1)] <- Mo0[["Dev"]]
-               Mon[(iter/Thinning+1),] <- Mo0[["Monitor"]]}
+               thinned[t.iter,] <- Mo0[["parm"]]
+               Dev[t.iter] <- Mo0[["Dev"]]
+               Mon[t.iter,] <- Mo0[["Monitor"]]}
           }
      ### Output
      out <- list(Acceptance=mean(as.vector(Acceptance)),
@@ -2324,9 +2666,10 @@ NUTS <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
                     Mon[((iter-A)/Thinning+1),] <- Mo0[["Monitor"]]}}
           else if(A >= Iterations) {
                if(iter %% Thinning == 0) {
-                    thinned[(iter/Thinning+1),] <- post[iter,]
-                    Dev[(iter/Thinning+1)] <- Mo0[["Dev"]]
-                    Mon[(iter/Thinning+1),] <- Mo0[["Monitor"]]}}
+                    t.iter <- floor(iter / Thinning) + 1
+                    thinned[t.iter,] <- post[iter,]
+                    Dev[t.iter] <- Mo0[["Dev"]]
+                    Mon[t.iter,] <- Mo0[["Monitor"]]}}
           prop <- post[iter,]
           r0 <- runif(LIV) ### r0 is momenta
           ### Joint log-probability of theta and momenta r
@@ -2387,9 +2730,9 @@ NUTS <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
                               Mon[((iter-A)/Thinning+1),] <- Mo1[["Monitor"]]}}
                     else if(A >= Iterations) {
                          if(iter %% Thinning == 0) {
-                              thinned[(iter/Thinning+1),] <- Mo1[["parm"]]
-                              Dev[(iter/Thinning+1)] <- Mo1[["Dev"]]
-                              Mon[(iter/Thinning+1),] <- Mo1[["Monitor"]]}}}
+                              thinned[t.iter,] <- Mo1[["parm"]]
+                              Dev[t.iter] <- Mo1[["Dev"]]
+                              Mon[t.iter,] <- Mo1[["Monitor"]]}}}
                ### Update number of observed valid points
                n <- n + nprime
                ### Decide if it is time to stop
@@ -2437,9 +2780,10 @@ RAM <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
           if(iter %% Status == 0) cat("Iteration: ", iter, sep="")
           ### Save Thinned Samples
           if(iter %% Thinning == 0) {
-               thinned[(iter/Thinning+1),] <- Mo0[["parm"]]
-               Dev[(iter/Thinning+1)] <- Mo0[["Dev"]]
-               Mon[(iter/Thinning+1),] <- Mo0[["Monitor"]]}
+               t.iter <- floor(iter / Thinning) + 1
+               thinned[t.iter,] <- Mo0[["parm"]]
+               Dev[t.iter] <- Mo0[["Dev"]]
+               Mon[t.iter,] <- Mo0[["Monitor"]]}
           ### Propose New Parameter Values
           if(Dist == "t") U <- qt(runif(LIV), df=5, lower.tail=TRUE)
           else U <- rnorm(LIV)
@@ -2460,9 +2804,9 @@ RAM <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
                Mo0 <- Mo1
                Acceptance <- Acceptance + 1
                if(iter %% Thinning == 0) {
-                    thinned[(iter/Thinning+1),] <- Mo1[["parm"]]
-                    Dev[(iter/Thinning+1)] <- Mo1[["Dev"]]
-                    Mon[(iter/Thinning+1),] <- Mo1[["Monitor"]]}}
+                    thinned[t.iter,] <- Mo1[["parm"]]
+                    Dev[t.iter] <- Mo1[["Dev"]]
+                    Mon[t.iter,] <- Mo1[["Monitor"]]}}
           ### Adaptation
           if({iter >= Adaptive} & {iter %% Periodicity == 0}) {
                eta <- min(1, LIV*iter^(-gamma))
@@ -2503,9 +2847,10 @@ RJ <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
                ",   Proposal: Componentwise\n", sep="")}
           ### Save Thinned Samples
           if(iter %% Thinning == 0) {
-               thinned[(iter/Thinning+1),] <- Mo0[["parm"]]
-               Dev[(iter/Thinning+1)] <- Mo0[["Dev"]]
-               Mon[(iter/Thinning+1),] <- Mo0[["Monitor"]]}
+               t.iter <- floor(iter / Thinning) + 1
+               thinned[t.iter,] <- Mo0[["parm"]]
+               Dev[t.iter] <- Mo0[["Dev"]]
+               Mon[t.iter,] <- Mo0[["Monitor"]]}
           ### Propose a variable to include/exclude
           v.change <- sample(LIV, 1, prob=selectable)
           prop.sel <- cur.sel
@@ -2563,9 +2908,9 @@ RJ <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
                nonzero.post[v.change] <- Mo0[["parm"]][v.change]
           Acceptance <- Acceptance + (u * (1 / sum(prop.parm)))
           if(iter %% Thinning == 0) {
-               thinned[(iter/Thinning+1),] <- Mo0[["parm"]]
-               Dev[(iter/Thinning+1)] <- Mo0[["Dev"]]
-               Mon[(iter/Thinning+1),] <- Mo0[["Monitor"]]}
+               thinned[t.iter,] <- Mo0[["parm"]]
+               Dev[t.iter] <- Mo0[["Dev"]]
+               Mon[t.iter,] <- Mo0[["Monitor"]]}
           }
      ### Output
      out <- list(Acceptance=Acceptance,
@@ -2576,104 +2921,6 @@ RJ <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
           VarCov=apply(thinned, 2, var))
      return(out)
      }
-#RJ <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
-#     Status, Thinning, Acceptance, Dev, DiagCovar, LIV, Mon, Mo0, ScaleF,
-#     thinned, bin.n, bin.p, parm.p, selectable, selected)
-#     {
-#     post <- matrix(Mo0[["parm"]], Iterations, LIV, byrow=TRUE)
-#     cur.parm <- cur.sel <- selected
-#     cur.parm[which(selectable == 0)] <- 1
-#     nonzero.post <- rep(0, LIV)
-#     p <- parm.p
-#     for (iter in 1:Iterations) {
-#          ### Print Status
-#          if(iter %% Status == 0) {cat("Iteration: ", iter,
-#               ",   Proposal: Componentwise\n", sep="")}
-#          ### Current Posterior
-#          if(iter > 1) post[iter,] <- post[iter-1,]
-#          ### Save Thinned Samples
-#          if(iter %% Thinning == 0) {
-#               thinned[(iter/Thinning+1),] <- post[iter,]
-#               Dev[(iter/Thinning+1)] <- Mo0[["Dev"]]
-#               Mon[(iter/Thinning+1),] <- Mo0[["Monitor"]]}
-#          ### Propose a variable to include/exclude
-#          v.change <- sample(LIV, 1, prob=selectable)
-#          prop.sel <- cur.sel
-#          prop.parm <- cur.parm
-#          ### Change proposed size, but not above bin.n
-#          if(sum(cur.sel) < bin.n) {
-#               prop.sel[v.change] <- 1 - prop.sel[v.change]
-#               prop.parm[v.change] <- 1 - prop.parm[v.change]}
-#          else if(prop.sel[v.change] == 1) 
-#               prop.parm[v.change] <- prop.sel[v.change] <- 0
-#          ### Priors
-#          prior.cur <- sum(dbern(cur.sel, p[which(selectable == 1)], log=TRUE),
-#               dbinom(sum(cur.sel), bin.n, bin.p, log=TRUE))
-#          prior.prop <- sum(dbern(prop.sel, p[which(selectable == 1)], log=TRUE),
-#               dbinom(sum(prop.sel), bin.n, bin.p, log=TRUE))
-#          ### Hit-And-Run Proposal Parameters
-#          theta <- rnorm(LIV)
-#          theta <- theta / sqrt(sum(theta*theta))
-#          lambda <- runif(1)
-#          ### Random-Scan Componentwise Estimation (Within-Model)
-#          for (j in sample(which(cur.parm == 1))) {
-#               ### Propose new parameter values
-#               temp.post <- post[iter,]
-#               temp.post[which(temp.post == 0)] <- nonzero.post[which(temp.post == 0)]
-#               temp.post[which(cur.parm == 0)] <- 0
-#               prop <- post[iter,] <- temp.post
-#               prop[j] <- prop[j] + lambda*theta[j]
-#               ### Log-Posterior of the proposed state
-#               Mo1 <- Model(prop, Data)
-#               if(!is.finite(Mo1[["LP"]])) Mo1 <- Mo0
-#               if(!is.finite(Mo1[["Dev"]])) Mo1 <- Mo0
-#               if(any(!is.finite(Mo1[["Monitor"]]))) Mo1 <- Mo0
-#               ### Accept/Reject (Within-Model Move)
-#               u <- log(runif(1)) < (Mo1[["LP"]] - Mo0[["LP"]])
-#               post[iter,j] <- Mo1[["parm"]][j]*(u == 1) +
-#                    post[iter,j]*(u == 0)
-#               if(post[iter,j] != 0) nonzero.post[j] <- post[iter,j]
-#               Mo0[["LP"]] <- Mo1[["LP"]]*(u == 1) + Mo0[["LP"]]*(u == 0)
-#               Mo0[["Dev"]] <- Mo1[["Dev"]]*(u == 1) +
-#                    Mo0[["Dev"]]*(u == 0)
-#               Mo0[["Monitor"]] <- Mo1[["Monitor"]]*(u == 1) +
-#                    Mo0[["Monitor"]]*(u == 0)
-#               Acceptance <- Acceptance + (u * (1 / sum(cur.parm)))}
-#          ### Random-Scan Componentwise Estimation (Between-Models)
-#          prop <- post[iter,]
-#          prop[v.change] <- prop.sel[v.change]*(prop[v.change] +
-#               lambda*theta[v.change])
-#          ### Log-Posterior of the proposed state
-#          Mo1 <- Model(prop, Data)
-#          if(!is.finite(Mo1[["LP"]])) Mo1 <- Mo0
-#          if(!is.finite(Mo1[["Dev"]])) Mo1 <- Mo0
-#          if(any(!is.finite(Mo1[["Monitor"]]))) Mo1 <- Mo0
-#          ### Accept/Reject (Between-Models Move)
-#          u <- log(runif(1)) < (Mo1[["LP"]] - Mo0[["LP"]] + prior.prop -
-#               prior.cur)
-#          if(u == TRUE) {cur.sel <- prop.sel; cur.parm <- prop.parm}
-#          post[iter,v.change] <- Mo1[["parm"]][v.change]*(u == 1) +
-#               post[iter,v.change]*(u == 0)
-#          if(post[iter,v.change] != 0) nonzero.post[v.change] <- post[iter,v.change]
-#          Mo0[["LP"]] <- Mo1[["LP"]]*(u == 1) + Mo0[["LP"]]*(u == 0)
-#          Mo0[["Dev"]] <- Mo1[["Dev"]]*(u == 1) + Mo0[["Dev"]]*(u == 0)
-#          Mo0[["Monitor"]] <- Mo1[["Monitor"]]*(u == 1) +
-#               Mo0[["Monitor"]]*(u == 0)
-#          Acceptance <- Acceptance + (u * (1 / sum(prop.parm)))
-#          if(iter %% Thinning == 0) {
-#               thinned[(iter/Thinning+1),] <- Mo0[["parm"]]
-#               Dev[(iter/Thinning+1)] <- Mo0[["Dev"]]
-#               Mon[(iter/Thinning+1),] <- Mo0[["Monitor"]]}
-#          }
-#     ### Output
-#     out <- list(Acceptance=Acceptance,
-#          Dev=Dev,
-#          DiagCovar=DiagCovar,
-#          Mon=Mon,
-#          thinned=thinned,
-#          VarCov=apply(thinned, 2, var))
-#     return(out)
-#     }
 RWM <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
      Status, Thinning, Acceptance, Dev, DiagCovar, LIV, Mon, Mo0, ScaleF,
      thinned, tuning, VarCov)
@@ -2683,9 +2930,10 @@ RWM <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
           if(iter %% Status == 0) cat("Iteration: ", iter, sep="")
           ### Save Thinned Samples
           if(iter %% Thinning == 0) {
-               thinned[(iter/Thinning+1),] <- Mo0[["parm"]]
-               Dev[(iter/Thinning+1)] <- Mo0[["Dev"]]
-               Mon[(iter/Thinning+1),] <- Mo0[["Monitor"]]}
+               t.iter <- floor(iter / Thinning) + 1
+               thinned[t.iter,] <- Mo0[["parm"]]
+               Dev[t.iter] <- Mo0[["Dev"]]
+               Mon[t.iter,] <- Mo0[["Monitor"]]}
           ### Propose new parameter values
           MVN.rand <- rnorm(LIV, 0, 1)
           MVNz <- try(matrix(MVN.rand,1,LIV) %*% chol(VarCov),
@@ -2715,9 +2963,9 @@ RWM <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
                Mo0 <- Mo1
                Acceptance <- Acceptance + 1
                if(iter %% Thinning == 0) {
-                    thinned[(iter/Thinning+1),] <- Mo1[["parm"]]
-                    Dev[(iter/Thinning+1)] <- Mo1[["Dev"]]
-                    Mon[(iter/Thinning+1),] <- Mo1[["Monitor"]]}
+                    thinned[t.iter,] <- Mo1[["parm"]]
+                    Dev[t.iter] <- Mo1[["Dev"]]
+                    Mon[t.iter,] <- Mo1[["Monitor"]]}
                }
           }
      ### Output
@@ -2744,9 +2992,10 @@ SAMWG <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
                ",   Proposal: Componentwise\n", sep="")}
           ### Save Thinned Samples
           if(iter %% Thinning == 0) {
-               thinned[(iter/Thinning+1),] <- Mo0[["parm"]]
-               Dev[(iter/Thinning+1)] <- Mo0[["Dev"]]
-               Mon[(iter/Thinning+1),] <- Mo0[["Monitor"]]}
+               t.iter <- floor(iter / Thinning) + 1
+               thinned[t.iter,] <- Mo0[["parm"]]
+               Dev[t.iter] <- Mo0[["Dev"]]
+               Mon[t.iter,] <- Mo0[["Monitor"]]}
           ### Select Order of Parameters
           if(length(staticparms) == 1) staticsample <- staticparms
           if(length(staticparms) > 1) staticsample <- sample(staticparms)
@@ -2768,9 +3017,9 @@ SAMWG <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
                if(u == TRUE) Mo0 <- Mo1
                Acceptance[j] <- Acceptance[j] + u}
           if(iter %% Thinning == 0) {
-               thinned[(iter/Thinning+1),] <- Mo0[["parm"]]
-               Dev[(iter/Thinning+1)] <- Mo0[["Dev"]]
-               Mon[(iter/Thinning+1),] <- Mo0[["Monitor"]]}
+               thinned[t.iter,] <- Mo0[["parm"]]
+               Dev[t.iter] <- Mo0[["Dev"]]
+               Mon[t.iter,] <- Mo0[["Monitor"]]}
           ### Adapt the Proposal Variance
           if(iter %% Periodicity == 0) {
                size <- 1 / min(100, sqrt(iter))
@@ -2876,9 +3125,10 @@ Slice <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
                ",   Proposal: Componentwise\n", sep="")}
           ### Save Thinned Samples
           if(iter %% Thinning == 0) {
-               thinned[(iter/Thinning+1),] <- Mo0[["parm"]]
-               Dev[(iter/Thinning+1)] <- Mo0[["Dev"]]
-               Mon[(iter/Thinning+1),] <- Mo0[["Monitor"]]}
+               t.iter <- floor(iter / Thinning) + 1
+               thinned[t.iter,] <- Mo0[["parm"]]
+               Dev[t.iter] <- Mo0[["Dev"]]
+               Mon[t.iter,] <- Mo0[["Monitor"]]}
           ### Random-Scan Componentwise Estimation
           for (j in sample(LIV)) {
                ### Univariate Slice Sampling
@@ -2886,9 +3136,9 @@ Slice <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
                     #w=1, m=Inf, lower=-Inf, upper=Inf, gx0=Mo0, Data)
                     w=w[j], m=m[j], lower=-Inf, upper=Inf, gx0=Mo0, Data)}
           if(iter %% Thinning == 0) {
-               thinned[(iter/Thinning+1),] <- Mo0[["parm"]]
-               Dev[(iter/Thinning+1)] <- Mo0[["Dev"]]
-               Mon[(iter/Thinning+1),] <- Mo0[["Monitor"]]}
+               thinned[t.iter,] <- Mo0[["parm"]]
+               Dev[t.iter] <- Mo0[["Dev"]]
+               Mon[t.iter,] <- Mo0[["Monitor"]]}
           }
      ### Output
      out <- list(Acceptance=Iterations,
@@ -2914,9 +3164,10 @@ SMWG <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
                ",   Proposal: Componentwise\n", sep="")}
           ### Save Thinned Samples
           if(iter %% Thinning == 0) {
-               thinned[(iter/Thinning+1),] <- Mo0[["parm"]]
-               Dev[(iter/Thinning+1)] <- Mo0[["Dev"]]
-               Mon[(iter/Thinning+1),] <- Mo0[["Monitor"]]}
+               t.iter <- floor(iter / Thinning) + 1
+               thinned[t.iter,] <- Mo0[["parm"]]
+               Dev[t.iter] <- Mo0[["Dev"]]
+               Mon[t.iter,] <- Mo0[["Monitor"]]}
           ### Select Order of Parameters
           if(length(staticparms) == 1) staticsample <- staticparms
           if(length(staticparms) > 1) staticsample <- sample(staticparms)
@@ -2938,9 +3189,9 @@ SMWG <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
                if(u == TRUE) Mo0 <- Mo1
                Acceptance[j] <- Acceptance[j] + u}
           if(iter %% Thinning == 0) {
-               thinned[(iter/Thinning+1),] <- Mo0[["parm"]]
-               Dev[(iter/Thinning+1)] <- Mo0[["Dev"]]
-               Mon[(iter/Thinning+1),] <- Mo0[["Monitor"]]}
+               thinned[t.iter,] <- Mo0[["parm"]]
+               Dev[t.iter] <- Mo0[["Dev"]]
+               Mon[t.iter,] <- Mo0[["Monitor"]]}
           }
      ### Output
      out <- list(Acceptance=mean(as.vector(Acceptance)),
@@ -2963,9 +3214,10 @@ THMC <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
                ",   Proposal: Multivariate\n", sep="")
           ### Save Thinned Samples
           if(iter %% Thinning == 0) {
-               thinned[(iter/Thinning+1),] <- Mo0[["parm"]]
-               Dev[(iter/Thinning+1)] <- Mo0[["Dev"]]
-               Mon[(iter/Thinning+1),] <- Mo0[["Monitor"]]}
+               t.iter <- floor(iter / Thinning) + 1
+               thinned[t.iter,] <- Mo0[["parm"]]
+               Dev[t.iter] <- Mo0[["Dev"]]
+               Mon[t.iter,] <- Mo0[["Monitor"]]}
           ### Propose new parameter values
           prop <- Mo0[["parm"]]
           momentum1 <- momentum0 <- rnorm(LIV)
@@ -3001,9 +3253,9 @@ THMC <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
                kinetic0 <- kinetic1
                Acceptance <- Acceptance + 1
                if(iter %% Thinning == 0) {
-                    thinned[(iter/Thinning+1),] <- Mo1[["parm"]]
-                    Dev[(iter/Thinning+1)] <- Mo1[["Dev"]]
-                    Mon[(iter/Thinning+1),] <- Mo1[["Monitor"]]}
+                    thinned[t.iter,] <- Mo1[["parm"]]
+                    Dev[t.iter] <- Mo1[["Dev"]]
+                    Mon[t.iter,] <- Mo1[["Monitor"]]}
                }
           }
      ### Output
@@ -3345,9 +3597,10 @@ twalk <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
                     ",   Proposal: Multivariate Subset\n", sep="")}
                ### Save Thinned Samples
                if(iter %% Thinning == 0) {
-                    thinned[(iter/Thinning+1),] <- Mo0.1[["parm"]]
-                    Dev[(iter/Thinning+1)] <- Mo0.1[["Dev"]]
-                    Mon[(iter/Thinning+1),] <- Mo0.1[["Monitor"]]}
+                    t.iter <- floor(iter / Thinning) + 1
+                    thinned[t.iter,] <- Mo0.1[["parm"]]
+                    Dev[t.iter] <- Mo0.1[["Dev"]]
+                    Mon[t.iter,] <- Mo0.1[["Monitor"]]}
                ### Assign x and xp
                x <- as.vector(Mo0.1[["parm"]])
                xp <- as.vector(Mo0.2[["parm"]])
@@ -3361,9 +3614,9 @@ twalk <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
                     Mo0.2 <- move$Mo0.2
                     Acceptance <- Acceptance + 1 #move$nphi/dim
                     if(iter %% Thinning == 0) {
-                         thinned[(iter/Thinning+1),] <- move$Mo0.1[["parm"]]
-                         Dev[(iter/Thinning+1)] <- move$Mo0.1[["Dev"]]
-                         Mon[(iter/Thinning+1),] <- move$Mo0.1[["Monitor"]]}
+                         thinned[t.iter,] <- move$Mo0.1[["parm"]]
+                         Dev[t.iter] <- move$Mo0.1[["Dev"]]
+                         Mon[t.iter,] <- move$Mo0.1[["Monitor"]]}
                     x <- move$y
                     U <- move$propU
                     xp <- move$yp
@@ -3410,9 +3663,10 @@ USAMWG <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
           if(iter > 1) post[iter,as.vector(Dyn)] <- post[iter-1,as.vector(Dyn)]
           ### Save Thinned Samples
           if(iter %% Thinning == 0) {
-               thinned[(iter/Thinning+1),] <- post[iter,]
-               Dev[(iter/Thinning+1)] <- Mo0[["Dev"]]
-               Mon[(iter/Thinning+1),] <- Mo0[["Monitor"]]}
+               t.iter <- floor(iter / Thinning) + 1
+               thinned[t.iter,] <- post[iter,]
+               Dev[t.iter] <- Mo0[["Dev"]]
+               Mon[t.iter,] <- Mo0[["Monitor"]]}
           ### Select Order of Parameters
           if(ncol(Dyn) == 1) dynsample <- sample(Dyn)
           if(ncol(Dyn) > 1) dynsample <- as.vector(apply(Dyn,1,sample))
@@ -3433,9 +3687,9 @@ USAMWG <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
                     post[iter,] <- Mo0[["parm"]]}
                Acceptance[j] <- Acceptance[j] + u}
           if(iter %% Thinning == 0) {
-               thinned[(iter/Thinning+1),] <- Mo0[["parm"]]
-               Dev[(iter/Thinning+1)] <- Mo0[["Dev"]]
-               Mon[(iter/Thinning+1),] <- Mo0[["Monitor"]]}
+               thinned[t.iter,] <- Mo0[["parm"]]
+               Dev[t.iter] <- Mo0[["Dev"]]
+               Mon[t.iter,] <- Mo0[["Monitor"]]}
           ### Adapt the Proposal Variance
           if(iter %% Periodicity == 0) {
                size <- 1 / min(100, sqrt(iter))
@@ -3481,9 +3735,10 @@ USMWG <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
           if(iter > 1) post[iter,as.vector(Dyn)] <- post[iter-1,as.vector(Dyn)]
           ### Save Thinned Samples
           if(iter %% Thinning == 0) {
-               thinned[(iter/Thinning+1),] <- Mo0[["parm"]]
-               Dev[(iter/Thinning+1)] <- Mo0[["Dev"]]
-               Mon[(iter/Thinning+1),] <- Mo0[["Monitor"]]}
+               t.iter <- floor(iter / Thinning) + 1
+               thinned[t.iter,] <- Mo0[["parm"]]
+               Dev[t.iter] <- Mo0[["Dev"]]
+               Mon[t.iter,] <- Mo0[["Monitor"]]}
           ### Select Order of Parameters
           if(ncol(Dyn) == 1) dynsample <- sample(Dyn)
           if(ncol(Dyn) > 1) dynsample <- as.vector(apply(Dyn,1,sample))
@@ -3504,9 +3759,9 @@ USMWG <- function(Model, Data, Adaptive, DR, Iterations, Periodicity,
                     post[iter,] <- Mo0[["parm"]]}
                Acceptance[j] <- Acceptance[j] + u}
           if(iter %% Thinning == 0) {
-               thinned[(iter/Thinning+1),] <- Mo0[["parm"]]
-               Dev[(iter/Thinning+1)] <- Mo0[["Dev"]]
-               Mon[(iter/Thinning+1),] <- Mo0[["Monitor"]]}
+               thinned[t.iter,] <- Mo0[["parm"]]
+               Dev[t.iter] <- Mo0[["Dev"]]
+               Mon[t.iter,] <- Mo0[["Monitor"]]}
           }
      ### Output
      out <- list(Acceptance=mean(as.vector(Acceptance[dynsample])),

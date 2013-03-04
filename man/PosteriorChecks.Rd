@@ -102,9 +102,9 @@ PosteriorChecks(x, Parms)
     suggest that a posterior distribution is non-normal or does not fit
     well with a distributional assumption, assuming a distributional
     assumption exists, which it may not. The burn-in is estimated for
-    each chain (only for objects of class \code{demonoid}. Lastly, the
-    integrated autocorrelation time is estimated with \code{\link{IAT}}.)
-    with the \code{\link{burnin}} function.}
+    each chain (only for objects of class \code{demonoid} with the
+    \code{\link{burnin}} function. Lastly, the integrated
+    autocorrelation time is estimated with \code{\link{IAT}}.}
 }
 \author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{

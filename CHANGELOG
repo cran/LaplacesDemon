@@ -1,3 +1,11 @@
+2013-02-16 Added LossMatrix
+2013-02-15 LaplaceApproximation: Added the SOMA algorithm
+2013-02-14 LaplaceApproximation: Added the NM algorithm
+2013-02-13 LaplaceApproximation: Added the HAR algorithm
+2013-02-13 LaplaceApproximation: Revised AGA with Robbins-Monro
+2013-02-12 Added BMK.Diagnostic and plot.bmk
+2013-02-07 LaplacesDemon: Added the AIES algorithm
+2013-02-07 LaplacesDemon: Added optional adaptivity to CHARM and HARM
 2013-01-27 LaplacesDemon: Covariance matrices are now created only when 
            required to minimize RAM for models with thousands of parameters
 2013-01-26 LaplacesDemon: Added the DEMC algorithm

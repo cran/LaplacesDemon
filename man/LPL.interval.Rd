@@ -104,11 +104,12 @@ LPL.interval(Prior, Posterior, prob=0.95, plot=FALSE, PDF=FALSE)
 }
 \references{
   Bernardo, J.M. (2005). "Intrinsic Credible Regions: An Objective
-  Bayesian Approach to Interval Estimation". Sociedad de Estadistica e
-  Investigacion Operativa, 14, 2, p. 317--384.
+  Bayesian Approach to Interval Estimation". \emph{Sociedad de
+  Estadistica e Investigacion Operativa}, 14(2), p. 317--384.
 
   Bernardo, J.M. and Rueda, R. (2002). "Bayesian Hypothesis Testing: A
-  Reference Approach". International Statistical Review, 70, p. 351--372.
+  Reference Approach". \emph{International Statistical Review}, 70,
+  p. 351--372.
 }
 \author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{

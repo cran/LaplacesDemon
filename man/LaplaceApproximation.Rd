@@ -42,7 +42,8 @@ LaplaceApproximation(Model, parm, Data, Interval=1.0E-6,
   \item{Interval}{This argument receives an interval for estimating
     approximate gradients. The logarithm of the unnormalized joint
     posterior density of the Bayesian model is evaluated at +/- 1/2 of
-    this interval. \code{Interval} defaults to 1.0E-6.}
+    this interval. \code{Interval} defaults to 1.0E-6 and is used only
+    with methods AGA and Rprop.}
   \item{Iterations}{This argument accepts an integer that determines the
     number of iterations that \code{LaplaceApproximation} will attempt
     to maximize the logarithm of the unnormalized joint posterior
@@ -54,9 +55,10 @@ LaplaceApproximation(Model, parm, Data, Interval=1.0E-6,
     exceeded, then all will be lost.}
   \item{Method}{This optional argument specifies the method used for
     Laplace Approximation. The default method is \code{LBFGS}. Options
-    include \code{AGA} for adaptive gradient ascent and \code{Rprop} for
-    resilient backpropagation. The previous default, \code{CG}
-    (conjugate gradient), has been deprecated.}
+    include \code{AGA} for adaptive gradient ascent, \code{HAR} for
+    adaptive hit-and-run, \code{NM} for Nelder-Mead, \code{Rprop} for
+    resilient backpropagation, and \code{SOMA} for the Self-Organizing
+    Migration Algorithm.}
   \item{Samples}{This argument indicates the number of posterior samples
     to be taken with sampling importance resampling via the
     \code{\link{SIR}} function, which occurs only when
@@ -111,20 +113,26 @@ LaplaceApproximation(Model, parm, Data, Interval=1.0E-6,
 
   The speed of Laplace Approximation depends on the optimization
   algorithm selected, and typically involves many evaluations of the
-  objective function per iteration (where the AM MCMC algorithm
-  evaluates once per iteration), making most of the MCMC algorithms
-  faster per iteration. The attractiveness of Laplace Approximation is
-  that it typically improves the objective function better than MCMC
-  when the parameters are in low-probability regions (in which MCMC
-  algorithms may suffer unreasonably low acceptance rates) until an
-  adaptive MCMC has ``learned'' how to move better. Laplace
-  Approximation is also typically faster because it is seeking
-  point-estimates, rather than attempting to represent the target
-  distribution with enough simulation draws. Laplace Approximation
-  extends MLE, but shares similar limitations, such as its asymptotic
-  nature with respect to sample size. Bernardo and Smith (2000) note
-  that Laplace Approximation is an attractive numerical approximation
-  algorithm, and will continue to develop.
+  objective function per iteration (where an MCMC algorithm with a
+  multivariate proposal usually evaluates once per iteration), making
+  many MCMC algorithms faster per iteration. The attractiveness
+  of Laplace Approximation is that it typically improves the objective
+  function better than MCMC when the parameters are in low-probability
+  regions (in which MCMC algorithms may suffer unreasonably low
+  acceptance rates). Laplace Approximation is also typically faster
+  because it is seeking point-estimates, rather than attempting to
+  represent the target distribution with enough simulation draws.
+  Laplace Approximation extends MLE, but shares similar limitations,
+  such as its asymptotic nature with respect to sample size. Bernardo
+  and Smith (2000) note that Laplace Approximation is an attractive
+  numerical approximation algorithm, and will continue to develop.
+
+  Laplace Approximation requires an approximation of the Hessian matrix
+  of second derivatives. As model dimension grows (as there are more
+  parameters), the Hessian matrix becomes more difficult to approximate
+  well. For this reason, large-dimensional models (certainly with more
+  than 1,000 parameters) are more sensibly approached with an MCMC
+  algorithm that does not require a proposal covariance matrix.
 
   \code{LaplaceApproximation} seeks a global maximum of the logarithm of
   the unnormalized joint posterior density. The approach differs by
@@ -133,17 +141,18 @@ LaplaceApproximation(Model, parm, Data, Interval=1.0E-6,
   estimate covariance, and save time for the user.
 
   Most optimization algorithms assume that the logarithm of the
-  unnormalized joint posterior density is defined and differentiable. An
-  approximate gradient is taken for each initial value as the difference
-  in the logarithm of the unnormalized joint posterior density due to a
-  slight increase versus decrease in the parameter.
+  unnormalized joint posterior density is defined and differentiable.
+  Some methods calculate an approximate gradient for each initial value
+  as the difference in the logarithm of the unnormalized joint posterior
+  density due to a slight increase versus decrease in the parameter.
 
-  When \code{Method="AGA"}, at 10 evenly-space times,
-  \code{LaplaceApproximation} attempts several step sizes, which are
-  also called rate parameters in other literature, and selects the best
-  step size from a set of 10 fixed options. Thereafter, each iteration
-  in which an improvement does not occur, the step size shrinks, being
-  multiplied by 0.999.
+  When \code{Method="AGA"}, the direction and distance for each
+  parameter is proposed based on an approximate truncated gradient and
+  an adaptive step size. The step size parameter, which is often plural
+  and called rate parameters in other literature, is adapted each
+  iteration with the univariate version of the Robbins-Monro stochastic
+  approximation in Garthwaite (2010). The step size shrinks when a
+  proposal is rejected and expands when a proposal is accepted.
 
   Gradient ascent is criticized for sometimes being relatively slow when
   close to the maximum, and its asymptotic rate of convergence is
@@ -156,9 +165,26 @@ LaplaceApproximation(Model, parm, Data, Interval=1.0E-6,
   subject to singularities. Therefore, gradient ascent takes longer to
   converge, but is more generalizable.
 
+  When \code{Method="HAR"}, a hit-and-run algorithm with a multivariate
+  proposal and adaptive length is used. The length parameter is adapted
+  each iteration with the univariate version of the Robbins-Monro
+  stochastic approximation in Garthwaite (2010). The length shrinks when
+  a proposal is rejected and expands when a proposal is accepted. This
+  is the same algorithm as the HARM or Hit-And-Run Metropolis MCMC
+  algorithm with adaptive length, except that a Metropolis step is not
+  used.
+
   When \code{Method="LBFGS"}, the limited-memory BFGS
   (Broyden-Fletcher-Goldfarb-Shanno) algorithm is called in
   \code{optim}, once per iteration.
+
+  When \code{Method="NM"}, the Nelder-Mead (1965) algorithm is
+  used. This was adapted from the \code{nelder_mead} function in package
+  pracma. Nelder-Mead is a derivative-free, direct search method that is
+  known to become inefficient in large-dimensional problems. As the
+  dimension increases, the search direction becomes increasingly
+  orthogonal to the steepest ascent (usually descent)
+  direction. However, in smaller dimensions, it is a popular algorithm.
 
   When \code{Method="Rprop"}, the approximate gradient is taken for each
   parameter in each iteration, and its sign is compared to the
@@ -169,6 +195,15 @@ LaplaceApproximation(Model, parm, Data, Interval=1.0E-6,
   constrained to the interval [0.001, 50], and initial weights are
   0.0125. This is the resilient backpropagation algorithm, which is
   often denoted as the ``Rprop-'' algorithm of Riedmiller (1994).
+
+  When \code{Method="SOMA"}, a population of ten particles or
+  individuals moves in the direction of the best particle, the leader.
+  The leader does not move in each iteration, and a line-search is used
+  for each non-leader, up to three times the difference in parameter
+  values between each non-leader and leader. This algorithm is
+  derivative-free and often considered in the family of evolution
+  algorithms. Numerous model evaluations are performed per non-leader
+  per iteration. This algorithm was adapted from package soma.
 
   After \code{LaplaceApproximation} finishes, due either to early
   convergence or completing the number of specified iterations, it
@@ -245,8 +280,8 @@ LaplaceApproximation(Model, parm, Data, Interval=1.0E-6,
   \item{Step.Size.Initial}{This is the initial, scalar \code{Step.Size}.}
   \item{Summary}{This is a summary matrix. Rows are parameters. The
     following columns are included: Mode, SD (Standard Deviation), LB
-    (Lower Bound), and UB (Upper Bound). The bounds constitute a 95\% probability
-    interval.}
+    (Lower Bound), and UB (Upper Bound). The bounds constitute a 95\%
+    probability interval.}
   \item{Tolerance.Final}{This is the last \code{Tolerance} of the
     \code{LaplaceApproxiation} algorithm. It is calculated as the square
     root of the sum of the squared differences between a new and current
@@ -263,8 +298,12 @@ LaplaceApproximation(Model, parm, Data, Interval=1.0E-6,
   Bernardo, J.M. and Smith, A.F.M. (2000). "Bayesian Theory". John
   Wiley \& Sons: West Sussex, England.
 
-  Kass, R.E. and Raftery, A.E. (1995). "Bayes Factors". Journal of the
-  American Statistical Association, 90(430), p. 773--795.
+  Garthwaite, P., Fan, Y., and Sisson, S. (2010). "Adaptive Optimal
+  Scaling of Metropolis-Hastings Algorithms Using the Robbins-Monro
+  Process."
+
+  Kass, R.E. and Raftery, A.E. (1995). "Bayes Factors". \emph{Journal
+  of the American Statistical Association}, 90(430), p. 773--795.
      
   Laplace, P. (1774). "Memoire sur la Probabilite des Causes par les
   Evenements." l'Academie Royale des Sciences, 6, 621--656. English
@@ -278,21 +317,30 @@ LaplaceApproximation(Model, parm, Data, Interval=1.0E-6,
 
   Lewis, S.M. and Raftery, A.E. (1997). "Estimating Bayes Factors via
   Posterior Simulation with the Laplace-Metropolis
-  Estimator". Journal of the American Statistical Association, 92,
-  p. 648--655.
+  Estimator". \emph{Journal of the American Statistical Association},
+  92, p. 648--655.
+
+  Nelder, J.A. and Mead, R. (1965). "A Simplex Method for Function
+  Minimization". \emph{The Computer Journal}, 7(4), p. 308--313.
 
   Riedmiller, M. (1994). "Advanced Supervised Learning in Multi-Layer
   Perceptrons - From Backpropagation to Adaptive Learning
-  Algorithms". Computer Standards and Interfaces, 16, p. 265--278.
+  Algorithms". \emph{Computer Standards and Interfaces}, 16,
+  p. 265--278.
      
   Tierney, L. and Kadane, J.B. (1986). "Accurate Approximations for
-  Posterior Moments and Marginal Densities". Journal of the American
-  Statistical Association, 81(393), p. 82--86.
+  Posterior Moments and Marginal Densities". \emph{Journal of the
+  American Statistical Association}, 81(393), p. 82--86.
 
   Tierney, L., Kass. R., and Kadane, J.B. (1989). "Fully Exponential
   Laplace Approximations to Expectations and Variances of Nonpositive
-  Functions". Journal of the American Statistical Association,
+  Functions". \emph{Journal of the American Statistical Association},
   84(407), p. 710--716.
+
+  Zelinka, I. (2004). "SOMA - Self Organizing Migrating Algorithm". In:
+  Onwubolu G.C. and Babu, B.V., editors. "New Optimization
+  Techniques in Engineering". Springer: Berlin, Germany.
+
 }
 \author{Statisticat, LLC \email{software@bayesian-inference.com}}
 \seealso{
@@ -312,13 +360,13 @@ library(LaplacesDemon)
 ##############################  Demon Data  ###############################
 data(demonsnacks)
 y <- log(demonsnacks$Calories)
-X <- cbind(1, as.matrix(demonsnacks[,c(7,8)]))
+X <- cbind(1, as.matrix(log(demonsnacks[,10]+1)))
 J <- ncol(X)
 for (j in 2:J) {X[,j] <- CenterScale(X[,j])}
 mon.names <- c("sigma","mu[1]")
 parm.names <- as.parm.names(list(beta=rep(0,J), log.sigma=0))
 PGF <- function(Data) return(c(rnormv(Data$J,0,10),
-     log(rhalfcauchy(1,25))))
+     log(rhalfcauchy(1,5))))
 MyData <- list(J=J, PGF=PGF, X=X, mon.names=mon.names,
      parm.names=parm.names, y=y)
 
@@ -346,23 +394,24 @@ Model <- function(parm, Data)
 Initial.Values <- rep(0,J+1)
 
 Fit <- LaplaceApproximation(Model, Initial.Values, Data=MyData,
-     Iterations=500, Method="AGA")
+     Iterations=100, Method="HAR")
 Fit
 print(Fit)
-PosteriorChecks(Fit)
-caterpillar.plot(Fit, Parms="beta")
+#PosteriorChecks(Fit)
+#caterpillar.plot(Fit, Parms="beta")
 #plot(Fit, MyData, PDF=FALSE)
-Pred <- predict(Fit, Model, MyData)
-summary(Pred, Discrep="Chi-Square")
-plot(Pred, Style="Covariates", Data=MyData)
-plot(Pred, Style="Density", Rows=1:9)
-plot(Pred, Style="Fitted")
-plot(Pred, Style="Jarque-Bera")
-plot(Pred, Style="Predictive Quantiles")
-plot(Pred, Style="Residual Density")
-plot(Pred, Style="Residuals")
-Levene.Test(Pred)
-Importance(Fit, Model, MyData, Discrep="Chi-Square")
+#Pred <- predict(Fit, Model, MyData)
+#summary(Pred, Discrep="Chi-Square")
+#plot(Pred, Style="Covariates", Data=MyData)
+#plot(Pred, Style="Density", Rows=1:9)
+#plot(Pred, Style="Fitted")
+#plot(Pred, Style="Jarque-Bera")
+#plot(Pred, Style="Predictive Quantiles")
+#plot(Pred, Style="Residual Density")
+#plot(Pred, Style="Residuals")
+#Levene.Test(Pred)
+#Importance(Fit, Model, MyData, Discrep="Chi-Square")
+
 #Fit$Covar is scaled (2.38^2/d) and submitted to LaplacesDemon as Covar.
 #Fit$Summary[,1] is submitted to LaplacesDemon as Initial.Values.
 #End
@@ -370,6 +419,10 @@ Importance(Fit, Model, MyData, Discrep="Chi-Square")
 \keyword{Adaptive}
 \keyword{Bayesian Inference}
 \keyword{Gradient Ascent}
+\keyword{Hit-And-Run}
 \keyword{Initial Values}
+\keyword{Limited-Memory BFGS}
+\keyword{Nelder-Mead}
 \keyword{Optimization}
 \keyword{Resilient Backpropagation}
+\keyword{Self-Organizing Migration Algorithm}

@@ -122,8 +122,8 @@ p.interval(obj, HPD=TRUE, MM=TRUE, prob=0.95, plot=FALSE, PDF=FALSE, \dots)
 }
 \references{
   Bernardo, J.M. (2005). "Intrinsic Credible Regions: An Objective
-  Bayesian Approach to Interval Estimation". Sociedad de Estadistica e
-  Investigacion Operativa, 14, 2, p. 317--384.
+  Bayesian Approach to Interval Estimation". \emph{Sociedad de
+  Estadistica e Investigacion Operativa}, 14(2), p. 317--384.
 }
 \author{Statisticat, LLC \email{software@bayesian-inference.com}}
 \seealso{

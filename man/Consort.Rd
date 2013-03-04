@@ -34,7 +34,8 @@
   \item Algorithm: The final algorithm must be non-adaptive, so that the
     Markov property holds.
   \item Acceptance Rate: The acceptance rate is considered satisfactory
-    if it is within the interval [15\%,50\%].
+    if it is within the interval [15\%,50\%] for most algorithms. Some
+    algorithms have different recommended intervals.
   \item MCSE: The Monte Carlo Standard Error (MCSE) is considered
     satisfactory for each target distribution if it is less than 6.27\%
     of the standard deviation of the target distribution. This allows
@@ -52,7 +53,7 @@
     information). The \code{\link{ESS}} function is used.
   \item Stationarity: Each target distribution is considered
     satisfactory if it is estimated to be stationary with the
-    \code{\link{Geweke.Diagnostic}} function.
+    \code{\link{BMK.Diagnostic}} function.
 }
   Bear in mind that the MCSE, ESS, and Stationarity criteria are all
   univariate measures applied to each marginal posterior
@@ -77,7 +78,7 @@
   The black vertical lines show the standard error, and the red vertical
   lines show the 95\% interval.
 
-  If the user has an object of class \code{demonoid.hpc}, the
+  If the user has an object of class \code{demonoid.hpc}, then the
   \code{Consort} function may be still be applied, but a particular
   chain in the object must be specified as a component in a list. For
   example, with an object called \code{Fit} and a goal of consorting
@@ -89,20 +90,22 @@
   and recommend a different algorithm. However, the user may be
   convinced that the current algorithm is best, and believe instead that
   MCMC found a local solution, and is leaving it to find the global
-  solution, in which case adaptations may increase again. If this is
-  true, then it may be best to ignore the newly suggested algorithm, and
-  continue with the current algorithm. The suggested code may be
-  helpful, but it is merely a suggestion.
+  solution, in which case adaptations may increase again. Diminishing
+  adaptation may have occurred in a previous run, and is not found in
+  the current run because adaptation is essentially finished. If either
+  of these is true, then it may be best to ignore the newly suggested
+  algorithm, and continue with the current algorithm. The suggested code
+  may be helpful, but it is merely a suggestion.
 }
 \references{
   Flegal, J.M., Haran, M., and Jones, G.L. (2008). "Markov chain Monte
-  Carlo: Can We Trust the Third Significant Figure?". Statistical
-  Science, 23, p. 250--260.
+  Carlo: Can We Trust the Third Significant Figure?". \emph{Statistical
+  Science}, 23, p. 250--260.
 }
 \author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{
+  \code{\link{BMK.Diagnostic}},
   \code{\link{ESS}},
-  \code{\link{Geweke.Diagnostic}},
   \code{\link{LaplacesDemon}},
   \code{\link{LaplacesDemon.hpc}},
   \code{\link{LPL.interval}},

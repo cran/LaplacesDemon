@@ -99,19 +99,19 @@ MCSS(x, a)
 }
 \references{
   Flegal, J.M., Haran, M., and Jones, G.L. (2008). "Markov chain Monte
-  Carlo: Can We Trust the Third Significant Figure?". Statistical
-  Science, 23, p. 250--260.
+  Carlo: Can We Trust the Third Significant Figure?". \emph{Statistical
+  Science}, 23, p. 250--260.
 
   Gelman, A., Carlin, J., Stern, H., and Rubin, D. (2004). "Bayesian
   Data Analysis, Texts in Statistical Science, 2nd ed.". Chapman and
   Hall, London.
 
-  Geyer, C.J. (1992). "Practical Markov Chain Monte Carlo". Statistical
-  Science, 7, 4, p. 473--483.
+  Geyer, C.J. (1992). "Practical Markov Chain Monte Carlo".
+  \emph{Statistical Science}, 7, 4, p. 473--483.
   
   Jones, G.L., Haran, M., Caffo, B.S., and Neath, R. (2006). "Fixed-Width
-  Output Analysis for Markov chain Monte Carlo". Journal of the American
-  Statistical Association, 101, 1, p. 1537--1547.
+  Output Analysis for Markov chain Monte Carlo". \emph{Journal of the
+  American Statistical Association}, 101(1), p. 1537--1547.
 }
 \author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{

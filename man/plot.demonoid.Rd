@@ -10,16 +10,17 @@
   or the value of epsilon, across adaptations.
 }
 \usage{
-\method{plot}{demonoid}(x, BurnIn=1, Data, PDF=FALSE, Parms, \dots)
-\method{plot}{demonoid.hpc}(x, BurnIn=1, Data, PDF=FALSE, Parms, \dots)
+\method{plot}{demonoid}(x, BurnIn=0, Data, PDF=FALSE, Parms, \dots)
+\method{plot}{demonoid.hpc}(x, BurnIn=0, Data, PDF=FALSE, Parms, \dots)
 }
 \arguments{
   \item{x}{
     This required argument is an object of class \code{demonoid} or
     \code{demonoid.hpc}.}
   \item{BurnIn}{
-    This argument requires a positive integer that indicates a number of
-    iterations to discard as burn-in for the purposes of plotting.}
+    This argument requires zero or a positive integer that indicates the
+    number of iterations to discard as burn-in for the purposes of
+    plotting. For more information on burn-in, see \code{\link{burnin}}.}
   \item{Data}{
     This required argument must receive the list of data that was
     supplied to \code{\link{LaplacesDemon}} to create the object of
@@ -85,6 +86,7 @@
 }
 \author{Statisticat, LLC \email{software@bayesian-inference.com}}
 \seealso{
+  \code{\link{burnin}},
   \code{\link{ESS}},
   \code{\link{LaplacesDemon}}, and
   \code{\link{LaplacesDemon.hpc}}.}

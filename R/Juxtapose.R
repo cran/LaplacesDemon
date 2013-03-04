@@ -78,6 +78,7 @@ Juxtapose <- function(x)
           else if(alg == "Adaptive Metropolis") alg <- "AM"
           else if(alg == "Adaptive-Mixture Metropolis") alg <- "AMM"
           else if(alg == "Adaptive Metropolis-within-Gibbs") alg <- "AMWG"
+          else if(alg == "Affine-Invariant Ensemble Sampler") alg <- "AIES"
           else if(alg == "Componentwise Hit-And-Run Metropolis") alg <- "CHARM"
           else if(alg == "Componentwise Slice") alg <- "CS"
           else if(alg == "Delayed Rejection Adaptive Metropolis")
@@ -100,6 +101,7 @@ Juxtapose <- function(x)
                alg <- "SAMWG"
           else if(alg == "Sequential Metropolis-within-Gibbs")
                alg <- "SMWG"
+          else if(alg == "Slice Sampler") alg <- "Slice"
           else if(alg == "Tempered Hamiltonian Monte Carlo") alg <- "THMC"
           else if(alg == "t-walk") alg <- "twalk"
           else if(alg == "Updating Sequential Adaptive Metropolis-within-Gibbs")
@@ -117,9 +119,9 @@ Juxtapose <- function(x)
           iter.min <- x[[i]][["Iterations"]] / x[[i]][["Minutes"]]
           t.iter.min <- x[[i]][["Iterations"]] / x[[i]][["Thinning"]] /
                x[[i]][["Minutes"]]
-          if(x[[i]][["Rec.BurnIn.Thinned"]] == x[[i]][["Thinned.Samples"]])
+          if(x[[i]][["Rec.BurnIn.Thinned"]] >= x[[i]][["Thinned.Samples"]])
                prop.stat <- 0
-          else prop.stat <- 1 - ((x[[i]][["Rec.BurnIn.Thinned"]] - 1) /
+          else prop.stat <- 1 - (x[[i]][["Rec.BurnIn.Thinned"]] /
                x[[i]][["Thinned.Samples"]])
           if(all(is.na(x[[i]][["Summary2"]]))) {
                iat.500 <- iat.025 <- iat.975 <- Inf}

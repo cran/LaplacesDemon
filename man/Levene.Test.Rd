@@ -76,8 +76,8 @@ Levene.Test(x, Method="U", G=NULL, Data=NULL)
 \references{
   Levene, H. (1960). "Robust Tests for Equality of Variances". In
   I. Olkins, S. G. Ghurye, W. Hoeffding, W. G. Madow, & H. B. Mann
-  (Eds.), Contributions to Probability and Statistics, p. 278--292.
-  Stanford, CA: Stanford University Press.
+  (Eds.), \emph{Contributions to Probability and Statistics},
+  p. 278--292. Stanford University Press: Stanford, CA.
 }
 \author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{

@@ -54,7 +54,7 @@ beta prime distribution, though it is not (yet) included here.
 }
 \references{
   Dubey, S.D. (1970). "Compound Gamma, Beta and F Distributions".
-  Metrika 16, p. 27--31.
+  \emph{Metrika}, 16, p. 27--31.
 }
 \seealso{
   \code{\link{dbeta}}

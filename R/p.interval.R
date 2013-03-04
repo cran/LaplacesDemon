@@ -42,7 +42,7 @@ p.interval <- function(obj, HPD=TRUE, MM=TRUE, prob=0.95, plot=FALSE,
      else {
           x <- as.matrix(obj)
           oname <- deparse(substitute(obj))
-          colnames(x) <- oname
+          colnames(x) <- colnames(obj)#oname
           obj <- x
           }
      if(any(!is.finite(obj)))

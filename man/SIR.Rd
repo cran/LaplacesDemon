@@ -62,8 +62,8 @@ SIR(Model, Data, mu, Sigma, n=1000)
 }
 \references{
   Gordon, N.J., Salmond, D.J., and Smith, A.F.M. (1993). "Novel Approach
-  to Nonlinear/Non-Gaussian Bayesian State Estimation". IEEE Proceedings
-  F on Radar and Signal Processing, 140 (2), p. 107--113.
+  to Nonlinear/Non-Gaussian Bayesian State Estimation". \emph{IEEE
+  Proceedings F on Radar and Signal Processing}, 140(2), p. 107--113.
 }
 \author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{

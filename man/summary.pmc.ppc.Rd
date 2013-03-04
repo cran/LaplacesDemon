@@ -245,26 +245,26 @@
 \references{
   Ando, T. (2007). "Bayesian Predictive Information Criterion for
   the Evaluation of Hierarchical Bayesian and Empirical Bayes Models".
-  Biometrika, 94 (2), p. 443--458.
+  \emph{Biometrika}, 94(2), p. 443--458.
   
   Gelfand, A. (1996). "Model Determination Using Sampling Based
   Methods". In Gilks, W., Richardson, S., Spiegehalter, D., Chapter 9 in
   Markov Chain Monte Carlo in Practice. Chapman \& Hall: Boca Raton, FL.
 
   Gelfand, A. and Ghosh, S. (1998). "Model Choice: A Minimum Posterior
-  Predictive Loss Approach". Biometrika, 85, p. 1--11.
+  Predictive Loss Approach". \emph{Biometrika}, 85, p. 1--11.
 
   Gelman, A., Meng, X.L., and Stern H. (1996). "Posterior Predictive
-  Assessment of Model Fitness via Realized Discrepancies". Statistica
-  Sinica, 6, p. 733--807.
+  Assessment of Model Fitness via Realized Discrepancies".
+  \emph{Statistica Sinica}, 6, p. 733--807.
 
   Laud, P.W. and Ibrahim, J.G. (1995). "Predictive Model
-  Selection". Journal of the Royal Statistical Society, B 57,
+  Selection". \emph{Journal of the Royal Statistical Society}, B 57,
   p. 247--262.
 
   Spiegelhalter, D.J., Best, N.G., Carlin, B.P., and van der Linde, A.
   (2002). "Bayesian Measures of Model Complexity and Fit (with
-  Discussion)". Journal of the Royal Statistical Society, B 64,
+  Discussion)". \emph{Journal of the Royal Statistical Society}, B 64,
   p. 583--639.
 }
 \author{Statisticat, LLC. \email{software@bayesian-inference.com}}

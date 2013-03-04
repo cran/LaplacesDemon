@@ -4,14 +4,15 @@
 # The purpose of the plot.pmc function is to plot an object of class pmc. #
 ###########################################################################
 
-plot.pmc <- function(x, BurnIn=1, Data=NULL, PDF=FALSE, Parms=NULL, ...)
+plot.pmc <- function(x, BurnIn=0, Data=NULL, PDF=FALSE, Parms=NULL, ...)
      {
      ### Initial Checks
      if(missing(x)) stop("The x argument is required.")
      if(class(x) != "pmc")
           stop("x must be of class pmc.")
      if(is.null(Data)) stop("The Data argument is NULL.")
-     if(BurnIn >= nrow(x$Posterior2)) BurnIn <- 1
+     if(BurnIn >= nrow(x$Posterior2)) BurnIn <- 0
+     Stat.at <- BurnIn + 1
      ### Selecting Parms
      if(is.null(Parms)) {
           Posterior <- x$Posterior2
@@ -42,37 +43,37 @@ plot.pmc <- function(x, BurnIn=1, Data=NULL, PDF=FALSE, Parms=NULL, ...)
           ### Plot Parameter Trace Plots
           k <- keepcols[j]
           LL <- Me <- UL <- matrix(0, x$M, x$Iterations)
-          for (m in 1:x$M) {for (i in BurnIn:x$Iterations) {
+          for (m in 1:x$M) {for (i in Stat.at:x$Iterations) {
                LL[m,i] <- as.vector(quantile(x$Posterior1[,k,i,m],
                     probs=0.025))
                Me[m,i] <- as.vector(quantile(x$Posterior1[,k,i,m],
                     probs=0.500))
                UL[m,i] <- as.vector(quantile(x$Posterior1[,k,i,m],
                     probs=0.975))}}
-          plot(BurnIn:x$Iterations, Me[1,BurnIn:x$Iterations],
-               ylim=c(min(LL[,BurnIn:x$Iterations]),
-                    max(UL[,BurnIn:x$Iterations])), pch=20,
+          plot(Stat.at:x$Iterations, Me[1,Stat.at:x$Iterations],
+               ylim=c(min(LL[,Stat.at:x$Iterations]),
+                    max(UL[,Stat.at:x$Iterations])), pch=20,
                xlab="Iterations", ylab="Value",
                main=colnames(Posterior)[j])
-          for (i in BurnIn:x$Iterations) lines(c(i,i), c(LL[1,i], UL[1,i]))
+          for (i in Stat.at:x$Iterations) lines(c(i,i), c(LL[1,i], UL[1,i]))
           if(x$M > 1) {
                for (m in 2:x$M) {
-                    points(BurnIn:x$Iterations+(m-1)*0.1,
-                         Me[m,BurnIn:x$Iterations], col=m, pch=20)
-                    for (i in BurnIn:x$Iterations) {
+                    points(Stat.at:x$Iterations+(m-1)*0.1,
+                         Me[m,Stat.at:x$Iterations], col=m, pch=20)
+                    for (i in Stat.at:x$Iterations) {
                          lines(c(i+(m-1)*0.1,i+(m-1)*0.1),
                               c(LL[m,i], UL[m,i]), col=m)}}}
           ### Plot Parameter Densities
-          plot(density(Posterior[BurnIn:x$Thinned.Samples,j]),
+          plot(density(Posterior[Stat.at:x$Thinned.Samples,j]),
                xlab="Value", main=colnames(Posterior)[j])
-          polygon(density(Posterior[BurnIn:x$Thinned.Samples,j]),
+          polygon(density(Posterior[Stat.at:x$Thinned.Samples,j]),
                col="black", border="black")
           abline(v=0, col="red", lty=2)
           }
      ### Plot Deviance Density
-     plot(density(x$Deviance[BurnIn:length(x$Deviance)]),
+     plot(density(x$Deviance[Stat.at:length(x$Deviance)]),
           xlab="Value", main="Deviance")
-     polygon(density(x$Deviance[BurnIn:length(x$Deviance)]), col="black",
+     polygon(density(x$Deviance[Stat.at:length(x$Deviance)]), col="black",
                border="black")
      abline(v=0, col="red", lty=2)
      ### Plot Monitored Variable Densities
@@ -80,9 +81,9 @@ plot.pmc <- function(x, BurnIn=1, Data=NULL, PDF=FALSE, Parms=NULL, ...)
      else if(is.matrix(x$Monitor)) {
           J <- ncol(x$Monitor); nn <- nrow(x$Monitor)}
      for (j in 1:J) {
-          plot(density(x$Monitor[BurnIn:nn,j]),
+          plot(density(x$Monitor[Stat.at:nn,j]),
                xlab="Value", main=Data$mon.names[j])
-          polygon(density(x$Monitor[BurnIn:nn,j]), col="black",
+          polygon(density(x$Monitor[Stat.at:nn,j]), col="black",
                border="black")
           abline(v=0, col="red", lty=2)}
      ### Plot Convergence Diagnostics

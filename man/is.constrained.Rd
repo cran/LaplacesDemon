@@ -24,6 +24,10 @@ is.constrained(Model, Initial.Values, Data)
   constrained values that are ouput in the fifth component of the
   \code{Model} specification are suitable as initial values, not the
   tested initial values.
+
+  A parameter may be constrained and this function may not discover the
+  constraint, since the discovery depends on the initial values and
+  whether or not they change as they are passed through the model.
 }
 \value{
   The \code{is.constrained} function returns a logical vector, equal in

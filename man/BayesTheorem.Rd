@@ -120,9 +120,9 @@ BayesTheorem(PrA, PrBA)
 \references{
   Bayes, T. and Price, R. (1763). "An Essay Towards Solving a Problem in
   the Doctrine of Chances". By the late Rev. Mr. Bayes, communicated by
-  Mr. Price, in a letter to John Canton, M.A. and F.R.S. Philosophical
-  Transactions of the Royal Statistical Society of London, 53,
-  p. 370--418.
+  Mr. Price, in a letter to John Canton, M.A. and F.R.S.
+  \emph{Philosophical Transactions of the Royal Statistical Society of
+  London}, 53, p. 370--418.
 }
 \author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{

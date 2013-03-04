@@ -66,8 +66,8 @@ BayesianBootstrap(X, n=1000, Method="weights", Status=NULL)
   the first dimension of the array.
 }
 \references{
-  Rubin, D.B. (1981). "The Bayesian Bootstrap". The Annals of
-  Statistics, 9(1), p. 130--134.
+  Rubin, D.B. (1981). "The Bayesian Bootstrap". \emph{The Annals of
+  Statistics}, 9(1), p. 130--134.
 }
 \author{Bogumil Kaminski, \email{bkamins@sgh.waw.pl} and
   Statisticat, LLC. \email{software@bayesian-inference.com}}

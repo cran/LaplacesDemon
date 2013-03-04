@@ -38,8 +38,8 @@ Gelfand.Diagnostic(x, k=3, pen=FALSE)
 \references{
   Gelfand, A.E., Hills, S., Racine-Poon, A., and Smith,
   A.F.M. (1990). "Illustration of Bayesian Inference in Normal Data
-  Models Using Gibbs Sampling". Journal of the American Statistical
-  Association, 85, p. 972--985.
+  Models Using Gibbs Sampling". \emph{Journal of the American
+  Statistical Association}, 85, p. 972--985.
 }
 \author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{

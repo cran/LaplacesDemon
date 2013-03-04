@@ -80,7 +80,8 @@ These functions are similar to those in the \code{VGAM} package.
   Laplace, P. (1774). "Memoire sur la Probabilite des Causes par les
   Evenements." l'Academie Royale des Sciences, 6, 621--656. English
   translation by S.M. Stigler in 1986 as "Memoir on the Probability
-  of the Causes of Events" in Statistical Science, 1(3), 359--378.
+  of the Causes of Events" in \emph{Statistical Science}, 1(3),
+  p. 359--378.
 }
 \seealso{
   \code{\link{dalaplace}},

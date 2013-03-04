@@ -89,11 +89,11 @@ elicit(n, cats, cat.names, show.plot=FALSE)
 }
 \references{
   Hahn, E.D. (2006). "Re-examining Informative Prior Elicitation Through
-  the Lens of Markov chain Monte Carlo Methods". Journal of the Royal
-  Statistical Society, A 169 (1), p. 37--48.
+  the Lens of Markov chain Monte Carlo Methods". \emph{Journal of the
+  Royal Statistical Society}, A 169 (1), p. 37--48.
   
   Savage, L.J. (1971). "Elicitation of Personal Probabilities and
-  Expectations". Journal of the American Statistical Association,
+  Expectations". \emph{Journal of the American Statistical Association},
   66(336), p. 783--801.
 }
 \author{Statisticat, LLC. \email{software@bayesian-inference.com}}

@@ -77,19 +77,20 @@ KLD(px, py, base)
 }
 \references{
   Berger, J.O., Bernardo, J.M., and Sun, D. (2009). "The Formal
-  Definition of Reference Priors". The Annals of Statistics, 37(2),
-  p. 905--938.
+  Definition of Reference Priors". \emph{The Annals of Statistics},
+  37(2), p. 905--938.
 
   Bernardo, J.M. and Rueda, R. (2002). "Bayesian Hypothesis Testing: A
-  Reference Approach". International Statistical Review, 70,
+  Reference Approach". \emph{International Statistical Review}, 70,
   p. 351--372.
 
   Bernardo, J.M. (2005). "Intrinsic Credible Regions: An Objective
-  Bayesian Approach to Interval Estimation". Sociedad de Estadistica e
-  Investigacion Operativa, 14, 2, p. 317--384.
+  Bayesian Approach to Interval Estimation". \emph{Sociedad de
+  Estadistica e Investigacion Operativa}, 14(2), p. 317--384.
 
   Kullback, S. and Leibler, R.A. (1951). "On Information and
-  Sufficiency". The Annals of Mathematical Statistics, 22(1), p. 79--86.
+  Sufficiency". \emph{The Annals of Mathematical Statistics}, 22(1),
+  p. 79--86.
 }
 \author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{

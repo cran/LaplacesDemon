@@ -11,6 +11,12 @@ is.bayesfactor <- function(x)
      if(identical(class(x), "bayesfactor")) bayesfactor <- TRUE
      return(bayesfactor)
      }
+is.bmk <- function(x)
+     {
+     bmk <- FALSE
+     if(identical(class(x), "bmk")) bmk <- TRUE
+     return(bmk)
+     }
 is.demonoid <- function(x)
      {
      demonoid <- FALSE

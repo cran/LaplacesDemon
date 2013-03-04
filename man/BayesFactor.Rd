@@ -116,12 +116,13 @@ model is the true model.
   Jeffreys, H. (1961). "Theory of Probability, Third Edition". Oxford
   University Press: Oxford, England.
 
-  Kass, R.E. and Raftery, A.E. (1995). "Bayes Factors". Journal of the
-  American Statistical Association, 90(430), p. 773--795.
+  Kass, R.E. and Raftery, A.E. (1995). "Bayes Factors". \emph{Journal
+  of the American Statistical Association}, 90(430), p. 773--795.
 
   Lewis, S.M. and Raftery, A.E. (1997). "Estimating Bayes Factors via
-  Posterior Simulation with the Laplace-Metropolis Estimator". Journal
-  of the American Statistical Association, 92, p. 648--655.
+  Posterior Simulation with the Laplace-Metropolis Estimator".
+  \emph{Journal of the American Statistical Association}, 92,
+  p. 648--655.
 }
 \author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{
@@ -146,12 +147,12 @@ library(LaplacesDemon)
 data(demonsnacks)
 J <- 2
 y <- log(demonsnacks$Calories)
-X <- cbind(1, as.matrix(demonsnacks[,7]))
+X <- cbind(1, as.matrix(log(demonsnacks[,10]+1)))
 X[,2] <- CenterScale(X[,2])
 mon.names <- c("LP","sigma")
 parm.names <- as.parm.names(list(beta=rep(0,J), log.sigma=0))
 PGF <- function(Data) return(c(rnormv(Data$J,0,10),
-     log(rhalfcauchy(1,25))))
+     log(rhalfcauchy(1,5))))
 MyData <- list(J=J, PGF=PGF, X=X, mon.names=mon.names,
      parm.names=parm.names, y=y)
 

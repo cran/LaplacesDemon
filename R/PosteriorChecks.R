@@ -17,14 +17,14 @@ PosteriorChecks <- function(x, Parms=NULL)
           !identical(class(x), "laplace") &
           !identical(class(x), "pmc"))
           stop("An object of class demonoid, laplace, or pmc is required.")
-     #Kurtosis and Skewness Functions
+     ### Kurtosis and Skewness Functions
      kurtosis <- function(x) {  
-          m4 <- mean((x-mean(x))^4) 
-          kurt <- m4/(sd(x)^4)-3  
+          m4 <- mean((x - mean(x))^4) 
+          kurt <- m4 / (sd(x)^4)-3  
           return(kurt)}
      skewness <-  function(x) {
-          m3 <- mean((x-mean(x))^3)
-          skew <- m3/(sd(x)^3)
+          m3 <- mean((x - mean(x))^3)
+          skew <- m3 / (sd(x)^3)
           return(skew)}
      ### Posterior Checks
      if(identical(class(x), "demonoid")) {
@@ -34,7 +34,7 @@ PosteriorChecks <- function(x, Parms=NULL)
                cat("\nWARNING: Non-stationary samples used.\n\n")}
           else {
                post <- cbind(x$Posterior2,
-                    x$Monitor[x$Rec.BurnIn.Thinned:nrow(x$Monitor),])}
+                    x$Monitor[(x$Rec.BurnIn.Thinned+1):nrow(x$Monitor),])}
           colnames(post) <- c(colnames(x$Posterior1), colnames(x$Monitor))
           ### Selecting Parms
           if(is.null(Parms)) {keepcols <- 1:ncol(post)}
@@ -54,9 +54,9 @@ PosteriorChecks <- function(x, Parms=NULL)
           temp <- colnames(post)[keepcols]
           post <- post[,keepcols]
           colnames(post) <- temp
-          #Correlation Table
+          ### Correlation Table
           options(warn=-1); postcor <- cor(post); options(warn=0)
-          #Summary Table
+          ### Summary Table
           Summ <- matrix(NA, ncol(post), 6)
           rownames(Summ) <- colnames(post)
           colnames(Summ) <- c("p(theta > 0)","N.Modes","Kurtosis",
@@ -135,9 +135,9 @@ PosteriorChecks <- function(x, Parms=NULL)
           temp <- colnames(post)[keepcols]
           post <- post[,keepcols]
           colnames(post) <- temp
-          #Correlation Table
+          ### Correlation Table
           options(warn=-1); postcor <- cor(post); options(warn=0)
-          #Summary Table
+          ### Summary Table
           Summ <- matrix(NA, ncol(post), 6)
           rownames(Summ) <- colnames(post)
           colnames(Summ) <- c("p(theta > 0)","N.Modes","Kurtosis",
@@ -152,7 +152,7 @@ PosteriorChecks <- function(x, Parms=NULL)
           Summ[,5] <- rep(1, nrow(Summ))
           options(warn=0)
           }
-     #Output
+     ### Output
      out <- list(Posterior.Correlation=postcor, Posterior.Summary=Summ)
      class(out) <- "posteriorchecks"
      return(out)

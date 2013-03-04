@@ -138,16 +138,17 @@ LML(Model=NULL, Data=NULL, Modes=NULL, theta=NULL, LL=NULL, method="NSIS")
   Data Analysis, Texts in Statistical Science, 2nd ed.". Chapman and
   Hall, London.
      
-  Kass, R.E. and Raftery, A.E. (1995). "Bayes Factors". Journal of the
-  American Statistical Association, 90(430), p. 773--795.
+  Kass, R.E. and Raftery, A.E. (1995). "Bayes Factors". \emph{Journal
+  of the American Statistical Association}, 90(430), p. 773--795.
 
   Lewis, S.M. and Raftery, A.E. (1997). "Estimating Bayes Factors via
-  Posterior Simulation with the Laplace-Metropolis Estimator". Journal
-  of the American Statistical Association, 92, p. 648--655.
+  Posterior Simulation with the Laplace-Metropolis Estimator".
+  \emph{Journal of the American Statistical Association}, 92,
+  p. 648--655.
 
   Newton, M.A. and Raftery, A.E. (1994). "Approximate Bayesian
-  Inference by the Weighted Likelihood Bootstrap". Journal of the
-  Royal Statistical Society, Series B 3, p. 3--48.
+  Inference by the Weighted Likelihood Bootstrap". \emph{Journal of the
+  Royal Statistical Society}, Series B 3, p. 3--48.
 }
 \author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{

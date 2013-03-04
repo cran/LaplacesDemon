@@ -86,30 +86,31 @@ parameterization is faster than the traditional parameterization.
 }
 \references{
   Anderson, D.N. (1992). "A Multivariate Linnik Distribution".
-  Statistical Probability Letters, 14, p. 333--336.
+  \emph{Statistical Probability Letters}, 14, p. 333--336.
 
   Eltoft, T., Kim, T., and Lee, T. (2006). "On the Multivariate Laplace
-  Distribution". IEEE Signal Processing Letters, 13(5), p. 300--303.
+  Distribution". \emph{IEEE Signal Processing Letters}, 13(5),
+  p. 300--303.
 
   Ernst, M. D. (1998). "A Multivariate Generalized Laplace
-  Distribution". Computational Statistics, 13, p. 227--232.
+  Distribution". \emph{Computational Statistics}, 13, p. 227--232.
 
   Fang, K.T., Kotz, S., and Ng, K.W. (1990). "Symmetric Multivariate and
   Related Distributions". Monographs on Statistics and Probability, 36,
   Chapman-Hall, London.
 
   Fernandez, C., Osiewalski, J. and Steel, M.F.J. (1995). "Modeling and
-  Inference with v-spherical Distributions". Journal of the American
-  Statistical Association, 90, p. 1331--1340.
+  Inference with v-spherical Distributions". \emph{Journal of the
+  American Statistical Association}, 90, p. 1331--1340.
   
   Gomez, E., Gomez-Villegas, M.A., and Marin, J.M. (1998). "A
   Multivariate Generalization of the Power Exponential Family of
-  Distributions". Communications in Statistics-Theory and Methods, 27(3),
-  p. 589--600.
+  Distributions". \emph{Communications in Statistics-Theory and
+  Methods}, 27(3), p. 589--600.
 
   Haro-Lopez, R.A. and Smith, A.F.M. (1999). "On Robust Bayesian
-  Analysis for Location and Scale Parameters". Journal of Multivariate
-  Analysis, 70, p. 30--56.
+  Analysis for Location and Scale Parameters". \emph{Journal of
+  Multivariate Analysis}, 70, p. 30--56.
 
   Kotz., S., Kozubowski, T.J., and Podgorski, K. (2001). "The Laplace
   Distribution and Generalizations: A Revisit with Applications to
@@ -117,16 +118,16 @@ parameterization is faster than the traditional parameterization.
   Boston, MA.
 
   Ulrich, G. and Chen, C.C. (1987). "A Bivariate Double Exponential
-  Distribution and its Generalization". ASA Proceedings on Statistical
-  Computing, p. 127--129.
+  Distribution and its Generalization". \emph{ASA Proceedings on
+  Statistical Computing}, p. 127--129.
 
   Wang, D., Zhang, C., and Zhao, X. (2008). "Multivariate Laplace
-  Filter: A Heavy-Tailed Model for Target Tracking". Proceedings of the
-  19th International Conference on Pattern Recognition: FL.
+  Filter: A Heavy-Tailed Model for Target Tracking". \emph{Proceedings
+  of the 19th International Conference on Pattern Recognition}: FL.
 
   Wainwright, M.J. and Simoncelli, E.P. (2000). "Scale Mixtures of
-  Gaussians and the Statistics of Natural Images". Advances in Neural
-  Information Processing Systems, 12, p. 855--861.
+  Gaussians and the Statistics of Natural Images". \emph{Advances in
+  Neural Information Processing Systems}, 12, p. 855--861.
 }
 \author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{

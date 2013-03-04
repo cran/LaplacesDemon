@@ -81,29 +81,26 @@ Combine <- function(x, Data, Thinning=1)
           thinned <- Thin(thinned, By=Thinning)
           Dev <- matrix(Thin(Dev, By=Thinning))
           Mon <- Thin(Mon, By=Thinning)}
+     thinned.rows <- nrow(thinned)
      ### Assess Stationarity
      cat("\nAssessing Stationarity\n")
-     burn.start <- trunc(seq(from=1, to=nrow(thinned),
-          by=nrow(thinned)/10))
-     geweke <- matrix(9, length(burn.start), LIV)
-     geweke.ct <- rep(0, LIV)
-     options(warn=-1)
-     for (i in 1:length(burn.start)) {
-          thinned2 <- matrix(thinned[burn.start[i]:nrow(thinned),],
-               nrow(thinned)-burn.start[i]+1, ncol(thinned))
-          test <- try(as.vector(Geweke.Diagnostic(thinned2)), silent=TRUE)
-          if(!inherits(test, "try-error")) geweke[i,] <- as.vector(test)}
-     options(warn=0)
-     rm(thinned2)
-     geweke <- ifelse(!is.finite(geweke), 9, geweke)
-     geweke <- abs(geweke) < 2
-     for (j in 1:LIV) {geweke.ct[j] <- which(geweke[,j] == TRUE)[1]}
-     geweke.ct <- ifelse(is.na(geweke.ct), nrow(thinned), geweke.ct)
-     BurnIn <- burn.start[max(geweke.ct)]
-     BurnIn <- ifelse(is.na(BurnIn), nrow(thinned), BurnIn)
+     if(thinned.rows %% 10 == 0) thinned2 <- thinned
+     if(thinned.rows %% 10 != 0) thinned2 <- thinned[1:(10*trunc(thinned.rows/10)),]
+     HD <- BMK.Diagnostic(thinned2, batches=10)
+     Ind <- 1 * (HD > 0.5)
+     BurnIn <- thinned.rows
+     batch.list <- seq(from=1, to=nrow(thinned2), by=floor(nrow(thinned2)/10))
+     for (i in 1:9) {
+          if(sum(Ind[,i:9]) == 0) {
+               BurnIn <- batch.list[i] - 1
+               break
+               }
+          }
+     Stat.at <- BurnIn + 1
+     rm(batch.list, HD, Ind, thinned2)
      ### Assess Thinning and ESS Size for all parameter samples
      cat("Assessing Thinning and ESS\n")
-     acf.temp <- matrix(1, trunc(10*log10(nrow(thinned))), LIV)
+     acf.temp <- matrix(1, trunc(10*log10(thinned.rows)), LIV)
      ESS1 <- Rec.Thin <- rep(1, LIV)
      for (j in 1:LIV) {
           temp0 <- acf(thinned[,j], lag.max=nrow(acf.temp), plot=FALSE)
@@ -115,10 +112,10 @@ Combine <- function(x, Data, Thinning=1)
      ESS2 <- ESS(Dev)
      ESS3 <- ESS(Mon)
      ### Assess ESS for stationary samples
-     if(BurnIn < nrow(thinned)) {
-          ESS4 <- ESS(thinned[BurnIn:nrow(thinned),])
-          ESS5 <- ESS(Dev[BurnIn:nrow(thinned),])
-          ESS6 <- ESS(Mon[BurnIn:nrow(thinned),]) }
+     if(Stat.at < thinned.rows) {
+          ESS4 <- ESS(thinned[Stat.at:thinned.rows,])
+          ESS5 <- ESS(Dev[Stat.at:thinned.rows,])
+          ESS6 <- ESS(Mon[Stat.at:thinned.rows,]) }
      ### Posterior Summary Table 1: All Thinned Samples
      cat("Creating Summaries\n")
      Num.Mon <- ncol(Mon)
@@ -168,13 +165,13 @@ Combine <- function(x, Data, Thinning=1)
      ### Posterior Summary Table 2: Stationary Samples
      Summ2 <- matrix(NA, LIV, 7, dimnames=list(Data$parm.names,
           c("Mean","SD","MCSE","ESS","LB","Median","UB")))
-     if(BurnIn < nrow(thinned)) {
-          thinned2 <- matrix(thinned[BurnIn:nrow(thinned),],
-               nrow(thinned)-BurnIn+1, ncol(thinned))
-          Dev2 <- matrix(Dev[BurnIn:nrow(thinned),],
-               nrow(thinned)-BurnIn+1, ncol(Dev))
-          Mon2 <- matrix(Mon[BurnIn:nrow(thinned),],
-               nrow(thinned)-BurnIn+1, ncol(Mon))
+     if(Stat.at < thinned.rows) {
+          thinned2 <- matrix(thinned[Stat.at:thinned.rows,],
+               thinned.rows-Stat.at+1, ncol(thinned))
+          Dev2 <- matrix(Dev[Stat.at:thinned.rows,],
+               thinned.rows-Stat.at+1, ncol(Dev))
+          Mon2 <- matrix(Mon[Stat.at:thinned.rows,],
+               thinned.rows-Stat.at+1, ncol(Mon))
           Summ2[,1] <- colMeans(thinned2)
           Summ2[,2] <- apply(thinned2, 2, sd)
           Summ2[,3] <- 0
@@ -228,7 +225,8 @@ Combine <- function(x, Data, Thinning=1)
           colnames(thinned) <- Data$parm.names}
      ### Logarithm of the Marginal Likelihood
      LML <- list(LML=NA, VarCov=NA)
-     if(({Algorithm == "Componentwise Hit-And-Run Metropolis"} |
+     if(({Algorithm == "Affine-Invariant Ensemble Sampler"} |
+          {Algorithm == "Componentwise Hit-And-Run Metropolis"} |
           {Algorithm == "Componentwise Slice"} |
           {Algorithm == "Delayed Rejection Metropolis"} |
           {Algorithm == "Hit-And-Run Metropolis"} | 
@@ -239,9 +237,10 @@ Combine <- function(x, Data, Thinning=1)
           {Algorithm == "Random-Walk Metropolis"} |
           {Algorithm == "Reversible-Jump"} |
           {Algorithm == "Sequential Metropolis-within-Gibbs"} |
+          {Algorithm == "Slice Sampler"} | 
           {Algorithm == "Tempered Hamiltonian Monte Carlo"} | 
-          {Algorithm == "t-walk"}) &
-          {BurnIn < nrow(thinned)}) {
+          {Algorithm == "t-walk"}) & 
+          {Stat.at < thinned.rows}) {
           cat("Estimating Log of the Marginal Likelihood\n")
           LML <- LML(theta=thinned2,
                LL=as.vector(Dev2)*(-1/2), method="NSIS")}
@@ -257,7 +256,7 @@ Combine <- function(x, Data, Thinning=1)
           DIC1=c(mean(as.vector(Dev)),
                var(as.vector(Dev))/2,
                mean(as.vector(Dev)) + var(as.vector(Dev))/2),
-          DIC2=if(BurnIn < nrow(thinned)) {
+          DIC2=if(Stat.at < thinned.rows) {
                c(mean(as.vector(Dev2)),
                var(as.vector(Dev2))/2,
                mean(as.vector(Dev2)) + 
@@ -273,14 +272,17 @@ Combine <- function(x, Data, Thinning=1)
           Parameters=LIV,
           Periodicity=Periodicity,
           Posterior1=thinned,
-          Posterior2=thinned[BurnIn:nrow(thinned),],
+          Posterior2=if(Stat.at < thinned.rows) {
+               thinned[Stat.at:thinned.rows,]}
+               else thinned[thinned.rows,],
           Rec.BurnIn.Thinned=BurnIn,
           Rec.BurnIn.UnThinned=BurnIn*Thinning,
           Rec.Thinning=min(1000, max(Rec.Thin)),
           Status=Status,
           Summary1=Summ1,
           Summary2=Summ2,
-          Thinned.Samples=nrow(thinned), Thinning=Thinning)
+          Thinned.Samples=thinned.rows,
+          Thinning=Thinning)
      class(LaplacesDemon.out) <- "demonoid"
      cat("\nLaplace's Demon has finished.\n")
      return(LaplacesDemon.out)

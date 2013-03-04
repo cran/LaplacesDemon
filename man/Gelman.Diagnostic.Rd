@@ -167,11 +167,11 @@
 }
 \references{
   Brooks, S.P. and Gelman, A. (1998). "General Methods for Monitoring
-  Convergence of Iterative Simulations". Journal of Computational and
-  Graphical Statistics, 7, p. 434--455.
+  Convergence of Iterative Simulations". \emph{Journal of Computational
+  and Graphical Statistics}, 7, p. 434--455.
 
   Gelman, A. and Rubin, D.B. (1992). "Inference from Iterative Simulation
-  using Multiple Sequences". Statistical Science, 7, p. 457--511.
+  using Multiple Sequences". \emph{Statistical Science}, 7, p. 457--511.
 }
 \seealso{
   \code{\link{Combine}},

@@ -27,16 +27,11 @@
 \usage{Geweke.Diagnostic(x)}
 \arguments{
   \item{x}{This required argument is a vector or matrix of posterior
-    samples. Each column vector in a matrix is a chain to be assessed.
+    samples, such as from the output of the \code{\link{LaplacesDemon}}
+    function. Each column vector in a matrix is a chain to be assessed.
     A minimum of 100 samples are required.}
 }
-\details{
-  The \code{Geweke.Diagnostic} is one of the criteria in the
-  \code{\link{Consort}} function regarding the recommendation of when
-  to stop updating the Markov chain Monte Carlo (MCMC) sampler in
-  \code{\link{LaplacesDemon}}. For more information on stationarity, see
-  the \code{\link{is.stationary}} function, and the accompanying vignettes.
-  
+\details{  
   The \code{Geweke.Diagnostic} is essentially the same as the
   \code{geweke.diag} function in the \code{coda} package, but
   programmed to accept a simple vector or matrix, so it does not require
@@ -54,8 +49,9 @@
   and AFM Smith). Clarendon Press, Oxford, UK.
 }
 \seealso{
-  \code{\link{Consort}} and
-  \code{\link{LaplacesDemon}}.
+  \code{\link{burnin}},
+  \code{\link{is.stationary}}, and 
+  \code{\link{LaplacesDemon}}
 }
 \examples{
 library(LaplacesDemon)

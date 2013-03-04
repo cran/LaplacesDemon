@@ -250,12 +250,12 @@ alpha=NULL, M=1, N=1000, nu=9)
 }
 \references{
   Cappe, O., Douc, R., Guillin, A., Marin, J.M., and Robert, C. (2008).
-  "Adaptive Importance Sampling in General Mixture Classes". Statistics
-  and Computing, 18, p. 587--600.
+  "Adaptive Importance Sampling in General Mixture Classes".
+  \emph{Statistics and Computing}, 18, p. 587--600.
 
   Cappe, O., Guillin, A., Marin, J.M., and Robert, C. (2004). "Population 
-  Monte Carlo". Journal of Computational and Graphical Statistics, 13,
-  p. 907--929.
+  Monte Carlo". \emph{Journal of Computational and Graphical
+  Statistics}, 13, p. 907--929.
 
   Gelman, A., Carlin, J., Stern, H., and Rubin, D. (2004). "Bayesian
   Data Analysis, Texts in Statistical Science, 2nd ed.". Chapman and
@@ -264,7 +264,7 @@ alpha=NULL, M=1, N=1000, nu=9)
   Wraith, D., Kilbinger, M., Benabed, K., Cappe, O., Cardoso, J.F.,
   Fort, G., Prunet, S., and Robert, C.P. (2009). "Estimation of
   Cosmological Parameters Using Adaptive Importance Sampling".
-  Physical Review D, 80 (2), p. 023507.
+  \emph{Physical Review D}, 80(2), p. 023507.
 }
 \author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{
@@ -282,13 +282,13 @@ library(LaplacesDemon)
 ##############################  Demon Data  ###############################
 data(demonsnacks)
 y <- log(demonsnacks$Calories)
-X <- cbind(1, as.matrix(demonsnacks[,c(7,8,10)]))
+X <- cbind(1, as.matrix(log(demonsnacks[,c(1,4,10)]+1)))
 J <- ncol(X)
 for (j in 2:J) {X[,j] <- CenterScale(X[,j])}
 mon.names <- c("LP","sigma")
 parm.names <- as.parm.names(list(beta=rep(0,J), log.sigma=0))
-PGF <- function(Data) return(c(rnormv(Data$J,0,1000),
-     log(rhalfcauchy(1,25))))
+PGF <- function(Data) return(c(rnormv(Data$J,0,10),
+     log(rhalfcauchy(1,5))))
 MyData <- list(J=J, PGF=PGF, X=X, mon.names=mon.names,
      parm.names=parm.names, y=y)
 
@@ -323,7 +323,7 @@ Fit
 print(Fit)
 PosteriorChecks(Fit)
 caterpillar.plot(Fit, Parms="beta")
-plot(Fit, BurnIn=1, MyData, PDF=FALSE)
+plot(Fit, BurnIn=0, MyData, PDF=FALSE)
 Pred <- predict(Fit, Model, MyData)
 summary(Pred, Discrep="Chi-Square")
 plot(Pred, Style="Covariates", Data=MyData)

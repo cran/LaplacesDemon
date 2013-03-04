@@ -7,6 +7,7 @@
 
 interval <- function(x, a=-Inf, b=Inf, reflect=TRUE)
      {
+     ### Initial Checks
      if(missing(x)) stop("The x argument is required.")
      if(a > b) stop("a > b.")
      ### Scalar

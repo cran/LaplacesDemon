@@ -158,7 +158,8 @@ Model.Spec.Time(Model, Initial.Values, Data, n=1000)
 }
 \references{
   Roberts, G.O. and Rosenthal, J.S. (2009). "Examples of Adaptive
-  MCMC". Computational Statistics and Data Analysis, 18, p. 349--367.
+  MCMC". \emph{Computational Statistics and Data Analysis}, 18,
+  p. 349--367.
 }
 \author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{
@@ -182,13 +183,13 @@ library(LaplacesDemon)
 ##############################  Demon Data  ###############################
 data(demonsnacks)
 y <- log(demonsnacks$Calories)
-X <- cbind(1, as.matrix(demonsnacks[,c(7,8,10)]))
+X <- cbind(1, as.matrix(log(demonsnacks[,c(1,4,10)]+1)))
 J <- ncol(X)
 for (j in 2:J) {X[,j] <- CenterScale(X[,j])}
 mon.names <- c("LP","sigma")
 parm.names <- as.parm.names(list(beta=rep(0,J), log.sigma=0))
 PGF <- function(Data) return(c(rnormv(Data$J,0,10),
-     log(rhalfcauchy(1,25))))
+     log(rhalfcauchy(1,5))))
 MyData <- list(J=J, PGF=PGF, X=X, mon.names=mon.names,
      parm.names=parm.names, y=y)
 
