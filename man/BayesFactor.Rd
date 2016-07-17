@@ -3,21 +3,23 @@
 \title{Bayes Factor}
 \description{
   This function calculates Bayes factors for two or more fitted objects
-  of class \code{demonoid}, \code{laplace}, or \code{pmc} that were
-  estimated respectively with the \code{\link{LaplacesDemon}}, 
-  \code{\link{LaplaceApproximation}}, or \code{\link{PMC}} functions,
-  and indicates the strength of evidence in favor of the hypothesis
-  (that each model, \eqn{\mathcal{M}_i}{M[i]}, is better than another
-  model, \eqn{\mathcal{M}_j}{M[j]}).
+  of class \code{demonoid}, \code{iterquad}, \code{laplace}, \code{pmc},
+  or \code{vb} that were estimated respectively with the
+  \code{\link{LaplacesDemon}}, \code{\link{IterativeQuadrature}},
+  \code{\link{LaplaceApproximation}}, \code{\link{PMC}}, or
+  \code{\link{VariationalBayes}} functions, and indicates the strength
+  of evidence in favor of the hypothesis (that each model,
+  \eqn{\mathcal{M}_i}{M[i]}, is better than another model,
+  \eqn{\mathcal{M}_j}{M[j]}).
 }
 \usage{
 BayesFactor(x)
 }
 \arguments{
   \item{x}{This is a list of two or more fitted objects of class
-    \code{demonoid}, \code{laplace}, or \code{pmc}. The components are
-    named in order beginning with model 1, \code{M1}, and \eqn{k} models
-    are usually represented as
+    \code{demonoid}, \code{iterquad}, \code{laplace}, \code{pmc}, or
+    \code{vb}. The components are named in order beginning with model 1,
+    \code{M1}, and \eqn{k} models are usually represented as
     \eqn{\mathcal{M}_1,\dots,\mathcal{M}_k}{M[1],...,M[k]}.}
 }
 \details{
@@ -53,45 +55,56 @@ BayesFactor(x)
   = (p(y|M_1)) / p(y|M_2) = (integral of p(y|Theta_1,M_1)p(Theta_1|M_1)dTheta_1)
   / (integral of p(y|Theta_2,M_2)p(Theta_2|M_2)dTheta_2)}
 
-where \eqn{p(\textbf{y}|\mathcal{M}_1)}{p(y|M_1)} is the marginal
-likelihood of the data in model 1.
+  where \eqn{p(\textbf{y}|\mathcal{M}_1)}{p(y|M_1)} is the marginal
+  likelihood of the data in model 1.
 
-The \code{\link{LaplaceApproximation}}, \code{\link{LaplacesDemon}}, and
-\code{\link{PMC}} functions each return the \code{\link{LML}}, the
-approximate logarithm of the marginal likelihood of the data, in each
-fitted object of class \code{laplace}, \code{demonoid}, or
-\code{pmc}. The \code{BayesFactor} function calculates matrix \code{B},
-a matrix of Bayes factors, where each element of matrix \code{B} is a
-comparison of two models. Each Bayes factor is calculated as the
-exponentiated difference of \code{LML} of model 1
-(\eqn{\mathcal{M}_1}{M[1]}) and \code{LML} of model 2
-(\eqn{\mathcal{M}_2}{M[2]}), and the hypothesis for each element of
-matrix \code{B} is that the model associated with the row is greater
-than the model associated with the column. For example, element
-\code{B[3,2]} is the Bayes factor that model 3 is greater than model 2.
-The 'Strength of Evidence' aids in the interpretation (Jeffreys, 1961).
+  The \code{\link{IterativeQuadrature}},
+  \code{\link{LaplaceApproximation}}, \code{\link{LaplacesDemon}},
+  \code{\link{PMC}}, and \code{\link{VariationalBayes}} functions each
+  return the \code{\link{LML}}, the approximate logarithm of the
+  marginal likelihood of the data, in each fitted object of class
+  \code{iterquad}, \code{laplace}, \code{demonoid}, \code{pmc}, or
+  \code{vb}. The \code{BayesFactor} function calculates matrix \code{B},
+  a matrix of Bayes factors, where each element of matrix \code{B} is a
+  comparison of two models. Each Bayes factor is calculated as the
+  exponentiated difference of \code{LML} of model 1
+  (\eqn{\mathcal{M}_1}{M[1]}) and \code{LML} of model 2
+  (\eqn{\mathcal{M}_2}{M[2]}), and the hypothesis for each element of
+  matrix \code{B} is that the model associated with the row is greater
+  than the model associated with the column. For example, element
+  \code{B[3,2]} is the Bayes factor that model 3 is greater than model
+  2. The 'Strength of Evidence' aids in the interpretation (Jeffreys,
+  1961).
 
-A table for the interpretation of the strength of evidence for Bayes
-factors is available at
-\url{http://www.bayesian-inference.com/bayesfactors}.
+  A table for the interpretation of the strength of evidence for Bayes
+  factors is available at
+  \url{https://web.archive.org/web/20150214194051/http://www.bayesian-inference.com/bayesfactors}.
 
-Each Bayes factor, \code{B}, is the posterior odds in favor of the
-hypothesis divided by the prior odds in favor of the hypothesis, where
-the hypothesis is usually
-\eqn{\mathcal{M}_1 > \mathcal{M}_2}{M[1] > M[2]}. For example, when
-\code{B[3,2]=2}, the data favor \eqn{\mathcal{M}_3}{M[3]} over
-\eqn{\mathcal{M}_2}{M[2]} with 2:1 odds.
+  Each Bayes factor, \code{B}, is the posterior odds in favor of the
+  hypothesis divided by the prior odds in favor of the hypothesis, where
+  the hypothesis is usually
+  \eqn{\mathcal{M}_1 > \mathcal{M}_2}{M[1] > M[2]}. For example, when
+  \code{B[3,2]=2}, the data favor \eqn{\mathcal{M}_3}{M[3]} over
+  \eqn{\mathcal{M}_2}{M[2]} with 2:1 odds.
 
-Gelman finds Bayes factors generally to be irrelevant, because they
-compute the relative probabilities of the models conditional on one
-of them being true. Gelman prefers approaches that measure the
-distance of the data to each of the approximate models (Gelman et al.,
-2004, p. 180), such as with posterior predictive checks (see the
-\code{\link{predict.laplace}} function in the context of Laplace
-Approximation, \code{\link{predict.demonoid}} function in the
-context of MCMC, or \code{\link{predict.pmc}} function in the context of
-PMC). Kass et al. (1995) asserts this can be done without assuming one
-model is the true model.
+  It is also popular to consider the natural logarithm of the Bayes
+  factor. The scale of the logged Bayes factor is the same above and
+  below one, which is more appropriate for visual comparisons. For
+  example, when comparing two Bayes factors at 0.5 and 2, the logarithm
+  of these Bayes factors is -0.69 and 0.69.
+
+  Gelman finds Bayes factors generally to be irrelevant, because they
+  compute the relative probabilities of the models conditional on one
+  of them being true. Gelman prefers approaches that measure the
+  distance of the data to each of the approximate models (Gelman et al.,
+  2004, p. 180), such as with posterior predictive checks (see the
+  \code{\link{predict.iterquad}} function regarding iterative
+  quadrature, \code{\link{predict.laplace}} function in the context of
+  Laplace Approximation, \code{\link{predict.demonoid}} function in the
+  context of MCMC, \code{\link{predict.pmc}} function in the context
+  of PMC, or \code{\link{predict.vb}} function in the context of
+  Variational Bayes). Kass et al. (1995) asserts this can be done
+  without assuming one model is the true model.
 }
 \value{
   \code{BayesFactor} returns an object of class \code{bayesfactor} that
@@ -124,17 +137,21 @@ model is the true model.
   \emph{Journal of the American Statistical Association}, 92,
   p. 648--655.
 }
-\author{Statisticat, LLC. \email{software@bayesian-inference.com}}
+\author{Statisticat, LLC.}
 \seealso{
   \code{\link{is.bayesfactor}},
   \code{\link{is.proper}},
+  \code{\link{IterativeQuadrature}},
   \code{\link{LaplaceApproximation}},
   \code{\link{LaplacesDemon}},
   \code{\link{LML}},
   \code{\link{PMC}},
   \code{\link{predict.demonoid}},
-  \code{\link{predict.laplace}}, and
-  \code{\link{predict.pmc}}.
+  \code{\link{predict.iterquad}},
+  \code{\link{predict.laplace}},
+  \code{\link{predict.pmc}},
+  \code{\link{predict.vb}}, and
+  \code{\link{VariationalBayes}}.
 }
 \examples{
 # The following example fits a model as Fit1, then adds a predictor, and
@@ -149,20 +166,28 @@ J <- 2
 y <- log(demonsnacks$Calories)
 X <- cbind(1, as.matrix(log(demonsnacks[,10]+1)))
 X[,2] <- CenterScale(X[,2])
-mon.names <- c("LP","sigma")
-parm.names <- as.parm.names(list(beta=rep(0,J), log.sigma=0))
-PGF <- function(Data) return(c(rnormv(Data$J,0,10),
-     log(rhalfcauchy(1,5))))
+
+#########################  Data List Preparation  #########################
+mon.names <- "LP"
+parm.names <- as.parm.names(list(beta=rep(0,J), sigma=0))
+pos.beta <- grep("beta", parm.names)
+pos.sigma <- grep("sigma", parm.names)
+PGF <- function(Data) {
+     beta <- rnorm(Data$J)
+     sigma <- runif(1)
+     return(c(beta, sigma))
+     }
 MyData <- list(J=J, PGF=PGF, X=X, mon.names=mon.names,
-     parm.names=parm.names, y=y)
+     parm.names=parm.names, pos.beta=pos.beta, pos.sigma=pos.sigma, y=y)
 
 ##########################  Model Specification  ##########################
 Model <- function(parm, Data)
      {
      ### Parameters
-     beta <- parm[1:Data$J]
-     sigma <- exp(parm[Data$J+1])
-     ### Log(Prior Densities)
+     beta <- parm[Data$pos.beta]
+     sigma <- interval(parm[Data$pos.sigma], 1e-100, Inf)
+     parm[Data$pos.sigma] <- sigma
+     ### Log-Prior
      beta.prior <- sum(dnormv(beta, 0, 1000, log=TRUE))
      sigma.prior <- dhalfcauchy(sigma, 25, log=TRUE)
      ### Log-Likelihood
@@ -170,7 +195,7 @@ Model <- function(parm, Data)
      LL <- sum(dnorm(Data$y, mu, sigma, log=TRUE))
      ### Log-Posterior
      LP <- LL + beta.prior + sigma.prior
-     Modelout <- list(LP=LP, Dev=-2*LL, Monitor=c(LP,sigma),
+     Modelout <- list(LP=LP, Dev=-2*LL, Monitor=LP,
           yhat=rnorm(length(mu), mu, sigma), parm=parm)
      return(Modelout)
      }
@@ -190,12 +215,15 @@ y <- log(demonsnacks$Calories)
 X <- cbind(1, as.matrix(demonsnacks[,c(7,8)]))
 X[,2] <- CenterScale(X[,2])
 X[,3] <- CenterScale(X[,3])
+
+#########################  Data List Preparation  #########################
 mon.names <- c("sigma","mu[1]")
-parm.names <- as.parm.names(list(beta=rep(0,J), log.sigma=0))
-PGF <- function(Data) return(c(rnormv(Data$J,0,10),
-     log(rhalfcauchy(1,25))))
+parm.names <- as.parm.names(list(beta=rep(0,J), sigma=0))
+pos.beta <- grep("beta", parm.names)
+pos.sigma <- grep("sigma", parm.names)
+PGF <- function(Data) return(c(rnormv(Data$J,0,10), rhalfcauchy(1,5)))
 MyData <- list(J=J, PGF=PGF, X=X, mon.names=mon.names,
-     parm.names=parm.names, y=y)
+     parm.names=parm.names, pos.beta=pos.beta, pos.sigma=pos.sigma, y=y)
 
 ############################  Initial Values  #############################
 Initial.Values <- GIV(Model, MyData, PGF=TRUE)

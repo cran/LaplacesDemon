@@ -32,10 +32,10 @@ plot.bmk <- function(x, col=colorRampPalette(c("black","red"))(100),
      ### Initial Settings
      min <- 0
      max <- 1
-     yLabels <- rownames(x)
-     xLabels <- colnames(x)
      if(is.null(rownames(x))) xLabels <- 1:nrow(x)
+     else xLabels <- colnames(x)
      if(is.null(colnames(x))) yLabels <- 1:ncol(x)
+     else yLabels <- rownames(x)
      ### plot.bmk
      if(PDF == TRUE) pdf("plot.bmk.pdf")
      ### Layout and Colors

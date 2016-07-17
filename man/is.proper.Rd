@@ -7,22 +7,25 @@
   distribution.
 }
 \usage{
-is.proper(f,a,b,tol)
+is.proper(f, a, b, tol=1e-5)
 }
 \arguments{
   \item{f}{This is either a probability density function or an object of
-    class \code{demonoid}, \code{laplace}, or \code{pmc}.}
+    class \code{demonoid}, \code{laplace}, \code{pmc}, or \code{vb}.}
   \item{a}{This is the lower limit of integration, and may be negative
     infinity.}
   \item{b}{This is the upper limit of integration, and may be positive
     infinity.}
-  \item{tol}{This is the tolerance, and indicates the difference from 1,
-    where the integrated area above this result is treated as 1.}
+  \item{tol}{This is the tolerance, and indicates the allowable
+    difference from one.}
 }
 \details{
   A proper probability distribution is a probability distribution that
-  integrates to 1, and an improper probability distribution does not
-  integrate to 1.
+  integrates to one, and an improper probability distribution does not
+  integrate to one. If a probability distribution integrates to any
+  positive and finite value other than one, then it is an improper
+  distribution, but is merely unnormalized. An unnormalized distribution
+  may be multiplied by a constant so that it integrates to one.
 
   In Bayesian inference, the posterior probability distribution should
   be proper. An improper prior distribution can cause an improper
@@ -56,47 +59,54 @@ is.proper(f,a,b,tol)
 
   To check the propriety of the joint posterior distribution, the only
   argument to be supplied is an object of class \code{demonoid},
-  \code{laplace}, or \code{pmc}. The \code{is.proper} function checks
-  the logarithm of the marginal likelihood (see \code{\link{LML}}) for a
-  finite value, and returns true when LML is finite. This indicates that
-  the marginal likelihood is finite for all observed \eqn{\textbf{y}}{y}
-  in the model data set. This implies:
+  \code{iterquad}, \code{laplace}, \code{pmc}, or \code{vb}. The
+  \code{is.proper} function checks the logarithm of the marginal
+  likelihood (see \code{\link{LML}}) for a finite value, and returns
+  \code{TRUE} when the LML is finite. This indicates that the marginal
+  likelihood is finite for all observed \eqn{\textbf{y}}{y} in the model
+  data set. This implies:
 
   \deqn{\int p(\theta|\textbf{y})p(\theta)d\theta < \infty}{integral of
   p(theta|y)p(theta)dtheta < Inf}
 
   If the object is of class \code{demonoid} and the algorithm was
-  adaptive, or if the object is of class \code{laplace} and the
-  algorithm did not converge, then \code{is.proper} will return
-  \code{FALSE} because LML was not estimated. In this case, it is
-  possible for the joint posterior to be proper, but \code{is.proper}
-  will be unable to determine propriety without the estimate of LML. If
-  desired, the \code{\link{LML}} may be estimated by the user, and if
-  its finite, then the joint posterior distribution is proper.
+  adaptive, or if the object is of class \code{iterquad},
+  \code{laplace}, or \code{vb} and the algorithm did not converge, then
+  \code{is.proper} will return \code{FALSE} because LML was not
+  estimated. In this case, it is possible for the joint posterior to be
+  proper, but \code{is.proper} will be unable to determine propriety
+  without the estimate of LML. If desired, the \code{\link{LML}} may be
+  estimated by the user, and if it is finite, then the joint posterior
+  distribution is proper.
 }
 \value{
   The \code{is.proper} function returns a logical value indicating
   whether or not the univariate prior or joint posterior probability
-  distribution integrates to 1 within its specified limits. \code{TRUE}
-  is returned for proper univariate probability distributions.
+  distribution integrates to one within its specified limits.
+  \code{TRUE} is returned for a proper univariate probability
+  distribution.
 }
 \author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{
   \code{\link{dnormv}},
   \code{\link{integrate}},
+  \code{\link{IterativeQuadrature}},
   \code{\link{LaplaceApproximation}},
   \code{\link{LaplacesDemon}},
-  \code{\link{LML}}, and
-  \code{\link{PMC}}.
+  \code{\link{LML}},
+  \code{\link{PMC}}, and
+  \code{\link{VariationalBayes}}.
 }
 \examples{
+library(LaplacesDemon)
 ### Prior Probability Distribution
 is.proper(function(x) {dnormv(x,0,1000)}, -Inf, Inf) #x ~ N(0,1000)
 is.proper(function(x) {dhalfcauchy(x,25)}, 0, Inf) #x ~ HC(25)
 is.proper(function(x) {dunif(x,0,1)}, 0, 1) #x ~ U(0,1)
 is.proper(function(x) {dunif(x,-Inf,Inf)}, -Inf, Inf) #x ~ U(-Inf,Inf)
 ### Joint Posterior Distribution
-#This assumes that Fit is an object of class demonoid, laplace, or pmc
+##This assumes that Fit is an object of class demonoid, iterquad,
+##  laplace, or pmc
 #is.proper(Fit)
 }
 \keyword{Diagnostic}

@@ -33,8 +33,10 @@ plot.laplace <- function(x, Data=NULL, PDF=FALSE, Parms=NULL, ...)
                          colnames(x$History)))}}
           History <- as.matrix(x$History[,keepcols])
           colnames(History) <- colnames(x$History)[keepcols]
-          Posterior <- as.matrix(x$Posterior[,keepcols])
-          colnames(Posterior) <- colnames(History)
+          if(all(!is.na(x$Posterior))) {
+               Posterior <- as.matrix(x$Posterior[,keepcols])
+               colnames(Posterior) <- colnames(History)}
+          else Posterior <- x$Posterior
           }
      if(PDF == TRUE)
           {
@@ -48,7 +50,7 @@ plot.laplace <- function(x, Data=NULL, PDF=FALSE, Parms=NULL, ...)
           plot(1:nrow(History), History[,j],
                type="l", xlab="Iterations", ylab="Value",
                main=colnames(History)[j])
-          if({x$Converged == TRUE} & !any(is.na(x$Posterior))) {
+          if({x$Converged == TRUE} & !any(is.na(Posterior))) {
                plot(density(Posterior[,j]),
                     xlab="Value", main=colnames(Posterior)[j])
                polygon(density(Posterior[,j]),
@@ -62,7 +64,7 @@ plot.laplace <- function(x, Data=NULL, PDF=FALSE, Parms=NULL, ...)
      if({x$Converged == TRUE} & !any(is.na(x$Monitor))) {
           for (j in 1:ncol(x$Monitor)) {
                plot(density(x$Monitor[,j]),
-                    xlab="Value", main=Data$mon.names[j])
+                    xlab="Value", main=Data[["mon.names"]][j])
                polygon(density(x$Monitor[,j]),
                     col="black", border="black")
                abline(v=0, col="red", lty=2)}

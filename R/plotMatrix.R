@@ -17,6 +17,10 @@ plotMatrix <- function(x, col=colorRampPalette(c("red","black","green"))(100),
                stop("Covar=NULL.")
           x <- x$Covar
           title <- "Covariance"}
+     else if(identical(class(x), "iterquad")) {
+          if(is.null(x$Covar)) stop("Covar=NULL.")
+          x <- x$Covar
+          title <- "Covariance"}
      else if(identical(class(x), "laplace")) {
           if(is.null(x$Covar)) stop("Covar=NULL.")
           x <- x$Covar
@@ -28,6 +32,10 @@ plotMatrix <- function(x, col=colorRampPalette(c("red","black","green"))(100),
      else if(identical(class(x), "posteriorchecks")) {
           x <- x$Posterior.Correlation
           title <- "Posterior Correlation"}
+     else if(identical(class(x), "vb")) {
+          if(is.null(x$Covar)) stop("Covar=NULL.")
+          x <- x$Covar
+          title <- "Covariance"}
      else if(!is.matrix(x)) x <- as.matrix(x)
      min <- min(x)
      max <- max(x)

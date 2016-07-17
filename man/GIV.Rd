@@ -3,8 +3,9 @@
 \title{Generate Initial Values}
 \description{
   The \code{GIV} function generates initial values for use with the
-  \code{\link{LaplaceApproximation}}, \code{\link{LaplacesDemon}}, and
-  \code{\link{PMC}} functions.
+  \code{\link{IterativeQuadrature}}, \code{\link{LaplaceApproximation}},
+  \code{\link{LaplacesDemon}}, \code{\link{PMC}}, and
+  \code{\link{VariationalBayes}} functions.
 }
 \usage{
 GIV(Model, Data, n=1000, PGF=FALSE)
@@ -30,7 +31,8 @@ GIV(Model, Data, n=1000, PGF=FALSE)
   function is here to help.
 
   \code{GIV} has several uses. First, the
-  \code{\link{LaplaceApproximation}} and \code{\link{LaplacesDemon}}
+  \code{\link{IterativeQuadrature}}, \code{\link{LaplaceApproximation}},
+  \code{\link{LaplacesDemon}}, and \code{\link{VariationalBayes}}
   functions use \code{GIV} internally if unacceptable initial values are
   discovered. Second, the user may use \code{GIV} when developing their
   model specification function, \code{Model}, to check for potential
@@ -115,10 +117,12 @@ GIV(Model, Data, n=1000, PGF=FALSE)
 \seealso{
   \code{\link{as.initial.values}},
   \code{\link{Gelman.Diagnostic}},
+  \code{\link{IterativeQuadrature}},
   \code{\link{LaplaceApproximation}},
   \code{\link{LaplacesDemon}},
-  \code{\link{LaplacesDemon.hpc}}, and
-  \code{\link{PMC}}.
+  \code{\link{LaplacesDemon.hpc}},
+  \code{\link{PMC}}, and
+  \code{\link{VariationalBayes}}.
 }
 \examples{
 library(LaplacesDemon)
@@ -128,20 +132,29 @@ data(demonsnacks)
 y <- log(demonsnacks$Calories)
 X <- cbind(1, as.matrix(log(demonsnacks[,c(1,4,10)]+1)))
 J <- ncol(X)
-for (j in 2:J) {X[,j] <- CenterScale(X[,j])}
+for (j in 2:J) X[,j] <- CenterScale(X[,j])
+
+#########################  Data List Preparation  #########################
 mon.names <- c("LP","sigma")
-parm.names <- as.parm.names(list(beta=rep(0,J), log.sigma=0))
-PGF <- function(Data) return(c(rnormv(Data$J,0,10), rhalfcauchy(1,5)))
+parm.names <- as.parm.names(list(beta=rep(0,J), sigma=0))
+pos.beta <- grep("beta", parm.names)
+pos.sigma <- grep("sigma", parm.names)
+PGF <- function(Data) {
+     beta <- rnorm(Data$J)
+     sigma <- runif(1)
+     return(c(beta, sigma))
+     }
 MyData <- list(J=J, PGF=PGF, X=X, mon.names=mon.names,
-     parm.names=parm.names, y=y)
+     parm.names=parm.names, pos.beta=pos.beta, pos.sigma=pos.sigma, y=y)
 
 ##########################  Model Specification  ##########################
 Model <- function(parm, Data)
      {
      ### Parameters
-     beta <- parm[1:Data$J]
-     sigma <- exp(parm[Data$J+1])
-     ### Log of Prior Densities
+     beta <- parm[Data$pos.beta]
+     sigma <- interval(parm[Data$pos.sigma], 1e-100, Inf)
+     parm[Data$pos.sigma] <- sigma
+     ### Log-Prior
      beta.prior <- sum(dnormv(beta, 0, 1000, log=TRUE))
      sigma.prior <- dhalfcauchy(sigma, 25, log=TRUE)
      ### Log-Likelihood
@@ -149,7 +162,7 @@ Model <- function(parm, Data)
      LL <- sum(dnorm(Data$y, mu, sigma, log=TRUE))
      ### Log-Posterior
      LP <- LL + beta.prior + sigma.prior
-     Modelout <- list(LP=LP, Dev=-2*LL, Monitor=c(LP,sigma),
+     Modelout <- list(LP=LP, Dev=-2*LL, Monitor=LP,
           yhat=rnorm(length(mu), mu, sigma), parm=parm)
      return(Modelout)
      }

@@ -5,26 +5,27 @@
   A caterpillar plot is a horizontal plot of 3 quantiles of selected
   distributions. This may be used to produce a caterpillar plot of
   posterior samples (parameters and monitored variables) from an object
-  either of class \code{demonoid}, \code{demonoid.hpc}, \code{laplace},
-  \code{pmc}, or a matrix.
+  either of class \code{demonoid}, \code{demonoid.hpc}, \code{iterquad},
+  \code{laplace}, \code{pmc}, \code{vb}, or a matrix.
 }
 \usage{caterpillar.plot(x, Parms=NULL, Title=NULL)}
 \arguments{
   \item{x}{
     This required argument is an object of class \code{demonoid},
-    code{demonoid.hpc}, \code{laplace}, \code{pmc}, or a
-    \eqn{S \times J}{S x J} matrix of \eqn{S} samples and \eqn{J}
-    variables. For an object of class \code{demonoid}, the distributions
-    of the stationary posterior summary (\code{Summary2}) will be
-    attempted first, and if missing, then the parameters of all
+    code{demonoid.hpc}, \code{iterquad}, \code{laplace}, \code{pmc},
+    \code{vb}, or a \eqn{S \times J}{S x J} matrix of \eqn{S} samples
+    and \eqn{J} variables. For an object of class \code{demonoid}, the
+    distributions of the stationary posterior summary (\code{Summary2})
+    will be attempted first, and if missing, then the parameters of all
     posterior samples (\code{Summary1}) will be plotted. For an object
     of class \code{demonoid.hpc}, stationarity may differ by chain, so
     all posterior samples (\code{Summary1}) are used. For an object of
-    class \code{laplace}, the distributions in the posterior summary,
-    \code{Summary}, are plotted according to the posterior draws,
-    sampled with sampling importance resampling in the \code{\link{SIR}}
-    function. When a generic matrix is supplied, unimodal 95\% HPD
-    intervals are estimated with the \code{\link{p.interval}} function.}
+    class \code{laplace} or \code{vb}, the distributions in the
+    posterior summary, \code{Summary}, are plotted according to the
+    posterior draws, sampled with sampling importance resampling in the
+    \code{\link{SIR}} function. When a generic matrix is supplied,
+    unimodal 95\% HPD intervals are estimated with the
+    \code{\link{p.interval}} function.}
   \item{Parms}{
     This argument accepts a vector of quoted strings to be matched for
     selecting parameters and monitored variables for plotting (though
@@ -57,12 +58,14 @@
 }
 \author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{
+  \code{\link{IterativeQuadrature}},
   \code{\link{LaplaceApproximation}},
   \code{\link{LaplacesDemon}},
   \code{\link{LaplacesDemon.hpc}},
   \code{\link{PMC}},
-  \code{\link{p.interval}}, and
-  \code{\link{SIR}}.
+  \code{\link{p.interval}},
+  \code{\link{SIR}}, and
+  \code{\link{VariationalBayes}}.
 }
 \examples{#An example is provided in the LaplacesDemon function.}
 \keyword{Plot}

@@ -12,12 +12,19 @@
   requires that posterior samples were produced with
   \code{\link{LaplaceApproximation}}.
 }
-\usage{\method{predict}{laplace}(object, Model, Data, \dots)}
+\usage{\method{predict}{laplace}(object, Model, Data, CPUs=1, Type="PSOCK", \dots)}
 \arguments{
   \item{object}{An object of class \code{laplace} is required.}
   \item{Model}{The model specification function is required.}
   \item{Data}{A data set in a list is required. The dependent
-     variable is required to be named either \code{y} or \code{Y}.}
+    variable is required to be named either \code{y} or \code{Y}.}
+  \item{CPUs}{This argument accepts an integer that specifies the number
+    of central processing units (CPUs) of the multicore computer or
+    computer cluster. This argument defaults to \code{CPUs=1}, in which
+    parallel processing does not occur.}
+  \item{Type}{This argument specifies the type of parallel processing to
+    perform, accepting either \code{Type="PSOCK"} or
+    \code{Type="MPI"}.}
   \item{\dots}{Additional arguments are unused.}
 }
 \details{
@@ -49,8 +56,17 @@
   of \code{yhat}, the fourth component of the returned list of the
   \code{Model} function.
 
+  Parallel processing may be performed when the user specifies
+  \code{CPUs} to be greater than one, implying that the specified number
+  of CPUs exists and is available. Parallelization may be performed on a
+  multicore computer or a computer cluster. Either a Simple Network of
+  Workstations (SNOW) or Message Passing Interface is used (MPI). With
+  small data sets and few samples, parallel processing may be slower,
+  due to computer network communication. With larger data sets and more
+  samples, the user should experience a faster run-time.
+
   For more information on posterior predictive checks, see
-  \url{http://www.bayesian-inference.com/posteriorpredictivechecks}.
+  \url{https://web.archive.org/web/20150215050702/http://www.bayesian-inference.com/posteriorpredictivechecks}.
 }
 \value{
   This function returns an object of class \code{laplace.ppc} (where
@@ -72,10 +88,11 @@
     posterior samples. Samples are obtained with the sampling importance
     resampling algorithm, \code{\link{SIR}}.}
 }
-\author{Statisticat, LLC. \email{software@bayesian-inference.com}}
+\author{Statisticat, LLC.}
 \seealso{
-  \code{\link{LaplaceApproximation}},
+  \code{\link{LaplaceApproximation}} and
   \code{\link{SIR}}.
 }
+\keyword{High Performance Computing}
 \keyword{Posterior Predictive Checks}
 \keyword{Predict}

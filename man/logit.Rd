@@ -42,13 +42,14 @@ logit(p)
   though the \code{\link{interval}} function provides an
   alternative. For example, consider a parameter \eqn{\theta}{theta}
   that must be in the interval [0,1]. The algorithms in
-  \code{\link{LaplaceApproximation}} and \code{\link{LaplacesDemon}} are
-  unaware of the desired interval, and may attempt \eqn{\theta}{theta}
-  outside of this interval. One solution is to have the algorithms
-  update \code{logit(theta)} rather than \code{theta}. After
-  \code{logit(theta)} is manipulated by the algorithm, it is transformed
-  via \code{invlogit(theta)} in the model specification function, where
-  \eqn{\theta \in [0,1]}{theta in [0,1]}.
+  \code{\link{IterativeQuadrature}}, \code{\link{LaplaceApproximation}},
+  \code{\link{LaplacesDemon}}, \code{\link{PMC}}, and
+  \code{\link{VariationalBayes}} are unaware of the desired interval,
+  and may attempt \eqn{\theta}{theta} outside of this interval. One
+  solution is to have the algorithms update \code{logit(theta)} rather
+  than \code{theta}. After \code{logit(theta)} is manipulated by the
+  algorithm, it is transformed via \code{invlogit(theta)} in the model
+  specification function, where \eqn{\theta \in [0,1]}{theta in [0,1]}.
 }
 \value{
   \code{invlogit} returns probability \code{p}, and
@@ -56,10 +57,13 @@ logit(p)
 }
 \seealso{
   \code{\link{interval}},
+  \code{\link{IterativeQuadrature}},
   \code{\link{LaplaceApproximation}},
   \code{\link{LaplacesDemon}},
-  \code{\link{plogis}}, and
-  \code{\link{qlogis}}.
+  \code{\link{plogis}},
+  \code{\link{PMC}},
+  \code{\link{qlogis}}, and
+  \code{\link{VariationalBayes}}.
 }
 \examples{
 library(LaplacesDemon)

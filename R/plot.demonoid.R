@@ -10,8 +10,6 @@ plot.demonoid <- function(x, BurnIn=0, Data=NULL, PDF=FALSE,
      {
      ### Initial Checks
      if(missing(x)) stop("The x argument is required.")
-     if(class(x) != "demonoid")
-          stop("x must be of class demonoid.")
      if(is.null(Data)) stop("The Data argument is NULL.")
      if(BurnIn >= nrow(x$Posterior1)) BurnIn <- 0
      Stat.at <- BurnIn + 1
@@ -43,7 +41,7 @@ plot.demonoid <- function(x, BurnIn=0, Data=NULL, PDF=FALSE,
           {
           plot(Stat.at:x$Thinned.Samples,
                Posterior[Stat.at:x$Thinned.Samples,j],
-               type="l", xlab="Iterations", ylab="Value",
+               type="l", xlab="Thinned Samples", ylab="Value",
                main=colnames(Posterior)[j])
           panel.smooth(Stat.at:x$Thinned.Samples,
                Posterior[Stat.at:x$Thinned.Samples,j], pch="")
@@ -68,7 +66,7 @@ plot.demonoid <- function(x, BurnIn=0, Data=NULL, PDF=FALSE,
      ### Plot Deviance
      plot(Stat.at:length(x$Deviance),
           x$Deviance[Stat.at:length(x$Deviance)],
-          type="l", xlab="Iterations", ylab="Value", main="Deviance")
+          type="l", xlab="Thinned Samples", ylab="Value", main="Deviance")
      panel.smooth(Stat.at:length(x$Deviance),
           x$Deviance[Stat.at:length(x$Deviance)], pch="")
      plot(density(x$Deviance[Stat.at:length(x$Deviance)]),
@@ -93,11 +91,11 @@ plot.demonoid <- function(x, BurnIn=0, Data=NULL, PDF=FALSE,
      for (j in 1:J)
           {
           plot(Stat.at:nn, x$Monitor[Stat.at:nn,j],
-               type="l", xlab="Iterations", ylab="Value",
-               main=Data$mon.names[j])
+               type="l", xlab="Thinned Samples", ylab="Value",
+               main=Data[["mon.names"]][j])
           panel.smooth(Stat.at:nn, x$Monitor[Stat.at:nn,j], pch="")
           plot(density(x$Monitor[Stat.at:nn,j]),
-               xlab="Value", main=Data$mon.names[j])
+               xlab="Value", main=Data[["mon.names"]][j])
           polygon(density(x$Monitor[Stat.at:nn,j]), col="black",
                border="black")
           abline(v=0, col="red", lty=2)
@@ -106,11 +104,13 @@ plot.demonoid <- function(x, BurnIn=0, Data=NULL, PDF=FALSE,
                z <- acf(x$Monitor[Stat.at:nn,j], plot=FALSE)
                se <- 1/sqrt(length(x$Monitor[Stat.at:nn,j]))
                plot(z$lag, z$acf, ylim=c(min(z$acf,-2*se),1), type="h",
-                    main=Data$mon.names[j], xlab="Lag", ylab="Correlation")
+                    main=Data[["mon.names"]][j], xlab="Lag",
+                    ylab="Correlation")
                abline(h=(2*se), col="red", lty=2)
                abline(h=(-2*se), col="red", lty=2)
                }
-          else {plot(0,0, main=paste(Data$mon.names[j], "is a constant."))}
+          else {plot(0,0, main=paste(Data[["mon.names"]][j],
+                    "is a constant."))}
           }
      ### Diminishing Adaptation
      if(nrow(x$CovarDHis) > 1) {
@@ -118,19 +118,42 @@ plot.demonoid <- function(x, BurnIn=0, Data=NULL, PDF=FALSE,
                "Hamiltonian Monte Carlo with Dual-Averaging",
                "No-U-Turn Sampler")) {
                plot(x$CovarDHis[,1], type="l", xlab="Adaptations",
-                    ylab=expression(epsilon))}
+                    main="Step-Size", ylab=expression(epsilon))}
           else {
+               if(x$Algorithm %in% c("Oblique Hyperrectangle Slice Sampler",
+                    "Univariate Eigenvector Slice Sampler"))
+                    title <- "Eigenvectors"
+               else if(x$Algorithm %in% c("Metropolis-Adjusted Langevin Algorithm"))
+                    title <- "Lambda"
+               else if(x$Algorithm %in% c("Componentwise Hit-And-Run Metropolis",
+                    "Hit-And-Run Metropolis"))
+                    title <- "Proposal Distance"
+               else if(x$Algorithm %in% c("Adaptive Griddy-Gibbs",
+                    "Adaptive Metropolis-within-Gibbs",
+                    "Sequential Adaptive Metropolis-within-Gibbs",
+                    "Updating Sequential Adaptive Metropolis-within-Gibbs"))
+                    title <- "Proposal S.D."
+               else if(x$Algorithm %in% c("Differential Evolution Markov Chain"))
+                    title <- "Z"
+               else if(x$Algorithm %in% c("Adaptive Factor Slice Sampler",
+                    "Refractive Sampler"))
+                    title <- "Step-Size"
+               else title <- "Proposal Variance"
                Diff <- abs(diff(x$CovarDHis))
                adaptchange <- matrix(NA, nrow(Diff), 3)
                for (i in 1:nrow(Diff)) {
                     adaptchange[i,1:3] <- as.vector(quantile(Diff[i,],
                          probs=c(0.025, 0.500, 0.975)))}
-               plot(adaptchange[,2], ylim=c(min(adaptchange), max(adaptchange)),
+               plot(1:nrow(Diff), adaptchange[,2],
+                    ylim=c(min(adaptchange), max(adaptchange)),
                     type="l", col="red", xlab="Adaptations",
-                    ylab="Absolute Difference", main="Proposal Variance",
-                    sub="Median=Red, 95% Bounds=Gray")
-               lines(adaptchange[,1], col="gray")
-               lines(adaptchange[,3], col="gray")}
+                    ylab="Absolute Difference", main=title,
+                    sub="Median=Red, Interval=Transparent Red")
+               polygon(c(1:nrow(Diff),rev(1:nrow(Diff))),
+                    c(adaptchange[,1], rev(adaptchange[,3])),
+                    col=rgb(255, 0, 0, 50, maxColorValue=255),
+                    border=FALSE)
+               lines(adaptchange[,2], col="red")}
           }
      if(PDF == TRUE) dev.off()
      }

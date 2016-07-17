@@ -18,7 +18,9 @@
   debated. The \code{LaplacesDemon} package neither supports nor
   contradicts the suggestion of mixing and `hairiness', but suggests
   that CSF plots may be used to provide additional information about a
-  chain.
+  chain. For example, a user may decide on a practical
+  \code{\link{burnin}} given when a conditional mean obtains a certain
+  standard error.
 }
 \usage{
 CSF(x, name, method="Quantiles", quantiles=c(0.025,0.500,0.975), output=FALSE)
@@ -109,6 +111,7 @@ CSF(x, name, method="Quantiles", quantiles=c(0.025,0.500,0.975), output=FALSE)
 }
 \author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{
+  \code{\link{burnin}},
   \code{\link{ESS}},
   \code{\link{Geweke.Diagnostic}},
   \code{\link{is.stationary}},

@@ -9,29 +9,31 @@ Levene.Test <- function(x, Method="U", G=NULL, Data=NULL)
      {
      ### Initial Checks
      if(missing(x)) stop("The x argument is required.")
-     if({class(x) != "demonoid.ppc"} & {class(x) != "laplace.ppc"} &
-        {class(x) != "pmc.ppc"})
-          stop("x is not of class demonoid.ppc, laplace.ppc, or pmc.ppc.")
+     if({class(x) != "demonoid.ppc"} & {class(x) != "iterquad.ppc"} &
+        {class(x) != "laplace.ppc"} & {class(x) != "pmc.ppc"} &
+        {class(x) != "vb.ppc"})
+          stop("x is not of class demonoid.ppc, iterquad.ppc, laplace.ppc, pmc.ppc, or vb.ppc.")
      if({Method == "C"} & is.null(Data))
           stop("Data is required for Method C.")
      if({Method == "R"} & is.null(Data))
           stop("Data is required for Method R.")
-     if({Method == "C" | Method == "R"} & is.null(Data$Y))
+     if({Method == "C" | Method == "R"} & is.null(Data[["Y"]]))
           stop("Y is required in Data.")
-     y <- x$y
-     yhat <- x$yhat
+     y <- x[["y"]]
+     yhat <- x[["yhat"]]
      if(is.null(Data) & is.null(G)) {
           G <- rep(1:4, each=round(nrow(yhat)/4), len=nrow(yhat))
           if(length(G) != length(y))
                stop("Lengths of G and y differ.")}
      if(!is.null(Data) & is.null(G) & {Method == "C" || Method == "R"}) {
           if(Method == "C") {
-               G <- matrix(rep(1:4, each=round(nrow(Data$Y)/4),
-                         len=nrow(Data$Y)), nrow(Data$Y), ncol(Data$Y))}
+               G <- matrix(rep(1:4, each=round(nrow(Data[["Y"]])/4),
+                    len=nrow(Data[["Y"]])), nrow(Data[["Y"]]),
+                    ncol(Data[["Y"]]))}
           if(Method == "R") {
-               G <- matrix(rep(1:4, each=round(ncol(Data$Y)/4),
-                         len=ncol(Data$Y)), nrow(Data$Y), ncol(Data$Y),
-                         byrow=TRUE)}}
+               G <- matrix(rep(1:4, each=round(ncol(Data[["Y"]])/4),
+                    len=ncol(Data[["Y"]])), nrow(Data[["Y"]]),
+                    ncol(Data[["Y"]]), byrow=TRUE)}}
      if(Method == "U") K <- length(unique(G))
      if(Method == "C") K <- length(unique(G[,1]))
      if(Method == "R") K <- length(unique(G[1,]))
@@ -43,20 +45,20 @@ Levene.Test <- function(x, Method="U", G=NULL, Data=NULL)
                sd(as.vector(epsilon.obs), na.rm=TRUE)), N, S)}
      if(Method == "C") {
           epsilon.rep <- epsilon.obs
-          for (j in 1:ncol(Data$Y)) {
-               point <- matrix(FALSE, nrow(Data$Y), ncol(Data$Y))
+          for (j in 1:ncol(Data[["Y"]])) {
+               point <- matrix(FALSE, nrow(Data[["Y"]]), ncol(Data[["Y"]]))
                point[,j] <- TRUE
                point <- as.vector(point)
-               epsilon.rep[point,] <- rnorm(nrow(Data$Y)*S,
+               epsilon.rep[point,] <- rnorm(nrow(Data[["Y"]])*S,
                     mean(epsilon.obs[point,], na.rm=TRUE),
                     sd(as.vector(epsilon.obs[point,]), na.rm=TRUE))}}
      if(Method == "R") {
           epsilon.rep <- epsilon.obs
-          for (i in 1:nrow(Data$Y)) {
-               point <- matrix(FALSE, nrow(Data$Y), ncol(Data$Y))
+          for (i in 1:nrow(Data[["Y"]])) {
+               point <- matrix(FALSE, nrow(Data[["Y"]]), ncol(Data[["Y"]]))
                point[i,] <- TRUE
                point <- as.vector(point)
-               epsilon.rep[point,] <- rnorm(ncol(Data$Y)*S,
+               epsilon.rep[point,] <- rnorm(ncol(Data[["Y"]])*S,
                     mean(epsilon.obs[point,], na.rm=TRUE),
                     sd(as.vector(epsilon.obs[point,]), na.rm=TRUE))}}
      ### Levene Test
@@ -88,6 +90,7 @@ Levene.Test <- function(x, Method="U", G=NULL, Data=NULL)
           plot(d.W.obs, xlim=c(min(d.W.obs$x, d.W.rep$x),
                     max(d.W.obs$x, d.W.rep$x)),
                ylim=c(0, max(d.W.obs$y, d.W.rep$y)),
+               col=rgb(0,0,0,50,maxColorValue=255),
                main="Levene's Test",
                xlab="W",
                sub=paste("W.obs=", round(mean(W.obs, na.rm=TRUE),2),
@@ -96,13 +99,14 @@ Levene.Test <- function(x, Method="U", G=NULL, Data=NULL)
                     probs=0.975, na.rm=TRUE)),2), "), p(W.obs > W.rep) = ",
                     p, " = ", result, sep=""),
                ylab="Density")
-          polygon(d.W.obs, col="black", border="black")
-          lines(d.W.rep, col="red")}
+          polygon(d.W.obs, col=rgb(0,0,0,50,maxColorValue=255), border=NA)
+          polygon(d.W.rep, col=rgb(255,0,0,50,maxColorValue=255),
+               border=NA)}
      if(Method == "C") {
           par(mfrow=c(1,1), ask=TRUE)
-          p <- rep(0, ncol(Data$Y))
-          for (j in 1:ncol(Data$Y)) {
-               point <- matrix(FALSE, nrow(Data$Y), ncol(Data$Y))
+          p <- rep(0, ncol(Data[["Y"]]))
+          for (j in 1:ncol(Data[["Y"]])) {
+               point <- matrix(FALSE, nrow(Data[["Y"]]), ncol(Data[["Y"]]))
                point[,j] <- TRUE
                point <- as.vector(point)
                W.obs <- W.rep <- rep(0, S)
@@ -136,6 +140,8 @@ Levene.Test <- function(x, Method="U", G=NULL, Data=NULL)
                plot(d.W.obs, xlim=c(min(d.W.obs$x, d.W.rep$x),
                          max(d.W.obs$x, d.W.rep$x)),
                     ylim=c(0, max(d.W.obs$y, d.W.rep$y)),
+                    col=rgb(col2rgb(j)[1], col2rgb(j)[2], col2rgb(j)[3],
+                         50, maxColorValue=255),
                     main="Levene's Test",
                     xlab=paste("W.obs=", round(mean(W.obs, na.rm=TRUE),2),
                          " (", round(as.vector(quantile(W.obs, probs=0.025,
@@ -145,13 +151,15 @@ Levene.Test <- function(x, Method="U", G=NULL, Data=NULL)
                          p[j], " = ", result, sep=""),
                     sub=paste("Y[,", j, "]", sep=""),
                     ylab="Density")
-               polygon(d.W.obs, col="black", border="black")
-               lines(d.W.rep, col="red")}}
+               polygon(d.W.obs, col=rgb(0,0,0,50,maxColorValue=255),
+                    border=NA)
+               polygon(d.W.rep, col=rgb(255,0,0,50,maxColorValue=255),
+                    border=NA)}}
      if(Method == "R") {
           par(mfrow=c(1,1), ask=TRUE)
-          p <- rep(0, nrow(Data$Y))
-          for (i in 1:nrow(Data$Y)) {
-               point <- matrix(FALSE, nrow(Data$Y), ncol(Data$Y))
+          p <- rep(0, nrow(Data[["Y"]]))
+          for (i in 1:nrow(Data[["Y"]])) {
+               point <- matrix(FALSE, nrow(Data[["Y"]]), ncol(Data[["Y"]]))
                point[i,] <- TRUE
                point <- as.vector(point)
                W.obs <- W.rep <- rep(0, S)
@@ -187,6 +195,8 @@ Levene.Test <- function(x, Method="U", G=NULL, Data=NULL)
                plot(d.W.obs, xlim=c(min(d.W.obs$x, d.W.rep$x),
                          max(d.W.obs$x, d.W.rep$x)),
                     ylim=c(0, max(d.W.obs$y, d.W.rep$y)),
+                    col=rgb(col2rgb(j)[1], col2rgb(j)[2], col2rgb(j)[3],
+                         50, maxColorValue=255),
                     main="Levene's Test",
                     xlab=paste("W.obs=", round(mean(W.obs, na.rm=TRUE),2),
                          " (", round(as.vector(quantile(W.obs, probs=0.025,
@@ -196,8 +206,10 @@ Levene.Test <- function(x, Method="U", G=NULL, Data=NULL)
                          p[i], " = ", result, sep=""),
                     sub=paste("Y[", i, ",]", sep=""),
                     ylab="Density")
-               polygon(d.W.obs, col="black", border="black")
-               lines(d.W.rep, col="red")}}
+               polygon(d.W.obs, col=rgb(0,0,0,50,maxColorValue=255),
+                    border=NA)
+               polygon(d.W.rep, col=rgb(255,0,0,50,maxColorValue=255),
+                    border=NA)}}
      return(p)
      }
 

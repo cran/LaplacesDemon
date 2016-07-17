@@ -11,12 +11,12 @@
    rwishart(nu, S)
 }
 \arguments{
-    \item{Omega}{This is the symmetric, positive-definite \eqn{k \times
-	k}{k x k} matrix \eqn{\Omega}{Omega}.}
-    \item{nu}{This is the scalar degrees of freedom \eqn{\nu}{nu}.}
-    \item{S}{This is the symmetric, positive-semidefinite, \eqn{k \times
-	k}{k x k} scale matrix \eqn{\textbf{S}}{S}.}
-    \item{log}{Logical. If \code{log=TRUE}, then the logarithm of the
+  \item{Omega}{This is the symmetric, positive-definite \eqn{k \times
+      k}{k x k} matrix \eqn{\Omega}{Omega}.}
+  \item{nu}{This is the scalar degrees of freedom \eqn{\nu}{nu}.}
+  \item{S}{This is the symmetric, positive-semidefinite, \eqn{k \times
+      k}{k x k} scale matrix \eqn{\textbf{S}}{S}.}
+  \item{log}{Logical. If \code{log=TRUE}, then the logarithm of the
     density is returned.}
 }
 \details{
@@ -58,7 +58,7 @@ The Wishart is the conjugate prior distribution for the precision matrix
 The integral is finite when \eqn{\nu \ge k}{nu >= k}, where
 \eqn{\nu}{nu} is the scalar degrees of freedom parameter, and \eqn{k} is
 the dimension of scale matrix \eqn{\textbf{S}}{S}. The density is finite
-is finite when \eqn{\nu ge k + 1}{nu >= k + 1}, which is recommended.
+when \eqn{\nu ge k + 1}{nu >= k + 1}, which is recommended.
 
 The degrees of freedom, \eqn{\nu}{nu}, is equivalent to specifying a
 prior sample size, indicating the confidence in \eqn{\textbf{S}}{S},
@@ -76,48 +76,33 @@ include an identity matrix or sample covariance matrix. When the model
 sample size is small, the specification of the scale matrix can be
 influential.
 
-One of many alternatives is to use hierarchical priors,
-in which the main diagonal of the (identity) scale matrix and the
-degrees of freedom are treated as unknowns (Bouriga and Feron, 2011;
-Daniels and Kass, 1999). A hierarchical Wishart prior provides
-shrinkage toward diagonality. Another alternative is to abandon the
-Wishart distribution altogether for the more flexible method of Barnard
-et al. (2000).
+Although the related inverse Wishart distribution has a dependency
+between variance and correlation, the Wishart distribution does not
+have this dependency.
 
-These functions are parameterized as per Gelman et al. (2004).
+The matrix gamma (\code{\link{dmatrixgamma}}) distribution is a more
+general version of the Wishart distribution, and the Yang-Berger
+(\code{\link{dyangberger}}) distribution is an alterative that is a
+least informative prior (LIP).
 }
 \value{
   \code{dwishart} gives the density and
   \code{rwishart} generates random deviates.
 }
 \references{
-  Barnard, J., McCulloch, R., and Meng, X. (2000). "Modeling Covariance
-  Matrices in Terms of Standard Deviations and Correlations, with
-  Application to Shrinkage". \emph{Statistica Sinica}, 10, p. 1281--1311.
-  
-  Bouriga, M. and Feron, O. (2011). "Estimation of Covariance Matrices
-  Based on Hierarchical Inverse-Wishart Priors". URL:
-  http://www.citebase.org/abstract?id=oai:arXiv.org:1106.3203.
-  
-  Daniels, M., and Kass, R. (1999). "Nonconjugate Bayesian Estimation of
-  Covariance Matrices and its use in Hierarchical Models". \emph{Journal
-  of the American Statistical Association}, 94 (448), p. 1254--1263.
-  
-  Gelman, A., Carlin, J., Stern, H., and Rubin, D. (2004). "Bayesian
-  Data Analysis, Texts in Statistical Science, 2nd ed.". Chapman and
-  Hall, London.
-
   Wishart, J. (1928). "The Generalised Product Moment Distribution in
   Samples from a Normal Multivariate Population". \emph{Biometrika},
   20A(1-2), p. 32--52.
 }
 \seealso{
   \code{\link{dchisq}},
-  \code{\link{dinvwishart}},
   \code{\link{dgamma}},
-  \code{\link{dmvn}},
-  \code{\link{dwishartc}}, and
-  \code{\link{Prec2Cov}}.
+  \code{\link{dinvwishart}},
+  \code{\link{dmatrixgamma}},
+  \code{\link{dmvnp}},
+  \code{\link{dwishartc}},
+  \code{\link{Prec2Cov}}, and
+  \code{\link{dyangberger}}.
 }
 \examples{
 library(LaplacesDemon)

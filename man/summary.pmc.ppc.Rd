@@ -50,7 +50,7 @@
   poorly) the model fits the data, or to assess discrepancies between
   the model and the data. For more information on posterior predictive
   checks, see
-  \url{http://www.bayesian-inference.com/posteriorpredictivechecks}.
+  \url{https://web.archive.org/web/20150215050702/http://www.bayesian-inference.com/posteriorpredictivechecks}.
 
   When \eqn{\textbf{y}}{y} is continuous and known, this function
   estimates the predictive concordance between \eqn{\textbf{y}}{y} and
@@ -249,7 +249,7 @@
   
   Gelfand, A. (1996). "Model Determination Using Sampling Based
   Methods". In Gilks, W., Richardson, S., Spiegehalter, D., Chapter 9 in
-  Markov Chain Monte Carlo in Practice. Chapman \& Hall: Boca Raton, FL.
+  Markov Chain Monte Carlo in Practice. Chapman and Hall: Boca Raton, FL.
 
   Gelfand, A. and Ghosh, S. (1998). "Model Choice: A Minimum Posterior
   Predictive Loss Approach". \emph{Biometrika}, 85, p. 1--11.
@@ -267,7 +267,7 @@
   Discussion)". \emph{Journal of the Royal Statistical Society}, B 64,
   p. 583--639.
 }
-\author{Statisticat, LLC. \email{software@bayesian-inference.com}}
+\author{Statisticat, LLC.}
 \seealso{
   \code{\link{PMC}},
   \code{\link{predict.pmc}}, and

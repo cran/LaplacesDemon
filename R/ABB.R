@@ -13,13 +13,14 @@ ABB <- function(X, K=1)
      J <- ncol(X)
      N <- nrow(X)
      ### Missingness Indicator
-     M <- ifelse(is.na(X), 1, 0)
+     M <- X*0
+     M[which(is.na(X))] <- 1
      if(sum(M) == 0) stop("There are no missing values to impute.")
      M.sums <- colSums(M)
      ### Approximate Bayesian Bootstrap
      MI <- list()
      for (k in 1:K) {
-          imp <- 0
+          imp <- NULL
           for (j in 1:J) {
                if(M.sums[j] > 0) {
                     ### Sample X.star.obs | X.obs
@@ -29,7 +30,7 @@ ABB <- function(X, K=1)
                     ### Sample X.star.mis | X.star.obs
                     X.star.mis <- sample(X.star.obs, M.sums[j],
                          replace=TRUE)
-                    if(length(imp) > 1) imp <- c(imp, X.star.mis)
+                    if(length(imp) > 0) imp <- c(imp, X.star.mis)
                     else imp <- X.star.mis}
                }
           MI[[k]] <- imp

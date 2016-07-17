@@ -111,10 +111,13 @@ ABB(X, K=1)
 }
 \author{Statisticat, LLC \email{software@bayesian-inference.com}}
 \seealso{
-  \code{\link{BayesianBootstrap}} and
-  \code{\link{LaplacesDemon}}.
+  \code{\link{BayesianBootstrap}},
+  \code{\link{LaplacesDemon}}, and
+  \code{\link{MISS}}.
 }
 \examples{
+library(LaplacesDemon)
+
 ### Create Data
 J <- 10 #Number of variables
 m <- 20 #Number of missings

@@ -38,7 +38,9 @@ is.model(Model, Initial.Values, Data)
 
   This function is not extensive, and checks only for these minimum
   criteria. Additional checks are conducted in
-  \code{\link{LaplaceApproximation}} and \code{\link{LaplacesDemon}}.
+  \code{\link{IterativeQuadrature}}, \code{\link{LaplaceApproximation}},
+  \code{\link{LaplacesDemon}}, \code{\link{PMC}}, and
+  \code{\link{VariationalBayes}}.
 }
 \value{
   The \code{is.model} function returns a logical value of \code{TRUE}
@@ -47,6 +49,10 @@ is.model(Model, Initial.Values, Data)
 }
 \author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{
-  \code{\link{LaplacesDemon}}.
+  \code{\link{IterativeQuadrature}},
+  \code{\link{LaplaceApproximation}},
+  \code{\link{LaplacesDemon}},
+  \code{\link{PMC}}, and
+  \code{\link{VariationalBayes}}.
 }
 \keyword{Utility}

@@ -27,8 +27,9 @@ is.stationary(x)
   Markov chains (as column vectors) must be stationary for
   \code{is.stationary} to return \code{TRUE}.
 
-  An alternative way to assess stationarity of chains is to use the
-  \code{\link{BMK.Diagnostic}} function.
+  Alternative ways to assess stationarity of chains are to use the
+  \code{\link{BMK.Diagnostic}} or \code{\link{Heidelberger.Diagnostic}}
+  functions.
 }
 \value{
   \code{is.stationary} returns a logical value indicating whether or not
@@ -38,7 +39,8 @@ is.stationary(x)
 \author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{
   \code{\link{BMK.Diagnostic}},
-  \code{\link{Geweke.Diagnostic}}, and
+  \code{\link{Geweke.Diagnostic}},
+  \code{\link{Heidelberger.Diagnostic}}, and
   \code{\link{LaplacesDemon}}.
 }
 \examples{

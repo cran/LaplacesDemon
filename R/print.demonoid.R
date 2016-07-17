@@ -12,16 +12,18 @@ print.demonoid <- function(x, ...)
      print(x$Call)
      cat("\nAcceptance Rate: ", round(x$Acceptance.Rate,5),
           "\n", sep="")
-     cat("Adaptive: ", x$Adaptive, "\n", sep="")
      cat("Algorithm: ", x$Algorithm, "\n", sep="")
      cat("Covariance Matrix: (NOT SHOWN HERE; diagonal shown instead)\n")
      if(is.matrix(x$Covar)) {
           print(diag(x$Covar))
           }
-     else if(is.vector(x$Covar)) {
+     else if(!is.list(x$Covar) & is.vector(x$Covar)) {
           print(x$Covar)
           }
-     else for (i in 1:length(x$Covar)) {print(diag(x$Covar[[i]]))}
+     else for (i in 1:length(x$Covar)) {
+          cat("Block:", i, "\n")
+          print(diag(x$Covar[[i]]))
+          cat("\n")}
      cat("\nCovariance (Diagonal) History: (NOT SHOWN HERE)\n")
      cat("Deviance Information Criterion (DIC):\n")
      DIC <- matrix(c(round(x$DIC1[1],3), round(x$DIC1[2],3),
@@ -29,7 +31,6 @@ print.demonoid <- function(x, ...)
           round(x$DIC2[3],3)), 3, 2,
           dimnames=list(c("Dbar","pD","DIC"),c("All","Stationary")))
      print(DIC)
-     cat("\nDelayed Rejection (DR): ", x$DR, "\n", sep="")
      cat("Initial Values:\n")
      print(x$Initial.Values)
      cat("\nIterations: ", x$Iterations, "\n", sep="")
@@ -40,7 +41,6 @@ print.demonoid <- function(x, ...)
      cat("Monitor: (NOT SHOWN HERE)\n")
      cat("Parameters (Number of): ", x$Parameters, "\n",
           sep="")
-     cat("Periodicity: ", x$Periodicity, "\n", sep="")
      cat("Posterior1: (NOT SHOWN HERE)\n")
      cat("Posterior2: (NOT SHOWN HERE)\n")
      cat("Recommended Burn-In of Thinned Samples: ",
@@ -48,6 +48,7 @@ print.demonoid <- function(x, ...)
      cat("Recommended Burn-In of Un-thinned Samples: ",
           x$Rec.BurnIn.UnThinned, "\n", sep="")
      cat("Recommended Thinning: ", x$Rec.Thinning, "\n", sep="")
+     cat("Specs: (NOT SHOWN HERE)\n")
      cat("Status is displayed every ", x$Status,
           " iterations\n", sep="")
      cat("Summary1: (SHOWN BELOW)\n")

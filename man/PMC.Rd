@@ -10,7 +10,7 @@
 }
 \usage{
 PMC(Model, Data, Initial.Values, Covar=NULL, Iterations=10, Thinning=1,
-alpha=NULL, M=1, N=1000, nu=9)
+alpha=NULL, M=1, N=1000, nu=9, CPUs=1, Type="PSOCK")
 }
 \arguments{
   \item{Model}{This is a model specification function. For more
@@ -22,7 +22,8 @@ alpha=NULL, M=1, N=1000, nu=9)
     first row of a matrix, then \code{\link{LaplaceApproximation}} is
     used to optimize initial values, in which case all mixture
     components receive the same initial values and covariance matrix
-    from the object of class \code{laplace}.}
+    from the object of class \code{laplace}. Parameters must be
+    continuous.}
   \item{Data}{This is a list of data. For more information, see
     \code{\link{LaplacesDemon}}.}
   \item{Covar}{This is a \eqn{K \times K}{K x K} covariance matrix for
@@ -50,9 +51,17 @@ alpha=NULL, M=1, N=1000, nu=9)
     \eqn{K} of parameters. These samples are also called walkers or
     particles.}
   \item{nu}{This is the degrees of freedom parameter \eqn{\nu}{nu} for
-  the multivariate t distribution for each mixture component. If a
-  multivariate normal distribution is preferred, then set
-  \eqn{\nu > 1e4}{nu > 1e4}.}
+    the multivariate t distribution for each mixture component. If a
+    multivariate normal distribution is preferred, then set
+    \eqn{\nu > 1e4}{nu > 1e4}.}
+  \item{CPUs}{This argument is required for parallel processing, and
+    and indicates the number of central processing units (CPUs) of the
+    computer or cluster. For example, when a user has a quad-core
+    computer, \code{CPUs=4}.}
+  \item{Type}{This argument defaults to \code{"PSOCK"} and uses the
+    Simple Network of Workstations (SNOW) for parallelization.
+    Alternatively, \code{Type="MPI"} may be specified to use Message
+    Passing Interface (MPI) for parallelization.}
 }
 \details{
   The \code{PMC} function uses the adaptive importance sampling
@@ -105,19 +114,22 @@ alpha=NULL, M=1, N=1000, nu=9)
     \item PMC is more sensitive to the initial covariance matrix (or
   matrices for mixture components) than adaptive MCMC. PMC requires more
   information about the target distributions before updating. The
-  covariance matrix from a converged Laplace Approximation may be
-  required (see \code{\link{LaplaceApproximation}} for more
-  information).
+  covariance matrix from a converged iterative quadrature algorithm,
+  Laplace Approximation, or Variational Bayes may be required (see
+  \code{\link{IterativeQuadrature}}, \code{\link{LaplaceApproximation}},
+  or \code{\link{VariationalBayes}} for more information).
   }
 
-  Since PMC requires better initial information than Laplace
-  Approximation and MCMC, it is not recommended to begin updating a
-  model that has little prior information with PMC, especially when the
-  model has more than a few parameters. Instead, Laplace Approximation
-  or MCMC should be used. However, once convergence is found or assumed,
-  it is recommended to attempt to update the model with PMC, given the
-  latest parameters and convariance matrix from Laplace Approximation or
-  MCMC. Used in this way, PMC may improve the model fit obtained with
+  Since PMC requires better initial information than iterative
+  quadrature, Laplace Approximation, MCMC, and Variational Bayes, it is
+  not recommended to begin updating a model that has little prior
+  information with PMC, especially when the model has more than a few
+  parameters. Instead, iterative quadrature, Laplace Approximation,
+  MCMC, or Variational Bayes should be used. However, once convergence
+  is found or assumed, it is recommended to attempt to update the model
+  with PMC, given the latest parameters and convariance matrix from
+  iterative quadrature, Laplace Approximation, MCMC, or Variational
+  Bayes. Used in this way, PMC may improve the model fit obtained with
   MCMC and should reduce the variance of the marginal posterior
   distributions,  which is desirable for predictive modeling.
   
@@ -129,8 +141,9 @@ alpha=NULL, M=1, N=1000, nu=9)
   (Cappe et al., 2008). If they do not stabilize, then it is suggested
   to begin PMC again with a larger number \code{N} of samples, and
   possibly with different initial values and covariance matrix or
-  matrices. \code{\link{LaplaceApproximation}} may be helpful to provide
-  better starting values for \code{PMC}.
+  matrices. \code{\link{IterativeQuadrature}},
+  \code{\link{LaplaceApproximation}}, or \code{\link{VariationalBayes}}
+  may be helpful to provide better starting values for \code{PMC}.
 
   If a message appears that warns about `bad weights', then \code{PMC}
   is attempting to work with an iteration in which importance weights
@@ -269,10 +282,12 @@ alpha=NULL, M=1, N=1000, nu=9)
 \author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{
   \code{\link{BayesFactor}},
+  \code{\link{IterativeQuadrature}},
   \code{\link{LaplaceApproximation}},
   \code{\link{LML}},
-  \code{\link{PMC.RAM}}, and
-  \code{\link{Thin}}.
+  \code{\link{PMC.RAM}},
+  \code{\link{Thin}}, and
+  \code{\link{VariationalBayes}}.
 }
 \examples{
 # The accompanying Examples vignette is a compendium of examples.
@@ -284,21 +299,29 @@ data(demonsnacks)
 y <- log(demonsnacks$Calories)
 X <- cbind(1, as.matrix(log(demonsnacks[,c(1,4,10)]+1)))
 J <- ncol(X)
-for (j in 2:J) {X[,j] <- CenterScale(X[,j])}
-mon.names <- c("LP","sigma")
-parm.names <- as.parm.names(list(beta=rep(0,J), log.sigma=0))
-PGF <- function(Data) return(c(rnormv(Data$J,0,10),
-     log(rhalfcauchy(1,5))))
+for (j in 2:J) X[,j] <- CenterScale(X[,j])
+
+#########################  Data List Preparation  #########################
+mon.names <- "LP"
+parm.names <- as.parm.names(list(beta=rep(0,J), sigma=0))
+pos.beta <- grep("beta", parm.names)
+pos.sigma <- grep("sigma", parm.names)
+PGF <- function(Data) {
+     beta <- rnorm(Data$J)
+     sigma <- runif(1)
+     return(c(beta, sigma))
+     }
 MyData <- list(J=J, PGF=PGF, X=X, mon.names=mon.names,
-     parm.names=parm.names, y=y)
+     parm.names=parm.names, pos.beta=pos.beta, pos.sigma=pos.sigma, y=y)
 
 ##########################  Model Specification  ##########################
 Model <- function(parm, Data)
      {
      ### Parameters
-     beta <- parm[1:Data$J]
-     sigma <- exp(parm[Data$J+1])
-     ### Log of Prior Densities
+     beta <- parm[Data$pos.beta]
+     sigma <- interval(parm[Data$pos.sigma], 1e-100, Inf)
+     parm[Data$pos.sigma] <- sigma
+     ### Log-Prior
      beta.prior <- sum(dnormv(beta, 0, 1000, log=TRUE))
      sigma.prior <- dhalfcauchy(sigma, 25, log=TRUE)
      ### Log-Likelihood
@@ -306,7 +329,7 @@ Model <- function(parm, Data)
      LL <- sum(dnorm(Data$y, mu, sigma, log=TRUE))
      ### Log-Posterior
      LP <- LL + beta.prior + sigma.prior
-     Modelout <- list(LP=LP, Dev=-2*LL, Monitor=c(LP,sigma),
+     Modelout <- list(LP=LP, Dev=-2*LL, Monitor=LP,
           yhat=rnorm(length(mu), mu, sigma), parm=parm)
      return(Modelout)
      }
@@ -318,13 +341,13 @@ Initial.Values <- GIV(Model, MyData, PGF=TRUE)
 
 ########################  Population Monte Carlo  #########################
 Fit <- PMC(Model, MyData, Initial.Values, Covar=NULL, Iterations=5,
-     Thinning=1, alpha=NULL, M=1, N=100)
+     Thinning=1, alpha=NULL, M=1, N=100, CPUs=1)
 Fit
 print(Fit)
 PosteriorChecks(Fit)
 caterpillar.plot(Fit, Parms="beta")
 plot(Fit, BurnIn=0, MyData, PDF=FALSE)
-Pred <- predict(Fit, Model, MyData)
+Pred <- predict(Fit, Model, MyData, CPUs=1)
 summary(Pred, Discrep="Chi-Square")
 plot(Pred, Style="Covariates", Data=MyData)
 plot(Pred, Style="Density", Rows=1:9)
@@ -339,5 +362,6 @@ Importance(Fit, Model, MyData, Discrep="Chi-Square")
 
 #End
 }
+\keyword{High Performance Computing}
 \keyword{Importance Sampling}
 \keyword{Monte Carlo}

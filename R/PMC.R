@@ -6,7 +6,7 @@
 ###########################################################################
 
 PMC <- function(Model, Data, Initial.Values, Covar=NULL, Iterations=10,
-     Thinning=1, alpha=NULL, M=1, N=1000, nu=9)
+     Thinning=1, alpha=NULL, M=1, N=1000, nu=9, CPUs=1, Type="PSOCK")
      {
      cat("\nPMC was called on ", date(), "\n", sep="")
      time1 <- proc.time()
@@ -17,8 +17,8 @@ PMC <- function(Model, Data, Initial.Values, Covar=NULL, Iterations=10,
      if(!is.function(Model)) stop("Model must be a function.")
      if(missing(Data))
           stop("A list containing data must be entered for Data.")
-     if(is.null(Data$mon.names)) stop("In Data, mon.names is NULL.")
-     if(is.null(Data$parm.names)) stop("In Data, parm.names is NULL.")
+     if(is.null(Data[["mon.names"]])) stop("In Data, mon.names is NULL.")
+     if(is.null(Data[["parm.names"]])) stop("In Data, parm.names is NULL.")
      for (i in 1:length(Data)) {
           if(is.matrix(Data[[i]])) {
                if(all(is.finite(Data[[i]]))) {
@@ -30,20 +30,22 @@ PMC <- function(Model, Data, Initial.Values, Covar=NULL, Iterations=10,
      N <- max(round(abs(N)), 1)
      if(missing(Initial.Values)) {
           cat("WARNING: Initial Values were not supplied.\n")
-          Initial.Values <- matrix(0, M, length(Data$parm.names))}
+          Initial.Values <- matrix(0, M, length(Data[["parm.names"]]))}
      if(is.vector(Initial.Values)) {
-          if(!identical(length(Initial.Values), length(Data$parm.names))) {
+          if(!identical(length(Initial.Values),
+               length(Data[["parm.names"]]))) {
                cat("WARNING: The length of Initial Values differed from",
                     "Data$parm.names.\n")
-          Initial.Values <- matrix(0, M, length(Data$parm.names))}}
+          Initial.Values <- matrix(0, M, length(Data[["parm.names"]]))}}
      else {
-          if(!identical(ncol(Initial.Values), length(Data$parm.names))) {
+          if(!identical(ncol(Initial.Values),
+               length(Data[["parm.names"]]))) {
                cat("WARNING: Columns in Initial Values differed from",
                     "Data$parm.names.\n")
-          Initial.Values <- matrix(0, M, length(Data$parm.names))}}
+          Initial.Values <- matrix(0, M, length(Data[["parm.names"]]))}}
      if(any(!is.finite(Initial.Values))) {
           cat("WARNING: Initial Values contain non-finite values.\n")
-          Initial.Values <- matrix(0, M, length(Data$parm.names))}
+          Initial.Values <- matrix(0, M, length(Data[["parm.names"]]))}
      if(is.vector(Initial.Values)) {
           LIV <- length(Initial.Values)
           Initial.Values <- matrix(Initial.Values, M, LIV, byrow=TRUE)}
@@ -86,7 +88,8 @@ PMC <- function(Model, Data, Initial.Values, Covar=NULL, Iterations=10,
           if(!is.list(M0)) stop("Model must return a list.")
           if(length(M0) != 5) stop("Model must return five components.")
           if(length(M0[["LP"]]) > 1) stop("Multiple joint posteriors exist!")
-          if(!identical(length(M0[["Monitor"]]), length(Data$mon.names)))
+          if(!identical(length(M0[["Monitor"]]),
+               length(Data[["mon.names"]])))
                stop("Length of mon.names differs from length of monitors.")
           if(any(!is.finite(c(M0[["LP"]],M0[["Dev"]],M0[["parm"]]))))
                stop("Model produces non-finite results.")}
@@ -103,24 +106,26 @@ PMC <- function(Model, Data, Initial.Values, Covar=NULL, Iterations=10,
      if(acount > 0) {
           cat("Suggestion:", acount, "possible instance(s) of apply functions\n")
           cat("     were found in the Model specification. Sampling speed will\n")
-          cat("     increase if apply functions are 'vectorized'.\n")}
+          cat("     increase if apply functions are vectorized in R or coded\n")
+          cat("     in a faster language such as C++ via the Rcpp package.\n")}
      acount <- length(grep("for", as.character.function(Model)))
      if(acount > 0) {
           cat("Suggestion:", acount, "possible instance(s) of for loops\n")
           cat("     were found in the Model specification. Sampling speed will\n")
-          cat("     increase if for loops are 'vectorized'.\n")}
+          cat("     increase if for loops are vectorized in R or coded in a\n")
+          cat("     faster language such as C++ via the Rcpp package.\n")}
      ######################  Laplace Approximation  #######################
      ### Sample Size of Data
-     if(!is.null(Data$n)) if(length(Data$n) == 1) NN <- Data$n
-     if(!is.null(Data$N)) if(length(Data$N) == 1) NN <- Data$N
-     if(!is.null(Data$y)) NN <- nrow(matrix(Data$y))
-     if(!is.null(Data$Y)) NN <- nrow(matrix(Data$Y))
+     if(!is.null(Data[["n"]])) if(length(Data[["n"]]) == 1) NN <- Data[["n"]] 
+     if(!is.null(Data[["N"]])) if(length(Data[["N"]]) == 1) NN <- Data[["N"]] 
+     if(!is.null(Data[["y"]])) NN <- nrow(matrix(Data[["y"]]))
+     if(!is.null(Data[["Y"]])) NN <- nrow(matrix(Data[["Y"]]))
      if(is.null(NN)) stop("Sample size of Data not found in n, N, y, or Y.")
      if({sum(abs(Initial.Values[1,]) == 0) == ncol(Initial.Values)} &
           {NN >= 5*ncol(Initial.Values)}) {
           cat("\nLaplace Approximation will be used on initial values.\n")
           Fit.LA <- LaplaceApproximation(Model, Initial.Values[1,], Data,
-               Method="Rprop", sir=FALSE)
+               Method="SPG", CovEst="Hessian", sir=FALSE)
           Covar <- array(Fit.LA$Covar, dim=c(LIV, LIV, Iterations, M))
           Initial.Values <- matrix(Fit.LA$Summary1[1:ncol(Initial.Values),1],
                M, LIV)}
@@ -130,6 +135,15 @@ PMC <- function(Model, Data, Initial.Values, Covar=NULL, Iterations=10,
                Covar[,,1,m] <- as.symmetric.matrix(Covar[,,1,m])
           if(!is.positive.definite(Covar[,,1,m]))
                Covar[,,1,m] <- as.positive.definite(Covar[,,1,m])}
+     ###################  Prepare for Parallelization  ####################
+     CPUs <- abs(round(CPUs))
+     if(CPUs > 1) {
+          detectedCores <- max(detectCores(),
+               as.integer(Sys.getenv("NSLOTS")), na.rm=TRUE)
+          cat("\n\nCPUs Detected:", detectedCores, "\n")
+          if(CPUs > detectedCores) {
+               cat("\nOnly", detectedCores, "will be used.\n")
+               CPUs <- detectedCores}}
      ############################  Begin PMC  #############################
      cat("\nPMC is beginning to update...\n")
      for (iter in 1:Iterations) {
@@ -145,12 +159,30 @@ PMC <- function(Model, Data, Initial.Values, Covar=NULL, Iterations=10,
                post[,,iter,m] <- rmvt(N, mu[iter,,m], S, nu)
                if(sum(!is.finite(post[,,iter,m]) > 0))
                     stop("Bad draws from importance distribution.")
-               for (i in 1:N) {
-                    mod <- Model(post[i,,iter,m], Data)
-                    if(all(is.finite(c(mod[["LP"]],mod[["Dev"]],mod[["parm"]]))))
-                         M0 <- mod
-                    LP[i,iter,m] <- M0[["LP"]]
-                    post[i,,iter,m] <- M0[["parm"]]}
+               ### Non-Parallel Processing
+               if(CPUs == 1) {
+                    for (i in 1:N) {
+                         mod <- Model(post[i,,iter,m], Data)
+                         if(all(is.finite(c(mod[["LP"]], mod[["Dev"]],
+                              mod[["parm"]]))))
+                              M0 <- mod
+                         LP[i,iter,m] <- M0[["LP"]]
+                         post[i,,iter,m] <- M0[["parm"]]}
+                    }
+               else { ### Parallel Processing
+                    cl <- makeCluster(CPUs, Type)
+                    varlist <- unique(c(ls(), ls(envir=.GlobalEnv),
+                         ls(envir=parent.env(environment()))))
+                    clusterExport(cl, varlist=varlist, envir=environment())
+                    clusterSetRNGStream(cl)
+                    mod <- parLapply(cl, 1:nrow(post),
+                         function(x) Model(post[x,,iter,m], Data))
+                    stopCluster(cl)
+                    LP[,iter,m] <- unlist(lapply(mod,
+                         function(x) x[["LP"]]))[1:nrow(post)]
+                    post[,,iter,m] <- matrix(unlist(lapply(mod,
+                         function(x) x[["parm"]])), dim(post)[1],
+                         dim(post)[2], byrow=TRUE)}
                ### Proposal Sampling Distribution H(theta) ~ MVT
                LH[,iter,m] <- dmvt(post[,,iter,m], mu[iter,,m],
                     S, nu, log=TRUE)
@@ -222,7 +254,7 @@ PMC <- function(Model, Data, Initial.Values, Covar=NULL, Iterations=10,
           }
      ### Combine Samples from Mixture Components
      Posterior2 <- post[,,Iterations,1]
-     colnames(Posterior2) <- Data$parm.names
+     colnames(Posterior2) <- Data[["parm.names"]]
      if(M > 1) {
           for (m in 2:M) {
                if(alpha[m,Iterations] >= 0.002)
@@ -232,18 +264,18 @@ PMC <- function(Model, Data, Initial.Values, Covar=NULL, Iterations=10,
      ### Final Sampling
      cat("Final Sampling\n")
      Dev <- rep(0, nrow(Posterior2))
-     Mon <- matrix(0, nrow(Posterior2), length(Data$mon.names))
-     colnames(Mon) <- Data$mon.names
+     Mon <- matrix(0, nrow(Posterior2), length(Data[["mon.names"]]))
+     colnames(Mon) <- Data[["mon.names"]]
      for (i in 1:nrow(Posterior2)) {
           temp <- Model(Posterior2[i,], Data)
           Dev[i] <- temp[["Dev"]]
           Mon[i,] <- temp[["Monitor"]]}
      ### Posterior Summary Table
      cat("Creating Summaries\n")
-     Summ <- matrix(NA, LIV, 7, dimnames=list(Data$parm.names,
+     Summ <- matrix(NA, LIV, 7, dimnames=list(Data[["parm.names"]],
           c("Mean","SD","MCSE","ESS","LB","Median","UB")))
      Summ[,1] <- colMeans(Posterior2)
-     Summ[,2] <- apply(Posterior2, 2, sd)
+     Summ[,2] <- sqrt(.colVars(Posterior2))
      Summ[,3] <- 0
      Summ[,4] <- ESS(Posterior2)
      Summ[,5] <- apply(Posterior2, 2, quantile, c(0.025), na.rm=TRUE)
@@ -281,7 +313,7 @@ PMC <- function(Model, Data, Initial.Values, Covar=NULL, Iterations=10,
           Monitor[7] <- as.numeric(quantile(Mon[,j], probs=0.975,
                na.rm=TRUE))
           Summ <- rbind(Summ, Monitor)
-          rownames(Summ)[nrow(Summ)] <- Data$mon.names[j]}
+          rownames(Summ)[nrow(Summ)] <- Data[["mon.names"]][j]}
      ### Logarithm of the Marginal Likelihood
      LML <- list(LML=NA, VarCov=NA)
      cat("Estimating Log of the Marginal Likelihood\n")

@@ -24,7 +24,7 @@ burnin <- function(x, method="BMK")
                     break
                     }
                }
-     }
+          }
      else {
           for (i in 1:ncol(x)) {
                iter <- 1

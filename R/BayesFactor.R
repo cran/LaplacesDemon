@@ -13,11 +13,16 @@ BayesFactor <- function(x)
      for (i in 1:Model.num) {
           if(!identical(class(x[[i]]), "demonoid") &
                !identical(class(x[[i]]), "laplace") &
-               !identical(class(x[[i]]), "pmc"))
-               stop("x is not of class demonoid, laplace, or pmc.")
+               !identical(class(x[[i]]), "pmc") &
+               !identical(class(x[[i]]), "vb"))
+               stop("x is not of class demonoid, laplace, pmc, or vb.")
           if(identical(class(x[[i]]), "laplace") &
                identical(x[[i]]$Converged, FALSE)) { 
                stop("LaplaceApproximation() did not converge in ",
+                    "M[",i,"].\n", sep="")}
+          if(identical(class(x[[i]]), "vb") &
+               identical(x[[i]]$Converged, FALSE)) { 
+               stop("VariationalBayes() did not converge in ",
                     "M[",i,"].\n", sep="")}
           if(is.na(x[[i]]$LML))
                stop(cat("LML is missing in M[",i,"].", sep=""))

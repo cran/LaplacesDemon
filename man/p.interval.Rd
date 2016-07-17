@@ -10,11 +10,12 @@ p.interval(obj, HPD=TRUE, MM=TRUE, prob=0.95, plot=FALSE, PDF=FALSE, \dots)
 }
 \arguments{
   \item{obj}{This can be either a vector or matrix of posterior samples,
-    or an object of class \code{demonoid} or \code{laplace}. If it is an
-    object of class \code{demonoid}, then it will use only stationary
-    posterior samples and monitored target distributions (automatically
-    discarding the burn-in; if stationarity does not exist, then it
-    will use all samples).}
+    or an object of class \code{demonoid}, \code{iterquad},
+    \code{laplace}, \code{pmc}, or \code{vb}. If it is an object of
+    class \code{demonoid}, then it will use only stationary posterior
+    samples and monitored target distributions (automatically discarding
+    the burn-in; if stationarity does not exist, then it will use all
+    samples).}
   \item{HPD}{Logical. This argument defaults to \code{TRUE}, in which
     case one or more Highest Posterior Density (HPD) intervals is
     returned. When \code{FALSE}, one or more quantile-based probability
@@ -109,7 +110,7 @@ p.interval(obj, HPD=TRUE, MM=TRUE, prob=0.95, plot=FALSE, PDF=FALSE, \dots)
   interval, but could be one- or two-tailed, whichever is more
   appropriate, like the HPD interval. A comparison of the quantile-based
   probability interval, HPD interval, and LPL interval is available
-  here: \url{http://www.bayesian-inference.com/credible}.
+  here: \url{https://web.archive.org/web/20150214090353/http://www.bayesian-inference.com/credible}.
 }
 \value{
   A matrix is returned with rows corresponding to the parameters (or
@@ -125,15 +126,20 @@ p.interval(obj, HPD=TRUE, MM=TRUE, prob=0.95, plot=FALSE, PDF=FALSE, \dots)
   Bayesian Approach to Interval Estimation". \emph{Sociedad de
   Estadistica e Investigacion Operativa}, 14(2), p. 317--384.
 }
-\author{Statisticat, LLC \email{software@bayesian-inference.com}}
+\author{Statisticat, LLC}
 \seealso{
   \code{\link{is.multimodal}},
+  \code{\link{IterativeQuadrature}},
   \code{\link{joint.pr.plot}},
-  \code{\link{LaplacesDemon}}, and
-  \code{\link{LPL.interval}}.}
+  \code{\link{LaplaceApproximation}},
+  \code{\link{LaplacesDemon}},
+  \code{\link{LPL.interval}},
+  \code{\link{PMC}}, and
+  \code{\link{VariationalBayes}}.
+}
 \examples{
-#First, update the model with the LaplacesDemon function.
-#Then
+##First, update the model with the LaplacesDemon function.
+##Then
 #p.interval(Fit, HPD=TRUE, MM=TRUE, prob=0.95)
 }
 \keyword{Credible Interval}

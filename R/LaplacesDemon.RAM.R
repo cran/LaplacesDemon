@@ -13,16 +13,16 @@ LaplacesDemon.RAM <- function(Model, Data, Iterations, Thinning,
      if(missing(Data))
           stop("The Data argument is required.")
      Const <- 1048600
-     LIV <- length(Data$parm.names)
-     LM <- length(Data$mon.names)
+     LIV <- length(Data[["parm.names"]])
+     LM <- length(Data[["mon.names"]])
      Covar <- 0
-     if(Algorithm %in% c("AM","AMM","DRAM","DRM","IM","INCA","RWM",
-          "RAM")) {
+     if(Algorithm %in% c("ADMG","AFSS","AM","AMM","DRAM","DRM","ESS","IM",
+          "INCA","MALA","OHSS","RWM","RAM","UESS")) {
           ### Covariance is required
           Covar <- Covar + as.vector(object.size(matrix(runif(LIV*LIV),
           LIV, LIV))) / Const
           }
-     else if(Algorithm %in% c("AM","AMM","AMWG","DRAM","DRM","INCA",
+     else if(Algorithm %in% c("AGG","AM","AMM","AMWG","DRAM","DRM","INCA",
           "MWG","RWM","SAMWG","SMWG","USAMWG","USMWG")) {
           ### Variance is required
           Covar <- Covar + as.vector(object.size(runif(LIV))) / Const}
@@ -34,7 +34,7 @@ LaplacesDemon.RAM <- function(Model, Data, Iterations, Thinning,
      Monitor <- as.vector(object.size(matrix(runif(Iterations*LM),
           round(Iterations / Thinning), LM))) / Const
      post <- 0
-     if(Algorithm %in% c("AHMC","AM","DRAM","INCA","NUTS"))
+     if(Algorithm %in% c("AHMC","AM","DRAM","INCA","NUTS","OHSS"))
           post <- as.vector(object.size(matrix(runif(Iterations*LIV),
                Iterations, LIV))) / Const
      Posterior1 <- as.vector(object.size(matrix(runif(round(Iterations /

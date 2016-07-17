@@ -39,9 +39,9 @@ Geweke.Diagnostic <- function(x)
           f1 <- sqrt(3) * {4 * freq - 1}
           f2 <- sqrt(5) * {24 * freq * freq - 12 * freq + 1}
           v0 <- numeric(ncol(yy))
-          for(j in 1:ncol(yy)) {
+          for (j in 1:ncol(yy)) {
                zz <- yy[,j]
-               if(var(zz) == 0) {v0[j] <- 0}
+               if(var(zz) == 0) v0[j] <- 0
                else {
                     yfft <- fft(zz)
                     spec <- Re(yfft * Conj(yfft)) / N

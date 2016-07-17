@@ -24,12 +24,12 @@
   MCSE to be a vital part of reporting any Bayesian model, and as a
   stopping rule (Flegal et al., 2008).
 
-  In Laplace's Demon, MCSE is part of the posterior summaries because it
-  is easy to estimate, and Laplace's Demon prefers to continue updating
-  until each MCSE is less than 6.27\% of its associated marginal
-  posterior standard deviation (for more information on this stopping
-  rule, see the \code{\link{Consort}} function), since MCSE has been
-  demonstrated to be an excellent stopping rule.
+  In \code{\link{LaplacesDemon}}, MCSE is part of the posterior
+  summaries because it is easy to estimate, and Laplace's Demon prefers
+  to continue updating until each MCSE is less than 6.27\% of its
+  associated marginal posterior standard deviation (for more information
+  on this stopping rule, see the \code{\link{Consort}} function), since
+  MCSE has been demonstrated to be an excellent stopping rule.
 
   Acceptable error may be specified, if known, in the \code{MCSS}
   (Monte Carlo Sample Size) function to estimate the required number of
@@ -131,4 +131,5 @@ MCSS(x, a=0.01)
 \keyword{Diagnostic}
 \keyword{MCMC}
 \keyword{MCSE}
+\keyword{MCSS}
 \keyword{Utility}

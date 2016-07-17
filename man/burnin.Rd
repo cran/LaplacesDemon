@@ -41,23 +41,25 @@ burnin(x, method="BMK")
 
   The term, ``burn-in'', originated in electronics regarding the initial
   testing of component failure at the factory to eliminate initial
-  failures (Geyer, 2011).
+  failures (Geyer, 2011). Although ``burn-in' has been the standard term
+  for decades, some are referring to these as ``warm-up'' iterations.
 }
 \value{
-  The \code{burnin} fucntion returns a vector equal in length to the
+  The \code{burnin} function returns a vector equal in length to the
   number of MCMC chains in \code{x}, and each element indicates the
   maximum iteration in burn-in.
 }
 \references{
   Geyer, C.J. (2011). "Introduction to Markov Chain Monte Carlo". In
   S Brooks, A Gelman, G Jones, and M Xiao-Li (eds.), "Handbook of
-  Markov Chain Monte Carlo", p. 3--48. Chapman \& Hall, Boca Raton, FL.
+  Markov Chain Monte Carlo", p. 3--48. Chapman and Hall, Boca Raton, FL.
 }
 \author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{
   \code{\link{BMK.Diagnostic}},
+  \code{\link{deburn}},
   \code{\link{Geweke.Diagnostic}},
-  \code{\link{KS.Diagnostic}},and
+  \code{\link{KS.Diagnostic}}, and
   \code{\link{LaplacesDemon}}.
 }
 \examples{

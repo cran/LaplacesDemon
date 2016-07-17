@@ -8,8 +8,9 @@
   (Savage, 1971). The \code{elicit} function elicits personal opinion
   and the \code{delicit} function estimates probability density to be
   used with model specification in the
-  \code{\link{LaplaceApproximation}}, \code{\link{LaplacesDemon}},
-  \code{\link{LaplacesDemon.hpc}}, or \code{\link{PMC}} functions.
+  \code{\link{IterativeQuadrature}}, \code{\link{LaplaceApproximation}},
+  \code{\link{LaplacesDemon}}, \code{\link{LaplacesDemon.hpc}},
+  \code{\link{PMC}}, or \code{\link{VariationalBayes}} functions.
 }
 \usage{
 delicit(theta, x, a=-Inf, b=Inf, log=FALSE)
@@ -85,7 +86,7 @@ elicit(n, cats, cat.names, show.plot=FALSE)
   As an alternative, Hahn (2006) also used a categorical approach,
   eliciting judgements about the relative likelihood of each category,
   and then minimizes the KLD (for more information on KLD, see the
-  \code{\link{KLD}}).
+  \code{\link{KLD}} function).
 }
 \references{
   Hahn, E.D. (2006). "Re-examining Informative Prior Elicitation Through
@@ -100,10 +101,12 @@ elicit(n, cats, cat.names, show.plot=FALSE)
 \seealso{
   \code{\link{de.Finetti.Game}},
   \code{\link{KLD}},
+  \code{\link{IterativeQuadrature}},
   \code{\link{LaplaceApproximation}},
   \code{\link{LaplacesDemon}},
-  \code{\link{LaplacesDemon.hpc}}, and
-  \code{\link{PMC}}.
+  \code{\link{LaplacesDemon.hpc}},
+  \code{\link{PMC}}, and
+  \code{\link{VariationalBayes}}.
 }
 \examples{
 library(LaplacesDemon)

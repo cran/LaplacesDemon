@@ -2,17 +2,19 @@
 # as.covar                                                                #
 #                                                                         #
 # The purpose of the as.covar function is to retrieve the covariance      #
-# matrix from an object of class demonoid, demonoid.hpc, laplace, or pmc, #
-# or in the case of an object of class pmc with mixture components, to    #
-# retrieve multiple covariance matrices.                                  #
+# matrix from an object of class demonoid, demonoid.hpc, iterquad,        #
+# laplace, pmc, or vb, or in the case of an object of class pmc with      #
+# mixture components, to retrieve multiple covariance matrices.           #
 ###########################################################################
 
 as.covar <- function(x)
      {
      if(!identical(class(x), "demonoid") &
         !identical(class(x), "demonoid.hpc") &
+        !identical(class(x), "iterquad") &
         !identical(class(x), "laplace") &
-        !identical(class(x), "pmc"))
+        !identical(class(x), "pmc") &
+        !identical(class(x), "vb"))
           stop("The class of x is unknown.")
      if(identical(class(x), "demonoid")) {
           if(is.matrix(x$Covar)) {
@@ -48,8 +50,9 @@ as.covar <- function(x)
                     cat("\nThe covariance matrix is blocked.\n")
                }
           }
-     else if(identical(class(x), "laplace"))
-          covar <- x$Covar
+     else if(identical(class(x), "iterquad")) covar <- x$Covar
+     else if(identical(class(x), "laplace")) covar <- x$Covar
+     else if(identical(class(x), "vb")) covar <- x$Covar
      else covar <- x$Covar[,,x$Iterations,]
      return(covar)
      }

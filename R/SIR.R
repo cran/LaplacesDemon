@@ -7,7 +7,7 @@
 # function in the LearnBayes package.                                     #
 ###########################################################################
 
-SIR <- function(Model, Data, mu, Sigma, n=1000) 
+SIR <- function(Model, Data, mu, Sigma, n=1000, CPUs=1, Type="PSOCK") 
      {
      if(missing(Model)) stop("The Model function is required.")
      if(missing(Data)) stop("The Data argument is required.")
@@ -20,14 +20,37 @@ SIR <- function(Model, Data, mu, Sigma, n=1000)
      ### Sampling
      k <- length(mu)
      theta <- rmvn(n, mu, Sigma)
-     theta <- ifelse(!is.finite(theta), 0, theta)
-     colnames(theta) <- Data$parm.names
+     theta[which(!is.finite(theta))] <- 0
+     colnames(theta) <- Data[["parm.names"]]
      ### Importance
      lf <- matrix(0, n, 1)
-     for (i in 1:n) {
-          mod <- Model(theta[i,], Data)
-          lf[i] <- mod[[1]]
-          theta[i,] <- mod[[5]]}
+     ### Non-Parallel Processing
+     if(CPUs == 1) {
+          for (i in 1:n) {
+               mod <- Model(theta[i,], Data)
+               lf[i] <- mod[["LP"]]
+               theta[i,] <- mod[["parm"]]}
+          }
+     else { ### Parallel Processing
+          detectedCores <- max(detectCores(),
+               as.integer(Sys.getenv("NSLOTS")), na.rm=TRUE)
+          cat("\n\nCPUs Detected:", detectedCores, "\n")
+          if(CPUs > detectedCores) {
+               cat("\nOnly", detectedCores, "will be used.\n")
+               CPUs <- detectedCores}
+          cl <- makeCluster(CPUs, Type)
+          varlist <- unique(c(ls(), ls(envir=.GlobalEnv),
+               ls(envir=parent.env(environment()))))
+          clusterExport(cl, varlist=varlist, envir=environment())
+          clusterSetRNGStream(cl)
+          mod <- parLapply(cl, 1:nrow(theta),
+               function(x) Model(theta[x,], Data))
+          stopCluster(cl)
+          lf <- unlist(lapply(mod,
+               function(x) x[["LP"]]))[1:nrow(theta)]
+          theta <- matrix(unlist(lapply(mod,
+               function(x) x[["parm"]])), nrow(theta), ncol(theta))
+          rm(mod)}
      lp <- dmvn(theta, mu, Sigma, log=TRUE)
      md <- max(lf - lp)
      lw <- lf - lp - md
@@ -36,7 +59,7 @@ SIR <- function(Model, Data, mu, Sigma, n=1000)
      probs <- exp(lw - logadd(lw))
      ### Resampling
      options(warn=-1)
-     indices <- try(sample(1:n, size=n, replace=TRUE, prob=probs),
+     indices <- try(sample.int(n, size=n, replace=TRUE, prob=probs),
           silent=TRUE)
      options(warn=0)
      if(inherits(indices, "try-error")) indices <- 1:n

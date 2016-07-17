@@ -84,15 +84,17 @@ LossMatrix(L, p.theta)
 
   Although isolated decision-theoretic problems exist such as the
   provided example, decision theory may also be applied to the results
-  of a statistical model (such as from
-  \code{\link{LaplaceApproximation}}, \code{\link{LaplacesDemon}}, or
-  \code{\link{PMC}}), contingent on how a decision-maker is considering
-  to use the information from the model. The statistician may pass the
-  results of a model to a client, who then considers choosing possible
-  actions, given this information. The statistician should further
-  assist the client with considering actions, states of the world, then
-  loss functions, and finally eliciting the client's prior
-  probabilities (such as with the \code{\link{elicit}} function).
+  of a probability model (such as from
+  \code{\link{IterativeQuadrature}}, \code{\link{LaplaceApproximation}},
+  \code{\link{LaplacesDemon}}, \code{\link{PMC}}), or
+  \code{\link{VariationalBayes}}, contingent on how
+  a decision-maker is considering to use the information from the
+  model. The statistician may pass the results of a model to a client,
+  who then considers choosing possible actions, given this
+  information. The statistician should further assist the client with
+  considering actions, states of the world, then loss functions, and
+  finally eliciting the client's prior probabilities (such as with the
+  \code{\link{elicit}} function).
 
   When the outcome is finally observed, the information from this
   outcome may be used to refine the priors of the next such decision. In
@@ -118,9 +120,11 @@ LossMatrix(L, p.theta)
 \author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{
   \code{\link{elicit}},
+  \code{\link{IterativeQuadrature}},
   \code{\link{LaplaceApproximation}},
-  \code{\link{LaplacesDemon}}, and
-  \code{\link{PMC}}
+  \code{\link{LaplacesDemon}},
+  \code{\link{PMC}}, and
+  \code{\link{VariationalBayes}}.
 }
 \examples{
 library(LaplacesDemon)

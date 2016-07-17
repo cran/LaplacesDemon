@@ -12,11 +12,11 @@ plotMatrix(x, col=colorRampPalette(c("red","black","green"))(100),
 }
 \arguments{
   \item{x}{This required argument is a numerical matrix, or an
-    object of class \code{bayesfactor}, \code{demonoid}, \code{laplace},
-    \code{pmc}, or \code{posteriorchecks}. See more information below
-    regarding these classes. One component of a blocked proposal
-    covariance matrix must be pointed to explicitly, rather than to the
-    object of class \code{demonoid}.}
+    object of class \code{bayesfactor}, \code{demonoid}, \code{iterquad},
+    \code{laplace}, \code{pmc}, \code{posteriorchecks}, or \code{vb}.
+    See more information below regarding these classes. One component of
+    a blocked proposal covariance matrix must be pointed to explicitly,
+    rather than to the object of class \code{demonoid}.}
   \item{col}{This argument specifies the colors of the circles. By
     default, the \code{colorRampPalette} function colors strong positive
     correlation as \code{green}, zero correlation as \code{black}, and
@@ -64,10 +64,10 @@ plotMatrix(x, col=colorRampPalette(c("red","black","green"))(100),
 
   When \code{x} is an object of class \code{bayesfactor}, matrix
   \code{B} is plotted. When \code{x} is an object of class
-  \code{demonoid} (if it is a matrix), \code{laplace}, or \code{pmc},
-  the covariance matrix \code{Covar} is plotted. When \code{x} is an
-  object of class \code{posteriorchecks}, the posterior correlation
-  matrix is plotted.
+  \code{demonoid} (if it is a matrix), \code{iterquad}, \code{laplace},
+  \code{pmc}, or \code{vb}, the covariance matrix \code{Covar} is
+  plotted. When \code{x} is an object of class \code{posteriorchecks},
+  the posterior correlation matrix is plotted.
 
   This is a modified version of the \code{circle.corr} function
   of Taiyun Wei.

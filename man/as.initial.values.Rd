@@ -3,23 +3,26 @@
 \title{Initial Values}
 \description{
   This function returns the most recent posterior samples from an object
-  of class \code{demonoid} or \code{demonoid.hpc}, the posterior modes
-  of an object of class \code{laplace}, the posterior means of an object
-  of class \code{pmc} with one mixture component, or the latest means of
-  the importance sampling distribution of an object of class \code{pmc}
-  with multiple mixture components. The returned values are intended to
-  be the initial values for future updates.
+  of class \code{demonoid} or \code{demonoid.hpc}, the posterior means
+  of an object of class \code{iterquad}, the posterior modes of an
+  object of class \code{laplace} or \code{vb}, the posterior means of an
+  object of class \code{pmc} with one mixture component, or the latest
+  means of the importance sampling distribution of an object of class
+  \code{pmc} with multiple mixture components. The returned values are
+  intended to be the initial values for future updates.
 }
 \usage{
 as.initial.values(x)
 }
 \arguments{
   \item{x}{This is an object of class \code{demonoid},
-    \code{demonoid.hpc}, \code{laplace}, or \code{pmc}.}
+    \code{demonoid.hpc}, \code{iterquad}, \code{laplace}, \code{pmc}, or
+    \code{vb}.}
 }
 \details{
   Unless it is known beforehand how many iterations are required for
-  \code{\link{LaplaceApproximation}} to converge, MCMC in
+  \code{\link{IterativeQuadrature}}, \code{\link{LaplaceApproximation}},
+  or \code{\link{VariationalBayes}} to converge, MCMC in
   \code{\link{LaplacesDemon}} to appear converged, or the normalized
   perplexity to stabilize in \code{\link{PMC}}, multiple updates are
   necessary. An additional update, however, should not begin with the
@@ -48,9 +51,11 @@ as.initial.values(x)
 \author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{
   \code{\link{Combine}},
+  \code{\link{IterativeQuadrature}},
   \code{\link{LaplaceApproximation}},
   \code{\link{LaplacesDemon}},
-  \code{\link{LaplacesDemon.hpc}}, and
-  \code{\link{PMC}}.
+  \code{\link{LaplacesDemon.hpc}},
+  \code{\link{PMC}}, and
+  \code{\link{VariationalBayes}}.
 }
 \keyword{Initial Values}

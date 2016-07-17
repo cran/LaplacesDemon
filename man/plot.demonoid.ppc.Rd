@@ -83,9 +83,9 @@
 
   \code{DW} plots the distributions of the Durbin-Watson (DW) test
   statistics (Durbin and Watson, 1950), both observed
-  (\eqn{d^{obs}}{d.obs} as black-filled density) and replicated
-  (\eqn{d^{rep}}{d.rep} with a red line). The distribution of
-  \eqn{d^{obs}}{d.obs} is estimated from the model, and 
+  (\eqn{d^{obs}}{d.obs} as a transparent, black density) and replicated
+  (\eqn{d^{rep}}{d.rep} as a transparent, red density). The distribution
+  of \eqn{d^{obs}}{d.obs} is estimated from the model, and
   \eqn{d^{rep}}{d.rep} is simulated from normal residuals without
   autocorrelation, where the number of simulations are the same as the
   observed number. This DW test may be applied to the residuals of
@@ -137,13 +137,13 @@
   This plot is appropriate when Y is multivariate, not categorical, and
   desired to be seen row-wise.
 
-  \code{Jarque-Bera}  plots the distributions of the Jarque-Bera (JB)
+  \code{Jarque-Bera} plots the distributions of the Jarque-Bera (JB)
   test statistics (Jarque and Bera, 1980), both observed
-  (\eqn{JB^{obs}}{JB.obs} as black-filled density) and replicated
-  (\eqn{JB^{rep}}{JB.rep} with a red line). The distribution of 
-  \eqn{JB^{obs}}{JB.obs} is estimated from the model, and
-  \eqn{JB^{rep}}{JB.rep} is simulated from normal residuals, where the
-  number of simulations are the same as the observed number. This
+  (\eqn{JB^{obs}}{JB.obs} as a transparent black density) and replicated
+  (\eqn{JB^{rep}}{JB.rep} as a transparent red density). The
+  distribution of \eqn{JB^{obs}}{JB.obs} is estimated from the model,
+  and \eqn{JB^{rep}}{JB.rep} is simulated from normal residuals, where
+  the number of simulations are the same as the observed number. This
   Jarque-Bera test may be applied to the residuals of 
   univariate models to test for normality. The Jarque-Bera test does not
   test normality per se, but whether or not the distribution has
@@ -166,12 +166,12 @@
 
   \code{Mardia} plots the distributions of the skewness (K3) and
   kurtosis (K4) test statistics (Mardia, 1970), both observed
-  (\eqn{K3^{obs}}{K3.obs} and \eqn{K4^{obs}}{K4.obs} as black-filled
-  density) and replicated (\eqn{K3^{rep}}{K3.rep} and
-  \eqn{K4^{rep}}{K4.rep} with a red line). The distributions of
-  \eqn{K3^{obs}}{K3.obs} and \eqn{K4^{obs}}{K4.obs} are estimated from
-  the model, and both \eqn{K3^{rep}}{K3.rep} \eqn{K4^{rep}}{K4.rep} are
-  simulated from multivariate normal residuals, where the number of
+  (\eqn{K3^{obs}}{K3.obs} and \eqn{K4^{obs}}{K4.obs} as transparent
+  black density) and replicated (\eqn{K3^{rep}}{K3.rep} and
+  \eqn{K4^{rep}}{K4.rep} as transparent red density). The distributions
+  of \eqn{K3^{obs}}{K3.obs} and \eqn{K4^{obs}}{K4.obs} are estimated
+  from the model, and both \eqn{K3^{rep}}{K3.rep} \eqn{K4^{rep}}{K4.rep}
+  are simulated from multivariate normal residuals, where the number of
   simulations are the same as the observed number. This Mardia's test
   may be applied to the residuals of multivariate models to test for
   multivariate normality. Mardia's test does not test for multivariate

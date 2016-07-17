@@ -10,12 +10,19 @@
   \eqn{\textbf{y}^{rep}}{y[rep]} is predicted given an object of
   class \code{demonoid}, the model specification, and data.
 }
-\usage{\method{predict}{demonoid}(object, Model, Data, \dots)}
+\usage{\method{predict}{demonoid}(object, Model, Data, CPUs=1, Type="PSOCK", \dots)}
 \arguments{
   \item{object}{An object of class \code{demonoid} is required.}
   \item{Model}{The model specification function is required.}
   \item{Data}{A data set in a list is required. The dependent variable
     is required to be named either \code{y} or \code{Y}.}
+  \item{CPUs}{This argument accepts an integer that specifies the number
+    of central processing units (CPUs) of the multicore computer or
+    computer cluster. This argument defaults to \code{CPUs=1}, in which
+    parallel processing does not occur.}
+  \item{Type}{This argument specifies the type of parallel processing to
+    perform, accepting either \code{Type="PSOCK"} or
+    \code{Type="MPI"}.}
   \item{\dots}{Additional arguments are unused.}
 }
 \details{
@@ -40,8 +47,17 @@
   of \code{yhat}, the fourth component of the return list of the
   \code{Model} function.
 
+  Parallel processing may be performed when the user specifies
+  \code{CPUs} to be greater than one, implying that the specified number
+  of CPUs exists and is available. Parallelization may be performed on a
+  multicore computer or a computer cluster. Either a Simple Network of
+  Workstations (SNOW) or Message Passing Interface is used (MPI). With
+  small data sets and few samples, parallel processing may be slower,
+  due to computer network communication. With larger data sets and more
+  samples, the user should experience a faster run-time.
+
   For more information on posterior predictive checks, see
-  \url{http://www.bayesian-inference.com/posteriorpredictivechecks}.
+  \url{https://web.archive.org/web/20150215050702/http://www.bayesian-inference.com/posteriorpredictivechecks}.
 }
 \value{
   This function returns an object of class \code{demonoid.ppc} (where
@@ -55,9 +71,10 @@
     number of posterior samples.}
   \item{Deviance}{This is a vector of predictive deviance.}
 }
-\author{Statisticat, LLC. \email{software@bayesian-inference.com}}
+\author{Statisticat, LLC.}
 \seealso{
   \code{\link{LaplacesDemon}}
 }
+\keyword{High Performance Computing}
 \keyword{Posterior Predictive Checks}
 \keyword{Predict}

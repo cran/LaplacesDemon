@@ -35,12 +35,13 @@ Validate(object, Model, Data, plot=FALSE, PDF=FALSE)
   considered when using \code{\link{LaplacesDemon}} or
   \code{\link{PMC}}. For more information on CPO, see the accompanying
   vignettes entitled "Bayesian Inference" and "Examples". CPO is
-  unavailable when using \code{\link{LaplaceApproximation}}.
+  unavailable when using \code{\link{LaplaceApproximation}} or
+  \code{\link{VariationalBayes}}.
 
-  For \code{\link{LaplaceApproximation}}, it is recommended that the
-  user perform holdout validation by comparing posterior predictive
-  checks, comparing the differences in the specified discrepancy
-  measure.
+  For \code{\link{LaplaceApproximation}} or
+  \code{\link{VariationalBayes}}, it is recommended that the user
+  perform holdout validation by comparing posterior predictive checks,
+  comparing the differences in the specified discrepancy measure.
 
   When LOOCV is unreasonable, popular alternatives include k-fold
   cross-validation and holdout validation. Although k-fold
@@ -126,8 +127,9 @@ Validate(object, Model, Data, plot=FALSE, PDF=FALSE)
 \author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{
   \code{\link{LaplaceApproximation}},
-  \code{\link{LaplacesDemon}}, and
-  \code{\link{PMC}}.
+  \code{\link{LaplacesDemon}},
+  \code{\link{PMC}}, and
+  \code{\link{VariationalBayes}}.
 }
 \examples{
 library(LaplacesDemon)

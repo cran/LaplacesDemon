@@ -1,7 +1,6 @@
 \name{Gelman.Diagnostic}
 \alias{Gelman.Diagnostic}
 \title{Gelman and Rubin's MCMC Convergence Diagnostic}
-\usage{Gelman.Diagnostic(x, confidence=0.95, transform=FALSE)}
 \description{
   Gelman and Rubin (1992) proposed a general approach to monitoring
   convergence of MCMC output in which \eqn{m > 1} parallel chains are
@@ -20,6 +19,7 @@
   As an alternative, the popular single-chain stopping rule is based on
   \code{\link{MCSE}}.
 }
+\usage{Gelman.Diagnostic(x, confidence=0.95, transform=FALSE)}
 \arguments{
   \item{x}{This required argument accepts an object of class
     \code{demonoid.hpc}, or a list of multiple objects of class
@@ -180,9 +180,10 @@
   \code{\link{LaplacesDemon}},
   \code{\link{LaplacesDemon.hpc}},
   \code{\link{MCSE}}, and
-  \code{\link{p.interval}}.}
+  \code{\link{p.interval}}.
+}
 \examples{
-#Examples
+#library(LaplacesDemon)
 ###After updating multiple chains with LaplacesDemon.hpc, do:
 #Gelman.Diagnostic(Fit)
 }

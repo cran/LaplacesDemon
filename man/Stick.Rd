@@ -52,8 +52,8 @@ Stick(theta)
   element in the \eqn{\theta}{theta} vector.
 
   A variety of stick-breaking processes exist. For example, rather than
-  each \eqn{\theta}{theta} being beta-distributed, logistic and probit
-  forms have been introduced, as well as others.
+  each \eqn{\theta}{theta} being beta-distributed, there have been other
+  forms introduced such as logistic and probit, among others.
 }
 \value{
   The \code{Stick} function returns a probability vector wherein each

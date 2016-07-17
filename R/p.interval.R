@@ -6,7 +6,7 @@
 # density (HPD) interval, or multi-modal HPD intervals of posterior       #
 # samples. The code for the uni-modal HPD interval is similar to code in  #
 # the coda package, but this is designed to work with matrices or objects #
-# of class demonoid or laplace.                                           #
+# of class demonoid, iterquad, laplace, or pmc.                           #
 ###########################################################################
 
 p.interval <- function(obj, HPD=TRUE, MM=TRUE, prob=0.95, plot=FALSE,
@@ -28,6 +28,11 @@ p.interval <- function(obj, HPD=TRUE, MM=TRUE, prob=0.95, plot=FALSE,
           colnames(x) <- c(colnames(obj$Posterior1),
                colnames(obj$Monitor))
           obj <- x
+          }
+     else if(identical(class(obj), "iterquad")) {
+          if(any(is.na(obj$Posterior)))
+               stop("Posterior samples do not exist in obj.")
+          obj <- obj$Posterior
           }
      else if(identical(class(obj), "laplace")) {
           if(any(is.na(obj$Posterior)))

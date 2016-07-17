@@ -141,6 +141,10 @@ Juxtapose(x)
   \code{\link{plot.juxtapose}} function, which displays \code{ISM} by
   default, or optionally \code{IAT}. For more information, see the
   \code{\link{plot.juxtapose}} function.
+
+  Independent samples per minute, calculated as \code{\link{ESS}}
+  divided by minutes of run-time, are also available by parameter in the
+  \code{\link{PosteriorChecks}} function.
 }
 \value{
   This function returns an object of class \code{juxtapose}. It is a
@@ -155,13 +159,14 @@ Juxtapose(x)
   \code{\link{IAT}},
   \code{\link{is.juxtapose}},
   \code{\link{LaplacesDemon}},
-  \code{\link{LaplacesDemon.hpc}}, and
-  \code{\link{plot.juxtapose}}.
+  \code{\link{LaplacesDemon.hpc}},
+  \code{\link{plot.juxtapose}}, and
+  \code{\link{PosteriorChecks}}.
 }
 \examples{
 ### Update three demonoid objects, each from different MCMC algorithms.
-### Suppose Fit1 was updated with AMWG, Fit2 with NUTS, and
-### Fit3 with twalk. Then, compare the inefficiencies:
+### Suppose Fit1 was updated with AFSS, Fit2 with AMWG, and
+### Fit3 with NUTS. Then, compare the inefficiencies:
 #Juxt <- Juxtapose(list(Fit1=Fit1, Fit2=Fit2, Fit3=Fit3)); Juxt
 #plot(Juxt, Style="ISM")
 }

@@ -21,13 +21,15 @@ Model.Spec.Time(Model, Initial.Values, Data, n=1000)
 }
 \details{
   The largest single factor to affect the run-time of an algorithm --
-  whether it is with \code{\link{LaplaceApproximation}},
-  \code{\link{LaplacesDemon}}, or \code{\link{PMC}} -- is the time that
-  it takes to evaluate the model specification. This has also been
+  whether it is with \code{\link{IterativeQuadrature}},
+  \code{\link{LaplaceApproximation}}, \code{\link{LaplacesDemon}},
+  \code{\link{PMC}}, or \code{\link{VariationalBayes}} -- is the time
+  that it takes to evaluate the model specification. This has also been
   observed in Rosenthal (2007). It is highly recommended that a user of
   the \code{LaplacesDemon} package should attempt to reduce the run-time
   of the model specification, usually by testing alternate forms of code
-  for speed.
+  for speed. This is especially true with big data, such as with the
+  \code{\link{BigData}} function.
 
   Every function in the LaplacesDemon package is byte-compiled, which is
   a recent option in R. This reduces run-time, thanks to Tierney's
@@ -45,7 +47,7 @@ Model.Spec.Time(Model, Initial.Values, Data, n=1000)
   \code{C} or other fast languages. For a comparison, see the
   ``Laplace's Demon Tutorial'' vignette.
 
-  However, if a model specification function in the \code{LaplacesDemon}
+  However, if a model specification function in the LaplacesDemon
   package is not fully vectorized (contains \code{for} loops and
   \code{apply} functions), then run-time will typically be slower than
   other popular MCMC-based software algorithms.
@@ -61,31 +63,21 @@ Model.Spec.Time(Model, Initial.Values, Data, n=1000)
   checks to ensure correctness. These checks may slow the 
   calculation of the density, for example. If the user is confident
   these checks are unnecessary for their model, then the user may
-  comment-out the checks to improve speed.
-
-  Examples in the \code{LaplacesDemon} package are not necessarily
-  optimized for speed, which is often compromised for clarity of
-  programming. For instance, most examples in the ``Examples'' vignette
-  use the \code{grep} function to find the position of a parameter based
-  on an associated parameter name. This makes the model specification
-  function much more readable, and also makes it easy to modify by
-  changing the number and position of parameters, such as when a user
-  experiments with the model form, or changes it from the example data
-  to actual data. However, the \code{grep} function is much slower than
-  specifying the exact location. There are many other instances in the
-  examples that demonstrate user-friendly code and are not optimized for
-  speed.
+  copy the code to a new function name and comment-out the checks to
+  improve speed.
 
   When speed is of paramount importance, a user is encouraged to
   experiment with writing the model specification function in another
-  language such as \code{C} or \code{Fortran}, and calling the new
-  function from within the \code{Model} function with the \code{.C} or
-  \code{.Fortran} function. This experimentation has not yet been done,
-  but should generally be worth the effort only when the model
-  specification is vectorized in the faster language as well. One
-  suggestion may be to browse for \code{R} packages on CRAN that enable
-  a user to speed up \code{R} code by incorporating \code{C} and other
-  languages.
+  language such as in \code{C++} with the \code{Rcpp} package, and
+  calling drop-in replacement functions from within the \code{Model}
+  function, or re-writing the model function entirely in \code{C++}.
+  For an introduction to including \code{C++} in \pkg{LaplacesDemon},
+  see \url{https://web.archive.org/web/20150227225556/http://www.bayesian-inference.com/softwarearticlescppsugar}.
+
+  When a model specification function is computationally expensive,
+  another approach to reduce run-time may be for the user to write
+  parallelized code within the model, splitting up difficult tasks and
+  assigning each to a separate CPU.
 
   Another use for \code{Model.Spec.Time} is to allow the user to make an
   informed decision about which MCMC algorithm to select, given the
@@ -97,8 +89,8 @@ Model.Spec.Time(Model, Initial.Values, Data, n=1000)
   specification function once per iteration, componentwise algorithms
   such as in the MWG family evaluate it once per parameter per
   iteration, significantly increasing run-time per iteration in large
-  models. The \code{Model.Spec.Time} may forewarn the user of the
-  associated run-time, and if it should be decided to go with an
+  models. The \code{Model.Spec.Time} function may forewarn the user of
+  the associated run-time, and if it should be decided to go with an
   alternate MCMC algorithm, such as AMM, in which each element of its
   covariance matrix must stabilize for the chains to become
   stationary. AMM, for example, will require many more iterations of 
@@ -124,8 +116,6 @@ Model.Spec.Time(Model, Initial.Values, Data, n=1000)
     \item Replace \code{tcrossprod(Data$X, t(beta))} with
     \code{Data$X \%*\% beta} when there are few predictors, and avoid
     \code{tcrossprod(beta, Data$X)}, which is always slowest.
-    \item Specify parameters directly, such as \code{parm[53]}, rather
-    than with \code{grep}.
     \item Vectorize functions and eliminate \code{apply} and \code{for}
     functions. There are often specialized functions. For example,
     \code{max.col(X)} is faster than \code{apply(X, 1, which.max)}.
@@ -161,19 +151,22 @@ Model.Spec.Time(Model, Initial.Values, Data, n=1000)
   MCMC". \emph{Computational Statistics and Data Analysis}, 18,
   p. 349--367.
 }
-\author{Statisticat, LLC. \email{software@bayesian-inference.com}}
+\author{Statisticat, LLC.}
 \seealso{
   \code{\link{.C}},
   \code{\link{.Fortran}},
+
   \code{\link{apply}},
-  \code{\link{grep}},
+  \code{\link{BigData}},
   \code{\link{interval}},
+  \code{\link{IterativeQuadrature}},
   \code{\link{Juxtapose}},
   \code{\link{LaplaceApproximation}},
   \code{\link{LaplacesDemon}},
   \code{\link{max.col}},
-  \code{\link{PMC}}, and
-  \code{\link{system.time}}.
+  \code{\link{PMC}},
+  \code{\link{system.time}}, and
+  \code{\link{VariationalBayes}}.
 }
 \examples{
 # The accompanying Examples vignette is a compendium of examples.
@@ -186,19 +179,23 @@ y <- log(demonsnacks$Calories)
 X <- cbind(1, as.matrix(log(demonsnacks[,c(1,4,10)]+1)))
 J <- ncol(X)
 for (j in 2:J) {X[,j] <- CenterScale(X[,j])}
-mon.names <- c("LP","sigma")
-parm.names <- as.parm.names(list(beta=rep(0,J), log.sigma=0))
-PGF <- function(Data) return(c(rnormv(Data$J,0,10),
-     log(rhalfcauchy(1,5))))
+
+#########################  Data List Preparation  #########################
+mon.names <- "LP"
+parm.names <- as.parm.names(list(beta=rep(0,J), sigma=0))
+pos.beta <- grep("beta", parm.names)
+pos.sigma <- grep("sigma", parm.names)
+PGF <- function(Data) return(c(rnormv(Data$J,0,10), rhalfcauchy(1,5)))
 MyData <- list(J=J, PGF=PGF, X=X, mon.names=mon.names,
-     parm.names=parm.names, y=y)
+     parm.names=parm.names, pos.beta=pos.beta, pos.sigma=pos.sigma, y=y)
 
 ##########################  Model Specification  ##########################
 Model <- function(parm, Data)
      {
      ### Parameters
-     beta <- parm[1:Data$J]
-     sigma <- exp(parm[Data$J+1])
+     beta <- parm[Data$pos.beta]
+     sigma <- interval(parm[Data$pos.sigma], 1e-100, Inf)
+     parm[Data$pos.sigma] <- sigma
      ### Log of Prior Densities
      beta.prior <- sum(dnormv(beta, 0, 1000, log=TRUE))
      sigma.prior <- dhalfcauchy(sigma, 25, log=TRUE)
@@ -207,7 +204,7 @@ Model <- function(parm, Data)
      LL <- sum(dnorm(Data$y, mu, sigma, log=TRUE))
      ### Log-Posterior
      LP <- LL + beta.prior + sigma.prior
-     Modelout <- list(LP=LP, Dev=-2*LL, Monitor=c(LP,sigma),
+     Modelout <- list(LP=LP, Dev=-2*LL, Monitor=LP,
           yhat=rnorm(length(mu), mu, sigma), parm=parm)
      return(Modelout)
      }

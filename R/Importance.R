@@ -7,14 +7,14 @@
 ###########################################################################
 
 Importance <- function(object, Model, Data, Categorical=FALSE, Discrep,
-     d=0)
+     d=0, CPUs=1, Type="PSOCK")
      {
      if(missing(object)) stop("The object argument is required.")
      if(missing(Model)) stop("The Model arguement is required.")
      if(missing(Data)) stop("The Data argument is required.")
-     if(is.null(Data$X)) stop("Data must have X.")
+     if(is.null(Data[["X"]])) stop("Data must have X.")
      if(missing(Discrep)) Discrep <- NULL
-     X.orig <- Data$X
+     X.orig <- Data[["X"]]
      cat("\nX has", ncol(X.orig), "variables")
      cat("\nEstimating the full model...")
      Pred <- predict(object, Model, Data)
@@ -33,8 +33,8 @@ Importance <- function(object, Model, Data, Categorical=FALSE, Discrep,
           cat("\nEstimating without X[,", i, "]...", sep="")
           X.temp <- X.orig
           X.temp[,i] <- 0
-          Data$X <- X.temp
-          Pred <- predict(object, Model, Data)
+          Data[["X"]] <- X.temp
+          Pred <- predict(object, Model, Data, CPUs, Type)
           Summ <- summary(Pred, Categorical=Categorical,
                Discrep=Discrep, d=d, Quiet=TRUE)
           out[i+1,1] <- Summ$BPIC[1,3]

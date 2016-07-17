@@ -73,9 +73,11 @@ Modes(x, min.size=0.1)
   estimates at the modes. The \code{size} component is a vector of the
   proportion of area underneath each mode.
 
-  The \code{\link{LaplaceApproximation}} function characterizes the
-  marginal posterior distributions by posterior modes and variance. A
-  related topic is MAP or maximum \emph{a posteriori} estimation.
+  The \code{\link{IterativeQuadrature}},
+  \code{\link{LaplaceApproximation}}, and \code{\link{VariationalBayes}}
+  functions characterize the marginal posterior distributions by
+  posterior modes (means) and variance. A related topic is MAP or
+  maximum \emph{a posteriori} estimation.
 
   Otherwise, the results of Bayesian inference tend to report the
   posterior mean or median, along with probability intervals (see
@@ -87,10 +89,12 @@ Modes(x, min.size=0.1)
 }
 \author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{
+  \code{\link{IterativeQuadrature}},
   \code{\link{LaplaceApproximation}},
   \code{\link{LaplacesDemon}},
-  \code{\link{LPL.interval}}, and
-  \code{\link{p.interval}}.
+  \code{\link{LPL.interval}},
+  \code{\link{p.interval}}, and
+  \code{\link{VariationalBayes}}.
 }
 \examples{
 library(LaplacesDemon)

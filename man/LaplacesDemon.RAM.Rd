@@ -3,7 +3,8 @@
 \title{LaplacesDemon RAM Estimate}
 \description{
   This function estimates the random-access memory (RAM) required to
-  update a given model and data in LaplacesDemon.
+  update a given model and data with the \code{\link{LaplacesDemon}}
+  function.
 
   \emph{Warning:} Unwise use of this function may crash a computer, so
   please read the details below.
@@ -66,6 +67,10 @@ LaplacesDemon.RAM(Model, Data, Iterations, Thinning, Algorithm="RWM")
   samples is not excessive. If used, then the user should create a
   matrix of the appropriate dimensions and use the
   \code{\link{object.size}} function to estimate the RAM.
+
+  If the data is too large for RAM, then consider using either the
+  \code{\link{BigData}} function or the SGLD algorithm in
+  \code{\link{LaplacesDemon}}.
 }
 \value{
   \code{LaplacesDemon.RAM} returns a list with several components. Each
@@ -111,6 +116,7 @@ LaplacesDemon.RAM(Model, Data, Iterations, Thinning, Algorithm="RWM")
 }
 \author{Statisticat, LLC \email{software@bayesian-inference.com}}
 \seealso{
+  \code{\link{BigData}},
   \code{\link{LaplacesDemon}},
   \code{\link{LML}}, and
   \code{\link{object.size}}.

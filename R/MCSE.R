@@ -67,8 +67,8 @@ MCSS <- function(x, a)
      if(missing(a)) stop("The a argument is required.")
      ess <- ESS(x)
      ratio <- length(x) / ess
-     fx <- function(sdx,n,a) ((sdx / sqrt(n)) - a)^2
-     optimized <- optimize(f=fx, interval=c(0,.Machine$integer.max),
+     fx <- function(sdx, n, a) ((sdx / sqrt(n)) - a)^2
+     optimized <- optimize(f=fx, interval=c(0, .Machine$integer.max),
           maximum=FALSE, a=a, sdx=sd(x))
      return(round(optimized$minimum * ratio))
      }

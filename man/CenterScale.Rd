@@ -39,21 +39,40 @@ CenterScale(x, Binary="none", Inverse=FALSE, mu, sigma, Range, Min)
   practice of standardizing predictors, which is \code{x.z <- (x -
     mean(x)) / sd(x)}, where coefficients cannot be validly compared
   between binary and continuous predictors.
+
+  In MCMC, such as in \code{\link{LaplacesDemon}}, a centered and
+  scaled predictor often results in a higher effective sample size
+  (\code{\link{ESS}}), and therefore the chain mixes better. Centering
+  and scaling is a method of re-parameterization to improve mixing.
+
+  Griffin and Brown (2013) also assert that the user may not want to
+  scale predictors that are measured on the same scale, since scaling
+  in this case may increase noisy, low signals. In this case, centering
+  (without scaling) is recommended. To center a predictor, subtract its
+  mean.
+
 }
 \value{
-  This function returns a centered and scaled vector, or the
-  untransformed vector.
+  The \code{CenterScale} function returns a centered and scaled vector,
+  or the untransformed vector.
 }
 \references{
   Gelman, A. (2008). "Scaling Regression Inputs by Dividing by Two Standard
   Devations". \emph{Statistics in Medicine}, 27, p. 2865--2873.
+
+  Griffin, J.E. and Brown, P.J. (2013) "Some Priors for Sparse
+  Regression Modelling". \emph{Bayesian Analysis}, 8(3), p. 691--702.
 }
 \seealso{
-  \code{\link{LaplaceApproximation}} and
-  \code{\link{LaplacesDemon}}.
+  \code{\link{ESS}},
+  \code{\link{IterativeQuadrature}},
+  \code{\link{LaplaceApproximation}},
+  \code{\link{LaplacesDemon}}, and
+  \code{\link{PMC}}.
 }
 \examples{
-### See the LaplaceApproximation or LaplacesDemon function for an example in use.
+### See the LaplacesDemon function for an example in use.
+library(LaplacesDemon)
 x <- rnorm(100,10,1)
 x.cs <- CenterScale(x)
 x.orig <- CenterScale(x.cs, Inverse=TRUE, mu=mean(x), sigma=sd(x))

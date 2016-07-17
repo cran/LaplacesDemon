@@ -5,7 +5,7 @@
   This function calculates the Kullback-Leibler divergence (KLD) between
   two probability distributions, and has many uses, such as in lowest
   posterior loss probability intervals, posterior predictive checks,
-  prior elicitation, and reference priors.
+  prior elicitation, reference priors, and Variational Bayes.
 }
 \usage{
 KLD(px, py, base)
@@ -94,9 +94,11 @@ KLD(px, py, base)
 }
 \author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{
-  \code{\link{LPL.interval}}
+  \code{\link{LPL.interval}} and
+  \code{\link{VariationalBayes}}.
 }
 \examples{
+library(LaplacesDemon)
 px <- dnorm(runif(100),0,1)
 py <- dnorm(runif(100),0.1,0.9)
 KLD(px,py)

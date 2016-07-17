@@ -4,7 +4,9 @@
 \description{
   This function provides a logical test of whether or not a given list
   of data meets minimum criteria to be considered data for
-  \code{\link{LaplaceApproximation}} or \code{\link{LaplacesDemon}}.
+  \code{\link{IterativeQuadrature}}, \code{\link{LaplaceApproximation}},
+  \code{\link{LaplacesDemon}}, \code{\link{PMC}}, or
+  \code{\link{VariationalBayes}}.
 }
 \usage{
 is.data(Data)
@@ -24,7 +26,9 @@ is.data(Data)
   or compare the length of \code{mon.names} to the number of monitored
   variables output from the \code{Model} specification
   function. Additional checks are conducted in
-  \code{\link{LaplaceApproximation}} and \code{\link{LaplacesDemon}}.
+  \code{\link{IterativeQuadrature}}, \code{\link{LaplaceApproximation}},
+  \code{\link{LaplacesDemon}}, \code{\link{PMC}}, and
+  \code{\link{VariationalBayes}}.
 }
 \value{
   The \code{is.data} function returns a logical value. It returns
@@ -33,7 +37,10 @@ is.data(Data)
 }
 \author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{
-  \code{\link{LaplaceApproximation}} and
-  \code{\link{LaplacesDemon}}.
+  \code{\link{IterativeQuadrature}}
+  \code{\link{LaplaceApproximation}},
+  \code{\link{LaplacesDemon}},
+  \code{\link{PMC}}, and
+  \code{\link{VariationalBayes}}.
 }
 \keyword{Utility}

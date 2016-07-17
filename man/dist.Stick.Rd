@@ -1,18 +1,25 @@
 \name{dist.Stick}
 \alias{dStick}
+\alias{rStick}
 \title{Truncated Stick-Breaking Prior Distribution}
 \description{
-  This function provides the density of the original truncated
-  stick-breaking (TSB) prior distribution given \eqn{\theta}{theta} and
-  \eqn{\gamma}{gamma}, as per Ishwaran and James (2001).
+  These functions provide the density and random number generation of
+  the original, truncated stick-breaking (TSB) prior distribution given
+  \eqn{\theta}{theta} and \eqn{\gamma}{gamma}, as per Ishwaran and James
+  (2001).
 }
 \usage{
 dStick(theta, gamma, log=FALSE)
+rStick(M, gamma)
 }
 \arguments{
+  \item{M}{This accepts an integer that is equal to one less than the
+    number of truncated number of possible mixture components
+    (\eqn{M=1}). Unlike most random deviate functions, this is not the
+    number of random deviates to return.}
   \item{theta}{This is \eqn{\theta}{theta}, a vector of length
-    \eqn{M-1}{M-1}, where \eqn{M}{M} is the truncated number of
-    possible mixture components.}
+    \eqn{M-1}, where \eqn{M} is the truncated number of possible mixture
+    components.}
   \item{gamma}{This is \eqn{\gamma}{gamma}, a scalar, and is usually
     gamma-distributed.}
   \item{log}{Logical. If \code{log=TRUE}, then the logarithm of the
@@ -45,7 +52,8 @@ James, 2001). This distribution is commonly used in truncated Dirichlet
 processes (TDPs).
 }
 \value{
-  \code{dStick} gives the density.
+  \code{dStick} gives the density and
+  \code{rStick} generates a random deviate vector of length \eqn{M}.
 }
 \references{
   Ishwaran, H. and James, L. (2001). "Gibbs Sampling Methods for Stick
@@ -63,5 +71,6 @@ processes (TDPs).
 \examples{
 library(LaplacesDemon)
 dStick(runif(4), 0.1)
+rStick(4, 0.1)
 }
 \keyword{Distribution}

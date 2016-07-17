@@ -19,29 +19,13 @@ BayesianBootstrap <- function(X, n=1000, Method="weights", Status=NULL)
           if(Status < 1 | Status > S) Status <- S + 1}
      N <- nrow(X)
      J <- ncol(X)
-     ### Bayesian Bootstrap: Samples (Deprecated)
-     #     X <- as.matrix(X[order(X[, 1]), ])
-     #     X.B <- matrix(NA, S, J)
-     #     for (s in 1:S) {
-     #          if(s %% Status == 0) 
-     #               cat("\nBootstrapped Samples:", s)
-     #          u <- c(0, sort(runif(N - 1)), 1)
-     #          g <- diff(u)
-     #          X.B[s, ] <- X[sample(1:N, 1, prob=g, replace=TRUE),]
-     #          }
-     #     cat("\n\nThe Bayesian Bootstrap has finished.\n\n")
-     #     return(X.B)
-     #     }
-     ### New in version 12.12.03
      if(identical(Method, "weights")) {
           BB <- replicate(S, diff(c(0, sort(runif(N-1)), 1)))
-          cat("\n\nThe Bayesian Bootstrap has finished.\n\n")
           return(BB)}
      ### Bayesian Bootstrap: Statistics
      BB <- vector("list", S)
      for (s in 1:S) {
-          if(s %% Status == 0) 
-               cat("\nBootstrapped Samples:", s)
+          if(s %% Status == 0) cat("\nBootstrapped Samples:", s)
           u <- c(0, sort(runif(N - 1)), 1)
           g <- diff(u)
           BB[[s]] <- Method(X, g)}
@@ -57,7 +41,7 @@ BayesianBootstrap <- function(X, n=1000, Method="weights", Status=NULL)
                }
      else {
           if(is.null(dim(BB[[1]])))
-               stop("Method must return vector, matrix or array")
+               stop("Method must return a vector, matrix or array")
           B <- array(NA, dim=c(S, dim(BB[[1]])))
           for (s in 1:S) {B[s,,] <- BB[[s]]}
           BB <- B

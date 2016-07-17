@@ -11,11 +11,11 @@
    rinvwishart(nu, S)
 }
 \arguments{
-    \item{Sigma}{This is the symmetric, positive-definite
-         \eqn{k \times k}{k x k} matrix \eqn{\Sigma}{Sigma}.}
-    \item{nu}{This is the scalar degrees of freedom, \eqn{\nu}{nu}.}
-    \item{S}{This is the symmetric, positive-semidefinite
-      \eqn{k \times k}{k x k} scale matrix \eqn{\textbf{S}}{S}.}
+  \item{Sigma}{This is the symmetric, positive-definite
+    \eqn{k \times k}{k x k} matrix \eqn{\Sigma}{Sigma}.}
+  \item{nu}{This is the scalar degrees of freedom, \eqn{\nu}{nu}.}
+  \item{S}{This is the symmetric, positive-semidefinite
+    \eqn{k \times k}{k x k} scale matrix \eqn{\textbf{S}}{S}.}
     \item{log}{Logical. If \code{log=TRUE}, then the logarithm of the
     density is returned.}
 }
@@ -61,13 +61,18 @@ include an identity matrix or sample covariance matrix. When the model
 sample size is small, the specification of the scale matrix can be
 influential.
 
-One of many alternatives is to use hierarchical priors,
-in which the main diagonal of the (identity) scale matrix and the
-degrees of freedom are treated as unknowns (Bouriga and Feron, 2011;
-Daniels and Kass, 1999). A hierarchical inverse Wishart prior provides
-shrinkage toward diagonality. Another alternative is to abandon the
-inverse Wishart distribution altogether for the more flexible method of
-Barnard et al. (2000).
+The inverse Wishart distribution has a dependency between variance and
+correlation, although its relative for a precision matrix (inverse
+covariance matrix), the Wishart distribution, does not have this
+dependency. This relationship becomes weaker with more degrees of
+freedom.
+
+Due to these limitations (lack of flexibility, and dependence between
+variance and correlation), alternative distributions have been
+developed. Alternative distributions that are available here include
+Huang-Wand (\code{\link{dhuangwand}}), inverse matrix gamma
+(\code{\link{dinvmatrixgamma}}), Scaled Inverse Wishart
+(\code{\link{dsiw}}), and Yang-Berger (\code{\link{dyangberger}}).
 
 These functions are parameterized as per Gelman et al. (2004).
 }
@@ -75,19 +80,7 @@ These functions are parameterized as per Gelman et al. (2004).
   \code{dinvwishart} gives the density and
   \code{rinvwishart} generates random deviates.
 }
-\references{
-  Barnard, J., McCulloch, R., and Meng, X. (2000). "Modeling Covariance
-  Matrices in Terms of Standard Deviations and Correlations, with
-  Application to Shrinkage". \emph{Statistica Sinica}, 10, p. 1281--1311.
-  
-  Bouriga, M. and Feron, O. (2011). "Estimation of Covariance Matrices
-  Based on Hierarchical Inverse-Wishart Priors". URL:
-  http://www.citebase.org/abstract?id=oai:arXiv.org:1106.3203.
-  
-  Daniels, M., and Kass, R. (1999). "Nonconjugate Bayesian Estimation of
-  Covariance Matrices and its use in Hierarchical Models". \emph{Journal
-  of the American Statistical Association}, 94(448), p. 1254--1263.
-  
+\references{  
   Gelman, A., Carlin, J., Stern, H., and Rubin, D. (2004). "Bayesian
   Data Analysis, Texts in Statistical Science, 2nd ed.". Chapman and
   Hall, London.
@@ -97,9 +90,13 @@ These functions are parameterized as per Gelman et al. (2004).
   20A(1-2), p. 32--52.
 }
 \seealso{
+  \code{\link{dhuangwand}},
+  \code{\link{dinvmatrixgamma}},
   \code{\link{dinvwishartc}},
-  \code{\link{dmvn}}, and
-  \code{\link{dwishart}}.
+  \code{\link{dmvn}},
+  \code{\link{dsiw}},
+  \code{\link{dwishart}}, and
+  \code{\link{dyangberger}}.
 }
 \examples{
 library(LaplacesDemon)

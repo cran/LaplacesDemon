@@ -12,18 +12,20 @@ plot.laplace.ppc <- function(x, Style=NULL, Data=NULL, Rows=NULL,
      if(missing(x)) stop("The x argument is required.")
      if(class(x) != "laplace.ppc") stop("x is not of class laplace.ppc.")
      if(is.null(Style)) Style <- "Density"
-     if(is.null(Rows)) Rows <- 1:nrow(x$yhat)
+     if(is.null(Rows)) Rows <- 1:nrow(x[["yhat"]])
      ### Plots
      if(Style == "Covariates") {
-          if(PDF == TRUE) {pdf("PPC.Plots.Covariates.pdf")
+          if(PDF == TRUE) {
+               pdf("PPC.Plots.Covariates.pdf")
                par(mfrow=c(3,3))}
-          else {par(mfrow=c(3,3), ask=TRUE)}
+          else par(mfrow=c(3,3), ask=TRUE)
           if(is.null(Data))
                stop("Data is required for Style=Covariates.")
-          if(is.null(Data$X) & is.null(Data$x))
+          if(is.null(Data[["X"]]) & is.null(Data[["x"]]))
                stop("X or x is required in Data.")
-          if(is.null(Data$X)) co <- matrix(Data$x, length(Data$x), 1)
-          else if(is.null(Data$x)) co <- Data$X
+          if(is.null(Data[["X"]]))
+               co <- matrix(Data[["x"]], length(Data[["x"]]), 1)
+          else if(is.null(Data[["x"]])) co <- Data[["X"]]
           temp <- summary(x, Quiet=TRUE)$Summary
           mycol <- rgb(0, 100, 0, 50, maxColorValue=255)
           for (i in 1:ncol(co)) {
@@ -35,15 +37,17 @@ plot.laplace.ppc <- function(x, Style=NULL, Data=NULL, Rows=NULL,
                panel.smooth(co[Rows,i], temp[Rows,5], col=mycol, pch=16,
                     cex=0.75)}}
      if(Style == "Covariates, Categorical DV") {
-          if(PDF == TRUE) {pdf("PPC.Plots.Covariates.Cat.pdf")
+          if(PDF == TRUE) {
+               pdf("PPC.Plots.Covariates.Cat.pdf")
                par(mfrow=c(3,3))}
-          else {par(mfrow=c(3,3), ask=TRUE)}
+          else par(mfrow=c(3,3), ask=TRUE)
           if(is.null(Data))
                stop("Data is required for Style=Covariates.")
-          if(is.null(Data$X) & is.null(Data$x))
+          if(is.null(Data[["X"]]) & is.null(Data[["x"]]))
                stop("X or x is required in Data.")
-          if(is.null(Data$X)) co <- matrix(Data$x, length(Data$x), 1)
-          else if(is.null(Data$x)) co <- Data$X
+          if(is.null(Data[["X"]]))
+               co <- matrix(Data[["x"]], length(Data[["x"]]), 1)
+          else if(is.null(Data[["x"]])) co <- Data[["X"]]
           temp <- summary(x, Categorical=TRUE, Quiet=TRUE)$Summary
           ncat <- length(table(temp[,1]))
           mycol <- rgb(0, 100, 0, 50, maxColorValue=255)
@@ -54,21 +58,22 @@ plot.laplace.ppc <- function(x, Style=NULL, Data=NULL, Rows=NULL,
                panel.smooth(co[Rows,i], temp[Rows,j], col=mycol, pch=16,
                     cex=0.75)}}}
      if(Style == "Density") {
-          if(PDF == TRUE) {pdf("PPC.Plots.Density.pdf")
+          if(PDF == TRUE) {
+               pdf("PPC.Plots.Density.pdf")
                par(mfrow=c(3,3))}
-          else {par(mfrow=c(3,3), ask=TRUE)}
+          else par(mfrow=c(3,3), ask=TRUE)
           for (j in 1:length(Rows)) {
-               plot(density(x$yhat[Rows[j],]),
+               plot(density(x[["yhat"]][Rows[j],]),
                     main=paste("Post. Pred. Plot of yhat[", Rows[j],
                          ",]", sep=""), xlab="Value",
                     sub="Black=Density, Red=y")
-               polygon(density(x$yhat[Rows[j],]), col="black",
+               polygon(density(x[["yhat"]][Rows[j],]), col="black",
                     border="black")
-               abline(v=x$y[Rows[j]], col="red")}}
+               abline(v=x[["y"]][Rows[j]], col="red")}}
      if(Style == "DW") {
           if(PDF == TRUE) pdf("PPC.Plots.DW.pdf")
           par(mfrow=c(1,1))
-          epsilon.obs <- x$y - x$yhat
+          epsilon.obs <- x[["y"]] - x[["yhat"]]
           N <- nrow(epsilon.obs)
           S <- ncol(epsilon.obs)
           epsilon.rep <- matrix(rnorm(N*S), N, S)
@@ -84,26 +89,27 @@ plot.laplace.ppc <- function(x, Style=NULL, Data=NULL, Rows=NULL,
           d.d.obs <- density(d.obs, na.rm=TRUE)
           d.d.rep <- density(d.rep, na.rm=TRUE)
           plot(d.d.obs, xlim=c(0,4),
-               ylim=c(0, max(d.d.obs$y, d.d.rep$y)),
+               ylim=c(0, max(d.d.obs$y, d.d.rep$y)), col="white",
                main="Durbin-Watson test", 
                xlab=paste("d.obs=", round(mean(d.obs, na.rm=TRUE),2), " (",
                round(as.vector(quantile(d.obs, probs=0.025, na.rm=TRUE)),2),
                ", ", round(as.vector(quantile(d.obs, probs=0.975, na.rm=TRUE)),
                2), "), p(d.obs > d.rep) = ", round(mean(d.obs > d.rep,
                na.rm=TRUE),3), " = ", result, " autocorrelation", sep=""))
-          polygon(d.d.obs, col="black", border="black")
-          lines(d.d.rep, col="red")
+          polygon(d.d.obs, col=rgb(0,0,0,50,maxColorValue=255), border=NA)
+          polygon(d.d.rep, col=rgb(255,0,0,50,maxColorValue=255), border=NA)
           abline(v=2, col="red")}
      if(Style == "DW, Multivariate, C") {
-          if(PDF == TRUE) {pdf("PPC.Plots.DW.M.pdf")
+          if(PDF == TRUE) {
+               pdf("PPC.Plots.DW.M.pdf")
                par(mfrow=c(1,1))}
-          else {par(mfrow=c(1,1), ask=TRUE)}
+          else par(mfrow=c(1,1), ask=TRUE)
           if(is.null(Data))
                stop("Data is required for Style=Fitted, Multivariate, C.")
-          if(is.null(Data$Y)) stop("Y is required in Data.")
-          M <- nrow(Data$Y)
-          J <- ncol(Data$Y)
-          epsilon.obs <- x$y - x$yhat
+          if(is.null(Data[["Y"]])) stop("Y is required in Data.")
+          M <- nrow(Data[["Y"]])
+          J <- ncol(Data[["Y"]])
+          epsilon.obs <- x[["y"]] - x[["yhat"]]
           N <- nrow(epsilon.obs)
           S <- ncol(epsilon.obs)
           epsilon.rep <- matrix(rnorm(N*S), N, S)
@@ -120,7 +126,7 @@ plot.laplace.ppc <- function(x, Style=NULL, Data=NULL, Rows=NULL,
                d.d.obs <- density(d.obs, na.rm=TRUE)
                d.d.rep <- density(d.rep, na.rm=TRUE)
                plot(d.d.obs, xlim=c(0,4),
-                    ylim=c(0, max(d.d.obs$y, d.d.rep$y)),
+                    ylim=c(0, max(d.d.obs$y, d.d.rep$y)), col="white",
                     main="Durbin-Watson test", 
                     xlab=paste("d.obs=", round(mean(d.obs, na.rm=TRUE),2), " (",
                     round(as.vector(quantile(d.obs, probs=0.025, na.rm=TRUE)),2),
@@ -128,21 +134,23 @@ plot.laplace.ppc <- function(x, Style=NULL, Data=NULL, Rows=NULL,
                     2), "), p(d.obs > d.rep) = ", round(mean(d.obs > d.rep,
                     na.rm=TRUE),3), " = ", result, " autocorrelation", sep=""),
                     sub=paste("Y[,",j,"]",sep=""))
-               polygon(d.d.obs, col="black", border="black")
-               lines(d.d.rep, col="red")
+               polygon(d.d.obs, col=rgb(0,0,0,50,maxColorValue=255),
+                    border=NA)
+               polygon(d.d.rep, col=rgb(255,0,0,50,maxColorValue=255),
+                    border=NA)
                abline(v=2, col="red")}}
      if(Style == "ECDF") {
           if(PDF == TRUE) pdf("PPC.Plots.ECDF.pdf")
           par(mfrow=c(1,1))
-          plot(ecdf(x$y[Rows]), verticals=TRUE, do.points=FALSE,
+          plot(ecdf(x[["y"]][Rows]), verticals=TRUE, do.points=FALSE,
                main="Cumulative Fit",
                xlab="y (black) and yhat (red; gray)",
                ylab="Cumulative Frequency")
-          lines(ecdf(apply(x$yhat[Rows,], 1, quantile, probs=0.975)),
+          lines(ecdf(apply(x[["yhat"]][Rows,], 1, quantile, probs=0.975)),
                verticals=TRUE, do.points=FALSE, col="gray")
-          lines(ecdf(apply(x$yhat[Rows,], 1, quantile, probs=0.025)),
+          lines(ecdf(apply(x[["yhat"]][Rows,], 1, quantile, probs=0.025)),
                verticals=TRUE, do.points=FALSE, col="gray")
-          lines(ecdf(apply(x$yhat[Rows,], 1, quantile, probs=0.500)),
+          lines(ecdf(apply(x[["yhat"]][Rows,], 1, quantile, probs=0.500)),
                verticals=TRUE, do.points=FALSE, col="red")}
      if(Style == "Fitted") {
           if(PDF == TRUE) pdf("PPC.Plots.Fitted.pdf")
@@ -157,61 +165,63 @@ plot.laplace.ppc <- function(x, Style=NULL, Data=NULL, Rows=NULL,
                     c(temp[Rows[i],4], temp[Rows[i],6]))}
           panel.smooth(temp[Rows,1], temp[Rows,5], pch=16, cex=0.75)}
      if(Style == "Fitted, Multivariate, C") {
-          if(PDF == TRUE) {pdf("PPC.Plots.Fitted.M.pdf")
+          if(PDF == TRUE) {
+               pdf("PPC.Plots.Fitted.M.pdf")
                par(mfrow=c(1,1))}
-          else {par(mfrow=c(1,1), ask=TRUE)}
+          else par(mfrow=c(1,1), ask=TRUE)
           if(is.null(Data))
                stop("Data is required for Style=Fitted, Multivariate, C.")
-          if(is.null(Data$Y)) stop("Y is required in Data.")
+          if(is.null(Data[["Y"]])) stop("Y is required in Data.")
           temp <- summary(x, Quiet=TRUE)$Summary
-          for (i in 1:ncol(Data$Y)) {
-               temp1 <- as.vector(matrix(temp[,1], nrow(Data$Y),
-                    ncol(Data$Y))[,i])
-               temp2 <- as.vector(matrix(temp[,4], nrow(Data$Y),
-                    ncol(Data$Y))[,i])
-               temp3 <- as.vector(matrix(temp[,5], nrow(Data$Y),
-                    ncol(Data$Y))[,i])
-               temp4 <- as.vector(matrix(temp[,6], nrow(Data$Y),
-                    ncol(Data$Y))[,i])
+          for (i in 1:ncol(Data[["Y"]])) {
+               temp1 <- as.vector(matrix(temp[,1], nrow(Data[["Y"]]),
+                    ncol(Data[["Y"]]))[,i])
+               temp2 <- as.vector(matrix(temp[,4], nrow(Data[["Y"]]),
+                    ncol(Data[["Y"]]))[,i])
+               temp3 <- as.vector(matrix(temp[,5], nrow(Data[["Y"]]),
+                    ncol(Data[["Y"]]))[,i])
+               temp4 <- as.vector(matrix(temp[,6], nrow(Data[["Y"]]),
+                    ncol(Data[["Y"]]))[,i])
                plot(temp1, temp3, pch=16, cex=0.75,
                     ylim=c(min(temp2, na.rm=TRUE),
                          max(temp4, na.rm=TRUE)),
                     xlab=paste("Y[,", i, "]", sep=""), ylab="yhat",
                     main="Fitted")
-               for (j in 1:nrow(Data$Y)) {
+               for (j in 1:nrow(Data[["Y"]])) {
                     lines(c(temp1[j], temp1[j]),
                          c(temp2[j], temp4[j]))}
                panel.smooth(temp1, temp3, pch=16, cex=0.75)}}
      if(Style == "Fitted, Multivariate, R") {
-          if(PDF == TRUE) {pdf("PPC.Plots.Fitted.M.pdf")
+          if(PDF == TRUE) {
+               pdf("PPC.Plots.Fitted.M.pdf")
                par(mfrow=c(1,1))}
-          else {par(mfrow=c(1,1), ask=TRUE)}
+          else par(mfrow=c(1,1), ask=TRUE)
           if(is.null(Data))
                stop("Data is required for Style=Fitted, Multivariate, R.")
-          if(is.null(Data$Y)) stop("Y is required in Data.")
+          if(is.null(Data[["Y"]])) stop("Y is required in Data.")
           temp <- summary(x, Quiet=TRUE)$Summary
-          for (i in 1:nrow(Data$Y)) {
-               temp1 <- as.vector(matrix(temp[,1], nrow(Data$Y),
-                    ncol(Data$Y))[i,])
-               temp2 <- as.vector(matrix(temp[,4], nrow(Data$Y),
-                    ncol(Data$Y))[i,])
-               temp3 <- as.vector(matrix(temp[,5], nrow(Data$Y),
-                    ncol(Data$Y))[i,])
-               temp4 <- as.vector(matrix(temp[,6], nrow(Data$Y),
-                    ncol(Data$Y))[i,])
+          for (i in 1:nrow(Data[["Y"]])) {
+               temp1 <- as.vector(matrix(temp[,1], nrow(Data[["Y"]]),
+                    ncol(Data[["Y"]]))[i,])
+               temp2 <- as.vector(matrix(temp[,4], nrow(Data[["Y"]]),
+                    ncol(Data[["Y"]]))[i,])
+               temp3 <- as.vector(matrix(temp[,5], nrow(Data[["Y"]]),
+                    ncol(Data[["Y"]]))[i,])
+               temp4 <- as.vector(matrix(temp[,6], nrow(Data[["Y"]]),
+                    ncol(Data[["Y"]]))[i,])
                plot(temp1, temp3, pch=16, cex=0.75,
                     ylim=c(min(temp2, na.rm=TRUE),
                          max(temp4, na.rm=TRUE)),
                     xlab=paste("Y[,", i, "]", sep=""), ylab="yhat",
                     main="Fitted")
-               for (j in 1:ncol(Data$Y)) {
+               for (j in 1:ncol(Data[["Y"]])) {
                     lines(c(temp1[j], temp1[j]),
                          c(temp2[j], temp4[j]))}
                panel.smooth(temp1, temp3, pch=16, cex=0.75)}}
      if(Style == "Jarque-Bera") {
           if(PDF == TRUE) pdf("PPC.Plots.Jarque.Bera.pdf")
           par(mfrow=c(1,1))
-          epsilon.obs <- epsilon.rep <- x$y[Rows] - x$yhat[Rows,]
+          epsilon.obs <- epsilon.rep <- x[["y"]][Rows] - x[["yhat"]][Rows,]
           kurtosis <- function(x) {  
                m4 <- mean((x-mean(x, na.rm=TRUE))^4, na.rm=TRUE) 
                kurt <- m4/(sd(x, na.rm=TRUE)^4)-3  
@@ -237,7 +247,7 @@ plot.laplace.ppc <- function(x, Style=NULL, Data=NULL, Rows=NULL,
           d.obs <- density(JB.obs)
           d.rep <- density(JB.rep)
           plot(d.obs, xlim=c(min(d.obs$x,d.rep$x), max(d.obs$x,d.rep$x)),
-               ylim=c(0, max(d.obs$y, d.rep$y)),
+               ylim=c(0, max(d.obs$y, d.rep$y)), col="white",
                main="Jarque-Bera Test",
                xlab="JB", ylab="Density",
                sub=paste("JB.obs=", round(mean(JB.obs, na.rm=TRUE),2),
@@ -245,18 +255,19 @@ plot.laplace.ppc <- function(x, Style=NULL, Data=NULL, Rows=NULL,
                na.rm=TRUE)),2), ",", round(as.vector(quantile(JB.obs,
                probs=0.975, na.rm=TRUE)),2), "), p(JB.obs > JB.rep) = ",
                p, " = ", result, sep=""))
-          polygon(d.obs, col="black", border="black")
-          lines(d.rep, col="red")}
+          polygon(d.obs, col=rgb(0,0,0,50,maxColorValue=255), border=NA)
+          polygon(d.rep, col=rgb(255,0,0,50,maxColorValue=255), border=NA)}
      if(Style == "Jarque-Bera, Multivariate, C") {
-          if(PDF == TRUE) {pdf("PPC.Plots.Jarque.Bera.pdf")
+          if(PDF == TRUE) {
+               pdf("PPC.Plots.Jarque.Bera.pdf")
                par(mfrow=c(1,1))}
-          else {par(mfrow=c(1,1), ask=TRUE)}
+          else par(mfrow=c(1,1), ask=TRUE)
           if(is.null(Data))
                stop("Data is required for Style=Jarque-Bera, Multivariate, C.")
-          if(is.null(Data$Y)) stop("Y is required in Data.")
-          M <- nrow(Data$Y)
-          J <- ncol(Data$Y)
-          epsilon.obs <- epsilon.rep <- x$y - x$yhat
+          if(is.null(Data[["Y"]])) stop("Y is required in Data.")
+          M <- nrow(Data[["Y"]])
+          J <- ncol(Data[["Y"]])
+          epsilon.obs <- epsilon.rep <- x[["y"]] - x[["yhat"]]
           kurtosis <- function(x) {  
                m4 <- mean((x-mean(x, na.rm=TRUE))^4, na.rm=TRUE) 
                kurt <- m4/(sd(x, na.rm=TRUE)^4)-3  
@@ -284,7 +295,7 @@ plot.laplace.ppc <- function(x, Style=NULL, Data=NULL, Rows=NULL,
                d.obs <- density(JB.obs)
                d.rep <- density(JB.rep)
                plot(d.obs, xlim=c(min(d.obs$x,d.rep$x), max(d.obs$x,d.rep$x)),
-                    ylim=c(0, max(d.obs$y, d.rep$y)),
+                    ylim=c(0, max(d.obs$y, d.rep$y)), col="white",
                     main="Jarque-Bera Test",
                     xlab=paste("JB for Y[,",j,"]", sep=""), ylab="Density",
                     sub=paste("JB.obs=", round(mean(JB.obs, na.rm=TRUE),2),
@@ -292,18 +303,20 @@ plot.laplace.ppc <- function(x, Style=NULL, Data=NULL, Rows=NULL,
                     na.rm=TRUE)),2), ",", round(as.vector(quantile(JB.obs,
                     probs=0.975, na.rm=TRUE)),2), "), p(JB.obs > JB.rep) = ",
                     p, " = ", result, sep=""))
-               polygon(d.obs, col="black", border="black")
-               lines(d.rep, col="red")}}
+               polygon(d.obs, col=rgb(0,0,0,50,maxColorValue=255),
+                    border=NA)
+               polygon(d.rep, col=rgb(255,0,0,50,maxColorValue=255),
+                    border=NA)}}
      if(Style == "Mardia") {
           if(PDF == TRUE) pdf("PPC.Plots.Mardia.pdf")
           par(mfrow=c(2,1))
           if(is.null(Data))
                stop("Data is required for Style=Mardia, C.")
-          if(is.null(Data$Y))
+          if(is.null(Data[["Y"]]))
                stop("Variable Y is required for Style=Mardia, C.")
-          epsilon.obs <- x$y - x$yhat
-          M <- nrow(Data$Y)
-          J <- ncol(Data$Y)
+          epsilon.obs <- x[["y"]] - x[["yhat"]]
+          M <- nrow(Data[["Y"]])
+          J <- ncol(Data[["Y"]])
           K3.obs <- K3.rep <- K4.obs <- K4.rep <- rep(0, ncol(epsilon.obs))
           for (s in 1:ncol(epsilon.obs)) {
                e.obs <- matrix(epsilon.obs[,s], M, J)
@@ -341,7 +354,7 @@ plot.laplace.ppc <- function(x, Style=NULL, Data=NULL, Rows=NULL,
           d.K4.rep <- density(K4.rep)
           plot(d.K3.obs, xlim=c(min(d.K3.obs$x, d.K3.rep$x),
                max(d.K3.obs$x, d.K3.rep$x)),
-               ylim=c(0, max(d.K3.obs$y, d.K3.rep$y)),
+               ylim=c(0, max(d.K3.obs$y, d.K3.rep$y)), col="white",
                main="Mardia's Test of MVN Skewness",
                xlab="Skewness Test Statistic (K3)", ylab="Density",
                sub=paste("K3.obs=", round(mean(K3.obs, na.rm=TRUE), 2),
@@ -349,11 +362,11 @@ plot.laplace.ppc <- function(x, Style=NULL, Data=NULL, Rows=NULL,
                     2), ", ", round(quantile(K3.obs, probs=0.975,
                     na.rm=TRUE), 2), "), p(K3.obs > K3.rep) = ",
                     p.K3, " = ", K3.result, sep=""))
-          polygon(d.K3.obs, col="black", border="black")
-          lines(d.K3.rep, col="red")
+          polygon(d.K3.obs, col=rgb(0,0,0,50,maxColorValue=255), border=NA)
+          polygon(d.K3.rep, col=rgb(255,0,0,50,maxColorValue=255), border=NA)
           plot(d.K4.obs, xlim=c(min(d.K4.obs$x, d.K4.rep$x),
                max(d.K4.obs$x, d.K4.rep$x)),
-               ylim=c(0, max(d.K4.obs$y, d.K4.rep$y)),
+               ylim=c(0, max(d.K4.obs$y, d.K4.rep$y)), col="white",
                main="Mardia's Test of MVN Kurtosis",
                xlab="Kurtosis Test Statistic (K4)", ylab="Density",
                sub=paste("K4.obs=", round(mean(K4.obs, na.rm=TRUE), 2),
@@ -361,8 +374,8 @@ plot.laplace.ppc <- function(x, Style=NULL, Data=NULL, Rows=NULL,
                     2), ", ", round(quantile(K4.obs, probs=0.975,
                     na.rm=TRUE), 2), "), p(K4.obs > K4.rep) = ",
                     p.K4, " = ", K4.result, sep=""))
-          polygon(d.K4.obs, col="black", border="black")
-          lines(d.K4.rep, col="red")}
+          polygon(d.K4.obs, col=rgb(0,0,0,50,maxColorValue=255), border=NA)
+          polygon(d.K4.rep, col=rgb(255,0,0,50,maxColorValue=255), border=NA)}
      if(Style == "Predictive Quantiles") {
           if(PDF == TRUE) pdf("PPC.Plots.PQ.pdf")
           par(mfrow=c(1,1))
@@ -378,7 +391,7 @@ plot.laplace.ppc <- function(x, Style=NULL, Data=NULL, Rows=NULL,
      if(Style == "Residual Density") {
           if(PDF == TRUE) pdf("PPC.Plots.Residual.Density.pdf")
           par(mfrow=c(1,1))
-          epsilon <- x$y - x$yhat
+          epsilon <- x[["y"]] - x[["yhat"]]
           epsilon.summary <- apply(epsilon, 1, quantile,
                probs=c(0.025,0.500,0.975), na.rm=TRUE)
           dens <- density(epsilon.summary[2,Rows], na.rm=TRUE)
@@ -387,18 +400,20 @@ plot.laplace.ppc <- function(x, Style=NULL, Data=NULL, Rows=NULL,
           polygon(dens, col="black", border="black")
           abline(v=0, col="red")}
      if(Style == "Residual Density, Multivariate, C") {
-          if(PDF == TRUE) {pdf("PPC.Plots.Residual.Density.pdf")
+          if(PDF == TRUE) {
+               pdf("PPC.Plots.Residual.Density.pdf")
                par(mfrow=c(1,1))}
-          else {par(mfrow=c(1,1), ask=TRUE)}
+          else par(mfrow=c(1,1), ask=TRUE)
           if(is.null(Data))
                stop("Data is required for Style=Residual Density, Multivariate, C.")
-          if(is.null(Data$Y))
+          if(is.null(Data[["Y"]]))
                stop("Variable Y is required for Style=Residual Density, Multivariate, C.")
-          epsilon <- x$y - x$yhat
+          epsilon <- x[["y"]] - x[["yhat"]]
           epsilon.summary <- apply(epsilon, 1, quantile,
                probs=c(0.025,0.500,0.975), na.rm=TRUE)
-          epsilon.500 <- matrix(epsilon.summary[2,], nrow(Data$Y), ncol(Data$Y))
-          for (i in 1:ncol(Data$Y)) {
+          epsilon.500 <- matrix(epsilon.summary[2,], nrow(Data[["Y"]]),
+               ncol(Data[["Y"]]))
+          for (i in 1:ncol(Data[["Y"]])) {
                dens <- density(epsilon.500[,i], na.rm=TRUE)
                plot(dens, col="black", main="Residual Density",
                     xlab=paste("epsilon[,", i, "]", sep=""),
@@ -406,18 +421,20 @@ plot.laplace.ppc <- function(x, Style=NULL, Data=NULL, Rows=NULL,
                polygon(dens, col="black", border="black")
                abline(v=0, col="red")}}
      if(Style == "Residual Density, Multivariate, R") {
-          if(PDF == TRUE) {pdf("PPC.Plots.Residual.Density.pdf")
+          if(PDF == TRUE) {
+               pdf("PPC.Plots.Residual.Density.pdf")
                par(mfrow=c(1,1))}
-          else {par(mfrow=c(1,1), ask=TRUE)}
+          else par(mfrow=c(1,1), ask=TRUE)
           if(is.null(Data))
                stop("Data is required for Style=Residual Density, Multivariate, R.")
-          if(is.null(Data$Y))
+          if(is.null(Data[["Y"]]))
                stop("Variable Y is required for Style=Residual Density, Multivariate, R.")
-          epsilon <- x$y - x$yhat
+          epsilon <- x[["y"]] - x[["yhat"]]
           epsilon.summary <- apply(epsilon, 1, quantile,
                probs=c(0.025,0.500,0.975), na.rm=TRUE)
-          epsilon.500 <- matrix(epsilon.summary[2,], nrow(Data$Y), ncol(Data$Y))
-          for (i in 1:nrow(Data$Y)) {
+          epsilon.500 <- matrix(epsilon.summary[2,], nrow(Data[["Y"]]),
+               ncol(Data[["Y"]]))
+          for (i in 1:nrow(Data[["Y"]])) {
                dens <- density(epsilon.500[i,], na.rm=TRUE)
                plot(dens, col="black", main="Residual Density",
                     xlab=paste("epsilon[", i, ",]", sep=""),
@@ -427,7 +444,7 @@ plot.laplace.ppc <- function(x, Style=NULL, Data=NULL, Rows=NULL,
      if(Style == "Residuals") {
           if(PDF == TRUE) pdf("PPC.Plots.Residuals.pdf")
           par(mfrow=c(1,1))
-          epsilon <- x$y - x$yhat
+          epsilon <- x[["y"]] - x[["yhat"]]
           epsilon.summary <- apply(epsilon, 1, quantile,
                probs=c(0.025,0.500,0.975), na.rm=TRUE)
           plot(epsilon.summary[2,Rows], pch=16, cex=0.75,
@@ -439,109 +456,121 @@ plot.laplace.ppc <- function(x, Style=NULL, Data=NULL, Rows=NULL,
                lines(c(i,i), c(epsilon.summary[1,Rows[i]],
                     epsilon.summary[3,Rows[i]]), col="black")}}
      if(Style == "Residuals, Multivariate, C") {
-          if(PDF == TRUE) {pdf("PPC.Plots.Residuals.pdf")
+          if(PDF == TRUE) {
+               pdf("PPC.Plots.Residuals.pdf")
                par(mfrow=c(1,1))}
-          else {par(mfrow=c(1,1), ask=TRUE)}
+          else par(mfrow=c(1,1), ask=TRUE)
           if(is.null(Data))
                stop("Data is required for Style=Residuals, Multivariate, C.")
-          if(is.null(Data$Y))
+          if(is.null(Data[["Y"]]))
                stop("Variable Y is required for Style=Residuals, Multivariate, C.")
-          epsilon <- x$y - x$yhat
+          epsilon <- x[["y"]] - x[["yhat"]]
           epsilon.summary <- apply(epsilon, 1, quantile,
                probs=c(0.025,0.500,0.975), na.rm=TRUE)
-          epsilon.025 <- matrix(epsilon.summary[1,], nrow(Data$Y), ncol(Data$Y))
-          epsilon.500 <- matrix(epsilon.summary[2,], nrow(Data$Y), ncol(Data$Y))
-          epsilon.975 <- matrix(epsilon.summary[3,], nrow(Data$Y), ncol(Data$Y))
-          for (i in 1:ncol(Data$Y)) {
+          epsilon.025 <- matrix(epsilon.summary[1,], nrow(Data[["Y"]]),
+               ncol(Data[["Y"]]))
+          epsilon.500 <- matrix(epsilon.summary[2,], nrow(Data[["Y"]]),
+               ncol(Data[["Y"]]))
+          epsilon.975 <- matrix(epsilon.summary[3,], nrow(Data[["Y"]]),
+               ncol(Data[["Y"]]))
+          for (i in 1:ncol(Data[["Y"]])) {
                plot(epsilon.500[,i], pch=16, cex=0.75,
                     ylim=c(min(epsilon.025[,i], na.rm=TRUE),
                          max(epsilon.975[,i], na.rm=TRUE)),
                     xlab=paste("Y[,", i, "]", sep=""), ylab=expression(epsilon))
                lines(rep(0, nrow(epsilon.500)), col="red")
-               for (j in 1:nrow(Data$Y)) {
+               for (j in 1:nrow(Data[["Y"]])) {
                     lines(c(j,j), c(epsilon.025[j,i],
                          epsilon.975[j,i]), col="black")}}}
      if(Style == "Residuals, Multivariate, R") {
-          if(PDF == TRUE) {pdf("PPC.Plots.Residuals.pdf")
+          if(PDF == TRUE) {
+               pdf("PPC.Plots.Residuals.pdf")
                par(mfrow=c(1,1))}
-          else {par(mfrow=c(1,1), ask=TRUE)}
+          else par(mfrow=c(1,1), ask=TRUE)
           if(is.null(Data))
                stop("Data is required for Style=Residuals, Multivariate, C.")
-          if(is.null(Data$Y))
+          if(is.null(Data[["Y"]]))
                stop("Variable Y is required for Style=Residuals, Multivariate, C.")
-          epsilon <- x$y - x$yhat
+          epsilon <- x[["y"]] - x[["yhat"]]
           epsilon.summary <- apply(epsilon, 1, quantile,
                probs=c(0.025,0.500,0.975), na.rm=TRUE)
-          epsilon.025 <- matrix(epsilon.summary[1,], nrow(Data$Y), ncol(Data$Y))
-          epsilon.500 <- matrix(epsilon.summary[2,], nrow(Data$Y), ncol(Data$Y))
-          epsilon.975 <- matrix(epsilon.summary[3,], nrow(Data$Y), ncol(Data$Y))
-          for (i in 1:nrow(Data$Y)) {
+          epsilon.025 <- matrix(epsilon.summary[1,], nrow(Data[["Y"]]),
+               ncol(Data[["Y"]]))
+          epsilon.500 <- matrix(epsilon.summary[2,], nrow(Data[["Y"]]),
+               ncol(Data[["Y"]]))
+          epsilon.975 <- matrix(epsilon.summary[3,], nrow(Data[["Y"]]),
+               ncol(Data[["Y"]]))
+          for (i in 1:nrow(Data[["Y"]])) {
                plot(epsilon.500[i,], pch=16, cex=0.75,
                     ylim=c(min(epsilon.025[i,], na.rm=TRUE),
                          max(epsilon.975[i,], na.rm=TRUE)),
                     xlab=paste("Y[", i, ",]", sep=""), ylab=expression(epsilon))
                lines(rep(0, ncol(epsilon.500)), col="red")
-               for (j in 1:ncol(Data$Y)) {
+               for (j in 1:ncol(Data[["Y"]])) {
                     lines(c(j,j), c(epsilon.025[i,j],
                          epsilon.975[i,j]), col="black")}}}
      if(Style == "Space-Time by Space") {
-          if(PDF == TRUE) {pdf("PPC.Plots.SpaceTime.pdf")
+          if(PDF == TRUE) {
+               pdf("PPC.Plots.SpaceTime.pdf")
                par(mfrow=c(1,1))}
-          else {par(mfrow=c(1,1), ask=TRUE)}
+          else par(mfrow=c(1,1), ask=TRUE)
           if(is.null(Data))
                stop("Data is required for Style=Space-Time by Space.")
-          if(is.null(Data$longitude))
+          if(is.null(Data[["longitude"]]))
                stop("Variable longitude is required in Data.")
-          if(is.null(Data$latitude))
+          if(is.null(Data[["latitude"]]))
                stop("Variable latitude is required in Data.")
-          if(is.null(Data$S)) stop("Variable S is required in Data.")
-          if(is.null(Data$S)) stop("Variable T is required in Data.")
+          if(is.null(Data[["S"]])) stop("Variable S is required in Data.")
+          if(is.null(Data[["T"]])) stop("Variable T is required in Data.")
           temp <- summary(x, Quiet=TRUE)$Summary
-          for (s in 1:Data$S) {
-               plot(matrix(temp[,1], Data$S, Data$T)[s,],
-                    ylim=c(min(c(matrix(temp[,4], Data$S, Data$T)[s,],
-                         matrix(temp[,1], Data$S, Data$T)[s,]), na.rm=TRUE),
-                         max(c(matrix(temp[,6], Data$S, Data$T)[s,],
-                         matrix(temp[,1], Data$S, Data$T)[s,]), na.rm=TRUE)),
+          for (s in 1:Data[["S"]]) {
+               plot(matrix(temp[,1], Data[["S"]], Data[["T"]])[s,],
+                    ylim=c(min(c(matrix(temp[,4], Data[["S"]], Data[["T"]])[s,],
+                         matrix(temp[,1], Data[["S"]], Data[["T"]])[s,]), na.rm=TRUE),
+                         max(c(matrix(temp[,6], Data[["S"]], Data[["T"]])[s,],
+                         matrix(temp[,1], Data[["S"]], Data[["T"]])[s,]), na.rm=TRUE)),
                     type="l", xlab="Time", ylab="y",
                     main=paste("Space-Time at Space s=",s," of ",
-                         Data$S, sep=""),
-                    sub="Actual=Black, Fit=Red, Interval=Gray")
-               lines(matrix(temp[,4], Data$S, Data$T)[s,], col="gray")
-               lines(matrix(temp[,6], Data$S, Data$T)[s,], col="gray")
-               lines(matrix(temp[,5], Data$S, Data$T)[s,], col="red")}}
+                         Data[["S"]], sep=""),
+                    sub="Actual=Black, Fit=Red, Interval=Transparent Red")
+               polygon(c(1:Data[["T"]],rev(1:Data[["T"]])),
+                    c(matrix(temp[,4], Data[["S"]], Data[["T"]])[s,],
+                    rev(matrix(temp[,6], Data[["S"]], Data[["T"]])[s,])),
+                    col=rgb(255, 0, 0, 50, maxColorValue=255), border=FALSE)
+               lines(matrix(temp[,5], Data[["S"]], Data[["T"]])[s,], col="red")}}
      if(Style == "Space-Time by Time") {
-          if(PDF == TRUE) {pdf("PPC.Plots.SpaceTime.pdf")
+          if(PDF == TRUE) {
+               pdf("PPC.Plots.SpaceTime.pdf")
                par(mfrow=c(1,1))}
-          else {par(mfrow=c(1,1), ask=TRUE)}
+          else par(mfrow=c(1,1), ask=TRUE)
           if(is.null(Data))
                stop("Data is required for Style=Space-Time by Time.")
-          if(is.null(Data$longitude))
+          if(is.null(Data[["longitude"]]))
                stop("Variable longitude is required in Data.")
-          if(is.null(Data$latitude))
+          if(is.null(Data[["latitude"]]))
                stop("Variable latitude is required in Data.")
-          if(is.null(Data$S)) stop("Variable S is required in Data.")
-          if(is.null(Data$S)) stop("Variable T is required in Data.")
-          Heat <- (1-(x$y-min(x$y, na.rm=TRUE)) /
-               max(x$y-min(x$y, na.rm=TRUE), na.rm=TRUE)) * 99 + 1
-          Heat <- matrix(Heat, Data$S, Data$T)
-          for (t in 1:Data$T) {
-               plot(Data$longitude, Data$latitude,
+          if(is.null(Data[["S"]])) stop("Variable S is required in Data.")
+          if(is.null(Data[["T"]])) stop("Variable T is required in Data.")
+          Heat <- (1-(x[["y"]]-min(x[["y"]], na.rm=TRUE)) /
+               max(x[["y"]]-min(x[["y"]], na.rm=TRUE), na.rm=TRUE)) * 99 + 1
+          Heat <- matrix(Heat, Data[["S"]], Data[["T"]])
+          for (t in 1:Data[["T"]]) {
+               plot(Data[["longitude"]], Data[["latitude"]],
                     col=heat.colors(120)[Heat[,t]],
                     pch=16, cex=0.75, xlab="Longitude", ylab="Latitude",
-                    main=paste("Space-Time at t=",t," of ", Data$T,
+                    main=paste("Space-Time at t=",t," of ", Data[["T"]],
                          sep=""), sub="Red=High, Yellow=Low")}}
      if(Style == "Spatial") {
           if(PDF == TRUE) pdf("PPC.Plots.Spatial.pdf")
           par(mfrow=c(1,1))
           if(is.null(Data)) stop("Data is required for Style=Spatial.")
-          if(is.null(Data$longitude))
+          if(is.null(Data[["longitude"]]))
                stop("Variable longitude is required in Data.")
-          if(is.null(Data$latitude))
+          if(is.null(Data[["latitude"]]))
                stop("Variable latitude is required in Data.")
-          heat <- (1-(x$y[Rows]-min(x$y[Rows], na.rm=TRUE)) /
-               max(x$y[Rows]-min(x$y[Rows], na.rm=TRUE), na.rm=TRUE)) * 99 + 1
-          plot(Data$longitude[Rows], Data$latitude[Rows],
+          heat <- (1-(x[["y"]][Rows]-min(x[["y"]][Rows], na.rm=TRUE)) /
+               max(x[["y"]][Rows]-min(x[["y"]][Rows], na.rm=TRUE), na.rm=TRUE)) * 99 + 1
+          plot(Data[["longitude"]][Rows], Data[["latitude"]][Rows],
                col=heat.colors(120)[heat],
                pch=16, cex=0.75, xlab="Longitude", ylab="Latitude",
                main="Spatial Plot", sub="Red=High, Yellow=Low")}
@@ -550,15 +579,15 @@ plot.laplace.ppc <- function(x, Style=NULL, Data=NULL, Rows=NULL,
           par(mfrow=c(1,1))
           if(is.null(Data))
                stop("Data is required for Style=Spatial Uncertainty.")
-          if(is.null(Data$longitude))
+          if(is.null(Data[["longitude"]]))
                stop("Variable longitude is required in Data.")
-          if(is.null(Data$latitude))
+          if(is.null(Data[["latitude"]]))
                stop("Variable latitude is required in Data.")
-          heat <- apply(x$yhat, 1, quantile, probs=c(0.025,0.975))
+          heat <- apply(x[["yhat"]], 1, quantile, probs=c(0.025,0.975))
           heat <- heat[2,] - heat[1,]
           heat <- (1-(heat[Rows]-min(heat[Rows])) /
                max(heat[Rows]-min(heat[Rows]))) * 99 + 1
-          plot(Data$longitude[Rows], Data$latitude[Rows],
+          plot(Data[["longitude"]][Rows], Data[["latitude"]][Rows],
                col=heat.colors(120)[heat],
                pch=16, cex=0.75, xlab="Longitude", ylab="Latitude",
                main="Spatial Uncertainty Plot",
@@ -567,67 +596,81 @@ plot.laplace.ppc <- function(x, Style=NULL, Data=NULL, Rows=NULL,
           if(PDF == TRUE) pdf("PPC.Plots.TimeSeries.pdf")
           par(mfrow=c(1,1))
           temp <- summary(x, Quiet=TRUE)$Summary
-          plot(temp[Rows,1],
+          plot(Rows, temp[Rows,1],
                ylim=c(min(temp[Rows,c(1,4)], na.rm=TRUE),
                     max(temp[Rows,c(1,6)], na.rm=TRUE)),
                type="l", xlab="Time", ylab="y",
                main="Plot of Fitted Time-Series",
-               sub="Actual=Black, Fit=Red, Interval=Gray")
-          lines(temp[Rows,4], col="gray")
-          lines(temp[Rows,6], col="gray")
-          lines(temp[Rows,5], col="red")}
+               sub="Actual=Black, Fit=Red, Interval=Transparent Red")
+          polygon(c(Rows,rev(Rows)),c(temp[Rows,4],rev(temp[Rows,6])),
+                col=rgb(255, 0, 0, 50, maxColorValue=255),
+                border=FALSE)
+          lines(Rows, temp[Rows,1])
+          lines(Rows, temp[Rows,5], col="red")}
      if(Style == "Time-Series, Multivariate, C") {
-          if(PDF == TRUE) {pdf("PPC.Plots.TimeSeries.pdf")
+          if(PDF == TRUE) {
+               pdf("PPC.Plots.TimeSeries.pdf")
                par(mfrow=c(1,1))}
           else {par(mfrow=c(1,1), ask=TRUE)}
           if(is.null(Data))
                stop("Data is required for Style=Time-Series, Multivariate.")
-          if(is.null(Data$Y))
+          if(is.null(Data[["Y"]]))
                stop("Variable Y is required in Data.")
           temp <- summary(x, Quiet=TRUE)$Summary
-          for (i in 1:ncol(Data$Y)) {
-          plot(matrix(temp[Rows,1], nrow(Data$Y), ncol(Data$Y))[,i],
-               ylim=c(min(Data$Y[,i],
-                    matrix(temp[Rows,4], nrow(Data$Y),
-                         ncol(Data$Y))[,i], na.rm=TRUE),
-                    max(Data$Y[,i],
-                    matrix(temp[Rows,6], nrow(Data$Y),
-                         ncol(Data$Y))[,i], na.rm=TRUE)),
+          for (i in 1:ncol(Data[["Y"]])) {
+          tempy <- matrix(temp[Rows,1], nrow(Data[["Y"]]),
+               ncol(Data[["Y"]]))[,i]
+          qLB <- matrix(temp[Rows,4], nrow(Data[["Y"]]),
+               ncol(Data[["Y"]]))[,i]
+          qMed <- matrix(temp[Rows,5], nrow(Data[["Y"]]),
+               ncol(Data[["Y"]]))[,i]
+          qUB <- matrix(temp[Rows,6], nrow(Data[["Y"]]),
+               ncol(Data[["Y"]]))[,i]
+          plot(1:length(tempy), tempy,
+               ylim=c(min(Data[["Y"]][,i],
+                    matrix(temp[Rows,4], nrow(Data[["Y"]]),
+                         ncol(Data[["Y"]]))[,i], na.rm=TRUE),
+                    max(Data[["Y"]][,i],
+                    matrix(temp[Rows,6], nrow(Data[["Y"]]),
+                         ncol(Data[["Y"]]))[,i], na.rm=TRUE)),
                type="l", xlab="Time", ylab="y",
-               main=paste("Time-Series ", i, " of ", ncol(Data$Y), sep=""),
-               sub="Actual=Black, Fit=Red, Interval=Gray")
-          lines(matrix(temp[Rows,4],nrow(Data$Y),ncol(Data$Y))[,i],
-               col="gray")
-          lines(matrix(temp[Rows,6],nrow(Data$Y),ncol(Data$Y))[,i],
-               col="gray")
-          lines(matrix(temp[Rows,5],nrow(Data$Y),ncol(Data$Y))[,i],
-               col="red")}}
+               main=paste("Time-Series ", i, " of ", ncol(Data[["Y"]]), sep=""),
+               sub="Actual=Black, Fit=Red, Interval=Transparent Red")
+          polygon(c(1:length(tempy),rev(1:length(tempy))),c(qLB,rev(qUB)),
+                col=rgb(255, 0, 0, 50, maxColorValue=255),
+                border=FALSE)
+          lines(1:length(tempy), tempy)
+          lines(1:length(tempy), qMed, col="red")}}
      if(Style == "Time-Series, Multivariate, R") {
-          if(PDF == TRUE) {pdf("PPC.Plots.TimeSeries.pdf")
+          if(PDF == TRUE) {
+               pdf("PPC.Plots.TimeSeries.pdf")
                par(mfrow=c(1,1))}
-          else {par(mfrow=c(1,1), ask=TRUE)}
+          else par(mfrow=c(1,1), ask=TRUE)
           if(is.null(Data))
                stop("Data is required for Style=Time-Series, Multivariate.")
-          if(is.null(Data$Y))
+          if(is.null(Data[["Y"]]))
                stop("Variable Y is required in Data.")
           temp <- summary(x, Quiet=TRUE)$Summary
-          for (i in 1:nrow(Data$Y)) {
-          plot(matrix(temp[Rows,1], nrow(Data$Y), ncol(Data$Y))[i,],
-               ylim=c(min(Data$Y[i,],
-                    matrix(temp[Rows,4], nrow(Data$Y),
-                         ncol(Data$Y))[i,], na.rm=TRUE),
-                    max(Data$Y[i,],
-                    matrix(temp[Rows,6], nrow(Data$Y),
-                         ncol(Data$Y))[i,], na.rm=TRUE)),
+          for (i in 1:nrow(Data[["Y"]])) {
+          tempy <- matrix(temp[Rows,1], nrow(Data[["Y"]]), ncol(Data[["Y"]]))[i,]
+          qLB <- matrix(temp[Rows,4], nrow(Data[["Y"]]), ncol(Data[["Y"]]))[i,]
+          qMed <- matrix(temp[Rows,5], nrow(Data[["Y"]]), ncol(Data[["Y"]]))[i,]
+          qUB <- matrix(temp[Rows,6], nrow(Data[["Y"]]), ncol(Data[["Y"]]))[i,]
+          plot(1:length(tempy), tempy,
+               ylim=c(min(Data[["Y"]][i,],
+                    matrix(temp[Rows,4], nrow(Data[["Y"]]),
+                         ncol(Data[["Y"]]))[i,], na.rm=TRUE),
+                    max(Data[["Y"]][i,],
+                    matrix(temp[Rows,6], nrow(Data[["Y"]]),
+                         ncol(Data[["Y"]]))[i,], na.rm=TRUE)),
                type="l", xlab="Time", ylab="y",
-               main=paste("Time-Series ", i, " of ", nrow(Data$Y), sep=""),
-               sub="Actual=Black, Fit=Red, Interval=Gray")
-          lines(matrix(temp[Rows,4],nrow(Data$Y),ncol(Data$Y))[i,],
-               col="gray")
-          lines(matrix(temp[Rows,6],nrow(Data$Y),ncol(Data$Y))[i,],
-               col="gray")
-          lines(matrix(temp[Rows,5],nrow(Data$Y),ncol(Data$Y))[i,],
-               col="red")}}
+               main=paste("Time-Series ", i, " of ", nrow(Data[["Y"]]), sep=""),
+               sub="Actual=Black, Fit=Red, Interval=Transparent Red")
+          polygon(c(1:length(tempy),rev(1:length(tempy))),c(qLB,rev(qUB)),
+                col=rgb(255, 0, 0, 50, maxColorValue=255),
+                border=FALSE)
+          lines(1:length(tempy), tempy)
+          lines(1:length(tempy), qMed, col="red")}}
      if(PDF == TRUE) dev.off()
      }
 

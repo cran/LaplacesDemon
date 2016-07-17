@@ -110,6 +110,7 @@ PMC.RAM(Model, Data, Iterations, Thinning, M, N)
 }
 \author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{
+  \code{\link{BigData}},
   \code{\link{LML}},
   \code{\link{object.size}}, and
   \code{\link{PMC}}.

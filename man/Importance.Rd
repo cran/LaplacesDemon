@@ -16,11 +16,12 @@
   matrix \eqn{\textbf{X}}{X}.
 }
 \usage{
-Importance(object, Model, Data, Categorical=FALSE, Discrep, d=0)
+Importance(object, Model, Data, Categorical=FALSE, Discrep, d=0, CPUs=1,
+  Type="PSOCK")
 }
 \arguments{
-  \item{object}{An object of class \code{demonoid}, \code{laplace}, or
-  \code{pmc} is required.}
+  \item{object}{An object of class \code{demonoid}, \code{iterquad},
+    \code{laplace}, \code{pmc}, or \code{vb} is required.}
   \item{Model}{The model specification function is required.}
   \item{Data}{A data set in a list is required. The dependent variable
     is required to be named either \code{y} or \code{Y}. The
@@ -37,6 +38,13 @@ Importance(object, Model, Data, Categorical=FALSE, Discrep, d=0)
     \code{Discrep} argument above, and it defaults to \code{d=0}. For
     more information on discrepancy, see
     \code{\link{summary.demonoid.ppc}}.}
+  \item{CPUs}{This argument accepts an integer that specifies the number
+    of central processing units (CPUs) of the multicore computer or
+    computer cluster. This argument defaults to \code{CPUs=1}, in which
+    parallel processing does not occur.}
+  \item{Type}{This argument specifies the type of parallel processing to
+    perform, accepting either \code{Type="PSOCK"} or
+    \code{Type="MPI"}.}
 }
 \details{Variable importance is defined here as the impact of each
   variable (predictor, or column vector) in design matrix
@@ -44,15 +52,18 @@ Importance(object, Model, Data, Categorical=FALSE, Discrep, d=0)
   \eqn{\textbf{Y}^{rep}}{Y^rep}), when the variable is removed.
 
   First, the full model is predicted with the
-  \code{\link{predict.demonoid}}, or \code{\link{predict.laplace}}, or
-  \code{\link{predict.pmc}} function, and summarized with the
-  \code{\link{summary.demonoid.ppc}}, \code{\link{summary.laplace.ppc}},
-  or \code{\link{summary.pmc.ppc}} function, respectively. The
-  results are stored in the first row of the output. Each successive
-  row in the output corresponds to the application of \code{predict} and
-  \code{summary} functions, but with each variable in design matrix
-  \eqn{\textbf{X}}{X} being set to zero and effectively removed. The
-  results show the impact of sequentially removing each predictor.
+  \code{\link{predict.demonoid}}, \code{\link{predict.iterquad}},
+  \code{\link{predict.laplace}}, \code{\link{predict.pmc}}, or
+  \code{\link{predict.vb}} function, and summarized with the
+  \code{\link{summary.demonoid.ppc}},
+  \code{\link{summary.iterquad.ppc}}, \code{\link{summary.laplace.ppc}},
+  \code{\link{summary.pmc.ppc}}, or \code{\link{summary.vb.ppc}}
+  function, respectively. The results are stored in the first row of the
+  output. Each successive row in the output corresponds to the
+  application of \code{predict} and \code{summary} functions, but with
+  each variable in design matrix \eqn{\textbf{X}}{X} being set to zero
+  and effectively removed. The results show the impact of sequentially
+  removing each predictor.
 
   The criterion for variable importance may differ from model to
   model. As a default, BPIC is recommended. The Bayesian Predictive
@@ -118,6 +129,15 @@ Importance(object, Model, Data, Categorical=FALSE, Discrep, d=0)
   output of the \code{Importance} function according to BPIC, predictive
   concordance (Gelfand, 1996), the selected discrepancy statistic
   (Gelman et al., 1996), or the L-criterion.
+
+  Parallel processing may be performed when the user specifies
+  \code{CPUs} to be greater than one, implying that the specified number
+  of CPUs exists and is available. Parallelization may be performed on a
+  multicore computer or a computer cluster. Either a Simple Network of
+  Workstations (SNOW) or Message Passing Interface is used (MPI). With
+  small data sets and few samples, parallel processing may be slower,
+  due to computer network communication. With larger data sets and more
+  samples, the user should experience a faster run-time.
 }
 \value{
   \code{Importance} returns an object of class \code{importance}, which
@@ -138,7 +158,7 @@ Importance(object, Model, Data, Categorical=FALSE, Discrep, d=0)
 
   Gelfand, A. (1996). "Model Determination Using Sampling Based
   Methods". In Gilks, W., Richardson, S., Spiegehalter, D., Chapter 9 in
-  Markov Chain Monte Carlo in Practice. Chapman \& Hall: Boca Raton, FL.
+  Markov Chain Monte Carlo in Practice. Chapman and Hall: Boca Raton, FL.
 
   Laud, P.W. and Ibrahim, J.G. (1995). "Predictive Model
   Selection". \emph{Journal of the Royal Statistical Society}, B 57,
@@ -152,6 +172,7 @@ Importance(object, Model, Data, Categorical=FALSE, Discrep, d=0)
 \author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{
   \code{\link{is.importance}},
+  \code{\link{IterativeQuadrature}},
   \code{\link{LaplaceApproximation}},
   \code{\link{LaplacesDemon}},
   \code{\link{PMC}},
@@ -159,19 +180,25 @@ Importance(object, Model, Data, Categorical=FALSE, Discrep, d=0)
   \code{\link{PosteriorChecks}},
   \code{\link{p.interval}},
   \code{\link{predict.demonoid}},
+  \code{\link{predict.iterquad}},
   \code{\link{predict.laplace}},
   \code{\link{predict.pmc}},
+  \code{\link{predict.vb}},
   \code{\link{summary.demonoid.ppc}},
-  \code{\link{summary.laplace.ppc}}, and
-  \code{\link{summary.pmc.ppc}}.
+  \code{\link{summary.iterquad.ppc}},
+  \code{\link{summary.laplace.ppc}},
+  \code{\link{summary.pmc.ppc}},
+  \code{\link{summary.vb.ppc}}, and
+  \code{\link{VariationalBayes}}.
 }
 \examples{
 #First, update the model with the LaplacesDemon function, such as
 #the example with linear regression, creating an object called Fit.
 #Then
-#Importance(Fit, Model, MyData, Discrep="Chi-Square")
+#Importance(Fit, Model, MyData, Discrep="Chi-Square", CPUs=1)
 }
 \keyword{BPIC}
+\keyword{High Performance Computing}
 \keyword{L-criterion}
 \keyword{Model Selection}
 \keyword{Posterior Predictive Checks}

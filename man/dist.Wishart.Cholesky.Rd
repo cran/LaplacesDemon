@@ -62,7 +62,7 @@ upper-triangular Cholesky factor \eqn{\textbf{U}}{U}, as per
 The integral is finite when \eqn{\nu \ge k}{nu >= k}, where
 \eqn{\nu}{nu} is the scalar degrees of freedom parameter, and \eqn{k} is
 the dimension of scale matrix \eqn{\textbf{S}}{S}. The density is finite
-is finite when \eqn{\nu ge k + 1}{nu >= k + 1}, which is recommended.
+when \eqn{\nu ge k + 1}{nu >= k + 1}, which is recommended.
 
 The degrees of freedom, \eqn{\nu}{nu}, is equivalent to specifying a
 prior sample size, indicating the confidence in \eqn{\textbf{S}}{S},
@@ -72,8 +72,14 @@ obtained as \eqn{\nu \rightarrow 0}{nu -> 0}.
 
 In practice, \eqn{\textbf{U}}{U} is fully unconstrained for proposals
 when its diagonal is log-transformed. The diagonal is exponentiated
-after a proposal and before other calculations. The Cholesky
-parameterization is faster than the traditional parameterization.
+after a proposal and before other calculations. Overall, the
+Cholesky parameterization is faster than the traditional
+parameterization. Compared with \code{dwishart}, \code{dwishartc}
+must additionally matrix-multiply the Cholesky back to the precision
+matrix, but it does not have to check for or correct the precision
+matrix to positive-semidefiniteness, which overall is slower. Compared
+with \code{rwishart}, \code{rwishartc} must additionally
+calculate a Cholesky decomposition, and is therefore slower.
 
 The Wishart prior lacks flexibility, having only one parameter,
 \eqn{\nu}{nu}, to control the variability for all \eqn{k(k + 1)/2}
@@ -82,31 +88,20 @@ include an identity matrix or sample covariance matrix. When the model
 sample size is small, the specification of the scale matrix can be
 influential.
 
-One of many alternatives is to use hierarchical priors,
-in which the main diagonal of the (identity) scale matrix and the
-degrees of freedom are treated as unknowns (Bouriga and Feron, 2011;
-Daniels and Kass, 1999). A hierarchical Wishart prior provides
-shrinkage toward diagonality. Another alternative is to abandon the
-Wishart distribution altogether for the more flexible method of Barnard
-et al. (2000).
+Although the related inverse Wishart distribution has a dependency
+between variance and correlation, the Wishart distribution does not
+have this dependency.
+
+The matrix gamma (\code{\link{dmatrixgamma}}) distribution is a more
+general version of the Wishart distribution, and the Yang-Berger
+(\code{\link{dyangberger}}) distribution is an alterative that is a
+least informative prior (LIP).
 }
 \value{
   \code{dwishartc} gives the density and
   \code{rwishartc} generates random deviates.
 }
 \references{
-  Barnard, J., McCulloch, R., and Meng, X. (2000). "Modeling Covariance
-  Matrices in Terms of Standard Deviations and Correlations, with
-  Application to Shrinkage". \emph{Statistica Sinica}, 10, p. 1281--1311.
-  
-  Bouriga, M. and Feron, O. (2011). "Estimation of Covariance Matrices
-  Based on Hierarchical Inverse-Wishart Priors". URL:
-  http://www.citebase.org/abstract?id=oai:arXiv.org:1106.3203.
-  
-  Daniels, M., and Kass, R. (1999). "Nonconjugate Bayesian Estimation of
-  Covariance Matrices and its use in Hierarchical Models". \emph{Journal
-  of the American Statistical Association}, 94(448), p. 1254--1263.
-
   Wishart, J. (1928). "The Generalised Product Moment Distribution in
   Samples from a Normal Multivariate Population". \emph{Biometrika},
   20A(1-2), p. 32--52.
@@ -114,12 +109,14 @@ et al. (2000).
 \seealso{
   \code{\link{chol}},
   \code{\link{dchisq}},
+  \code{\link{dgamma}},
   \code{\link{dinvwishart}},
   \code{\link{dinvwishartc}},
-  \code{\link{dgamma}},
+  \code{\link{dmatrixgamma}},
   \code{\link{dmvnp}},
-  \code{\link{dmvnpc}}, and
-  \code{\link{Prec2Cov}}.
+  \code{\link{dmvnpc}},
+  \code{\link{Prec2Cov}}, and
+  \code{\link{dyangbergerc}}.
 }
 \examples{
 library(LaplacesDemon)

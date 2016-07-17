@@ -5,8 +5,9 @@
 # checks of the posterior, including the probability that each theta is   #
 # greater than zero, kurtosis, and skewness. This function requires an    #
 # object of class demonoid, laplace, or pmc. The kurtosis and skewness    #
-# checks return nothing (NA) for class laplace, because parameters from   #
-# Laplace Approximation are normally distributed, by definition.          #
+# checks return nothing (NA) for classes laplace and vb, because          #
+# parameters from Laplace Approximation and Variational Bayes are         #
+# normally distributed, by definition.                                    #
 ###########################################################################
 
 PosteriorChecks <- function(x, Parms=NULL)
@@ -14,9 +15,11 @@ PosteriorChecks <- function(x, Parms=NULL)
      ### Initial Checks
      if(missing(x)) stop("The x argument is required.")
      if(!identical(class(x), "demonoid") &
+          !identical(class(x), "iterquad") &
           !identical(class(x), "laplace") &
-          !identical(class(x), "pmc"))
-          stop("An object of class demonoid, laplace, or pmc is required.")
+          !identical(class(x), "pmc") &
+          !identical(class(x), "vb"))
+          stop("An object of class demonoid, iterquad, laplace, pmc, or vb is required.")
      ### Kurtosis and Skewness Functions
      kurtosis <- function(x) {  
           m4 <- mean((x - mean(x))^4) 
@@ -57,10 +60,10 @@ PosteriorChecks <- function(x, Parms=NULL)
           ### Correlation Table
           options(warn=-1); postcor <- cor(post); options(warn=0)
           ### Summary Table
-          Summ <- matrix(NA, ncol(post), 6)
+          Summ <- matrix(NA, ncol(post), 8)
           rownames(Summ) <- colnames(post)
-          colnames(Summ) <- c("p(theta > 0)","N.Modes","Kurtosis",
-               "Skewness","Burn-In","IAT")
+          colnames(Summ) <- c("p(theta > 0)", "N.Modes", "Kurtosis",
+               "Skewness", "Burn-In", "IAT", "ISM", "AR")
           options(warn=-1)
           for (i in 1:ncol(post)) {
                Summ[i,1] <- mean(post[,i] > 0)
@@ -69,6 +72,52 @@ PosteriorChecks <- function(x, Parms=NULL)
                Summ[i,4] <- round(skewness(post[,i]),3)
                Summ[i,6] <- round(IAT(post[,i]),3)}
           Summ[,5] <- burnin(post)
+          Summ[,7] <- round(ESS(post)/x$Min, 3)
+          Summ[,8] <- AcceptanceRate(post)
+          options(warn=0)
+          }
+     else if(identical(class(x), "iterquad")) {
+          ### Posterior
+          if(any(is.na(x$Posterior)))
+               stop("Posterior samples do not exist.")
+          post <- x$Summary1
+          ### Selecting Parms
+          if(is.null(Parms)) {keeprows <- 1:nrow(post)}
+          else {
+               Parms <- sub("\\[","\\\\[",Parms)
+               Parms <- sub("\\]","\\\\]",Parms)
+               Parms <- sub("\\.","\\\\.",Parms)
+               if(length(grep(Parms[1], rownames(post))) == 0)
+                    stop("Parameter in Parms does not exist.")
+               keeprows <- grep(Parms[1], rownames(post))
+               if(length(Parms) > 1) {
+                    for (i in 2:length(Parms)) {
+                         if(length(grep(Parms[i], rownames(post))) == 0)
+                              stop("Parameter in Parms does not exist.")
+                         keeprows <- c(keeprows,
+                              grep(Parms[i], rownames(post)))}}}
+          temp <- rownames(post)[keeprows]
+          post <- post[keeprows,]
+          rownames(post) <- temp
+          Posterior <- x$Posterior
+          colnames(Posterior) <- rownames(post)
+          ### Correlation Table
+          options(warn=-1); postcor <- cor(Posterior); options(warn=0)
+          ### Summary Table
+          Summ <- matrix(NA, nrow(post), 8)
+          rownames(Summ) <- rownames(post)
+          colnames(Summ) <- c("p(theta > 0)", "N.Modes", "Kurtosis",
+               "Skewness", "Burn-In", "IAT", "ISM", "AR")
+          options(warn=-1)
+          for (i in 1:ncol(Posterior)) {
+               Summ[i,1] <- mean(Posterior[,i] > 0)
+               Summ[i,2] <- length(Modes(Posterior[,i])[[1]])
+               Summ[i,3] <- round(kurtosis(Posterior[,i]),3)
+               Summ[i,4] <- round(skewness(Posterior[,i]),3)
+               Summ[i,5] <- 0
+               Summ[i,6] <- round(IAT(Posterior[,i]),3)}
+          Summ[,7] <- NA
+          Summ[,8] <- 1
           options(warn=0)
           }
      else if(identical(class(x), "laplace")) {
@@ -99,10 +148,10 @@ PosteriorChecks <- function(x, Parms=NULL)
           ### Correlation Table
           options(warn=-1); postcor <- cor(Posterior); options(warn=0)
           ### Summary Table
-          Summ <- matrix(NA, nrow(post), 6)
+          Summ <- matrix(NA, nrow(post), 8)
           rownames(Summ) <- rownames(post)
-          colnames(Summ) <- c("p(theta > 0)","N.Modes","Kurtosis",
-               "Skewness","Burn-In","IAT")
+          colnames(Summ) <- c("p(theta > 0)", "N.Modes", "Kurtosis",
+               "Skewness", "Burn-In", "IAT", "ISM", "AR")
           options(warn=-1)
           for (i in 1:ncol(Posterior)) {
                Summ[i,1] <- mean(Posterior[,i] > 0)
@@ -111,6 +160,52 @@ PosteriorChecks <- function(x, Parms=NULL)
                Summ[i,4] <- round(skewness(Posterior[,i]),3)
                Summ[i,5] <- 0
                Summ[i,6] <- round(IAT(Posterior[,i]),3)}
+          Summ[,7] <- NA
+          Summ[,8] <- 1
+          options(warn=0)
+          }
+     else if(identical(class(x), "vb")) {
+          ### Posterior
+          if(any(is.na(x$Posterior)))
+               stop("Posterior samples do not exist.")
+          post <- x$Summary1
+          ### Selecting Parms
+          if(is.null(Parms)) {keeprows <- 1:nrow(post)}
+          else {
+               Parms <- sub("\\[","\\\\[",Parms)
+               Parms <- sub("\\]","\\\\]",Parms)
+               Parms <- sub("\\.","\\\\.",Parms)
+               if(length(grep(Parms[1], rownames(post))) == 0)
+                    stop("Parameter in Parms does not exist.")
+               keeprows <- grep(Parms[1], rownames(post))
+               if(length(Parms) > 1) {
+                    for (i in 2:length(Parms)) {
+                         if(length(grep(Parms[i], rownames(post))) == 0)
+                              stop("Parameter in Parms does not exist.")
+                         keeprows <- c(keeprows,
+                              grep(Parms[i], rownames(post)))}}}
+          temp <- rownames(post)[keeprows]
+          post <- post[keeprows,]
+          rownames(post) <- temp
+          Posterior <- x$Posterior
+          colnames(Posterior) <- rownames(post)
+          ### Correlation Table
+          options(warn=-1); postcor <- cor(Posterior); options(warn=0)
+          ### Summary Table
+          Summ <- matrix(NA, nrow(post), 8)
+          rownames(Summ) <- rownames(post)
+          colnames(Summ) <- c("p(theta > 0)", "N.Modes", "Kurtosis",
+               "Skewness", "Burn-In", "IAT", "ISM", "AR")
+          options(warn=-1)
+          for (i in 1:ncol(Posterior)) {
+               Summ[i,1] <- mean(Posterior[,i] > 0)
+               Summ[i,2] <- length(Modes(Posterior[,i])[[1]])
+               Summ[i,3] <- round(kurtosis(Posterior[,i]),3)
+               Summ[i,4] <- round(skewness(Posterior[,i]),3)
+               Summ[i,5] <- 0
+               Summ[i,6] <- round(IAT(Posterior[,i]),3)}
+          Summ[,7] <- NA
+          Summ[,8] <- 1
           options(warn=0)
           }
      if(identical(class(x), "pmc")) {
@@ -138,10 +233,10 @@ PosteriorChecks <- function(x, Parms=NULL)
           ### Correlation Table
           options(warn=-1); postcor <- cor(post); options(warn=0)
           ### Summary Table
-          Summ <- matrix(NA, ncol(post), 6)
+          Summ <- matrix(NA, ncol(post), 8)
           rownames(Summ) <- colnames(post)
-          colnames(Summ) <- c("p(theta > 0)","N.Modes","Kurtosis",
-               "Skewness","Burn-In","IAT")
+          colnames(Summ) <- c("p(theta > 0)", "N.Modes", "Kurtosis",
+               "Skewness", "Burn-In", "IAT", "ISM", "AR")
           options(warn=-1)
           for (i in 1:ncol(post)) {
                Summ[i,1] <- mean(post[,i] > 0)
@@ -150,6 +245,8 @@ PosteriorChecks <- function(x, Parms=NULL)
                Summ[i,4] <- round(skewness(post[,i]),3)
                Summ[i,6] <- round(IAT(post[,i]),3)}
           Summ[,5] <- rep(1, nrow(Summ))
+          Summ[,7] <- NA
+          Summ[,8] <- 1
           options(warn=0)
           }
      ### Output

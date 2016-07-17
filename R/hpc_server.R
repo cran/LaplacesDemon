@@ -15,6 +15,7 @@ server_Listening <- function(n=2, port=19009)
                open="r+")
           cat("\nClient", i, "Connected")}
      tmp <- NULL
+     trow <- 0
      stop_server <- FALSE
      cat("\nStart listening...")
      repeat
@@ -24,14 +25,18 @@ server_Listening <- function(n=2, port=19009)
                #print(paste("Socket", i, "ready to write"))
                con <- slist[[i]]
                #print("Write message...")
-               serialize(tmp, con)
+               if(is.null(tmp)) serialize(tmp, con)
+               else serialize(tmp[-(((i-1)*trow+1):(i*trow))], con)
                #print("Read message...")
                buf <- try(unserialize(con), silent=TRUE)
                if(is.matrix(buf)) {
-                    tmp <- buf
+                    if(is.null(tmp)) {
+                         tmp <- matrix(0, nrow=n*nrow(buf), ncol=ncol(buf))
+                         trow <- nrow(buf)
+                         }
+                    tmp[((i-1)*trow+1):(i*trow),] <- buf
                     }
-               else
-                    {
+               else {
                     stop_server <- TRUE
                     break
                     }
@@ -42,4 +47,7 @@ server_Listening <- function(n=2, port=19009)
           close(slist[[i]])
           cat("\nClose connection", i)
           }
+     cat("\n")
      }
+
+#End

@@ -10,7 +10,8 @@ Levene.Test(x, Method="U", G=NULL, Data=NULL)
 }
 \arguments{
   \item{x}{This required argument must be an object of class
-    \code{demonoid.ppc}, \code{laplace.ppc}, or \code{pmc.ppc}.}
+    \code{demonoid.ppc}, \code{iterquad.ppc}, \code{laplace.ppc},
+    \code{pmc.ppc}, or \code{vb.ppc}.}
   \item{Method}{The method defaults to \code{U} for a univariate
     dependent variable (DV), y. When the DV is multivariate,
     \code{Method="C"} applies Levene's test to each column associated
@@ -81,13 +82,16 @@ Levene.Test(x, Method="U", G=NULL, Data=NULL)
 }
 \author{Statisticat, LLC. \email{software@bayesian-inference.com}}
 \seealso{
+  \code{\link{IterativeQuadrature}},
   \code{\link{LaplaceApproximation}},
   \code{\link{LaplacesDemon}},
-  \code{\link{PMC}}, and
-  \code{\link{p.interval}}.
+  \code{\link{PMC}},
+  \code{\link{p.interval}}, and
+  \code{\link{VariationalBayes}}.
 }
 \examples{
-#First, update the model with LaplaceApproximation, LaplacesDemon, or PMC.
+#First, update the model with IterativeQuadrature, LaplaceApproximation,
+#  LaplacesDemon, PMC, or VariationalBayes.
 #Then, use the predict function, creating, say, object Pred.
 #Finally:
 #Levene.Test(Pred)
