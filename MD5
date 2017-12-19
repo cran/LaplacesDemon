@@ -1,7 +1,7 @@
-f7d59f4f33e09ed64de887d8aa2b6254 *CHANGELOG
-18cb54e5111ec4c4cd6b97f9524b8e7e *DESCRIPTION
+d3cb1084009f89c569e2a804469ec625 *CHANGELOG
+c2bec80c914081081374979eadf25ca9 *DESCRIPTION
 c3cc24977ea0e5e80769e2e325f7d3dd *LICENSE
-58f93021fc2d915b6ccf88c9d99864bf *NAMESPACE
+e539630e54f7c3a13050b5e65cf2911f *NAMESPACE
 c27d786c909d4ef57c05712d9c9bf726 *R/ABB.R
 33c69e8d43c7784acc22eb1bc6d8f649 *R/AcceptanceRate.R
 16c3489c056d2f39d592c9f471c7ac15 *R/BMK.Diagnostic.R
@@ -65,7 +65,7 @@ ec8ac80f70315dafb8a46f6840696129 *R/burnin.R
 8475e2ce9f934f7ca066972438f24ae1 *R/cond.plot.R
 f8a791c997679700c0b5a30370b77521 *R/de.Finetti.Game.R
 ada37abad692ed54eae3444e71298fd6 *R/deburn.R
-bebeb71bfe61badc1087768c255517cf *R/distributions.R
+a6029f3b4b87140efe873f4efe01093e *R/distributions.R
 fd6afa6bb7ddffff64b580847ca2076f *R/hpc_server.R
 6832f098d4bfef1647dbbd2a1c5ecddc *R/interval.R
 f6873e8d5625828f5b533aab7259e1e2 *R/is.appeased.R
@@ -83,8 +83,8 @@ af88af14a7fe0d97ee69ba2538716973 *R/log-log.R
 5c9234a3f79d774f078ca1946d191b07 *R/logit.R
 29ce6627e4b81b8c2cc0ad664ad4b72a *R/p.interval.R
 54c5cb92a9f36cec58f342e062c33a60 *R/plot.bmk.R
-43fed45e32b02fe8c3eea8ae2eed6dae *R/plot.demonoid.R
-298ad1e5a626019621f6e54f963cf420 *R/plot.demonoid.hpc.R
+5714a2228c6d62b61e41e14669cb6644 *R/plot.demonoid.R
+0623c5f293134320092b30f056b247ae *R/plot.demonoid.hpc.R
 b5adbebdf2f04d46b994ac1337ef401b *R/plot.demonoid.ppc.R
 8b9447d698344ee9e750e7aeb9234d93 *R/plot.importance.R
 3850cb1a6b807064c10f5ff9820bd9eb *R/plot.iterquad.R
@@ -119,7 +119,7 @@ a071b4a06aff5cbab6f2774fd360c73c *R/summary.miss.R
 3bb614c076befdbf6348e8d72c58797f *R/summary.pmc.ppc.R
 33f8ac1d7bf837189ddf8e1524b5a37a *R/summary.vb.ppc.R
 e452450ec510d16253286f1fa09f21ef *README
-22b4d6187af80f41bfcfd1944d5a7b89 *build/vignette.rds
+807b02f5a4dde1e26650ca8eea5b4042 *build/vignette.rds
 a3d880190df8c97eb46bc23789dfaaa1 *data/demonchoice.txt.gz
 6c47ee76fe189495a5fa480411193d45 *data/demonfx.txt.gz
 34b104265c1e3ea6e565fcd6073c51bd *data/demonsessions.txt.gz
@@ -127,12 +127,12 @@ d67214ac9687eb74f629abf2b7df2cb3 *data/demonsnacks.txt.gz
 5ba7e1e859d4f6f7b3db6f44d2ddd683 *data/demontexas.txt.gz
 6c8e3a4b465adc0c1a81d659f0b6682b *inst/CITATION
 33f3d2d3432c91edffada5f0911f70d6 *inst/doc/BayesianInference.Stex
-cb481f3c58844e9e6148d29de9456d71 *inst/doc/BayesianInference.pdf
+be0b02564d939f82a5bacec72301ac91 *inst/doc/BayesianInference.pdf
 293d2a5a0705b26feaa358d186fc9a10 *inst/doc/Examples.Stex
-abc402f02732aa2cce462ec08ece1ec6 *inst/doc/Examples.pdf
+7f4d86db6f10529cf5405ae76155a850 *inst/doc/Examples.pdf
 72435861066256b6de07dd4dec08223d *inst/doc/LaplacesDemonTutorial.R
 0ca4408d6303f319224744110e730ca1 *inst/doc/LaplacesDemonTutorial.Stex
-f3a152e1b7ef8a2b82f0ea168361fc84 *inst/doc/LaplacesDemonTutorial.pdf
+8d2f51b4dcb679bdcd6c9156b1e13a1f *inst/doc/LaplacesDemonTutorial.pdf
 dee4eb6dd6f6acadd1ca8369e8617ad2 *man/ABB.Rd
 df692f6b354f6a95e8336725ad80ac07 *man/AcceptanceRate.Rd
 b0457cd4a7fd0b608efe58647460c8fa *man/BMK.Diagnostic.Rd
@@ -164,7 +164,7 @@ b6cf14b3deea3ff2e767c1fe4a452d03 *man/LML.Rd
 3db35088f55110e6816b41aeb09ed6dd *man/LaplaceApproximation.Rd
 e4ce4dab2682f3a407a37d2fccb9a9f4 *man/LaplacesDemon-package.Rd
 412efcfac3670885f17d839b17432455 *man/LaplacesDemon.RAM.Rd
-4498d7d129d3c9a6f47695a147e296b3 *man/LaplacesDemon.Rd
+1c9f5dbe147a07930fcd31992afd8672 *man/LaplacesDemon.Rd
 e77a4c020e440299412993291a0df8d3 *man/Levene.Test.Rd
 32c6604af1ee5ac12d60584a2c4ca06e *man/LossMatrix.Rd
 fee8f6e1ae1d1b1785b7672a7dbc5705 *man/MCSE.Rd
@@ -227,7 +227,7 @@ ed6808349666a415ea41e0273a8b50ce *man/dist.LASSO.Rd
 cb6b15a47a90ae7e8606f4287340d2ba *man/dist.Laplace.Precision.Rd
 c0def495bae5dc1cb20064c005e1e138 *man/dist.Laplace.Rd
 1f0314af551b04cf5744707500639805 *man/dist.Log.Laplace.Rd
-167ec69d8d82faab6dc7a35628c30448 *man/dist.Log.Normal.Precision.Rd
+dcb1129491c7949fd54b40ec6e5b7252 *man/dist.Log.Normal.Precision.Rd
 83c1ffcf622a774d544b4810beecf4bd *man/dist.Matrix.Gamma.Rd
 ebfbc075768f85c0535322d16f8c9270 *man/dist.Matrix.Normal.Rd
 0d58194c0c3190aeda98d50bfd481e20 *man/dist.Multivariate.Cauchy.Cholesky.Rd
@@ -283,7 +283,7 @@ eb0bd2d521aabaea20730ecc73f3f106 *man/log-log.Rd
 72db795ef19f383328b79d3a86de5698 *man/logit.Rd
 83fe3964936c1a4bde11f3dcb83ed893 *man/p.interval.Rd
 b503d3911867246ae35265eb4d07459c *man/plot.bmk.Rd
-a766056aa645900e22fef49b8bb48507 *man/plot.demonoid.Rd
+6da412751938621a56b5c3b0f5700c4d *man/plot.demonoid.Rd
 f246d90adf2d4a390e17bb018f177a05 *man/plot.demonoid.ppc.Rd
 c841efc816e2011567eeb7ff1f9baf0c *man/plot.importance.Rd
 69fe9c1b9f5f85c1618320d4ab8873f8 *man/plot.iterquad.Rd
