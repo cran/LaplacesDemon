@@ -1,5 +1,5 @@
-d3cb1084009f89c569e2a804469ec625 *CHANGELOG
-c2bec80c914081081374979eadf25ca9 *DESCRIPTION
+7b8a8d0d7a19b32d45f0816fd1d2b0ef *CHANGELOG
+2eef9c30888b7c87d733af6155bbf9c0 *DESCRIPTION
 c3cc24977ea0e5e80769e2e325f7d3dd *LICENSE
 e539630e54f7c3a13050b5e65cf2911f *NAMESPACE
 c27d786c909d4ef57c05712d9c9bf726 *R/ABB.R
@@ -119,7 +119,8 @@ a071b4a06aff5cbab6f2774fd360c73c *R/summary.miss.R
 3bb614c076befdbf6348e8d72c58797f *R/summary.pmc.ppc.R
 33f8ac1d7bf837189ddf8e1524b5a37a *R/summary.vb.ppc.R
 e452450ec510d16253286f1fa09f21ef *README
-807b02f5a4dde1e26650ca8eea5b4042 *build/vignette.rds
+40bccd6c0141daf77184a939353d64b9 *build/partial.rdb
+dcd65b51610be75011d9777e126bb852 *build/vignette.rds
 a3d880190df8c97eb46bc23789dfaaa1 *data/demonchoice.txt.gz
 6c47ee76fe189495a5fa480411193d45 *data/demonfx.txt.gz
 34b104265c1e3ea6e565fcd6073c51bd *data/demonsessions.txt.gz
@@ -127,12 +128,12 @@ d67214ac9687eb74f629abf2b7df2cb3 *data/demonsnacks.txt.gz
 5ba7e1e859d4f6f7b3db6f44d2ddd683 *data/demontexas.txt.gz
 6c8e3a4b465adc0c1a81d659f0b6682b *inst/CITATION
 33f3d2d3432c91edffada5f0911f70d6 *inst/doc/BayesianInference.Stex
-be0b02564d939f82a5bacec72301ac91 *inst/doc/BayesianInference.pdf
+35ff0da2a63f4df5f6885b39e2e83265 *inst/doc/BayesianInference.pdf
 293d2a5a0705b26feaa358d186fc9a10 *inst/doc/Examples.Stex
-7f4d86db6f10529cf5405ae76155a850 *inst/doc/Examples.pdf
+a1176a64b7d4f7e4998b27926e16cc5b *inst/doc/Examples.pdf
 72435861066256b6de07dd4dec08223d *inst/doc/LaplacesDemonTutorial.R
 0ca4408d6303f319224744110e730ca1 *inst/doc/LaplacesDemonTutorial.Stex
-8d2f51b4dcb679bdcd6c9156b1e13a1f *inst/doc/LaplacesDemonTutorial.pdf
+a78616f74b30f27311c498b753d0291d *inst/doc/LaplacesDemonTutorial.pdf
 dee4eb6dd6f6acadd1ca8369e8617ad2 *man/ABB.Rd
 df692f6b354f6a95e8336725ad80ac07 *man/AcceptanceRate.Rd
 b0457cd4a7fd0b608efe58647460c8fa *man/BMK.Diagnostic.Rd
@@ -162,7 +163,7 @@ e5f7d3ced33891fe96f153b1d252a3de *man/KLD.Rd
 b6cf14b3deea3ff2e767c1fe4a452d03 *man/LML.Rd
 16fc4add45e330e025fa24e97b82d44f *man/LPL.interval.Rd
 3db35088f55110e6816b41aeb09ed6dd *man/LaplaceApproximation.Rd
-e4ce4dab2682f3a407a37d2fccb9a9f4 *man/LaplacesDemon-package.Rd
+0d7ba0135dbed77445d91f057e98a9dd *man/LaplacesDemon-package.Rd
 412efcfac3670885f17d839b17432455 *man/LaplacesDemon.RAM.Rd
 1c9f5dbe147a07930fcd31992afd8672 *man/LaplacesDemon.Rd
 e77a4c020e440299412993291a0df8d3 *man/Levene.Test.Rd
