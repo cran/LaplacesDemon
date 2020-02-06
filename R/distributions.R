@@ -1176,8 +1176,8 @@ dmatrixnorm <- function(X, M, U, V, log=FALSE)
      k <- ncol(X)
      ss <- X - M
      dens <- -0.5*tr(as.inverse(V) %*% t(ss) %*%
-          as.inverse(U) %*% ss) - (log(2*pi)*(n*k/2) +
-          logdet(V)*(n/2) + logdet(U)*(k/2))
+          as.inverse(U) %*% ss) - 
+       (log(2*pi)*(n*k/2) - logdet(V) * (n/2) - logdet(U) * (k/2))
      if(log == FALSE) dens <- exp(dens)
      return(dens)
      }
@@ -1363,7 +1363,7 @@ dmvl <- function(x, mu, Sigma, log=FALSE)
      z <- rowSums({ss %*% Omega} * ss)
      z[which(z == 0)] <- 1e-300
      dens <- as.vector(log(2) - log(2*pi)*(k/2) + logdet(Sigma)*0.5 +
-          (log(pi) - log(2) + log(2*z)*0.5)*0.5 - log(2*z)*0.5 -
+          (log(pi) - log(2) + log(2*z)*0.5)*0.5 - sqrt(2*z) -
           log(z/2)*0.5*(k/2 - 1))
      if(log == FALSE) dens <- exp(dens)
      return(dens)
@@ -2626,13 +2626,19 @@ dzellner <- function(beta, g, sigma, X, log=FALSE)
      {
      if(g <= 0) stop("The g parameter must be positive.")
      if(sigma <= 0) stop("The sigma parameter must be positive.")
+  ## HS (01/2020): The original formulation was:
+  ### g*sigma*sigma* as.inverse(t(X) %*% X)
+  ### the latter bit is equivalent to: solve(crossprod(X))
+  ### which should be equivalent to the more stable and accurate
+  ### chol2inv(qr.R(qr(X))) 
+  ## see: strucchange::solveCrossprod
      dens <- dmvn(beta, rep(0, length(beta)),
-          g*sigma*sigma*as.inverse(t(X) %*% X), log=log)
+          g*sigma*sigma*chol2inv(qr.R(qr(X))), log=log)
      return(dens)
      }
 rzellner <- function(n, g, sigma, X)
      {
-     x <- rmvn(n, rep(0, ncol(X)), g*sigma*sigma*as.inverse(t(X) %*% X))
+     x <- rmvn(n, rep(0, ncol(X)), g*sigma*sigma*chol2inv(qr.R(qr(X))))
      return(x)
      }
 

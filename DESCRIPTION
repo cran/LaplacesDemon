@@ -1,5 +1,5 @@
 Package: LaplacesDemon
-Version: 16.1.1
+Version: 16.1.4
 Title: Complete Environment for Bayesian Inference
 Authors@R: c(person("Byron", "Hall", role = "aut"),
     person("Martina", "Hall", role = "aut"),
@@ -21,7 +21,7 @@ License: MIT + file LICENSE
 URL: https://github.com/LaplacesDemonR/LaplacesDemon
 BugReports: https://github.com/LaplacesDemonR/LaplacesDemon/issues
 NeedsCompilation: no
-Packaged: 2018-06-23 11:30:26 UTC; henrik
+Packaged: 2020-02-03 21:47:37 UTC; henrik
 Author: Byron Hall [aut],
   Martina Hall [aut],
   Statisticat, LLC [aut],
@@ -34,4 +34,4 @@ Author: Byron Hall [aut],
   Henrik Singmann [cre]
 Maintainer: Henrik Singmann <singmann+LaplacesDemon@gmail.com>
 Repository: CRAN
-Date/Publication: 2018-06-30 17:19:43 UTC
+Date/Publication: 2020-02-06 09:40:20 UTC
