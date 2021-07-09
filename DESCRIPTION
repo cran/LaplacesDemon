@@ -1,5 +1,5 @@
 Package: LaplacesDemon
-Version: 16.1.4
+Version: 16.1.6
 Title: Complete Environment for Bayesian Inference
 Authors@R: c(person("Byron", "Hall", role = "aut"),
     person("Martina", "Hall", role = "aut"),
@@ -16,12 +16,12 @@ Depends: R (>= 3.0.0)
 Imports: parallel, grDevices, graphics, stats, utils
 Suggests: KernSmooth
 ByteCompile: TRUE
-Description: Provides a complete environment for Bayesian inference using a variety of different samplers (see ?LaplacesDemon for an overview). The README describes the history of the package development process.
+Description: Provides a complete environment for Bayesian inference using a variety of different samplers (see ?LaplacesDemon for an overview).
 License: MIT + file LICENSE
 URL: https://github.com/LaplacesDemonR/LaplacesDemon
 BugReports: https://github.com/LaplacesDemonR/LaplacesDemon/issues
 NeedsCompilation: no
-Packaged: 2020-02-03 21:47:37 UTC; henrik
+Packaged: 2021-07-09 13:02:27 UTC; henrik
 Author: Byron Hall [aut],
   Martina Hall [aut],
   Statisticat, LLC [aut],
@@ -34,4 +34,4 @@ Author: Byron Hall [aut],
   Henrik Singmann [cre]
 Maintainer: Henrik Singmann <singmann+LaplacesDemon@gmail.com>
 Repository: CRAN
-Date/Publication: 2020-02-06 09:40:20 UTC
+Date/Publication: 2021-07-09 14:00:02 UTC

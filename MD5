@@ -1,5 +1,5 @@
-0520e7f6384867c7c6a765d49dc7ac54 *CHANGELOG
-0b29f0ab3ac8b7543469d5da607b3ac4 *DESCRIPTION
+f1b449743a3e4db07c55df024cc1b8fe *CHANGELOG
+e579c808da30e4461826925e2aa595d2 *DESCRIPTION
 c3cc24977ea0e5e80769e2e325f7d3dd *LICENSE
 e539630e54f7c3a13050b5e65cf2911f *NAMESPACE
 c27d786c909d4ef57c05712d9c9bf726 *R/ABB.R
@@ -41,7 +41,7 @@ c246715bd85cd2e3d69c4d7859694a98 *R/LaplacesDemon.RAM.R
 48fce694d14a5acf05f986ec27efc070 *R/Math.R
 88b122f98bea5e1a05821c5858895580 *R/Matrices.R
 3356cce03a44c7ad59c03f578df7d1fe *R/MinnesotaPrior.R
-7b8320de74bf7a6c0f8b6f7a3d97c046 *R/Mode.R
+80e0b0a1023ac505a329e85bd12cc623 *R/Mode.R
 463884bbfa7aaf99cb05238a4f878928 *R/Model.Spec.Time.R
 b50f0448874be2c5cc3d494dd53aebb0 *R/PMC.R
 860f1680f5e20304a6d8295e73c7d596 *R/PMC.RAM.R
@@ -65,7 +65,7 @@ ec8ac80f70315dafb8a46f6840696129 *R/burnin.R
 8475e2ce9f934f7ca066972438f24ae1 *R/cond.plot.R
 f8a791c997679700c0b5a30370b77521 *R/de.Finetti.Game.R
 ada37abad692ed54eae3444e71298fd6 *R/deburn.R
-28959361f206036126767c1f1b3af2ad *R/distributions.R
+31ce3267f842b8d7afcd9e67f6196edf *R/distributions.R
 fd6afa6bb7ddffff64b580847ca2076f *R/hpc_server.R
 6832f098d4bfef1647dbbd2a1c5ecddc *R/interval.R
 f6873e8d5625828f5b533aab7259e1e2 *R/is.appeased.R
@@ -118,9 +118,9 @@ ce33ecde26a90181dcafbdb8b7e5d9f2 *R/summary.demonoid.ppc.R
 a071b4a06aff5cbab6f2774fd360c73c *R/summary.miss.R
 3bb614c076befdbf6348e8d72c58797f *R/summary.pmc.ppc.R
 33f8ac1d7bf837189ddf8e1524b5a37a *R/summary.vb.ppc.R
-e452450ec510d16253286f1fa09f21ef *README
-48cfc16a9828a8fbf7ce88208636955c *build/partial.rdb
-07d99d620775761ca5e13044e6bee90d *build/vignette.rds
+ec6cf1febf0e6b5ec0d94642bf01b06c *README
+2f8e69cec6b03bfe3a97c94a2638333c *build/partial.rdb
+d6ffbf7492ebed23954132d1c1633427 *build/vignette.rds
 1df2e11a174cec53f7e0200228674659 *data/demonchoice.txt
 834b37bf46a2fa1ae99ada3fecccdf03 *data/demonfx.txt
 d6ad9b8e2f294fb7335d96d0dcbf86be *data/demonsessions.txt
@@ -128,12 +128,12 @@ d6ad9b8e2f294fb7335d96d0dcbf86be *data/demonsessions.txt
 23247d75cfea5c7e5a83bd2feb269e9f *data/demontexas.txt
 6c8e3a4b465adc0c1a81d659f0b6682b *inst/CITATION
 33f3d2d3432c91edffada5f0911f70d6 *inst/doc/BayesianInference.Stex
-64e47fa1b217ccfcbab7d83653e22f29 *inst/doc/BayesianInference.pdf
+547204e5c2eb9df70f62bea1e73bed28 *inst/doc/BayesianInference.pdf
 293d2a5a0705b26feaa358d186fc9a10 *inst/doc/Examples.Stex
-07b801147e63710010e1a1b405ea6e45 *inst/doc/Examples.pdf
+5e73bbdc0d5ad292a4e2c6eeb9cde96f *inst/doc/Examples.pdf
 72435861066256b6de07dd4dec08223d *inst/doc/LaplacesDemonTutorial.R
 0ca4408d6303f319224744110e730ca1 *inst/doc/LaplacesDemonTutorial.Stex
-acc0ee7dac92fe642c0d059ee8717b26 *inst/doc/LaplacesDemonTutorial.pdf
+663092e373f84ef62f99fbf543e103ef *inst/doc/LaplacesDemonTutorial.pdf
 dee4eb6dd6f6acadd1ca8369e8617ad2 *man/ABB.Rd
 df692f6b354f6a95e8336725ad80ac07 *man/AcceptanceRate.Rd
 b0457cd4a7fd0b608efe58647460c8fa *man/BMK.Diagnostic.Rd
@@ -196,7 +196,7 @@ b1b188179fe2b028089393e26f5a1865 *man/WAIC.Rd
 77c9dbefcbcb34bd39b85bc856f0bf0b *man/caterpillar.plot.Rd
 9c33224960655e76af15af0c4d1b082e *man/cond.plot.Rd
 a0d30de161387f71a2c09d3680fde234 *man/data.demonchoice.Rd
-ae3de9d3980822a3eafc209b76e379a3 *man/data.demonfx.Rd
+01761a40a7c864d56e14d6d5afd26504 *man/data.demonfx.Rd
 3d67886d0b20296236092b8d399431bb *man/data.demonsessions.Rd
 049f783a38a5409bece9ea7749093561 *man/data.demonsnacks.Rd
 ab0acc139cd5219924c89e035040989e *man/data.demontexas.Rd

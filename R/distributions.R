@@ -631,7 +631,7 @@ dinvchisq <- function(x, df, scale=1/df, log=FALSE)
      x <- rep(x, len=NN); df <- rep(df, len=NN);
      scale <- rep(scale, len=NN)
      nu <- df / 2
-     dens <- nu*log(nu) - log(gamma(nu)) + nu*log(scale) -
+     dens <- nu*log(nu) - lgamma(nu) + nu*log(scale) -
           (nu+1)*log(x) - (nu*scale/x)
      if(log == FALSE) dens <- exp(dens)
      return(dens)
@@ -1362,9 +1362,9 @@ dmvl <- function(x, mu, Sigma, log=FALSE)
      ss <- x - mu
      z <- rowSums({ss %*% Omega} * ss)
      z[which(z == 0)] <- 1e-300
-     dens <- as.vector(log(2) - log(2*pi)*(k/2) + logdet(Sigma)*0.5 +
-          (log(pi) - log(2) + log(2*z)*0.5)*0.5 - sqrt(2*z) -
-          log(z/2)*0.5*(k/2 - 1))
+     dens <- as.vector(log(2) - log(2 * pi) * (k/2) - logdet(Sigma) * 0.5 + 
+                      (log(pi) - log(2) - log(2 * z) * 0.5) * 0.5 - 
+                      sqrt(2 * z) - log(z/2) * 0.5 * (k/2 - 1))
      if(log == FALSE) dens <- exp(dens)
      return(dens)
      }
