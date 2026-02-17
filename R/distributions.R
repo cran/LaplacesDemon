@@ -515,7 +515,7 @@ qhalft <- function(p, scale=25, nu=1)
      if(any(scale <= 0)) stop("The scale parameter must be positive.")
      NN <- max(length(p), length(scale), length(nu))
      p <- rep(p, len=NN); scale <- rep(scale, len=NN)
-     q <- rtrunc(p, "st", a=0, b=Inf, mu=0, sigma=scale, nu=nu)
+     q <- qtrunc(p, "st", a=0, b=Inf, mu=0, sigma=scale, nu=nu)
      return(q)
      }
 rhalft <- function(n, scale=25, nu=1)
@@ -689,8 +689,7 @@ dinvgaussian <- function(x, mu, lambda, log=FALSE)
      NN <- max(length(x), length(mu), length(lambda))
      x <- rep(x, len=NN); mu <- rep(mu, len=NN)
      lambda <- rep(lambda, len=NN)
-     dens <- log(lambda / (2*pi*x^3)^0.5) -
-          ((lambda*(x - mu)^2) / (2*mu^2*x))
+     dens <- log(lambda^0.5/(2 * pi * x^3)^0.5) - ((lambda * (x - mu)^2)/(2 * mu^2 * x))
      if(log == FALSE) dens <- exp(dens)
      return(dens)
      }
@@ -1605,7 +1604,7 @@ rmvpe <- function(n, mu=c(0,0), Sigma=diag(2), kappa=1)
           stop("Sigma must be positive-definite.")}
      SigmaSqrt <- ev$vectors %*% diag(sqrt(ev$values),
           length(ev$values)) %*% t(ev$vectors)
-     radius <- (rgamma(n, shape=k/(2*kappa), scale=1/2))^(1/(2*kappa))
+     radius <- (rgamma(n, shape=k/(2*kappa), scale=2))^(1/(2*kappa))
      runifsphere <- function(n, k)
           {
           p <- as.integer(k)
